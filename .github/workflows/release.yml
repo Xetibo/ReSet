@@ -14,9 +14,8 @@ jobs:
           toolchain: nightly
       - name: Build
         run: cargo build --verbose
-      - name: Upload
-        uses: actions/upload-artifact@v3
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: reset
-          path: target/release/reset
-
+          files: |
+            target/release/reset
