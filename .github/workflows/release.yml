@@ -5,16 +5,18 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [x86_64-unknown-linux-musl]
     steps:
-      - uses: actions/checkout@master
-      - name: Compile and release
-        uses: rust-build/rust-build.action@v1.4.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+      - name: nightly-rust
+        uses: actions-rs/toolchain@v1
+        with: 
+          profile: minimal
+          toolchain: nightly
+      - name: Build
+        run: cargo build --verbose
+      - name: Upload
+        uses: actions/upload-artifact@v3
         with:
-          RUSTTARGET: ${{ matrix.target }}
-          EXTRA_FILES: "README.md LICENSE"
+          name: reset
+          path: target/release/reset
+
