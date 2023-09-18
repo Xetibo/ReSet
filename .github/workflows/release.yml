@@ -5,6 +5,10 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64-unknown-linux-gnu]
     steps:
       - uses: actions/checkout@master
       - name: Compile and release
@@ -12,5 +16,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          RUSTTARGET: x86_64_unknown_linux_gnu
+          RUSTTARGET: ${{ matrix.target }}
           EXTRA_FILES: "README.md LICENSE"
