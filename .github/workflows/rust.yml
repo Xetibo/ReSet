@@ -20,12 +20,11 @@ jobs:
       with: 
         profile: minimal
         toolchain: nightly
-        components: rustfmt, clippy
     - name: run code coverage
       uses: actions-rs/tarpaulin@v0.1
       with:
         version: '0.15.0'
-        args: '-- --engine llvm --test-threads 1'
+        args: '-- --test-threads 1'
     - name: upload code coverage
       uses: actions/upload-artifact@v1
       with:
