@@ -25,11 +25,12 @@ jobs:
       with:
         version: '0.15.0'
         args: '-- --test-threads 1'
+        out-type: "Toml"
     - name: upload code coverage
       uses: actions/upload-artifact@v1
       with:
         name: code-coverage-report
-        path: code-coverage-report.xml
+        path: coverage/coverage.toml
 
     - name: Build
       run: cargo build --verbose
