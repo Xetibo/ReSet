@@ -16,6 +16,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: nightly-rust
+      uses: actions-rs/toolchain@v1
+      with: 
+        profile: minimal
+        toolchain: nightly
+        components: rustfmt, clippy
+    - name: run code coverage
+      uses: actions-rs/tarpaulin@v0.1
+      with:
+        version: '0.15.0'
+        args: '-- --engine llvm --test-threads 1'
+    - name: upload code coverage
+      uses: actions/upload-artifact@v1
+      with:
+        name: code-coverage-report
+        path: code-coverage-report.xml
+
     - name: Build
       run: cargo build --verbose
     - name: Run tests
