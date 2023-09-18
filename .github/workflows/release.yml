@@ -12,4 +12,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          RUSTTARGET: x86_64_unknown_linux_gnu
           EXTRA_FILES: "README.md LICENSE"
