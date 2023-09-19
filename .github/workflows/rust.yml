@@ -20,6 +20,11 @@ jobs:
       with: 
         profile: minimal
         toolchain: nightly
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+        path: cache 
+        key: ${{ runner.os }}-cache
     - name: run code coverage
       uses: actions-rs/tarpaulin@v0.1
       with:
