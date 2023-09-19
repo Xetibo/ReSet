@@ -23,7 +23,7 @@ jobs:
     - name: Cache
       uses: actions/cache@v3
       with:
-        path: cache 
+        path: target/debug 
         key: ${{ runner.os }}-cache
     - name: run code coverage
       uses: actions-rs/tarpaulin@v0.1
