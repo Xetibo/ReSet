@@ -1,6 +1,7 @@
 [package]
-name = "ReSet"
+name = "reset"
 version = "0.1.0"
 edition = "2021"
+description = "A wip universal Linux settings application."
 
 [dependencies]
