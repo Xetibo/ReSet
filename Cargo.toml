@@ -5,3 +5,4 @@ edition = "2021"
 description = "A wip universal Linux settings application."
 
 [dependencies]
+ReSet-Lib = "0.1.0"
