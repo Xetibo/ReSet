@@ -6,3 +6,8 @@ description = "A wip universal Linux settings application."
 
 [dependencies]
 ReSet-Lib = "0.1.0"
+adw = { version = "0.5.3", package = "libadwaita" }
+gtk = { version = "0.7.3", package = "gtk4" }
+
+[build-dependencies]
+glib-build-tools = "0.18.0"

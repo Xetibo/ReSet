@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <object class="GtkListBoxRow" id="resetWifiEntry">
+    <child>
+      <object class="GtkBox">
+        <child>
+          <object class="GtkImage" id="resetWifiStrength">
+            <property name="icon-name">network-wireless-symbolic</property>
+            <property name="margin-end">15</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="resetWifiLabel">
+            <property name="hexpand">True</property>
+            <property name="label">LoremIpsumInternet</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="resetWifiButton">
+            <property name="halign">start</property>
+            <property name="icon-name">emblem-system-symbolic</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkBox" id="resetWifi">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="AdwClampScrollable">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="justify">right</property>
+                <property name="label">Available networks</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBox" id="resetWifiList"/>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton">
+        <property name="halign">start</property>
+        <property name="label">Advanced</property>
+        <property name="valign">start</property>
+      </object>
+    </child>
+  </object>
+  <object class="AdwToast"/>
+</interface>
