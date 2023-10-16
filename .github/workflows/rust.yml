@@ -21,7 +21,7 @@ jobs:
           profile: minimal
           toolchain: nightly
       - name: Install gtk
-        run: sudo apt install libgtk-4-dev libadwaita-1 -y
+        run: sudo apt install libgtk-4-dev libadwaita-1-dev -y
       - name: Cache
         uses: actions/cache@v3
         with:
