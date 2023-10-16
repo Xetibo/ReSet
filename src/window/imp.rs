@@ -1,12 +1,22 @@
+use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate};
+use gtk::{glib, CompositeTemplate, SearchEntry, Label, ListBox, FlowBox};
+use crate::wifi::WifiBox;
 
+#[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/org/xetibo/reset/resetMainWindow.ui")]
 pub struct Window {
-    // todo i guess
+    #[template_child]
+    pub resetSearchEntry: TemplateChild<SearchEntry>,
+    #[template_child]
+    pub resetSidebarList: TemplateChild<ListBox>,
+    #[template_child]
+    pub resetMain: TemplateChild<FlowBox>,
+    #[template_child]
+    pub test: TemplateChild<Label>,
 }
 
 #[glib::object_subclass]
@@ -16,6 +26,7 @@ impl ObjectSubclass for Window {
     type ParentType = adw::ApplicationWindow;
 
     fn class_init(klass: &mut Self::Class) {
+        WifiBox::ensure_type();
         klass.bind_template();
     }
 
@@ -24,7 +35,24 @@ impl ObjectSubclass for Window {
     }
 }
 
-impl ObjectImpl for Window {}
+impl ObjectImpl for Window {
+    fn constructed(&self) {
+        self.parent_constructed();
+
+        let object = self.obj();
+        object.setupCallback();
+
+        let wifibox = WifiBox::new();
+        let wifibox2 = WifiBox::new();
+        let wifibox3 = WifiBox::new();
+        let wifibox4 = WifiBox::new();
+
+        self.resetMain.insert(&wifibox, -1);
+        self.resetMain.insert(&wifibox2, -1);
+        self.resetMain.insert(&wifibox3, -1);
+        self.resetMain.insert(&wifibox4, -1);
+    }
+}
 
 impl WidgetImpl for Window {}
 

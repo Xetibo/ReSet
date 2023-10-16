@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.12"/>
+  <template class="resetWifiEntry" parent="GtkListBoxRow">
+    <child>
+      <object class="GtkBox">
+        <child>
+          <object class="GtkImage" id="resetWifiStrength">
+            <property name="icon-name">network-wireless-symbolic</property>
+            <property name="margin-end">15</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="resetWifiLabel">
+            <property name="ellipsize">end</property>
+            <property name="hexpand">True</property>
+            <property name="label">LoremIpsumInternet</property>
+            <property name="margin-end">10</property>
+            <property name="single-line-mode">True</property>
+            <property name="width-request">200</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="resetWifiButton">
+            <property name="halign">start</property>
+            <property name="icon-name">emblem-system-symbolic</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

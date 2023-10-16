@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="/org/xetibo/reset/">
+        <file compressed="true" preprocess="xml-stripblanks">resetWifiEntry.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">resetWiFi.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">resetMainWindow.ui</file>
-<!--        <file compressed="true" preprocess="xml-stripblanks">resetWiFi.ui</file>-->
     </gresource>
 </gresources>
