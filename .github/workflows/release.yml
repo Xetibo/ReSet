@@ -1,6 +1,6 @@
 on:
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   release:
@@ -9,9 +9,11 @@ jobs:
       - uses: actions/checkout@v3
       - name: nightly-rust
         uses: actions-rs/toolchain@v1
-        with: 
+        with:
           profile: minimal
           toolchain: nightly
+      - name: Install gtk
+        run: sudo apt install libgtk-4-dev -y
       - name: Build
         run: cargo build --release --verbose
       - name: Release
