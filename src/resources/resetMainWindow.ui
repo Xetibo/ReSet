@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-  <requires lib="gtk" version="4.8"/>
+  <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetUI" parent="AdwApplicationWindow">
     <child>
@@ -16,19 +16,17 @@
               </object>
             </property>
             <child>
-              <object class="GtkLabel" id="test"/>
+              <object class="GtkButton" id="resetSideBarToggle">
+                <property name="icon-name">sidebar-show-symbolic</property>
+              </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="AdwNavigationSplitView">
+          <object class="AdwNavigationSplitView" id="resetNavigationSplitView">
             <property name="content">
               <object class="AdwNavigationPage">
-                <property name="margin-bottom">20</property>
-                <property name="margin-end">20</property>
-                <property name="margin-start">20</property>
-                <property name="margin-top">20</property>
-                <child>
+                <property name="child">
                   <object class="GtkFlowBox" id="resetMain">
                     <property name="column-spacing">25</property>
                     <property name="homogeneous">True</property>
@@ -36,9 +34,17 @@
                     <property name="selection-mode">none</property>
                     <property name="valign">start</property>
                   </object>
-                </child>
+                </property>
+                <property name="margin-bottom">20</property>
+                <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-top">20</property>
+                <property name="title">fdas</property>
               </object>
             </property>
+            <property name="max-sidebar-width">200.0</property>
+            <property name="min-sidebar-width">200.0</property>
+            <property name="show-content">True</property>
             <property name="sidebar">
               <object class="AdwNavigationPage">
                 <property name="child">
@@ -174,7 +180,7 @@
                                 <child>
                                   <object class="GtkBox">
                                     <property name="margin-bottom">10</property>
-                                    <property name="margin-start">35</property>
+                                    <property name="margin-start">30</property>
                                     <property name="margin-top">10</property>
                                     <child>
                                       <object class="GtkImage">
@@ -222,6 +228,7 @@
                     </child>
                   </object>
                 </property>
+                <property name="title">asdf</property>
               </object>
             </property>
             <property name="vexpand">True</property>

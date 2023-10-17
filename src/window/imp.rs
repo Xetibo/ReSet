@@ -1,8 +1,9 @@
-use adw::glib::StaticTypeExt;
+use adw::glib::{StaticTypeExt};
+use adw::NavigationSplitView;
 use adw::subclass::prelude::AdwApplicationWindowImpl;
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, SearchEntry, Label, ListBox, FlowBox};
+use gtk::{glib, CompositeTemplate, SearchEntry, ListBox, FlowBox, Button};
 use crate::wifi::WifiBox;
 
 #[allow(non_snake_case)]
@@ -10,13 +11,15 @@ use crate::wifi::WifiBox;
 #[template(resource = "/org/xetibo/reset/resetMainWindow.ui")]
 pub struct Window {
     #[template_child]
+    pub resetNavigationSplitView: TemplateChild<NavigationSplitView>,
+    #[template_child]
     pub resetSearchEntry: TemplateChild<SearchEntry>,
     #[template_child]
     pub resetSidebarList: TemplateChild<ListBox>,
     #[template_child]
     pub resetMain: TemplateChild<FlowBox>,
     #[template_child]
-    pub test: TemplateChild<Label>,
+    pub resetSideBarToggle: TemplateChild<Button>
 }
 
 #[glib::object_subclass]
@@ -54,7 +57,17 @@ impl ObjectImpl for Window {
     }
 }
 
-impl WidgetImpl for Window {}
+impl WidgetImpl for Window {
+    fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
+        println!("new width {}, new hight {}", width, height);
+        self.parent_size_allocate(width, height, baseline);
+        if width < 550 {
+            self.obj().hideSidebar(true);
+        } else {
+            self.obj().hideSidebar(false);
+        }
+    }
+}
 
 impl WindowImpl for Window {}
 

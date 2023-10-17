@@ -23,19 +23,14 @@ impl Window {
         self.imp()
             .resetSearchEntry
             .connect_search_changed(clone!(@ weak self as window => move |_| {
-                window.setText();
                 window.filterList();
             }));
-    }
 
-    fn setText(&self) {
-        let buffer = self.imp()
-            .resetSearchEntry
-            .text()
-            .to_string();
         self.imp()
-            .test
-            .set_text(&buffer);
+            .resetSideBarToggle
+            .connect_clicked(clone!(@ weak self as window => move |_| {
+                window.toggleSidebar();
+            }));
     }
 
     fn filterList(&self) {
@@ -56,5 +51,23 @@ impl Window {
             }
             return false;
         });
+    }
+
+    fn hideSidebar(&self, hidden: bool) {
+        self.imp()
+            .resetNavigationSplitView
+            .set_collapsed(hidden);
+    }
+
+    fn toggleSidebar(&self) {
+        if self.imp().resetNavigationSplitView.shows_content() {
+            self.imp()
+                .resetNavigationSplitView
+                .set_show_content(false);
+        } else {
+            self.imp()
+                .resetNavigationSplitView
+                .set_show_content(true);
+        }
     }
 }
