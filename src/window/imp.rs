@@ -1,6 +1,6 @@
 use adw::glib::{StaticTypeExt};
-use adw::NavigationSplitView;
-use adw::subclass::prelude::AdwApplicationWindowImpl;
+use adw::{Breakpoint, OverlaySplitView};
+use adw::subclass::prelude::{AdwApplicationWindowImpl};
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
 use gtk::{glib, CompositeTemplate, SearchEntry, ListBox, FlowBox, Button};
@@ -11,15 +11,17 @@ use crate::wifi::WifiBox;
 #[template(resource = "/org/xetibo/reset/resetMainWindow.ui")]
 pub struct Window {
     #[template_child]
-    pub resetNavigationSplitView: TemplateChild<NavigationSplitView>,
+    pub resetMain: TemplateChild<FlowBox>,
+    #[template_child]
+    pub resetSidebarBreakpoint: TemplateChild<Breakpoint>,
+    #[template_child]
+    pub resetOverlaySplitView: TemplateChild<OverlaySplitView>,
     #[template_child]
     pub resetSearchEntry: TemplateChild<SearchEntry>,
     #[template_child]
     pub resetSidebarList: TemplateChild<ListBox>,
     #[template_child]
-    pub resetMain: TemplateChild<FlowBox>,
-    #[template_child]
-    pub resetSideBarToggle: TemplateChild<Button>
+    pub resetSideBarToggle: TemplateChild<Button>,
 }
 
 #[glib::object_subclass]
@@ -44,6 +46,7 @@ impl ObjectImpl for Window {
 
         let object = self.obj();
         object.setupCallback();
+        object.handleDynamicSidebar();
 
         let wifibox = WifiBox::new();
         let wifibox2 = WifiBox::new();
@@ -57,17 +60,7 @@ impl ObjectImpl for Window {
     }
 }
 
-impl WidgetImpl for Window {
-    fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
-        println!("new width {}, new hight {}", width, height);
-        self.parent_size_allocate(width, height, baseline);
-        if width < 550 {
-            self.obj().hideSidebar(true);
-        } else {
-            self.obj().hideSidebar(false);
-        }
-    }
-}
+impl WidgetImpl for Window {}
 
 impl WindowImpl for Window {}
 
