@@ -3,13 +3,13 @@ use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use crate::wifi::WifiEntry;
 
-
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/xetibo/reset/resetWiFi.ui")]
 pub struct WifiBox {
     #[template_child]
     pub resetWifiList: TemplateChild<ListBox>,
+    // pub resetWifiList2: Vec<ListBox>,
 }
 
 #[glib::object_subclass]
@@ -31,6 +31,16 @@ impl ObjectSubclass for WifiBox {
 impl ObjectImpl for WifiBox {
     fn constructed(&self) {
         self.parent_constructed();
+
+        // for i in 0.. {
+        //     let listEntryOption = self.resetWifiList.row_at_index(i);
+        //     match listEntryOption {
+        //         None => break,
+        //         Some(row) => {
+        //
+        //         }
+        //     }
+        // }
     }
 }
 

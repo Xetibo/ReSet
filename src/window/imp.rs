@@ -1,8 +1,9 @@
-use adw::glib::StaticTypeExt;
-use adw::subclass::prelude::AdwApplicationWindowImpl;
+use adw::glib::{StaticTypeExt};
+use adw::{Breakpoint, OverlaySplitView};
+use adw::subclass::prelude::{AdwApplicationWindowImpl};
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, SearchEntry, Label, ListBox, FlowBox};
+use gtk::{glib, CompositeTemplate, SearchEntry, ListBox, FlowBox, Button};
 use crate::wifi::WifiBox;
 
 #[allow(non_snake_case)]
@@ -10,13 +11,17 @@ use crate::wifi::WifiBox;
 #[template(resource = "/org/xetibo/reset/resetMainWindow.ui")]
 pub struct Window {
     #[template_child]
+    pub resetMain: TemplateChild<FlowBox>,
+    #[template_child]
+    pub resetSidebarBreakpoint: TemplateChild<Breakpoint>,
+    #[template_child]
+    pub resetOverlaySplitView: TemplateChild<OverlaySplitView>,
+    #[template_child]
     pub resetSearchEntry: TemplateChild<SearchEntry>,
     #[template_child]
     pub resetSidebarList: TemplateChild<ListBox>,
     #[template_child]
-    pub resetMain: TemplateChild<FlowBox>,
-    #[template_child]
-    pub test: TemplateChild<Label>,
+    pub resetSideBarToggle: TemplateChild<Button>,
 }
 
 #[glib::object_subclass]
@@ -41,6 +46,7 @@ impl ObjectImpl for Window {
 
         let object = self.obj();
         object.setupCallback();
+        object.handleDynamicSidebar();
 
         let wifibox = WifiBox::new();
         let wifibox2 = WifiBox::new();

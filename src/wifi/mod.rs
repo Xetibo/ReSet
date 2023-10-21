@@ -5,8 +5,6 @@ mod wifiEntry;
 
 use adw::glib::Object;
 use gtk::{glib};
-use gtk::prelude::WidgetExt;
-use gtk::subclass::prelude::*;
 
 glib::wrapper! {
     pub struct WifiBox(ObjectSubclass<wifiBox::WifiBox>)
@@ -26,8 +24,4 @@ impl WifiBox {
     }
 }
 
-impl WifiEntry {
-    fn onClick(&self) {
-        self.imp().resetWifiButton.set_tooltip_text(Option::from("asd"));
-    }
-}
+impl WifiEntry {}
