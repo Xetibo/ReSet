@@ -1,10 +1,14 @@
-use adw::glib::{StaticTypeExt};
 use adw::{Breakpoint, OverlaySplitView};
-use adw::subclass::prelude::{AdwApplicationWindowImpl};
+use adw::glib::StaticTypeExt;
+use adw::subclass::prelude::AdwApplicationWindowImpl;
 use glib::subclass::InitializingObject;
+use gtk::{Button, CompositeTemplate, FlowBox, glib, ListBox, SearchEntry};
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, SearchEntry, ListBox, FlowBox, Button};
+
 use crate::wifi::WifiBox;
+use crate::window::handleSidebarClick::HANDLE_WIFI_CLICK;
+use crate::window::SidebarEntry;
+use crate::window::sidebarEntry::Categories;
 
 #[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
@@ -47,6 +51,14 @@ impl ObjectImpl for Window {
         let object = self.obj();
         object.setupCallback();
         object.handleDynamicSidebar();
+
+
+        let WiFiEntry = SidebarEntry::new("WiFi",
+                                          "network-wireless-symbolic",
+                                          Categories::Connectivity,
+                                          false,
+                                          HANDLE_WIFI_CLICK);
+        self.resetSidebarList.append(&WiFiEntry);
 
         let wifibox = WifiBox::new();
         let wifibox2 = WifiBox::new();

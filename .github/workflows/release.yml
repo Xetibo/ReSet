@@ -12,8 +12,6 @@ jobs:
         with:
           profile: minimal
           toolchain: nightly
-      - name: Install gtk
-        run: sudo apt install libgtk-4-dev libadwaita-1-dev -y
       - name: Build
         run: cargo build --release --verbose
       - name: Release

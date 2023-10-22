@@ -99,6 +99,9 @@
                             </child>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkGestureClick"/>
+                        </child>
                       </object>
                     </child>
                     <child>

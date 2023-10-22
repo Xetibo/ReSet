@@ -1,5 +1,4 @@
 #![allow(non_snake_case)]
-
 mod wifiBox;
 mod wifiEntry;
 
