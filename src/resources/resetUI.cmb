@@ -4,7 +4,8 @@
   <ui>
 	(3,1,None,"resetMainWindow",None,None,None,None,None,None,None),
 	(4,7,None,"resetWiFi",None,None,None,None,None,None,None),
-	(5,1,None,"resetWifiEntry",None,None,None,None,None,None,None)
+	(5,1,None,"resetWifiEntry",None,None,None,None,None,None,None),
+	(6,1,None,"resetSidebarEntry",None,None,None,None,None,None,None)
   </ui>
   <object>
 	(3,1,"AdwApplicationWindow","resetUI",None,None,None,None,-1,"  &lt;child&gt;\n    &lt;object id=\"resetSidebarBreakpoint\" class=\"AdwBreakpoint\"&gt;\n    &lt;/object&gt;\n  &lt;/child&gt;"),
@@ -67,7 +68,11 @@
 	(5,2,"GtkBox",None,1,None,None,None,None,None),
 	(5,3,"GtkImage","resetWifiStrength",2,None,None,None,None,None),
 	(5,4,"GtkLabel","resetWifiLabel",2,None,None,None,1,None),
-	(5,5,"GtkButton","resetWifiButton",2,None,None,None,2,None)
+	(5,5,"GtkButton","resetWifiButton",2,None,None,None,2,None),
+	(6,1,"GtkListBoxRow","resetSidebarEntry",None,None,None,None,None,None),
+	(6,2,"GtkBox",None,1,None,None,None,None,None),
+	(6,3,"GtkImage","resetSidebarImage",2,None,None,None,None,None),
+	(6,4,"GtkLabel","resetSidebarLabel",2,None,None,None,1,None)
   </object>
   <object_property>
 	(3,2,"AdwOverlaySplitView","content",None,None,None,None,None,3,None,None,None,None),
@@ -166,7 +171,11 @@
 	(5,4,"GtkWidget","width-request","200",None,None,None,None,None,None,None,None,None),
 	(5,5,"GtkButton","icon-name","emblem-system-symbolic",None,None,None,None,None,None,None,None,None),
 	(5,5,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
-	(5,5,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None)
+	(5,5,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
+	(6,2,"GtkWidget","margin-bottom","10",None,None,None,None,None,None,None,None,None),
+	(6,2,"GtkWidget","margin-start","10",None,None,None,None,None,None,None,None,None),
+	(6,2,"GtkWidget","margin-top","10",None,None,None,None,None,None,None,None,None),
+	(6,3,"GtkWidget","margin-end","10",None,None,None,None,None,None,None,None,None)
   </object_property>
   <object_data>
 	(3,15,"GtkWidget",2,2,None,1,None,None,None,None),
