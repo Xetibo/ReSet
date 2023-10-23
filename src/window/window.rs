@@ -1,14 +1,13 @@
+use std::cell::{Cell, RefCell};
 use adw::{Breakpoint, OverlaySplitView};
 use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;
 use glib::subclass::InitializingObject;
-use gtk::{Button, CompositeTemplate, FlowBox, glib, ListBox, SearchEntry};
+use gtk::{Button, CompositeTemplate, FlowBox, glib, ListBox, SearchEntry, Box};
 use gtk::subclass::prelude::*;
 
 use crate::wifi::WifiBox;
-use crate::window::handleSidebarClick::HANDLE_WIFI_CLICK;
 use crate::window::SidebarEntry;
-use crate::window::sidebarEntry::Categories;
 
 #[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
@@ -26,6 +25,9 @@ pub struct Window {
     pub resetSidebarList: TemplateChild<ListBox>,
     #[template_child]
     pub resetSideBarToggle: TemplateChild<Button>,
+    #[template_child]
+    pub resetPath: TemplateChild<Box>,
+    pub sidebarEntries: RefCell<Vec<SidebarEntry>>,
 }
 
 #[glib::object_subclass]
@@ -51,24 +53,7 @@ impl ObjectImpl for Window {
         let object = self.obj();
         object.setupCallback();
         object.handleDynamicSidebar();
-
-
-        let WiFiEntry = SidebarEntry::new("WiFi",
-                                          "network-wireless-symbolic",
-                                          Categories::Connectivity,
-                                          false,
-                                          HANDLE_WIFI_CLICK);
-        self.resetSidebarList.append(&WiFiEntry);
-
-        let wifibox = WifiBox::new();
-        let wifibox2 = WifiBox::new();
-        let wifibox3 = WifiBox::new();
-        let wifibox4 = WifiBox::new();
-
-        self.resetMain.insert(&wifibox, -1);
-        self.resetMain.insert(&wifibox2, -1);
-        self.resetMain.insert(&wifibox3, -1);
-        self.resetMain.insert(&wifibox4, -1);
+        object.setupSidebarEntries();
     }
 }
 

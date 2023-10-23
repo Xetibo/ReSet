@@ -19,22 +19,20 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="resetBack">
                     <property name="icon-name">go-previous-symbolic</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="resetForward">
                     <property name="icon-name">go-previous-symbolic-rtl</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label">breadcrum path</property>
-                  </object>
+                  <object class="GtkBox" id="resetPath"/>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="resetMenu">
                     <property name="halign">end</property>
                     <property name="hexpand">True</property>
                     <property name="icon-name">open-menu-symbolic</property>
@@ -42,7 +40,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="resetClose">
                     <property name="icon-name">window-close-symbolic</property>
                   </object>
                 </child>
@@ -79,163 +77,6 @@
                   <object class="GtkListBox" id="resetSidebarList">
                     <property name="css-name">resetList</property>
                     <property name="width-request">150</property>
-                    <child>
-                      <object class="GtkListBoxRow" id="resetConnectivity">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-start">10</property>
-                            <property name="margin-top">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="icon-name">network-wired-symbolic</property>
-                                <property name="margin-end">10</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Connectivity</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkGestureClick"/>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBoxRow" id="resetWifi">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-start">30</property>
-                            <property name="margin-top">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="icon-name">network-wireless-symbolic</property>
-                                <property name="margin-end">10</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">WiFi</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBoxRow" id="resetBluetooth">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-start">30</property>
-                            <property name="margin-top">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="icon-name">bluetooth-symbolic</property>
-                                <property name="margin-end">10</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Bluetooth</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBoxRow" id="resetVPN">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-start">30</property>
-                            <property name="margin-top">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="icon-name">network-vpn-symbolic</property>
-                                <property name="margin-end">10</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">VPN</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBoxRow" id="resetAudio">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-start">10</property>
-                            <property name="margin-top">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="icon-name">audio-headset-symbolic</property>
-                                <property name="margin-end">10</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Audio</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBoxRow" id="resetVolume">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-start">30</property>
-                            <property name="margin-top">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="icon-name">audio-volume-high-symbolic</property>
-                                <property name="margin-end">10</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Volume</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBoxRow" id="resetMicrophone">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-start">30</property>
-                            <property name="margin-top">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="icon-name">audio-input-microphone-symbolic</property>
-                                <property name="margin-end">10</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Microphone</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
                     <style>
                       <class name="b"/>
                     </style>

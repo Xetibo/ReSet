@@ -7,6 +7,7 @@ use glib::Object;
 use gtk::{Application, FlowBox, gio, glib};
 use gtk::prelude::*;
 
+use crate::window::handleSidebarClick::{HANDLE_AUDIO_CLICK, HANDLE_BLUETOOTH_CLICK, HANDLE_CONNECTIVITY_CLICK, HANDLE_MICROPHONE_CLICK, HANDLE_VOLUME_CLICK, HANDLE_VPN_CLICK, HANDLE_WIFI_CLICK};
 use crate::window::sidebarEntry::{Categories, SidebarAction};
 
 mod window;
@@ -35,60 +36,95 @@ impl Window {
     fn setupCallback(&self) {
         let selfImp = self.imp();
 
-        selfImp.resetSearchEntry
-            .connect_search_changed(clone!(@ weak self as window => move |_| {
+        selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
                 window.filterList();
             }));
 
-        selfImp.resetSideBarToggle
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggleSidebar();
             }));
 
         selfImp.resetSidebarList.connect_row_activated(clone!(@ weak selfImp as flowbox => move |x, y| {
             let mut result = y.downcast_ref::<SidebarEntry>().unwrap();
-            let x1 = result.imp().onClickEvent.borrow().onClickEvent;
-            (x1)(flowbox.resetMain.get());
+            let clickEvent = result.imp().onClickEvent.borrow().onClickEvent;
+            (clickEvent)(flowbox.resetMain.get());
         }));
     }
 
     fn handleDynamicSidebar(&self) {
-        self.imp().resetSidebarBreakpoint
-            .set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
-        self.imp().resetSidebarBreakpoint
-            .add_setter(&Object::from(self.imp().resetOverlaySplitView.get()),
-                        "collapsed",
-                        &true.to_value());
-        self.imp().resetSidebarBreakpoint
-            .add_setter(&Object::from(self.imp().resetSideBarToggle.get()),
-                        "visible",
-                        &true.to_value());
+        let selfImp = self.imp();
+        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
+        selfImp.resetSidebarBreakpoint.add_setter(&Object::from(selfImp.resetOverlaySplitView.get()),
+                                                  "collapsed",
+                                                  &true.to_value());
+        selfImp.resetSidebarBreakpoint.add_setter(&Object::from(selfImp.resetSideBarToggle.get()),
+                                                  "visible",
+                                                  &true.to_value());
     }
 
     fn filterList(&self) {
         let text = self.imp().resetSearchEntry.text().to_string();
-        self.imp().resetSidebarList.set_filter_func(move |x| {
+        for sidebarEntry in self.imp().sidebarEntries.borrow().iter() {
             if text == "" {
-                return true;
+                sidebarEntry.set_visible(true);
+                continue;
             }
-            if let Some(child) = x.child() {
-                let result = child.downcast::<gtk::Box>().unwrap();
-                let label = result.last_child().unwrap().downcast::<gtk::Label>().unwrap();
-                if label.text().to_lowercase().contains(&text.to_lowercase()) {
-                    return true;
-                }
+            if sidebarEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
+                sidebarEntry.set_visible(true);
+            } else {
+                sidebarEntry.set_visible(false);
             }
-            return false;
-        });
+        }
     }
 
     fn toggleSidebar(&self) {
         if self.imp().resetOverlaySplitView.shows_sidebar() {
-            self.imp().resetOverlaySplitView
-                .set_show_sidebar(false);
+            self.imp().resetOverlaySplitView.set_show_sidebar(false);
         } else {
-            self.imp().resetOverlaySplitView
-                .set_show_sidebar(true);
+            self.imp().resetOverlaySplitView.set_show_sidebar(true);
+        }
+    }
+
+    fn setupSidebarEntries(&self) {
+        let mut sidebarEntries = self.imp().sidebarEntries.borrow_mut();
+        sidebarEntries.push(SidebarEntry::new("Connectivity",
+                                              "network-wired-symbolic",
+                                              Categories::Connectivity,
+                                              false,
+                                              HANDLE_CONNECTIVITY_CLICK));
+        sidebarEntries.push(SidebarEntry::new("WiFi",
+                                              "network-wireless-symbolic",
+                                              Categories::Connectivity,
+                                              true,
+                                              HANDLE_WIFI_CLICK));
+        sidebarEntries.push(SidebarEntry::new("Bluetooth",
+                                              "bluetooth-symbolic",
+                                              Categories::Connectivity,
+                                              true,
+                                              HANDLE_BLUETOOTH_CLICK));
+        sidebarEntries.push(SidebarEntry::new("VPN",
+                                              "network-vpn-symbolic",
+                                              Categories::Connectivity,
+                                              true,
+                                              HANDLE_VPN_CLICK));
+        sidebarEntries.push(SidebarEntry::new("Audio",
+                                              "audio-headset-symbolic",
+                                              Categories::Audio,
+                                              false,
+                                              HANDLE_AUDIO_CLICK));
+        sidebarEntries.push(SidebarEntry::new("Volume",
+                                              "audio-volume-high-symbolic",
+                                              Categories::Audio,
+                                              true,
+                                              HANDLE_VOLUME_CLICK));
+        sidebarEntries.push(SidebarEntry::new("Microphone",
+                                              "audio-input-microphone-symbolic",
+                                              Categories::Audio,
+                                              true,
+                                              HANDLE_MICROPHONE_CLICK));
+
+        for entry in sidebarEntries.iter() {
+            self.imp().resetSidebarList.append(entry);
         }
     }
 }
@@ -102,9 +138,19 @@ impl SidebarEntry {
         entryImp.category.set(category);
         entryImp.isSubcategory.set(isSubcategory);
         {
-            let mut ref_mut = entryImp.onClickEvent.borrow_mut();
-            *ref_mut = SidebarAction { onClickEvent: clickEvent };
+            let mut name = entryImp.name.borrow_mut();
+            *name = String::from(entryName);
+            let mut action = entryImp.onClickEvent.borrow_mut();
+            *action = SidebarAction { onClickEvent: clickEvent };
         }
+        Self::setMargin(&entry);
         entry
+    }
+
+    fn setMargin(entry: &SidebarEntry) {
+        if entry.imp().isSubcategory.get() {
+            let option = entry.child().unwrap();
+            option.set_margin_start(30);
+        }
     }
 }

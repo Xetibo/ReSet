@@ -9,7 +9,7 @@ use crate::window::handleSidebarClick::HANDLE_HOME;
 #[derive(Default)]
 pub enum Categories {
     Connectivity,
-    Sound,
+    Audio,
     #[default]
     Misc,
 }
@@ -25,6 +25,7 @@ pub struct SidebarEntry {
     pub category: Cell<Categories>,
     pub isSubcategory: Cell<bool>,
     pub onClickEvent: RefCell<SidebarAction>,
+    pub name : RefCell<String>,
 }
 
 #[allow(non_snake_case)]
@@ -55,8 +56,8 @@ impl ObjectSubclass for SidebarEntry {
     }
 }
 
-impl ListBoxRowImpl for SidebarEntry {}
-
 impl ObjectImpl for SidebarEntry {}
+
+impl ListBoxRowImpl for SidebarEntry {}
 
 impl WidgetImpl for SidebarEntry {}
