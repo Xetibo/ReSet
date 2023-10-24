@@ -64,15 +64,26 @@ impl Window {
 
     fn filterList(&self) {
         let text = self.imp().resetSearchEntry.text().to_string();
-        for sidebarEntry in self.imp().sidebarEntries.borrow().iter() {
+        for (mainEntry, subEntries) in self.imp().sidebarEntries.borrow().iter() {
             if text == "" {
-                sidebarEntry.set_visible(true);
+                mainEntry.set_visible(true);
+                for subEntry in subEntries {
+                    subEntry.set_visible(true);
+                }
                 continue;
             }
-            if sidebarEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
-                sidebarEntry.set_visible(true);
+            if mainEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
+                mainEntry.set_visible(true);
             } else {
-                sidebarEntry.set_visible(false);
+                mainEntry.set_visible(false);
+            }
+            for subEntry in subEntries {
+                if subEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
+                    subEntry.set_visible(true);
+                    mainEntry.set_visible(true);
+                } else {
+                    subEntry.set_visible(false);
+                }
             }
         }
     }
@@ -86,45 +97,54 @@ impl Window {
     }
 
     fn setupSidebarEntries(&self) {
-        let mut sidebarEntries = self.imp().sidebarEntries.borrow_mut();
-        sidebarEntries.push(SidebarEntry::new("Connectivity",
-                                              "network-wired-symbolic",
-                                              Categories::Connectivity,
-                                              false,
-                                              HANDLE_CONNECTIVITY_CLICK));
-        sidebarEntries.push(SidebarEntry::new("WiFi",
-                                              "network-wireless-symbolic",
-                                              Categories::Connectivity,
-                                              true,
-                                              HANDLE_WIFI_CLICK));
-        sidebarEntries.push(SidebarEntry::new("Bluetooth",
-                                              "bluetooth-symbolic",
-                                              Categories::Connectivity,
-                                              true,
-                                              HANDLE_BLUETOOTH_CLICK));
-        sidebarEntries.push(SidebarEntry::new("VPN",
-                                              "network-vpn-symbolic",
-                                              Categories::Connectivity,
-                                              true,
-                                              HANDLE_VPN_CLICK));
-        sidebarEntries.push(SidebarEntry::new("Audio",
-                                              "audio-headset-symbolic",
-                                              Categories::Audio,
-                                              false,
-                                              HANDLE_AUDIO_CLICK));
-        sidebarEntries.push(SidebarEntry::new("Volume",
-                                              "audio-volume-high-symbolic",
-                                              Categories::Audio,
-                                              true,
-                                              HANDLE_VOLUME_CLICK));
-        sidebarEntries.push(SidebarEntry::new("Microphone",
-                                              "audio-input-microphone-symbolic",
-                                              Categories::Audio,
-                                              true,
-                                              HANDLE_MICROPHONE_CLICK));
+        let selfImp = self.imp();
+        let mut sidebarEntries = selfImp.sidebarEntries.borrow_mut();
 
-        for entry in sidebarEntries.iter() {
-            self.imp().resetSidebarList.append(entry);
+        let mut connectivityList = vec![SidebarEntry::new("WiFi",
+                                                          "network-wireless-symbolic",
+                                                          Categories::Connectivity,
+                                                          true,
+                                                          HANDLE_WIFI_CLICK),
+                                        SidebarEntry::new("Bluetooth",
+                                                          "bluetooth-symbolic",
+                                                          Categories::Connectivity,
+                                                          true,
+                                                          HANDLE_BLUETOOTH_CLICK),
+                                        SidebarEntry::new("VPN",
+                                                          "network-vpn-symbolic",
+                                                          Categories::Connectivity,
+                                                          true,
+                                                          HANDLE_VPN_CLICK)];
+
+        sidebarEntries.push((SidebarEntry::new("Connectivity",
+                                               "network-wired-symbolic",
+                                               Categories::Connectivity,
+                                               false,
+                                               HANDLE_CONNECTIVITY_CLICK), connectivityList));
+
+        let mut audioList = vec![SidebarEntry::new("Volume",
+                                                   "audio-volume-high-symbolic",
+                                                   Categories::Audio,
+                                                   true,
+                                                   HANDLE_VOLUME_CLICK),
+                                 SidebarEntry::new("Microphone",
+                                                   "audio-input-microphone-symbolic",
+                                                   Categories::Audio,
+                                                   true,
+                                                   HANDLE_MICROPHONE_CLICK)];
+
+        sidebarEntries.push((SidebarEntry::new("Audio",
+                                               "audio-headset-symbolic",
+                                               Categories::Audio,
+                                               false,
+                                               HANDLE_AUDIO_CLICK), audioList));
+
+
+        for (mainEntry, subEntries) in sidebarEntries.iter() {
+            selfImp.resetSidebarList.append(mainEntry);
+            for subEntry in subEntries {
+                selfImp.resetSidebarList.append(subEntry);
+            }
         }
     }
 }
