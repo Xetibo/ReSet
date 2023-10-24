@@ -27,7 +27,7 @@ pub struct Window {
     pub resetSideBarToggle: TemplateChild<Button>,
     #[template_child]
     pub resetPath: TemplateChild<Box>,
-    pub sidebarEntries: RefCell<Vec<SidebarEntry>>,
+    pub sidebarEntries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
 }
 
 #[glib::object_subclass]
