@@ -1,5 +1,7 @@
 use gtk::{Button, CompositeTemplate, DropDown, TemplateChild, glib};
+use gtk::prelude::*;
 use gtk::subclass::prelude::*;
+use crate::audio::AudioSourceEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -19,6 +21,7 @@ impl ObjectSubclass for AudioBox {
     type ParentType = gtk::Box;
 
     fn class_init(klass: &mut Self::Class) {
+        AudioSourceEntry::ensure_type();
         klass.bind_template();
     }
 

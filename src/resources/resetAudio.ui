@@ -4,7 +4,6 @@
     <requires lib="gtk" version="4.12"/>
     <template class="resetAudio" parent="GtkBox">
         <property name="halign">start</property>
-        <property name="margin-end">5</property>
         <property name="margin-start">5</property>
         <property name="orientation">vertical</property>
         <property name="valign">start</property>
@@ -28,6 +27,9 @@
         </child>
         <child>
             <object class="GtkSeparator"/>
+        </child>
+        <child>
+            <object class="resetAudioSourceEntry" id="asdf"/>
         </child>
         <child>
             <object class="GtkButton" id="resetAllOutputDevices">
