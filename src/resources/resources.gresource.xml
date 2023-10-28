@@ -5,6 +5,7 @@
         <file compressed="true" preprocess="xml-stripblanks">resetSidebarEntry.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">resetWiFi.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">resetWifiEntry.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">resetAudio.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">resetAudioSourceEntry.ui</file>
     </gresource>
 </gresources>

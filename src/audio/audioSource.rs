@@ -1,7 +1,5 @@
 use gtk::{Button, CompositeTemplate, glib, Image, Label, ProgressBar, Scale};
-use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -21,18 +19,20 @@ pub struct AudioSourceEntry {
 
 #[glib::object_subclass]
 impl ObjectSubclass for AudioSourceEntry {
-    const NAME: &'static str = "resetWifiEntry";
+    const NAME: &'static str = "resetAudioSourceEntry";
     type Type = super::AudioSourceEntry;
-    // type ParentType = gtk::Box;
+    type ParentType = gtk::Box;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
     }
-    
+
     fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
         obj.init_template();
     }
 }
+
+impl BoxImpl for AudioSourceEntry {}
 
 impl ObjectImpl for AudioSourceEntry {}
 

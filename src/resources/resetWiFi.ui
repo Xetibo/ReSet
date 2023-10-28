@@ -7,6 +7,7 @@
     <property name="halign">start</property>
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
+    <property name="width-request">300</property>
     <child>
       <object class="AdwClampScrollable">
         <property name="maximum-size">0</property>

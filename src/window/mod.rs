@@ -45,7 +45,7 @@ impl Window {
             }));
 
         selfImp.resetSidebarList.connect_row_activated(clone!(@ weak selfImp as flowbox => move |x, y| {
-            let mut result = y.downcast_ref::<SidebarEntry>().unwrap();
+            let result = y.downcast_ref::<SidebarEntry>().unwrap();
             let clickEvent = result.imp().onClickEvent.borrow().onClickEvent;
             (clickEvent)(flowbox.resetMain.get());
         }));
@@ -100,7 +100,7 @@ impl Window {
         let selfImp = self.imp();
         let mut sidebarEntries = selfImp.sidebarEntries.borrow_mut();
 
-        let mut connectivityList = vec![SidebarEntry::new("WiFi",
+        let connectivityList = vec![SidebarEntry::new("WiFi",
                                                           "network-wireless-symbolic",
                                                           Categories::Connectivity,
                                                           true,
@@ -122,7 +122,7 @@ impl Window {
                                                false,
                                                HANDLE_CONNECTIVITY_CLICK), connectivityList));
 
-        let mut audioList = vec![SidebarEntry::new("Volume",
+        let audioList = vec![SidebarEntry::new("Volume",
                                                    "audio-volume-high-symbolic",
                                                    Categories::Audio,
                                                    true,

@@ -1,4 +1,4 @@
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 use adw::{Breakpoint, OverlaySplitView};
 use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;

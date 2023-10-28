@@ -6,7 +6,8 @@
 	(4,7,None,"resetWiFi",None,None,None,None,None,None,None),
 	(5,1,None,"resetWifiEntry",None,None,None,None,None,None,None),
 	(6,1,None,"resetSidebarEntry",None,None,None,None,None,None,None),
-	(7,1,None,"resetAudioSourceEntry",None,None,None,None,None,None,None)
+	(7,1,None,"resetAudioSourceEntry",None,None,None,None,None,None,None),
+	(8,1,None,"resetAudio",None,None,None,None,None,None,None)
   </ui>
   <object>
 	(3,1,"AdwApplicationWindow","resetUI",None,None,None,None,-1,"  &lt;child&gt;\n    &lt;object id=\"resetSidebarBreakpoint\" class=\"AdwBreakpoint\"&gt;\n    &lt;/object&gt;\n  &lt;/child&gt;"),
@@ -48,17 +49,24 @@
 	(5,5,"GtkButton","resetWifiButton",2,None,None,None,2,None),
 	(6,1,"GtkListBoxRow","resetSidebarEntry",None,None,None,None,None,None),
 	(6,2,"GtkBox",None,1,None,None,None,-1,None),
-	(6,6,"GtkImage","resetSidebarImage",2,None,None,None,1,None),
-	(6,7,"GtkLabel","resetSidebarLabel",2,None,None,None,2,None),
+	(6,6,"GtkImage","resetSidebarImage",2,None,None,None,None,None),
+	(6,7,"GtkLabel","resetSidebarLabel",2,None,None,None,1,None),
 	(7,1,"GtkBox","resetAudioSourceEntry",None,None,None,None,-1,None),
-	(7,4,"GtkProgressBar","resetLevel",1,None,None,None,2,None),
+	(7,4,"GtkProgressBar","resetVolumeMeter",1,None,None,None,2,None),
 	(7,5,"GtkBox",None,1,None,None,None,None,None),
 	(7,6,"GtkLabel","resetSourceName",5,None,None,None,1,None),
 	(7,7,"GtkImage","resetSourceIcon",5,None,None,None,None,None),
 	(7,8,"GtkBox",None,1,None,None,None,1,None),
 	(7,9,"GtkScale","resetVolumeSlider",8,None,None,None,1,None),
 	(7,10,"GtkAdjustment",None,9,None,None,None,None,None),
-	(7,11,"GtkButton","resetSourceMute",8,None,None,None,None,None)
+	(7,11,"GtkButton","resetSourceMute",8,None,None,None,None,None),
+	(7,12,"GtkLabel","resetVolumePercentage",8,None,None,None,2,None),
+	(8,1,"GtkBox","resetAudio",None,None,None,None,None,None),
+	(8,13,"GtkButton","resetAllOutputDevices",1,None,None,None,2,None),
+	(8,14,"GtkBox",None,1,None,None,None,None,None),
+	(8,15,"GtkLabel",None,14,None,None,None,None,None),
+	(8,16,"GtkDropDown","resetOutputDevice",14,None,None,None,1,None),
+	(8,18,"GtkSeparator",None,1,None,None,None,1,None)
   </object>
   <object_property>
 	(3,1,"GtkWindow","default-height","500",None,None,None,None,None,None,None,None,None),
@@ -133,19 +141,47 @@
 	(7,1,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
 	(7,1,"GtkWidget","margin-end","5",None,None,None,None,None,None,None,None,None),
 	(7,1,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
+	(7,5,"GtkWidget","margin-bottom","5",None,None,None,None,None,None,None,None,None),
+	(7,6,"GtkLabel","label","System Volume",None,None,None,None,None,None,None,None,None),
+	(7,7,"GtkImage","icon-name","audio-volume-high-symbolic",None,None,None,None,None,None,None,None,None),
+	(7,7,"GtkWidget","margin-end","5",None,None,None,None,None,None,None,None,None),
 	(7,8,"GtkWidget","margin-bottom","5",None,None,None,None,None,None,None,None,None),
 	(7,8,"GtkWidget","margin-top","5",None,None,None,None,None,None,None,None,None),
 	(7,9,"GtkRange","adjustment",None,None,None,None,None,10,None,None,None,None),
+	(7,9,"GtkScale","value-pos","bottom",None,None,None,None,None,None,None,None,None),
 	(7,9,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
-	(7,10,"GtkAdjustment","page-increment","0.2",None,None,None,None,None,None,None,None,None),
-	(7,10,"GtkAdjustment","upper","10.0",None,None,None,None,None,None,None,None,None),
-	(7,11,"GtkButton","icon-name","audio-volume-high-symbolic",None,None,None,None,None,None,None,None,None)
+	(7,9,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
+	(7,10,"GtkAdjustment","page-increment","5.0",None,None,None,None,None,None,None,None,None),
+	(7,10,"GtkAdjustment","upper","100.0",None,None,None,None,None,None,None,None,None),
+	(7,11,"GtkButton","icon-name","audio-volume-high-symbolic",None,None,None,None,None,None,None,None,None),
+	(7,11,"GtkWidget","margin-end","5",None,None,None,None,None,None,None,None,None),
+	(7,11,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
+	(7,12,"GtkLabel","label","100%",None,None,None,None,None,None,None,None,None),
+	(7,12,"GtkLabel","lines","1",None,None,None,None,None,None,None,None,None),
+	(7,12,"GtkWidget","width-request","40",None,None,None,None,None,None,None,None,None),
+	(8,1,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
+	(8,1,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
+	(8,1,"GtkWidget","margin-end","5",None,None,None,None,None,None,None,None,None),
+	(8,1,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
+	(8,1,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
+	(8,1,"GtkWidget","width-request","300",None,None,None,None,None,None,None,None,None),
+	(8,13,"GtkButton","label","All Output Devices",None,None,None,None,None,None,None,None,None),
+	(8,13,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
+	(8,13,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
+	(8,13,"GtkWidget","margin-top","5",None,None,None,None,None,None,None,None,None),
+	(8,13,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
+	(8,14,"GtkWidget","margin-bottom","10",None,None,None,None,None,None,None,None,None),
+	(8,15,"GtkLabel","label","Output Device",None,None,None,None,None,None,None,None,None),
+	(8,16,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
+	(8,16,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
+	(8,16,"GtkWidget","valign","end",None,None,None,None,None,None,None,None,None)
   </object_property>
   <object_data>
 	(3,23,"GtkWidget",1,1,None,None,None,None,None,None),
 	(3,23,"GtkWidget",2,2,None,1,None,None,None,None)
   </object_data>
   <object_data_arg>
-	(3,23,"GtkWidget",2,2,"name","b")
+	(3,23,"GtkWidget",2,2,"name","b"),
+	(7,9,"GtkScale",2,2,"value","50.0")
   </object_data_arg>
 </cambalache-project>
