@@ -40,23 +40,21 @@ impl Window {
     fn setupCallback(&self) {
         let selfImp = self.imp();
 
-        selfImp.resetSearchEntry
-            .connect_search_changed(clone!(@ weak self as window => move |_| {
+        selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
                 window.filterList();
             }));
 
-        selfImp.resetSideBarToggle
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggleSidebar();
             }));
 
-        selfImp.resetSidebarList.connect_row_activated(
-            clone!(@ weak selfImp as flowbox => move |_, y| {
+        selfImp.resetSidebarList
+            .connect_row_activated(clone!(@ weak selfImp as flowbox => move |_, y| {
                 let result = y.downcast_ref::<SidebarEntry>().unwrap();
                 let clickEvent = result.imp().onClickEvent.borrow().onClickEvent;
                 (clickEvent)(flowbox.resetMain.get());
             }),
-        );
+            );
 
         selfImp.resetClose.connect_clicked(clone!(@ weak self as window => move |_| {
             window.close();
@@ -69,8 +67,7 @@ impl Window {
 
     fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp
-            .resetSidebarBreakpoint
+        selfImp.resetSidebarBreakpoint
             .set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
@@ -94,25 +91,13 @@ impl Window {
                 }
                 continue;
             }
-            if mainEntry
-                .imp()
-                .name
-                .borrow()
-                .to_lowercase()
-                .contains(&text.to_lowercase())
-            {
+            if mainEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
                 mainEntry.set_visible(true);
             } else {
                 mainEntry.set_visible(false);
             }
             for subEntry in subEntries {
-                if subEntry
-                    .imp()
-                    .name
-                    .borrow()
-                    .to_lowercase()
-                    .contains(&text.to_lowercase())
-                {
+                if subEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
                     subEntry.set_visible(true);
                     mainEntry.set_visible(true);
                 } else {
@@ -217,9 +202,7 @@ impl SidebarEntry {
         let entry: SidebarEntry = Object::builder().build();
         let entryImp = entry.imp();
         entryImp.resetSidebarLabel.get().set_text(entryName);
-        entryImp
-            .resetSidebarImage
-            .set_from_icon_name(Some(iconName));
+        entryImp.resetSidebarImage.set_from_icon_name(Some(iconName));
         entryImp.category.set(category);
         entryImp.isSubcategory.set(isSubcategory);
         {
