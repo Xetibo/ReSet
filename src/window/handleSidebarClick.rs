@@ -1,6 +1,7 @@
 use gtk::FlowBox;
+use crate::audio::AudioBox;
+use crate::bluetooth::BluetoothBox;
 use crate::wifi::WifiBox;
-
 
 pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let wifibox = WifiBox::new();
@@ -15,9 +16,9 @@ pub const HANDLE_WIFI_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
 };
 
 pub const HANDLE_BLUETOOTH_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let wifibox = WifiBox::new();
+    let bluetoothBox = BluetoothBox::new();
     resetMain.remove_all();
-    resetMain.insert(&wifibox, -1);
+    resetMain.insert(&bluetoothBox, -1);
 };
 
 pub const HANDLE_VPN_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
@@ -27,15 +28,15 @@ pub const HANDLE_VPN_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
 };
 
 pub const HANDLE_AUDIO_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let wifibox = WifiBox::new();
+    let audioBox = AudioBox::new();
     resetMain.remove_all();
-    resetMain.insert(&wifibox, -1);
+    resetMain.insert(&audioBox, -1);
 };
 
 pub const HANDLE_VOLUME_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let wifibox = WifiBox::new();
+    let audioBox = AudioBox::new();
     resetMain.remove_all();
-    resetMain.insert(&wifibox, -1);
+    resetMain.insert(&audioBox, -1);
 };
 
 pub const HANDLE_MICROPHONE_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {

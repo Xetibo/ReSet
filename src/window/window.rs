@@ -1,10 +1,10 @@
-use std::cell::{Cell, RefCell};
-use adw::{Breakpoint, OverlaySplitView};
 use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;
+use adw::{Breakpoint, OverlaySplitView};
 use glib::subclass::InitializingObject;
-use gtk::{Button, CompositeTemplate, FlowBox, glib, ListBox, SearchEntry, Box};
 use gtk::subclass::prelude::*;
+use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
+use std::cell::RefCell;
 
 use crate::wifi::WifiBox;
 use crate::window::SidebarEntry;
@@ -27,6 +27,8 @@ pub struct Window {
     pub resetSideBarToggle: TemplateChild<Button>,
     #[template_child]
     pub resetPath: TemplateChild<Box>,
+    #[template_child]
+    pub resetClose: TemplateChild<Button>,
     pub sidebarEntries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
 }
 
@@ -64,5 +66,3 @@ impl WindowImpl for Window {}
 impl ApplicationWindowImpl for Window {}
 
 impl AdwApplicationWindowImpl for Window {}
-
-
