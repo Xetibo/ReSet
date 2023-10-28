@@ -1,10 +1,14 @@
-use gtk::{Button, CompositeTemplate, glib};
+use gtk::{Button, CompositeTemplate, glib, Image, Label};
 use gtk::subclass::prelude::*;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/xetibo/reset/resetWifiEntry.ui")]
 pub struct WifiEntry {
+    #[template_child]
+    pub resetWifiStrength: TemplateChild<Image>,
+    #[template_child]
+    pub resetWifiLabel: TemplateChild<Label>,
     #[template_child]
     pub resetWifiButton: TemplateChild<Button>,
 }

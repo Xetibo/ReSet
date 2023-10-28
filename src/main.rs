@@ -1,6 +1,7 @@
 mod window;
 mod audio;
 mod wifi;
+mod bluetooth;
 
 use gtk::prelude::*;
 use gtk::{Application, gio};

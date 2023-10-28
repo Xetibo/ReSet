@@ -5,9 +5,27 @@
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetWifi" parent="GtkBox">
     <property name="halign">start</property>
+    <property name="margin-start">5</property>
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
     <property name="width-request">300</property>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-bottom">5</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">WiFi</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSwitch" id="resetWiFiSwitch">
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="valign">end</property>
+          </object>
+        </child>
+      </object>
+    </child>
     <child>
       <object class="AdwClampScrollable">
         <property name="maximum-size">0</property>
