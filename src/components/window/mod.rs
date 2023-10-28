@@ -42,19 +42,18 @@ impl Window {
 
         selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
                 window.filterList();
-            }));
+        }));
 
         selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggleSidebar();
-            }));
+        }));
 
         selfImp.resetSidebarList
             .connect_row_activated(clone!(@ weak selfImp as flowbox => move |_, y| {
                 let result = y.downcast_ref::<SidebarEntry>().unwrap();
                 let clickEvent = result.imp().onClickEvent.borrow().onClickEvent;
                 (clickEvent)(flowbox.resetMain.get());
-            }),
-            );
+            }));
 
         selfImp.resetClose.connect_clicked(clone!(@ weak self as window => move |_| {
             window.close();
