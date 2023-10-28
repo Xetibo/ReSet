@@ -14,6 +14,8 @@ pub struct AudioSourceEntry {
     #[template_child]
     pub resetVolumeSlider: TemplateChild<Scale>,
     #[template_child]
+    pub resetVolumePercentage: TemplateChild<Label>,
+    #[template_child]
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
 }
 
@@ -36,10 +38,4 @@ impl BoxImpl for AudioSourceEntry {}
 
 impl ObjectImpl for AudioSourceEntry {}
 
-impl ListBoxRowImpl for AudioSourceEntry {}
-
 impl WidgetImpl for AudioSourceEntry {}
-
-impl WindowImpl for AudioSourceEntry {}
-
-impl ApplicationWindowImpl for AudioSourceEntry {}
