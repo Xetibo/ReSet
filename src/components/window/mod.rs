@@ -1,17 +1,18 @@
 #![allow(non_snake_case)]
 
+use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::BreakpointCondition;
 use glib::Object;
+use gtk::{Application, FlowBox, gio, glib};
 use gtk::prelude::*;
-use gtk::{gio, glib, Application, FlowBox};
 
-use crate::window::handleSidebarClick::{
+use crate::components::wifi::WifiBox;
+use crate::components::window::handleSidebarClick::{
     HANDLE_AUDIO_CLICK, HANDLE_BLUETOOTH_CLICK, HANDLE_CONNECTIVITY_CLICK, HANDLE_MICROPHONE_CLICK,
     HANDLE_VOLUME_CLICK, HANDLE_VPN_CLICK, HANDLE_WIFI_CLICK,
 };
-use crate::window::sidebarEntry::{Categories, SidebarAction};
+use crate::components::window::sidebarEntry::{Categories, SidebarAction};
 
 mod handleSidebarClick;
 mod sidebarEntry;
@@ -39,14 +40,12 @@ impl Window {
     fn setupCallback(&self) {
         let selfImp = self.imp();
 
-        selfImp
-            .resetSearchEntry
+        selfImp.resetSearchEntry
             .connect_search_changed(clone!(@ weak self as window => move |_| {
                 window.filterList();
             }));
 
-        selfImp
-            .resetSideBarToggle
+        selfImp.resetSideBarToggle
             .connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggleSidebar();
             }));
@@ -59,11 +58,13 @@ impl Window {
             }),
         );
 
-        selfImp
-            .resetClose
-            .connect_clicked(clone!(@ weak self as window => move |_| {
-                window.close();
-            }));
+        selfImp.resetClose.connect_clicked(clone!(@ weak self as window => move |_| {
+            window.close();
+        }));
+
+        selfImp.resetMenu.connect_clicked(|_| {
+            WifiBox::donotdisturb();
+        });
     }
 
     fn handleDynamicSidebar(&self) {

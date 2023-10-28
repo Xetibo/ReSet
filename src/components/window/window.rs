@@ -6,8 +6,8 @@ use gtk::subclass::prelude::*;
 use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
 use std::cell::RefCell;
 
-use crate::wifi::WifiBox;
-use crate::window::SidebarEntry;
+use crate::components::wifi::WifiBox;
+use crate::components::window::SidebarEntry;
 
 #[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
@@ -27,6 +27,8 @@ pub struct Window {
     pub resetSideBarToggle: TemplateChild<Button>,
     #[template_child]
     pub resetPath: TemplateChild<Box>,
+    #[template_child]
+    pub resetMenu: TemplateChild<Button>,
     #[template_child]
     pub resetClose: TemplateChild<Button>,
     pub sidebarEntries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
