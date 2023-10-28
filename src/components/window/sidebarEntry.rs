@@ -4,7 +4,7 @@ use glib::subclass::InitializingObject;
 use gtk::{CompositeTemplate, FlowBox, glib, Image, Label, ListBoxRow};
 use gtk::subclass::prelude::*;
 
-use crate::window::handleSidebarClick::HANDLE_HOME;
+use crate::components::window::handleSidebarClick::HANDLE_HOME;
 
 #[derive(Default)]
 pub enum Categories {

@@ -1,7 +1,7 @@
 use gtk::{CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use crate::bluetooth::BluetoothEntry;
+use crate::components::bluetooth::BluetoothEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]

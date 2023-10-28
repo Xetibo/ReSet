@@ -1,11 +1,9 @@
-mod audio;
-mod bluetooth;
-mod wifi;
-mod window;
+
+mod components;
 
 use gtk::prelude::*;
 use gtk::{gio, Application};
-use window::Window;
+use components::window::Window;
 
 const APP_ID: &str = "org.Xetibo.ReSet";
 

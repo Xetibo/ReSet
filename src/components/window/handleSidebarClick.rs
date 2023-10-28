@@ -1,7 +1,7 @@
 use gtk::FlowBox;
-use crate::audio::AudioBox;
-use crate::bluetooth::BluetoothBox;
-use crate::wifi::WifiBox;
+use crate::components::audio::AudioBox;
+use crate::components::bluetooth::BluetoothBox;
+use crate::components::wifi::WifiBox;
 
 pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let wifibox = WifiBox::new();

@@ -1,7 +1,7 @@
 use gtk::{Button, CompositeTemplate, DropDown, TemplateChild, glib};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use crate::audio::AudioSourceEntry;
+use crate::components::audio::AudioSourceEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]

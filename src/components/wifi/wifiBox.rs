@@ -2,7 +2,7 @@ use gtk::{CompositeTemplate, glib, ListBox};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
-use crate::wifi::WifiEntry;
+use crate::components::wifi::WifiEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
