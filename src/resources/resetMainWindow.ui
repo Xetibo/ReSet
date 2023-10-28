@@ -5,6 +5,9 @@
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetUI" parent="AdwApplicationWindow">
     <child>
+      <object class="GtkWindowHandle"/>
+    </child>
+    <child>
       <object class="AdwOverlaySplitView" id="resetOverlaySplitView">
         <property name="content">
           <object class="GtkBox">
@@ -12,6 +15,7 @@
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkBox">
+                <property name="valign">start</property>
                 <child>
                   <object class="GtkButton" id="resetSideBarToggle">
                     <property name="icon-name">sidebar-show-symbolic</property>
@@ -21,27 +25,32 @@
                 <child>
                   <object class="GtkButton" id="resetBack">
                     <property name="icon-name">go-previous-symbolic</property>
+                    <property name="valign">start</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="resetForward">
                     <property name="icon-name">go-previous-symbolic-rtl</property>
+                    <property name="valign">start</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox" id="resetPath"/>
+                  <object class="GtkBox" id="resetPath">
+                    <property name="valign">start</property>
+                  </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="resetMenu">
                     <property name="halign">end</property>
                     <property name="hexpand">True</property>
                     <property name="icon-name">open-menu-symbolic</property>
-                    <property name="valign">center</property>
+                    <property name="valign">start</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="resetClose">
                     <property name="icon-name">window-close-symbolic</property>
+                    <property name="valign">start</property>
                   </object>
                 </child>
               </object>

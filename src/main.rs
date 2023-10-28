@@ -1,4 +1,6 @@
 mod window;
+
+mod audio;
 mod wifi;
 
 use gtk::prelude::*;
