@@ -4,6 +4,8 @@
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetUI" parent="AdwApplicationWindow">
+    <property name="default-height">500</property>
+    <property name="default-width">800</property>
     <child>
       <object class="GtkWindowHandle"/>
     </child>
@@ -14,43 +16,47 @@
             <property name="margin-start">5</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox">
-                <property name="valign">start</property>
+              <object class="GtkWindowHandle">
                 <child>
-                  <object class="GtkButton" id="resetSideBarToggle">
-                    <property name="icon-name">sidebar-show-symbolic</property>
-                    <property name="visible">False</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="resetBack">
-                    <property name="icon-name">go-previous-symbolic</property>
+                  <object class="GtkBox">
                     <property name="valign">start</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="resetForward">
-                    <property name="icon-name">go-previous-symbolic-rtl</property>
-                    <property name="valign">start</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox" id="resetPath">
-                    <property name="valign">start</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="resetMenu">
-                    <property name="halign">end</property>
-                    <property name="hexpand">True</property>
-                    <property name="icon-name">open-menu-symbolic</property>
-                    <property name="valign">start</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="resetClose">
-                    <property name="icon-name">window-close-symbolic</property>
-                    <property name="valign">start</property>
+                    <child>
+                      <object class="GtkButton" id="resetSideBarToggle">
+                        <property name="icon-name">sidebar-show-symbolic</property>
+                        <property name="visible">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="resetBack">
+                        <property name="icon-name">go-previous-symbolic</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="resetForward">
+                        <property name="icon-name">go-previous-symbolic-rtl</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="resetPath">
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="resetMenu">
+                        <property name="halign">end</property>
+                        <property name="hexpand">True</property>
+                        <property name="icon-name">open-menu-symbolic</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="resetClose">
+                        <property name="icon-name">window-close-symbolic</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -71,24 +77,35 @@
         <property name="margin-top">5</property>
         <property name="max-sidebar-width">180.0</property>
         <property name="sidebar">
-          <object class="GtkViewport">
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="width-request">150</property>
+              <object class="GtkWindowHandle">
+                <property name="valign">start</property>
                 <child>
                   <object class="GtkSearchEntry" id="resetSearchEntry">
                     <property name="margin-end">5</property>
                     <property name="placeholder-text">Search</property>
+                    <property name="valign">start</property>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkViewport">
                 <child>
-                  <object class="GtkListBox" id="resetSidebarList">
-                    <property name="css-name">resetList</property>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
                     <property name="width-request">150</property>
-                    <style>
-                      <class name="b"/>
-                    </style>
+                    <child>
+                      <object class="GtkListBox" id="resetSidebarList">
+                        <property name="css-name">resetList</property>
+                        <property name="width-request">150</property>
+                        <style>
+                          <class name="b"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
