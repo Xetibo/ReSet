@@ -3,7 +3,7 @@ use gtk::subclass::prelude::*;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/xetibo/reset/resetWifiEntry.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetWifiEntry.ui")]
 pub struct WifiEntry {
     #[template_child]
     pub resetWifiStrength: TemplateChild<Image>,

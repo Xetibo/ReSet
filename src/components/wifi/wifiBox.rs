@@ -6,7 +6,7 @@ use crate::components::wifi::WifiEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/xetibo/reset/resetWiFi.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetWiFi.ui")]
 pub struct WifiBox {
     #[template_child]
     pub resetWifiList: TemplateChild<ListBox>,

@@ -5,7 +5,7 @@ use crate::components::audio::AudioSourceEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/xetibo/reset/resetAudio.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetAudio.ui")]
 pub struct AudioBox {
     #[template_child]
     pub resetOutputDevice: TemplateChild<DropDown>,

@@ -7,7 +7,6 @@ use glib::Object;
 use gtk::{Application, FlowBox, gio, glib};
 use gtk::prelude::*;
 
-use crate::components::wifi::WifiBox;
 use crate::components::window::handleSidebarClick::{
     HANDLE_AUDIO_CLICK, HANDLE_BLUETOOTH_CLICK, HANDLE_CONNECTIVITY_CLICK, HANDLE_MICROPHONE_CLICK,
     HANDLE_VOLUME_CLICK, HANDLE_VPN_CLICK, HANDLE_WIFI_CLICK,
@@ -42,32 +41,33 @@ impl Window {
 
         selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
                 window.filterList();
-        }));
+            }));
 
         selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggleSidebar();
-        }));
+            }));
 
-        selfImp.resetSidebarList
-            .connect_row_activated(clone!(@ weak selfImp as flowbox => move |_, y| {
+        selfImp.resetSidebarList.connect_row_activated(
+            clone!(@ weak selfImp as flowbox => move |_, y| {
                 let result = y.downcast_ref::<SidebarEntry>().unwrap();
                 let clickEvent = result.imp().onClickEvent.borrow().onClickEvent;
                 (clickEvent)(flowbox.resetMain.get());
-            }));
+            }),
+        );
 
         selfImp.resetClose.connect_clicked(clone!(@ weak self as window => move |_| {
-            window.close();
-        }));
+                window.close();
+            }));
 
-        selfImp.resetMenu.connect_clicked(|_| {
-            WifiBox::donotdisturb();
-        });
+        // selfImp.resetMenu.connect_clicked(|_| {
+        //     WifiBox::donotdisturb();
+        //
+        // });
     }
 
     fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp.resetSidebarBreakpoint
-            .set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
+        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
             "collapsed",
@@ -188,6 +188,31 @@ impl Window {
             }
         }
     }
+
+    fn setupPopoverButtons(&self) {
+        let selfImp = self.imp();
+        selfImp
+            .resetAboutButton
+            .connect_clicked(clone!(@ weak self as window => move |_| {
+                let dialog = adw::AboutWindow::builder()
+                    .application_name("ReSet")
+                    .application_icon("ReSet")
+                    .developer_name("Xetibo")
+                    .license("GPL-3.0")
+                    .license_type(gtk::License::Gpl30)
+                    .website("https://github.com/Xetibo/ReSet")
+                    .issue_url("https://github.com/Xetibo/ReSet/issues")
+                    .version("0.0.1")
+                    .transient_for(&window)
+                    .modal(true)
+                    .copyright("© 2022-2023 Xetibo")
+                    .developers(vec!["DashieTM".to_string(), "Takatori".to_string()])
+                    .designers(vec!["DashieTM".to_string(), "Takatori".to_string()])
+                    .build();
+
+            dialog.present();
+        }));
+    }
 }
 
 impl SidebarEntry {
@@ -223,4 +248,3 @@ impl SidebarEntry {
         }
     }
 }
-

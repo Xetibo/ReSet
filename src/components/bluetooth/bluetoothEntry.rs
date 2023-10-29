@@ -3,7 +3,7 @@ use gtk::subclass::prelude::*;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/xetibo/reset/resetBluetoothEntry.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetBluetoothEntry.ui")]
 pub struct BluetoothEntry {
     #[template_child]
     pub resetBluetoothDeviceType: TemplateChild<Image>,

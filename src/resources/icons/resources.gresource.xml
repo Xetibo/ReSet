@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/Xetibo/ReSet/icons/scalable/actions">
+    <file preprocess="xml-stripblanks">ReSet.svg</file>
+  </gresource>
+</gresources>

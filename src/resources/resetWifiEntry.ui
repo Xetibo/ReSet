@@ -3,6 +3,7 @@
 <interface>
   <requires lib="gtk" version="4.12"/>
   <template class="resetWifiEntry" parent="GtkListBoxRow">
+    <property name="selectable">False</property>
     <child>
       <object class="GtkBox">
         <child>
@@ -25,6 +26,7 @@
         <child>
           <object class="GtkButton" id="resetWifiButton">
             <property name="halign">start</property>
+            <property name="has-frame">False</property>
             <property name="icon-name">emblem-system-symbolic</property>
             <property name="valign">center</property>
           </object>

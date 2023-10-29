@@ -3,6 +3,7 @@
 <interface>
     <requires lib="gtk" version="4.12"/>
     <template class="resetBluetoothEntry" parent="GtkListBoxRow">
+        <property name="selectable">False</property>
         <child>
             <object class="GtkBox">
                 <child>
@@ -24,6 +25,7 @@
                 </child>
                 <child>
                     <object class="GtkButton" id="resetBluetoothButton">
+                        <property name="has-frame">False</property>
                         <property name="icon-name">emblem-system-symbolic</property>
                     </object>
                 </child>

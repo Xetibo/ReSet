@@ -3,7 +3,7 @@ use adw::subclass::prelude::AdwApplicationWindowImpl;
 use adw::{Breakpoint, OverlaySplitView};
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
+use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry, PopoverMenu};
 use std::cell::RefCell;
 
 use crate::components::wifi::WifiBox;
@@ -11,7 +11,7 @@ use crate::components::window::SidebarEntry;
 
 #[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
-#[template(resource = "/org/xetibo/reset/resetMainWindow.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetMainWindow.ui")]
 pub struct Window {
     #[template_child]
     pub resetMain: TemplateChild<FlowBox>,
@@ -28,9 +28,11 @@ pub struct Window {
     #[template_child]
     pub resetPath: TemplateChild<Box>,
     #[template_child]
-    pub resetMenu: TemplateChild<Button>,
+    pub resetPopoverMenu: TemplateChild<PopoverMenu>,
     #[template_child]
     pub resetClose: TemplateChild<Button>,
+    #[template_child]
+    pub resetAboutButton: TemplateChild<Button>,
     pub sidebarEntries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
 }
 
@@ -56,6 +58,7 @@ impl ObjectImpl for Window {
 
         let object = self.obj();
         object.setupCallback();
+        object.setupPopoverButtons();
         object.handleDynamicSidebar();
         object.setupSidebarEntries();
     }

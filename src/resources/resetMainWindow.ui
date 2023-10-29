@@ -28,33 +28,67 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="resetBack">
+                        <property name="has-frame">False</property>
                         <property name="icon-name">go-previous-symbolic</property>
                         <property name="valign">start</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton" id="resetForward">
+                        <property name="has-frame">False</property>
                         <property name="icon-name">go-previous-symbolic-rtl</property>
                         <property name="valign">start</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkBox" id="resetPath">
+                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
                         <property name="valign">start</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkButton" id="resetMenu">
+                      <object class="GtkMenuButton">
+                        <property name="can-shrink">True</property>
                         <property name="halign">end</property>
-                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
                         <property name="icon-name">open-menu-symbolic</property>
-                        <property name="valign">start</property>
+                        <property name="popover">
+                          <object class="GtkPopoverMenu" id="resetPopoverMenu">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkButton">
+                                    <property name="has-frame">False</property>
+                                    <property name="label">Help</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton">
+                                    <property name="has-frame">False</property>
+                                    <property name="label">Preferences</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="resetAboutButton">
+                                    <property name="has-frame">False</property>
+                                    <property name="label">About</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </property>
+                          </object>
+                        </property>
+                        <property name="valign">end</property>
+                        <property name="vexpand">True</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton" id="resetClose">
+                        <property name="halign">start</property>
                         <property name="icon-name">window-close-symbolic</property>
-                        <property name="valign">start</property>
+                        <property name="margin-start">5</property>
                       </object>
                     </child>
                   </object>
@@ -64,7 +98,8 @@
             <child>
               <object class="GtkFlowBox" id="resetMain">
                 <property name="column-spacing">25</property>
-                <property name="homogeneous">True</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
                 <property name="row-spacing">25</property>
                 <property name="selection-mode">none</property>
                 <property name="valign">start</property>
@@ -78,13 +113,13 @@
         <property name="max-sidebar-width">180.0</property>
         <property name="sidebar">
           <object class="GtkBox">
+            <property name="margin-end">5</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkWindowHandle">
                 <property name="valign">start</property>
                 <child>
                   <object class="GtkSearchEntry" id="resetSearchEntry">
-                    <property name="margin-end">5</property>
                     <property name="placeholder-text">Search</property>
                     <property name="valign">start</property>
                   </object>
@@ -93,6 +128,7 @@
             </child>
             <child>
               <object class="GtkViewport">
+                <property name="margin-top">5</property>
                 <child>
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
