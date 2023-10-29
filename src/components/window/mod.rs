@@ -1,11 +1,11 @@
 #![allow(non_snake_case)]
 
+use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::BreakpointCondition;
 use glib::Object;
+use gtk::{Application, FlowBox, gio, glib};
 use gtk::prelude::*;
-use gtk::{gio, glib, Application, FlowBox};
 
 use crate::components::window::handleSidebarClick::{
     HANDLE_AUDIO_CLICK, HANDLE_BLUETOOTH_CLICK, HANDLE_CONNECTIVITY_CLICK, HANDLE_MICROPHONE_CLICK,
@@ -39,15 +39,11 @@ impl Window {
     fn setupCallback(&self) {
         let selfImp = self.imp();
 
-        selfImp
-            .resetSearchEntry
-            .connect_search_changed(clone!(@ weak self as window => move |_| {
+        selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
                 window.filterList();
             }));
 
-        selfImp
-            .resetSideBarToggle
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggleSidebar();
             }));
 
@@ -59,9 +55,7 @@ impl Window {
             }),
         );
 
-        selfImp
-            .resetClose
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetClose.connect_clicked(clone!(@ weak self as window => move |_| {
                 window.close();
             }));
 
@@ -73,9 +67,7 @@ impl Window {
 
     fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp
-            .resetSidebarBreakpoint
-            .set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
+        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
             "collapsed",
@@ -98,25 +90,13 @@ impl Window {
                 }
                 continue;
             }
-            if mainEntry
-                .imp()
-                .name
-                .borrow()
-                .to_lowercase()
-                .contains(&text.to_lowercase())
-            {
+            if mainEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
                 mainEntry.set_visible(true);
             } else {
                 mainEntry.set_visible(false);
             }
             for subEntry in subEntries {
-                if subEntry
-                    .imp()
-                    .name
-                    .borrow()
-                    .to_lowercase()
-                    .contains(&text.to_lowercase())
-                {
+                if subEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
                     subEntry.set_visible(true);
                     mainEntry.set_visible(true);
                 } else {
@@ -211,9 +191,7 @@ impl Window {
 
     fn setupPopoverButtons(&self) {
         let selfImp = self.imp();
-        selfImp
-            .resetAboutButton
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetAboutButton.connect_clicked(clone!(@ weak self as window => move |_| {
                 let dialog = adw::AboutWindow::builder()
                     .application_name("ReSet")
                     // .application_icon("")
@@ -225,8 +203,8 @@ impl Window {
                     .transient_for(&window)
                     .modal(true)
                     .copyright("© 2022-2023 Xetibo")
-                    .developers(vec!["DashieTM".to_string(), "Takatori".to_string()])
-                    .designers(vec!["DashieTM".to_string(), "Takatori".to_string()])
+                    .developers(vec!["DashieTM".to_string(), "takatori".to_string()])
+                    .designers(vec!["DashieTM".to_string(), "takatori".to_string()])
                     .build();
 
                 dialog.present();
@@ -245,9 +223,7 @@ impl SidebarEntry {
         let entry: SidebarEntry = Object::builder().build();
         let entryImp = entry.imp();
         entryImp.resetSidebarLabel.get().set_text(entryName);
-        entryImp
-            .resetSidebarImage
-            .set_from_icon_name(Some(iconName));
+        entryImp.resetSidebarImage.set_from_icon_name(Some(iconName));
         entryImp.category.set(category);
         entryImp.isSubcategory.set(isSubcategory);
         {
