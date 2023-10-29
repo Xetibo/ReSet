@@ -5,7 +5,7 @@ use crate::components::bluetooth::BluetoothEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/xetibo/reset/resetBluetooth.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetBluetooth.ui")]
 pub struct BluetoothBox {
     #[template_child]
     pub resetBluetoothSwitch: TemplateChild<Switch>,

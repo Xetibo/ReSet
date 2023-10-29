@@ -3,7 +3,7 @@ use gtk::subclass::prelude::*;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/xetibo/reset/resetAudioSourceEntry.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetAudioSourceEntry.ui")]
 pub struct AudioSourceEntry {
     #[template_child]
     pub resetSourceIcon: TemplateChild<Image>,

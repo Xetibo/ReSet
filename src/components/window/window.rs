@@ -11,7 +11,7 @@ use crate::components::window::SidebarEntry;
 
 #[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
-#[template(resource = "/org/xetibo/reset/resetMainWindow.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetMainWindow.ui")]
 pub struct Window {
     #[template_child]
     pub resetMain: TemplateChild<FlowBox>,

@@ -16,7 +16,7 @@ pub enum Categories {
 
 #[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
-#[template(resource = "/org/xetibo/reset/resetSidebarEntry.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetSidebarEntry.ui")]
 pub struct SidebarEntry {
     #[template_child]
     pub resetSidebarLabel: TemplateChild<Label>,

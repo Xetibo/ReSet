@@ -191,21 +191,24 @@ impl Window {
 
     fn setupPopoverButtons(&self) {
         let selfImp = self.imp();
-        selfImp.resetAboutButton.connect_clicked(clone!(@ weak self as window => move |_| {
-            let dialog = adw::AboutWindow::builder()
-                .application_name("ReSet")
-                // .application_icon("")
-                .developer_name("Xetibo")
-                .license_type(gtk::License::Gpl30)
-                .website("https://github.com/Xetibo/ReSet")
-                .issue_url("https://github.com/Xetibo/ReSet/issues")
-                .version("0.0.1")
-                .transient_for(&window)
-                .modal(true)
-                .copyright("© 2022-2023 Xetibo")
-                .developers(vec!["DashieTM".to_string(), "takatori".to_string()])
-                .designers(vec!["DashieTM".to_string(), "takatori".to_string()])
-                .build();
+        selfImp
+            .resetAboutButton
+            .connect_clicked(clone!(@ weak self as window => move |_| {
+                let dialog = adw::AboutWindow::builder()
+                    .application_name("ReSet")
+                    .application_icon("ReSet")
+                    .developer_name("Xetibo")
+                    .license("GPL-3.0")
+                    .license_type(gtk::License::Gpl30)
+                    .website("https://github.com/Xetibo/ReSet")
+                    .issue_url("https://github.com/Xetibo/ReSet/issues")
+                    .version("0.0.1")
+                    .transient_for(&window)
+                    .modal(true)
+                    .copyright("© 2022-2023 Xetibo")
+                    .developers(vec!["DashieTM".to_string(), "Takatori".to_string()])
+                    .designers(vec!["DashieTM".to_string(), "Takatori".to_string()])
+                    .build();
 
             dialog.present();
         }));

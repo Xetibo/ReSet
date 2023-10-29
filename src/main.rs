@@ -10,6 +10,8 @@ const APP_ID: &str = "org.Xetibo.ReSet";
 fn main() {
     gio::resources_register_include!("src.templates.gresource")
         .expect("Failed to register resources.");
+    gio::resources_register_include!("src.icons.gresource")
+        .expect("Failed to register resources.");
 
     let app = Application::builder().application_id(APP_ID).build();
 
