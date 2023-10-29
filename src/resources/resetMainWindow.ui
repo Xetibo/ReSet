@@ -98,7 +98,8 @@
             <child>
               <object class="GtkFlowBox" id="resetMain">
                 <property name="column-spacing">25</property>
-                <property name="homogeneous">True</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
                 <property name="row-spacing">25</property>
                 <property name="selection-mode">none</property>
                 <property name="valign">start</property>
@@ -112,13 +113,13 @@
         <property name="max-sidebar-width">180.0</property>
         <property name="sidebar">
           <object class="GtkBox">
+            <property name="margin-end">5</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkWindowHandle">
                 <property name="valign">start</property>
                 <child>
                   <object class="GtkSearchEntry" id="resetSearchEntry">
-                    <property name="margin-end">5</property>
                     <property name="placeholder-text">Search</property>
                     <property name="valign">start</property>
                   </object>
@@ -153,7 +154,7 @@
     <!-- Custom fragments -->
     <child>
       <object id="resetSidebarBreakpoint" class="AdwBreakpoint">
-    </object>
+      </object>
     </child>
   </template>
 </interface>
