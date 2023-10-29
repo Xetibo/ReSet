@@ -3,7 +3,7 @@ use adw::subclass::prelude::AdwApplicationWindowImpl;
 use adw::{Breakpoint, OverlaySplitView};
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
+use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry, PopoverMenu};
 use std::cell::RefCell;
 
 use crate::components::wifi::WifiBox;
@@ -28,7 +28,7 @@ pub struct Window {
     #[template_child]
     pub resetPath: TemplateChild<Box>,
     #[template_child]
-    pub resetMenu: TemplateChild<Button>,
+    pub resetPopoverMenu: TemplateChild<PopoverMenu>,
     #[template_child]
     pub resetClose: TemplateChild<Button>,
     pub sidebarEntries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,

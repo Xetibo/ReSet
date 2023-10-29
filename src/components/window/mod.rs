@@ -7,7 +7,6 @@ use glib::Object;
 use gtk::{Application, FlowBox, gio, glib};
 use gtk::prelude::*;
 
-use crate::components::wifi::WifiBox;
 use crate::components::window::handleSidebarClick::{
     HANDLE_AUDIO_CLICK, HANDLE_BLUETOOTH_CLICK, HANDLE_CONNECTIVITY_CLICK, HANDLE_MICROPHONE_CLICK,
     HANDLE_VOLUME_CLICK, HANDLE_VPN_CLICK, HANDLE_WIFI_CLICK,
@@ -41,15 +40,14 @@ impl Window {
         let selfImp = self.imp();
 
         selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
-                window.filterList();
+            window.filterList();
         }));
 
         selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
-                window.toggleSidebar();
+            window.toggleSidebar();
         }));
 
-        selfImp.resetSidebarList
-            .connect_row_activated(clone!(@ weak selfImp as flowbox => move |_, y| {
+        selfImp.resetSidebarList.connect_row_activated(clone!(@ weak selfImp as flowbox => move |_, y| {
                 let result = y.downcast_ref::<SidebarEntry>().unwrap();
                 let clickEvent = result.imp().onClickEvent.borrow().onClickEvent;
                 (clickEvent)(flowbox.resetMain.get());
@@ -59,15 +57,15 @@ impl Window {
             window.close();
         }));
 
-        selfImp.resetMenu.connect_clicked(|_| {
-            WifiBox::donotdisturb();
-        });
+        // selfImp.resetMenu.connect_clicked(|_| {
+        //     WifiBox::donotdisturb();
+        //
+        // });
     }
 
     fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp.resetSidebarBreakpoint
-            .set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
+        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
             "collapsed",
