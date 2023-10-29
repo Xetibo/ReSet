@@ -71,7 +71,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkButton">
+                                  <object class="GtkButton" id="resetAboutButton">
                                     <property name="has-frame">False</property>
                                     <property name="label">About</property>
                                   </object>
@@ -153,7 +153,7 @@
     <!-- Custom fragments -->
     <child>
       <object id="resetSidebarBreakpoint" class="AdwBreakpoint">
-      </object>
+    </object>
     </child>
   </template>
 </interface>

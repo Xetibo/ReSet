@@ -31,6 +31,8 @@ pub struct Window {
     pub resetPopoverMenu: TemplateChild<PopoverMenu>,
     #[template_child]
     pub resetClose: TemplateChild<Button>,
+    #[template_child]
+    pub resetAboutButton: TemplateChild<Button>,
     pub sidebarEntries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
 }
 
@@ -56,6 +58,7 @@ impl ObjectImpl for Window {
 
         let object = self.obj();
         object.setupCallback();
+        object.setupPopoverButtons();
         object.handleDynamicSidebar();
         object.setupSidebarEntries();
     }
