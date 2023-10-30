@@ -7,9 +7,23 @@
     <child>
       <object class="GtkBox">
         <child>
-          <object class="GtkImage" id="resetWifiStrength">
-            <property name="icon-name">network-wireless-symbolic</property>
-            <property name="margin-end">15</property>
+          <object class="GtkBox">
+            <property name="spacing">-1</property>
+            <property name="width-request">35</property>
+            <child>
+              <object class="GtkImage" id="resetWifiStrength">
+                <property name="icon-name">network-wireless-signal-excellent-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage" id="resetWifiEncrypted">
+                <property name="halign">start</property>
+                <property name="icon-name">system-lock-screen-symbolic</property>
+                <property name="margin-bottom">6</property>
+                <property name="pixel-size">9</property>
+                <property name="valign">end</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

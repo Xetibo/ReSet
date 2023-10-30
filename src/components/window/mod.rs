@@ -40,12 +40,12 @@ impl Window {
         let selfImp = self.imp();
 
         selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
-                window.filterList();
-            }));
+            window.filterList();
+        }));
 
         selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
-                window.toggleSidebar();
-            }));
+            window.toggleSidebar();
+        }));
 
         selfImp.resetSidebarList.connect_row_activated(
             clone!(@ weak selfImp as flowbox => move |_, y| {
@@ -67,7 +67,7 @@ impl Window {
 
     fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 500sp").as_ref().ok());
+        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 600sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
             "collapsed",
@@ -191,9 +191,7 @@ impl Window {
 
     fn setupPopoverButtons(&self) {
         let selfImp = self.imp();
-        selfImp
-            .resetAboutButton
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetAboutButton.connect_clicked(clone!(@ weak self as window => move |_| {
                 let dialog = adw::AboutWindow::builder()
                     .application_name("ReSet")
                     .application_icon("ReSet")
