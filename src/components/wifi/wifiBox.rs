@@ -1,55 +1,58 @@
-use std::cell::RefCell;
-use gtk::{CompositeTemplate, glib, ListBox, ListBoxRow, Switch};
-use gtk::prelude::*;
-use gtk::subclass::prelude::*;
+use std::thread;
+use std::time::Duration;
 
-use crate::components::wifi::WifiEntry;
+use adw::glib;
+use adw::glib::clone;
+use adw::glib::Object;
+use adw::subclass::prelude::ObjectSubclassIsExt;
+use dbus::blocking::Connection;
+use dbus::Error;
 
-#[allow(non_snake_case)]
-#[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/Xetibo/ReSet/resetWiFi.ui")]
-pub struct WifiBox {
-    #[template_child]
-    pub resetWifiDetails: TemplateChild<ListBox>,
-    #[template_child]
-    pub resetWifiSwitchRow: TemplateChild<ListBoxRow>,
-    #[template_child]
-    pub resetWifiSwitch: TemplateChild<Switch>,
-    #[template_child]
-    pub resetWifiList: TemplateChild<ListBox>,
-    pub wifiEntries: RefCell<Vec<WifiEntry>>,
+use crate::components::wifi::wifiBoxImpl;
+use crate::components::wifi::wifiEntry::WifiEntry;
+use crate::components::wifi::wifiEntryImpl::WifiStrength;
+
+glib::wrapper! {
+    pub struct WifiBox(ObjectSubclass<wifiBoxImpl::WifiBox>)
+    @extends gtk::Box, gtk::Widget,
+    @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
-#[glib::object_subclass]
-impl ObjectSubclass for WifiBox {
-    const NAME: &'static str = "resetWifi";
-    type Type = super::WifiBox;
-    type ParentType = gtk::Box;
-
-    fn class_init(klass: &mut Self::Class) {
-        WifiEntry::ensure_type();
-        klass.bind_template();
+impl WifiBox {
+    pub fn new() -> Self {
+        Object::builder().build()
     }
 
-    fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
-        obj.init_template();
+    pub fn setupCallbacks(&self) {
+        let selfImp = self.imp();
+
+        selfImp.resetWifiDetails.connect_row_activated(clone!(@ weak selfImp as window => move |_, _y| {
+            // let result = y.downcast_ref()::<WifiEntry>().unwrap(); no worky smh
+        }));
+    }
+
+    pub fn scanForWifi(&self) {
+        let selfImp = self.imp();
+        let mut wifiEntries = selfImp.wifiEntries.borrow_mut();
+        wifiEntries.push(WifiEntry::new(WifiStrength::Excellent, "ina internet", true));
+        wifiEntries.push(WifiEntry::new(WifiStrength::Excellent, "watch ina", true));
+        wifiEntries.push(WifiEntry::new(WifiStrength::Ok, "INANET", true));
+        wifiEntries.push(WifiEntry::new(WifiStrength::Weak, "ina best waifu", false));
+
+        for wifiEntry in wifiEntries.iter() {
+            selfImp.resetWifiList.append(wifiEntry);
+        }
+    }
+
+    pub fn donotdisturb() {
+        thread::spawn(|| {
+            let conn = Connection::new_session().unwrap();
+            let proxy = conn.with_proxy(
+                "org.freedesktop.Notifications",
+                "/org/freedesktop/Notifications",
+                Duration::from_millis(1000),
+            );
+            let _: Result<(), Error> = proxy.method_call("org.freedesktop.Notifications", "DoNotDisturb", ());
+        });
     }
 }
-
-impl ObjectImpl for WifiBox {
-    fn constructed(&self) {
-        self.parent_constructed();
-
-        let obj = self.obj();
-        obj.setupCallbacks();
-        obj.scanForWifi();
-    }
-}
-
-impl BoxImpl for WifiBox {}
-
-impl WidgetImpl for WifiBox {}
-
-impl WindowImpl for WifiBox {}
-
-impl ApplicationWindowImpl for WifiBox {}

@@ -1,63 +1,48 @@
-use std::cell::{Cell, RefCell};
+use adw::subclass::prelude::ObjectSubclassIsExt;
+use glib::Object;
+use gtk::{FlowBox, glib};
+use gtk::prelude::*;
+use crate::components::window::sidebarEntryImpl;
+use crate::components::window::sidebarEntryImpl::{Categories, SidebarAction};
 
-use glib::subclass::InitializingObject;
-use gtk::{CompositeTemplate, FlowBox, glib, Image, Label, ListBoxRow};
-use gtk::subclass::prelude::*;
-
-use crate::components::window::handleSidebarClick::HANDLE_HOME;
-
-#[derive(Default)]
-pub enum Categories {
-    Connectivity,
-    Audio,
-    #[default]
-    Misc,
+glib::wrapper! {
+    pub struct SidebarEntry(ObjectSubclass<sidebarEntryImpl::SidebarEntry>)
+        @extends gtk::ListBoxRow, gtk::Widget,
+        @implements gtk::Accessible, gtk::Actionable, gtk::Buildable, gtk::ConstraintTarget;
 }
 
-#[allow(non_snake_case)]
-#[derive(CompositeTemplate, Default)]
-#[template(resource = "/org/Xetibo/ReSet/resetSidebarEntry.ui")]
-pub struct SidebarEntry {
-    #[template_child]
-    pub resetSidebarLabel: TemplateChild<Label>,
-    #[template_child]
-    pub resetSidebarImage: TemplateChild<Image>,
-    pub category: Cell<Categories>,
-    pub isSubcategory: Cell<bool>,
-    pub onClickEvent: RefCell<SidebarAction>,
-    pub name : RefCell<String>,
-}
+impl SidebarEntry {
+    pub fn new(
+        entryName: &str,
+        iconName: &str,
+        category: Categories,
+        isSubcategory: bool,
+        clickEvent: fn(FlowBox),
+    ) -> Self {
+        let entry: SidebarEntry = Object::builder().build();
+        let entryImp = entry.imp();
+        entryImp.resetSidebarLabel.get().set_text(entryName);
+        entryImp
+            .resetSidebarImage
+            .set_from_icon_name(Some(iconName));
+        entryImp.category.set(category);
+        entryImp.isSubcategory.set(isSubcategory);
+        {
+            let mut name = entryImp.name.borrow_mut();
+            *name = String::from(entryName);
+            let mut action = entryImp.onClickEvent.borrow_mut();
+            *action = SidebarAction {
+                onClickEvent: clickEvent,
+            };
+        }
+        Self::setMargin(&entry);
+        entry
+    }
 
-#[allow(non_snake_case)]
-pub struct SidebarAction {
-    pub onClickEvent: fn(FlowBox),
-}
-
-impl Default for SidebarAction {
-    fn default() -> Self {
-        Self {
-            onClickEvent: HANDLE_HOME
+    fn setMargin(entry: &SidebarEntry) {
+        if entry.imp().isSubcategory.get() {
+            let option = entry.child().unwrap();
+            option.set_margin_start(30);
         }
     }
 }
-
-#[glib::object_subclass]
-impl ObjectSubclass for SidebarEntry {
-    const NAME: &'static str = "resetSidebarEntry";
-    type Type = super::SidebarEntry;
-    type ParentType = ListBoxRow;
-
-    fn class_init(klass: &mut Self::Class) {
-        klass.bind_template();
-    }
-
-    fn instance_init(obj: &InitializingObject<Self>) {
-        obj.init_template();
-    }
-}
-
-impl ObjectImpl for SidebarEntry {}
-
-impl ListBoxRowImpl for SidebarEntry {}
-
-impl WidgetImpl for SidebarEntry {}
