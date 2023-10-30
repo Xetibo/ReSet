@@ -2,8 +2,9 @@ use std::cell::RefCell;
 use gtk::{CompositeTemplate, glib, ListBox, ListBoxRow, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
+use crate::components::wifi::wifiBox;
 
-use crate::components::wifi::WifiEntry;
+use crate::components::wifi::wifiEntry::WifiEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -23,7 +24,7 @@ pub struct WifiBox {
 #[glib::object_subclass]
 impl ObjectSubclass for WifiBox {
     const NAME: &'static str = "resetWifi";
-    type Type = super::WifiBox;
+    type Type = wifiBox::WifiBox;
     type ParentType = gtk::Box;
 
     fn class_init(klass: &mut Self::Class) {

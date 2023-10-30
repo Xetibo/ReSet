@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use gtk::{Button, CompositeTemplate, glib, Image, Label};
 use gtk::subclass::prelude::*;
+use crate::components::wifi::wifiEntry;
 
 #[derive(Default, Copy, Clone)]
 pub enum WifiStrength {
@@ -30,7 +31,7 @@ pub struct WifiEntry {
 #[glib::object_subclass]
 impl ObjectSubclass for WifiEntry {
     const NAME: &'static str = "resetWifiEntry";
-    type Type = super::WifiEntry;
+    type Type = wifiEntry::WifiEntry;
     type ParentType = gtk::ListBoxRow;
 
     fn class_init(klass: &mut Self::Class) {

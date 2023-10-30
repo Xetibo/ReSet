@@ -3,7 +3,7 @@ mod components;
 
 use gtk::prelude::*;
 use gtk::{gio, Application};
-use components::window::Window;
+use crate::components::window::window::Window;
 
 const APP_ID: &str = "org.Xetibo.ReSet";
 

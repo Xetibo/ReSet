@@ -1,8 +1,8 @@
 use gtk::{Align, FlowBox, FlowBoxChild};
 use gtk::prelude::{FlowBoxChildExt, WidgetExt};
-use crate::components::audio::AudioBox;
-use crate::components::bluetooth::BluetoothBox;
-use crate::components::wifi::WifiBox;
+use crate::components::audio::audioBox::AudioBox;
+use crate::components::bluetooth::bluetoothBox::BluetoothBox;
+use crate::components::wifi::wifiBox::WifiBox;
 
 pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let wifibox = WifiBox::new();

@@ -1,4 +1,8 @@
+use crate::components::wifi::wifiEntryImpl;
 use adw::glib;
+use adw::glib::{Object, PropertySet};
+use adw::subclass::prelude::ObjectSubclassIsExt;
+use gtk::prelude::WidgetExt;
 use crate::components::wifi::wifiEntryImpl::WifiStrength;
 
 glib::wrapper! {

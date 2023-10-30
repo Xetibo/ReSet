@@ -1,10 +1,19 @@
+use std::thread;
+use std::time::Duration;
+
 use adw::glib;
+use adw::glib::clone;
+use adw::glib::Object;
+use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
+use dbus::Error;
+
+use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;
 use crate::components::wifi::wifiEntryImpl::WifiStrength;
 
 glib::wrapper! {
-    pub struct WifiBox(ObjectSubclass<wifiBox::WifiBox>)
+    pub struct WifiBox(ObjectSubclass<wifiBoxImpl::WifiBox>)
     @extends gtk::Box, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
@@ -17,7 +26,7 @@ impl WifiBox {
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
 
-        selfImp.resetWifiDetails.connect_row_activated(clone!(@ weak selfImp as window => move |_, y| {
+        selfImp.resetWifiDetails.connect_row_activated(clone!(@ weak selfImp as window => move |_, _y| {
             // let result = y.downcast_ref()::<WifiEntry>().unwrap(); no worky smh
         }));
     }

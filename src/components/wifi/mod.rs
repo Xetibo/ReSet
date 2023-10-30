@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-mod wifiBox;
-mod wifiBoxImpl;
-mod wifiEntryImpl;
-mod wifiEntry;
+pub mod wifiBox;
+pub mod wifiBoxImpl;
+pub mod wifiEntry;
+pub mod wifiEntryImpl;
