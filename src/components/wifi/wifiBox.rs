@@ -1,6 +1,8 @@
-use gtk::{CompositeTemplate, glib, ListBox};
+use std::cell::RefCell;
+use gtk::{CompositeTemplate, glib, ListBox, ListBoxRow, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
+use gtk::prelude::*;
 
 use crate::components::wifi::WifiEntry;
 
@@ -9,7 +11,14 @@ use crate::components::wifi::WifiEntry;
 #[template(resource = "/org/Xetibo/ReSet/resetWiFi.ui")]
 pub struct WifiBox {
     #[template_child]
+    pub resetWifiDetails: TemplateChild<ListBox>,
+    #[template_child]
+    pub resetWifiSwitchRow: TemplateChild<ListBoxRow>,
+    #[template_child]
+    pub resetWifiSwitch: TemplateChild<Switch>,
+    #[template_child]
     pub resetWifiList: TemplateChild<ListBox>,
+    pub wifiEntries: RefCell<Vec<WifiEntry>>,
 }
 
 #[glib::object_subclass]
@@ -31,6 +40,10 @@ impl ObjectSubclass for WifiBox {
 impl ObjectImpl for WifiBox {
     fn constructed(&self) {
         self.parent_constructed();
+
+        let obj = self.obj();
+        obj.setupCallbacks();
+        obj.scanForWifi();
     }
 }
 

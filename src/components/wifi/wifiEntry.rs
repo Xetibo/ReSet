@@ -1,5 +1,15 @@
+use std::cell::RefCell;
 use gtk::{Button, CompositeTemplate, glib, Image, Label};
 use gtk::subclass::prelude::*;
+
+#[derive(Default, Copy, Clone)]
+pub enum WifiStrength {
+    Excellent,
+    Ok,
+    Weak,
+    #[default]
+    None,
+}
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -8,9 +18,13 @@ pub struct WifiEntry {
     #[template_child]
     pub resetWifiStrength: TemplateChild<Image>,
     #[template_child]
+    pub resetWifiEncrypted: TemplateChild<Image>,
+    #[template_child]
     pub resetWifiLabel: TemplateChild<Label>,
     #[template_child]
     pub resetWifiButton: TemplateChild<Button>,
+    pub wifiName: RefCell<String>,
+    pub wifiStrength: RefCell<WifiStrength>,
 }
 
 #[glib::object_subclass]
@@ -22,7 +36,7 @@ impl ObjectSubclass for WifiEntry {
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
     }
-    
+
     fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
         obj.init_template();
     }
