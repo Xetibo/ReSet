@@ -9,7 +9,7 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
 use gtk::glib;
-use gtk::prelude::{ListBoxRowExt, TreeViewExt, WidgetExt};
+use gtk::prelude::WidgetExt;
 
 use crate::components::wifi::wifiEntry::WifiStrength;
 

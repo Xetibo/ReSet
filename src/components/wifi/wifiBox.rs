@@ -2,7 +2,6 @@ use std::cell::RefCell;
 use gtk::{CompositeTemplate, glib, ListBox, ListBoxRow, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use gtk::prelude::*;
 
 use crate::components::wifi::WifiEntry;
 
