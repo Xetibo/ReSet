@@ -65,21 +65,20 @@
       </object>
     </child>
     <child>
-      <object class="GtkScrolledWindow">
-        <property name="propagate-natural-height">True</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkViewport">
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="justify">right</property>
+            <property name="label">Available networks</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="propagate-natural-height">True</property>
             <child>
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="valign">start</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="halign">start</property>
-                    <property name="justify">right</property>
-                    <property name="label">Available networks</property>
-                  </object>
-                </child>
+              <object class="GtkViewport">
                 <child>
                   <object class="GtkListBox" id="resetWifiList">
                     <property name="show-separators">True</property>

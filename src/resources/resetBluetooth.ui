@@ -9,38 +9,52 @@
         <property name="valign">start</property>
         <property name="width-request">400</property>
         <child>
-            <object class="GtkBox">
-                <property name="margin-bottom">5</property>
+            <object class="GtkListBox" id="resetBluetoothDetails">
+                <property name="margin-bottom">10</property>
+                <property name="show-separators">True</property>
+                <property name="valign">start</property>
                 <child>
-                    <object class="GtkLabel">
-                        <property name="label">Bluetooth</property>
-                    </object>
-                </child>
-                <child>
-                    <object class="GtkSwitch" id="resetBluetoothSwitch">
-                        <property name="halign">end</property>
-                        <property name="hexpand">True</property>
-                        <property name="valign">end</property>
+                    <object class="GtkListBoxRow" id="resetBluetoothSwitchRow">
+                        <property name="selectable">False</property>
+                        <child>
+                            <object class="GtkBox">
+                                <property name="height-request">40</property>
+                                <child>
+                                    <object class="GtkLabel">
+                                        <property name="label">Bluetooth</property>
+                                        <property name="margin-start">5</property>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkSwitch" id="resetBluetoothSwitch">
+                                        <property name="active">True</property>
+                                        <property name="halign">end</property>
+                                        <property name="hexpand">True</property>
+                                        <property name="margin-end">5</property>
+                                        <property name="valign">center</property>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
                     </object>
                 </child>
             </object>
         </child>
         <child>
-            <object class="GtkScrolledWindow">
-                <property name="propagate-natural-height">True</property>
+            <object class="GtkBox">
+                <property name="orientation">vertical</property>
                 <child>
-                    <object class="GtkViewport">
+                    <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="justify">right</property>
+                        <property name="label">Available device</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkScrolledWindow">
+                        <property name="propagate-natural-height">True</property>
                         <child>
-                            <object class="GtkBox">
-                                <property name="orientation">vertical</property>
-                                <property name="valign">start</property>
-                                <child>
-                                    <object class="GtkLabel">
-                                        <property name="halign">start</property>
-                                        <property name="justify">right</property>
-                                        <property name="label">Available device</property>
-                                    </object>
-                                </child>
+                            <object class="GtkViewport">
                                 <child>
                                     <object class="GtkListBox" id="resetBluetoothAvailableDevices">
                                         <property name="show-separators">True</property>
@@ -54,22 +68,21 @@
             </object>
         </child>
         <child>
-            <object class="GtkScrolledWindow">
+            <object class="GtkBox">
                 <property name="margin-top">10</property>
-                <property name="propagate-natural-height">True</property>
+                <property name="orientation">vertical</property>
                 <child>
-                    <object class="GtkViewport">
+                    <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="justify">right</property>
+                        <property name="label">Connected devices</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkScrolledWindow">
+                        <property name="propagate-natural-height">True</property>
                         <child>
-                            <object class="GtkBox">
-                                <property name="orientation">vertical</property>
-                                <property name="valign">start</property>
-                                <child>
-                                    <object class="GtkLabel">
-                                        <property name="halign">start</property>
-                                        <property name="justify">right</property>
-                                        <property name="label">Connected devices</property>
-                                    </object>
-                                </child>
+                            <object class="GtkViewport">
                                 <child>
                                     <object class="GtkListBox" id="resetBluetoothConnectedDevices">
                                         <property name="show-separators">True</property>
