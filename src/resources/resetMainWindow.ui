@@ -42,15 +42,45 @@
                     </child>
                     <child>
                       <object class="GtkBox" id="resetPath">
+                        <property name="halign">start</property>
                         <property name="hexpand">True</property>
                         <property name="hexpand-set">True</property>
-                        <property name="valign">start</property>
+                        <property name="valign">center</property>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="has-frame">False</property>
+                            <property name="label">Home</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">&gt;</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="has-frame">False</property>
+                            <property name="label">WiFi</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">&gt;</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="has-frame">False</property>
+                            <property name="label">Advanced</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuButton">
                         <property name="can-shrink">True</property>
                         <property name="halign">end</property>
+                        <property name="has-frame">False</property>
                         <property name="hexpand-set">True</property>
                         <property name="icon-name">open-menu-symbolic</property>
                         <property name="popover">
@@ -88,6 +118,7 @@
                       <object class="GtkButton" id="resetClose">
                         <property name="css-classes">resetClose</property>
                         <property name="halign">start</property>
+                        <property name="has-frame">False</property>
                         <property name="icon-name">window-close-symbolic</property>
                         <property name="margin-start">5</property>
                       </object>
@@ -97,14 +128,23 @@
               </object>
             </child>
             <child>
-              <object class="GtkFlowBox" id="resetMain">
-                <property name="column-spacing">25</property>
-                <property name="hexpand">True</property>
-                <property name="hexpand-set">True</property>
-                <property name="margin-top">5</property>
-                <property name="row-spacing">25</property>
-                <property name="selection-mode">none</property>
-                <property name="valign">start</property>
+              <object class="GtkScrolledWindow">
+                <property name="propagate-natural-height">True</property>
+                <child>
+                  <object class="GtkViewport">
+                    <child>
+                      <object class="GtkFlowBox" id="resetMain">
+                        <property name="column-spacing">25</property>
+                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
+                        <property name="margin-top">5</property>
+                        <property name="row-spacing">25</property>
+                        <property name="selection-mode">none</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -129,12 +169,10 @@
               </object>
             </child>
             <child>
-              <object class="GtkViewport">
-                <property name="margin-top">5</property>
+              <object class="GtkScrolledWindow">
+                <property name="propagate-natural-height">True</property>
                 <child>
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <property name="width-request">150</property>
+                  <object class="GtkViewport">
                     <child>
                       <object class="GtkListBox" id="resetSidebarList">
                         <property name="css-name">resetList</property>

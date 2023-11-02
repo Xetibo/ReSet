@@ -54,3 +54,27 @@ pub const HANDLE_MICROPHONE_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
 pub const HANDLE_HOME: fn(FlowBox) =  |resetMain: FlowBox|   {
     resetMain.remove_all();
 };
+
+pub const HANDLE_PERIPHERALS_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
+    let label = Label::new(Some("not implemented yet"));
+    resetMain.remove_all();
+    resetMain.insert(&label, -1);
+};
+
+pub const HANDLE_MONITOR_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
+    let label = Label::new(Some("not implemented yet"));
+    resetMain.remove_all();
+    resetMain.insert(&label, -1);
+};
+
+pub const HANDLE_MOUSE_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
+    let label = Label::new(Some("not implemented yet"));
+    resetMain.remove_all();
+    resetMain.insert(&label, -1);
+};
+
+pub const HANDLE_KEYBOARD_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
+    let label = Label::new(Some("not implemented yet"));
+    resetMain.remove_all();
+    resetMain.insert(&label, -1);
+};

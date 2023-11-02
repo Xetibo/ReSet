@@ -48,12 +48,13 @@
                     <object class="GtkLabel">
                         <property name="halign">start</property>
                         <property name="justify">right</property>
-                        <property name="label">Available device</property>
+                        <property name="label">Available devices</property>
                         <property name="margin-start">5</property>
                     </object>
                 </child>
                 <child>
                     <object class="GtkScrolledWindow">
+                        <property name="min-content-height">100</property>
                         <property name="propagate-natural-height">True</property>
                         <child>
                             <object class="GtkViewport">
@@ -87,6 +88,7 @@
                 </child>
                 <child>
                     <object class="GtkScrolledWindow">
+                        <property name="min-content-height">100</property>
                         <property name="propagate-natural-height">True</property>
                         <child>
                             <object class="GtkViewport">

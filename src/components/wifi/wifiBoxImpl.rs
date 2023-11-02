@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use gtk::{CompositeTemplate, glib, ListBox, ListBoxRow, Switch};
+use gtk::{Button, CompositeTemplate, glib, ListBox, ListBoxRow, Revealer, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use crate::components::wifi::wifiBox;
@@ -18,6 +18,8 @@ pub struct WifiBox {
     pub resetWifiSwitch: TemplateChild<Switch>,
     #[template_child]
     pub resetWifiList: TemplateChild<ListBox>,
+    #[template_child]
+    pub resetWifiAdvanced: TemplateChild<Button>,
     pub wifiEntries: RefCell<Vec<WifiEntry>>,
 }
 
