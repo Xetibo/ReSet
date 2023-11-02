@@ -28,9 +28,9 @@ pub const HANDLE_BLUETOOTH_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
 };
 
 pub const HANDLE_VPN_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let wifibox = WifiBox::new();
+    let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();
-    resetMain.insert(&wifibox, -1);
+    resetMain.insert(&label, -1);
 };
 
 pub const HANDLE_AUDIO_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {

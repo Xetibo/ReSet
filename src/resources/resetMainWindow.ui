@@ -86,6 +86,7 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="resetClose">
+                        <property name="css-classes">resetClose</property>
                         <property name="halign">start</property>
                         <property name="icon-name">window-close-symbolic</property>
                         <property name="margin-start">5</property>

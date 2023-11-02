@@ -4,13 +4,14 @@
   <requires lib="gtk" version="4.12"/>
   <template class="resetWifi" parent="GtkBox">
     <property name="halign">start</property>
-    <property name="margin-start">5</property>
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
     <property name="width-request">400</property>
     <child>
       <object class="GtkListBox" id="resetWifiDetails">
+        <property name="css-classes">boxed-list</property>
         <property name="margin-bottom">10</property>
+        <property name="margin-start">5</property>
         <property name="show-separators">True</property>
         <property name="valign">start</property>
         <child>
@@ -72,6 +73,7 @@
             <property name="halign">start</property>
             <property name="justify">right</property>
             <property name="label">Available networks</property>
+            <property name="margin-start">5</property>
           </object>
         </child>
         <child>
@@ -81,6 +83,10 @@
               <object class="GtkViewport">
                 <child>
                   <object class="GtkListBox" id="resetWifiList">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                   </object>
@@ -95,6 +101,7 @@
       <object class="GtkButton">
         <property name="halign">start</property>
         <property name="label">Advanced</property>
+        <property name="margin-start">5</property>
         <property name="margin-top">5</property>
         <property name="valign">start</property>
       </object>
