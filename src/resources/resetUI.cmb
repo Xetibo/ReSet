@@ -267,6 +267,7 @@
 	(4,103,"GtkWidget","margin-top","5",None,None,None,None,None,None,None,None,None),
 	(4,103,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
 	(4,105,"AdwNavigationPage","tag","saved",None,None,None,None,None,None,None,None,None),
+	(4,108,"GtkLabel","label","advanced page",None,None,None,None,None,None,None,None,None),
 	(4,109,"GtkActionable","action-name","navigation.pop",None,None,None,None,None,None,None,None,None),
 	(4,109,"GtkButton","label","back",None,None,None,None,None,None,None,None,None),
 	(4,109,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
