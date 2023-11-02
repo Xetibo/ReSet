@@ -1,4 +1,4 @@
-use gtk::{Align, FlowBox, FlowBoxChild};
+use gtk::{Align, FlowBox, FlowBoxChild, Label};
 use gtk::prelude::{FlowBoxChildExt, WidgetExt};
 use crate::components::audio::audioBox::AudioBox;
 use crate::components::bluetooth::bluetoothBox::BluetoothBox;
@@ -59,9 +59,9 @@ pub const HANDLE_VOLUME_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
 };
 
 pub const HANDLE_MICROPHONE_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let wifibox = WifiBox::new();
+    let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();
-    resetMain.insert(&wifibox, -1);
+    resetMain.insert(&label, -1);
 };
 
 pub const HANDLE_HOME: fn(FlowBox) =  |resetMain: FlowBox|   {

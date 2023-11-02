@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use gtk::{CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -15,6 +16,8 @@ pub struct BluetoothBox {
     pub resetBluetoothAvailableDevices: TemplateChild<ListBox>,
     #[template_child]
     pub resetBluetoothConnectedDevices: TemplateChild<ListBox>,
+    pub availableDevices: RefCell<Vec<BluetoothEntry>>,
+    pub connectedDevices: RefCell<Vec<BluetoothEntry>>,
 }
 
 #[glib::object_subclass]
@@ -36,6 +39,9 @@ impl ObjectSubclass for BluetoothBox {
 impl ObjectImpl for BluetoothBox {
     fn constructed(&self) {
         self.parent_constructed();
+        let obj = self.obj();
+        obj.scanForDevices();
+        obj.addConnectedDevices();
     }
 }
 

@@ -2,7 +2,6 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <requires lib="libadwaita" version="1.4"/>
   <template class="resetWifi" parent="GtkBox">
     <property name="halign">start</property>
     <property name="margin-start">5</property>
@@ -66,24 +65,27 @@
       </object>
     </child>
     <child>
-      <object class="AdwClampScrollable">
-        <property name="maximum-size">0</property>
-        <property name="orientation">vertical</property>
+      <object class="GtkScrolledWindow">
+        <property name="propagate-natural-height">True</property>
         <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <property name="valign">start</property>
+          <object class="GtkViewport">
             <child>
-              <object class="GtkLabel">
-                <property name="halign">start</property>
-                <property name="justify">right</property>
-                <property name="label">Available networks</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkListBox" id="resetWifiList">
-                <property name="show-separators">True</property>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
                 <property name="valign">start</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="halign">start</property>
+                    <property name="justify">right</property>
+                    <property name="label">Available networks</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkListBox" id="resetWifiList">
+                    <property name="show-separators">True</property>
+                    <property name="valign">start</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

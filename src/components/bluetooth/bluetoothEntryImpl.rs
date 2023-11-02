@@ -1,7 +1,17 @@
+use std::cell::RefCell;
 use gtk::{Button, CompositeTemplate, glib, Image, Label};
 use gtk::subclass::prelude::*;
 use crate::components::bluetooth::bluetoothEntry;
 
+#[derive(Default, Copy, Clone)]
+pub enum DeviceTypes {
+    Mouse,
+    Keyboard,
+    Headset,
+    Controller,
+    #[default]
+    None,
+}
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetBluetoothEntry.ui")]
@@ -12,6 +22,7 @@ pub struct BluetoothEntry {
     pub resetBluetoothLabel: TemplateChild<Label>,
     #[template_child]
     pub resetBluetoothButton: TemplateChild<Button>,
+    pub deviceName: RefCell<String>,
 }
 
 #[glib::object_subclass]

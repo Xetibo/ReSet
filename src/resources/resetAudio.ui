@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-    <requires lib="gtk" version="4.12"/>
+    <requires lib="gtk" version="4.6"/>
     <template class="resetAudio" parent="GtkBox">
         <property name="halign">start</property>
         <property name="margin-start">5</property>
@@ -10,7 +10,7 @@
         <property name="width-request">400</property>
         <child>
             <object class="GtkBox">
-                <property name="margin-bottom">10</property>
+                <property name="height-request">40</property>
                 <child>
                     <object class="GtkLabel">
                         <property name="label">Output Device</property>
@@ -20,7 +20,27 @@
                     <object class="GtkDropDown" id="resetOutputDevice">
                         <property name="halign">end</property>
                         <property name="hexpand">True</property>
-                        <property name="valign">end</property>
+                        <property name="valign">center</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+        <child>
+            <object class="GtkBox">
+                <property name="height-request">40</property>
+                <property name="margin-bottom">5</property>
+                <child>
+                    <object class="GtkLabel">
+                        <property name="label">Show Applications</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkSwitch">
+                        <property name="active">True</property>
+                        <property name="halign">end</property>
+                        <property name="hexpand">True</property>
+                        <property name="margin-end">5</property>
+                        <property name="valign">center</property>
                     </object>
                 </child>
             </object>
@@ -29,15 +49,8 @@
             <object class="GtkSeparator"/>
         </child>
         <child>
-            <object class="resetAudioSourceEntry" id="asdf"/>
-        </child>
-        <child>
-            <object class="GtkButton" id="resetAllOutputDevices">
-                <property name="halign">start</property>
-                <property name="label">All Output Devices</property>
-                <property name="margin-start">5</property>
+            <object class="resetAudioSourceEntry" id="asdf">
                 <property name="margin-top">5</property>
-                <property name="valign">start</property>
             </object>
         </child>
     </template>

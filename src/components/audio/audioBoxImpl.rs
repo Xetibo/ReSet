@@ -10,8 +10,6 @@ use crate::components::audio::audioSource::AudioSourceEntry;
 pub struct AudioBox {
     #[template_child]
     pub resetOutputDevice: TemplateChild<DropDown>,
-    #[template_child]
-    pub resetAllOutputDevices: TemplateChild<Button>,
 }
 
 
