@@ -231,8 +231,8 @@ impl Window {
                     .transient_for(&window)
                     .modal(true)
                     .copyright("© 2022-2023 Xetibo")
-                    .developers(vec!["DashieTM".to_string(), "Takatori".to_string()])
-                    .designers(vec!["DashieTM".to_string(), "Takatori".to_string()])
+                    .developers(vec!["DashieTM".to_string(), "Takotori".to_string()])
+                    .designers(vec!["DashieTM".to_string(), "Takotori".to_string()])
                     .build();
 
             dialog.present();
