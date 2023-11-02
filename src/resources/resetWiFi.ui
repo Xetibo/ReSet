@@ -78,6 +78,7 @@
         </child>
         <child>
           <object class="GtkScrolledWindow">
+            <property name="min-content-height">100</property>
             <property name="propagate-natural-height">True</property>
             <child>
               <object class="GtkViewport">

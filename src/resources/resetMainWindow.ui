@@ -97,14 +97,23 @@
               </object>
             </child>
             <child>
-              <object class="GtkFlowBox" id="resetMain">
-                <property name="column-spacing">25</property>
-                <property name="hexpand">True</property>
-                <property name="hexpand-set">True</property>
-                <property name="margin-top">5</property>
-                <property name="row-spacing">25</property>
-                <property name="selection-mode">none</property>
-                <property name="valign">start</property>
+              <object class="GtkScrolledWindow">
+                <property name="propagate-natural-height">True</property>
+                <child>
+                  <object class="GtkViewport">
+                    <child>
+                      <object class="GtkFlowBox" id="resetMain">
+                        <property name="column-spacing">25</property>
+                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
+                        <property name="margin-top">5</property>
+                        <property name="row-spacing">25</property>
+                        <property name="selection-mode">none</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -129,12 +138,10 @@
               </object>
             </child>
             <child>
-              <object class="GtkViewport">
-                <property name="margin-top">5</property>
+              <object class="GtkScrolledWindow">
+                <property name="propagate-natural-height">True</property>
                 <child>
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <property name="width-request">150</property>
+                  <object class="GtkViewport">
                     <child>
                       <object class="GtkListBox" id="resetSidebarList">
                         <property name="css-name">resetList</property>
