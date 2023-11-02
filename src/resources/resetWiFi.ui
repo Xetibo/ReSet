@@ -2,93 +2,121 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.4"/>
   <template class="resetWifi" parent="GtkBox">
     <property name="halign">start</property>
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
     <property name="width-request">400</property>
     <child>
-      <object class="GtkListBox" id="resetWifiDetails">
-        <property name="css-classes">boxed-list</property>
-        <property name="margin-bottom">10</property>
-        <property name="margin-start">5</property>
-        <property name="show-separators">True</property>
-        <property name="valign">start</property>
+      <object class="AdwNavigationView">
         <child>
-          <object class="GtkListBoxRow" id="resetWifiSwitchRow">
-            <property name="selectable">False</property>
+          <object class="AdwNavigationPage">
+            <property name="tag">main</property>
             <child>
               <object class="GtkBox">
-                <property name="height-request">40</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label">WiFi</property>
-                    <property name="margin-start">5</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkSwitch" id="resetWifiSwitch">
-                    <property name="active">True</property>
-                    <property name="halign">end</property>
-                    <property name="hexpand">True</property>
-                    <property name="margin-end">5</property>
-                    <property name="valign">center</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkListBoxRow">
-            <property name="selectable">False</property>
-            <child>
-              <object class="GtkBox">
-                <property name="height-request">40</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label">Saved Networks</property>
-                    <property name="margin-start">5</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkImage">
-                    <property name="halign">end</property>
-                    <property name="hexpand">True</property>
-                    <property name="icon-name">go-previous-symbolic-rtl</property>
-                    <property name="margin-end">5</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="halign">start</property>
-            <property name="justify">right</property>
-            <property name="label">Available networks</property>
-            <property name="margin-start">5</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow">
-            <property name="min-content-height">100</property>
-            <property name="propagate-natural-height">True</property>
-            <child>
-              <object class="GtkViewport">
-                <child>
-                  <object class="GtkListBox" id="resetWifiList">
+                  <object class="GtkListBox" id="resetWifiDetails">
                     <property name="css-classes">boxed-list</property>
                     <property name="margin-bottom">10</property>
-                    <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
                     <property name="show-separators">True</property>
+                    <property name="valign">start</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="resetWifiSwitchRow">
+                        <property name="selectable">False</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="height-request">40</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">WiFi</property>
+                                <property name="margin-start">5</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="resetWifiSwitch">
+                                <property name="active">True</property>
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="margin-end">5</property>
+                                <property name="valign">center</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow">
+                        <property name="action-name">navigation.push</property>
+                        <property name="action-target">'saved'</property>
+                        <property name="selectable">False</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="height-request">40</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Saved Networks</property>
+                                <property name="margin-start">5</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="icon-name">go-previous-symbolic-rtl</property>
+                                <property name="margin-end">5</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="justify">right</property>
+                        <property name="label">Available networks</property>
+                        <property name="margin-start">5</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="min-content-height">100</property>
+                        <property name="propagate-natural-height">True</property>
+                        <child>
+                          <object class="GtkViewport">
+                            <child>
+                              <object class="GtkListBox" id="resetWifiList">
+                                <property name="css-classes">boxed-list</property>
+                                <property name="margin-bottom">10</property>
+                                <property name="margin-end">5</property>
+                                <property name="margin-start">5</property>
+                                <property name="show-separators">True</property>
+                                <property name="valign">start</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="resetWifiAdvanced">
+                    <property name="action-name">navigation.push</property>
+                    <property name="action-target">'advanced'</property>
+                    <property name="halign">start</property>
+                    <property name="label">Advanced</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <property name="valign">start</property>
                   </object>
                 </child>
@@ -96,15 +124,52 @@
             </child>
           </object>
         </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton">
-        <property name="halign">start</property>
-        <property name="label">Advanced</property>
-        <property name="margin-start">5</property>
-        <property name="margin-top">5</property>
-        <property name="valign">start</property>
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="child">
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkLabel"/>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="action-name">navigation.pop</property>
+                    <property name="halign">start</property>
+                    <property name="label">back</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="valign">start</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="tag">advanced</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="tag">saved</property>
+            <child>
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">saved networks</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="action-name">navigation.pop</property>
+                    <property name="halign">start</property>
+                    <property name="label">back</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="valign">start</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </template>

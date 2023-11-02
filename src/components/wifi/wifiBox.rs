@@ -7,6 +7,7 @@ use adw::glib::Object;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
+use gtk::prelude::ButtonExt;
 
 use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;
