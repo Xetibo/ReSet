@@ -1,4 +1,4 @@
-use gtk::{Button, CompositeTemplate, DropDown, TemplateChild, glib};
+use gtk::{CompositeTemplate, DropDown, TemplateChild, glib};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use crate::components::audio::audioBox;
