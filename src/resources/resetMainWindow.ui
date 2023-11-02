@@ -80,6 +80,7 @@
                       <object class="GtkMenuButton">
                         <property name="can-shrink">True</property>
                         <property name="halign">end</property>
+                        <property name="has-frame">False</property>
                         <property name="hexpand-set">True</property>
                         <property name="icon-name">open-menu-symbolic</property>
                         <property name="popover">
@@ -117,6 +118,7 @@
                       <object class="GtkButton" id="resetClose">
                         <property name="css-classes">resetClose</property>
                         <property name="halign">start</property>
+                        <property name="has-frame">False</property>
                         <property name="icon-name">window-close-symbolic</property>
                         <property name="margin-start">5</property>
                       </object>
