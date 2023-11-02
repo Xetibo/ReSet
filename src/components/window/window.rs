@@ -5,10 +5,7 @@ use glib::Object;
 use gtk::{Application, gio, glib, Orientation};
 use gtk::prelude::*;
 
-use crate::components::window::handleSidebarClick::{
-    HANDLE_AUDIO_CLICK, HANDLE_BLUETOOTH_CLICK, HANDLE_CONNECTIVITY_CLICK, HANDLE_MICROPHONE_CLICK,
-    HANDLE_VOLUME_CLICK, HANDLE_VPN_CLICK, HANDLE_WIFI_CLICK,
-};
+use crate::components::window::handleSidebarClick::*;
 use crate::components::window::sidebarEntry::SidebarEntry;
 use crate::components::window::sidebarEntryImpl::Categories;
 use crate::components::window::windowImpl;
@@ -169,6 +166,41 @@ impl Window {
                 HANDLE_AUDIO_CLICK,
             ),
             audioList,
+        ));
+
+        let peripheralsList = vec![
+            SidebarEntry::new(
+                "Displays",
+                "video-display-symbolic",
+                Categories::Peripherals,
+                true,
+                HANDLE_MONITOR_CLICK,
+            ),
+            SidebarEntry::new(
+                "Mouse",
+                "input-mouse-symbolic",
+                Categories::Peripherals,
+                true,
+                HANDLE_MOUSE_CLICK,
+            ),
+            SidebarEntry::new(
+                "Keyboard",
+                "input-keyboard-symbolic",
+                Categories::Peripherals,
+                true,
+                HANDLE_KEYBOARD_CLICK,
+            ),
+        ];
+
+        sidebarEntries.push((
+            SidebarEntry::new(
+                "Peripherals",
+                "preferences-system-devices-symbolic",
+                Categories::Peripherals,
+                false,
+                HANDLE_PERIPHERALS_CLICK,
+            ),
+            peripheralsList,
         ));
 
         for (mainEntry, subEntries) in sidebarEntries.iter() {

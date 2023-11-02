@@ -11,6 +11,7 @@ use crate::components::window::sidebarEntry;
 pub enum Categories {
     Connectivity,
     Audio,
+    Peripherals,
     #[default]
     Misc,
 }
