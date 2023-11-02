@@ -129,7 +129,9 @@
             <property name="child">
               <object class="GtkBox">
                 <child>
-                  <object class="GtkLabel"/>
+                  <object class="GtkLabel">
+                    <property name="label">advanced page</property>
+                  </object>
                 </child>
                 <child>
                   <object class="GtkButton">
