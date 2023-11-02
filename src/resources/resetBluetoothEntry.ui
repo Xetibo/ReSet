@@ -6,6 +6,7 @@
         <property name="selectable">False</property>
         <child>
             <object class="GtkBox">
+                <property name="margin-start">5</property>
                 <child>
                     <object class="GtkImage" id="resetBluetoothDeviceType">
                         <property name="icon-name">input-mouse-symbolic</property>
