@@ -2,7 +2,7 @@ use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
-use gtk::{Application, gio, glib, Orientation};
+use gtk::{Application, gio, glib, ListBoxRow, Orientation};
 use gtk::prelude::*;
 
 use crate::components::window::handleSidebarClick::*;
@@ -208,7 +208,10 @@ impl Window {
             for subEntry in subEntries {
                 selfImp.resetSidebarList.append(subEntry);
             }
-            selfImp.resetSidebarList.append(&gtk::Separator::new(Orientation::Horizontal))
+            let separator = ListBoxRow::new();
+            separator.set_child(Some(&gtk::Separator::new(Orientation::Horizontal)));
+            separator.set_activatable(false);
+            selfImp.resetSidebarList.append(&separator);
         }
     }
 
