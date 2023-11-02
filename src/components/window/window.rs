@@ -210,6 +210,7 @@ impl Window {
             }
             let separator = ListBoxRow::new();
             separator.set_child(Some(&gtk::Separator::new(Orientation::Horizontal)));
+            separator.set_selectable(false);
             separator.set_activatable(false);
             selfImp.resetSidebarList.append(&separator);
         }
