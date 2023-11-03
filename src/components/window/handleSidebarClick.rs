@@ -11,6 +11,7 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     resetMain.insert(&wifiBox, -1);
     resetMain.insert(&bluetoothBox, -1);
     // todo center flowbox children
+    resetMain.set_max_children_per_line(2);
 };
 
 pub const HANDLE_WIFI_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
@@ -19,36 +20,42 @@ pub const HANDLE_WIFI_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let child = FlowBoxChild::new();
     child.set_child(Some(&wifibox));
     resetMain.insert(&child, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_BLUETOOTH_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let bluetoothBox = BluetoothBox::new();
     resetMain.remove_all();
     resetMain.insert(&bluetoothBox, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_VPN_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();
     resetMain.insert(&label, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_AUDIO_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let audioBox = AudioBox::new();
     resetMain.remove_all();
     resetMain.insert(&audioBox, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_VOLUME_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let audioBox = AudioBox::new();
     resetMain.remove_all();
     resetMain.insert(&audioBox, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_MICROPHONE_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();
     resetMain.insert(&label, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_HOME: fn(FlowBox) =  |resetMain: FlowBox|   {
@@ -59,22 +66,26 @@ pub const HANDLE_PERIPHERALS_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();
     resetMain.insert(&label, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_MONITOR_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();
     resetMain.insert(&label, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_MOUSE_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();
     resetMain.insert(&label, -1);
+    resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_KEYBOARD_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();
     resetMain.insert(&label, -1);
+    resetMain.set_max_children_per_line(1);
 };

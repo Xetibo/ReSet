@@ -4,7 +4,7 @@
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetWifi" parent="GtkBox">
-    <property name="halign">start</property>
+    <property name="halign">center</property>
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
     <property name="width-request">400</property>
