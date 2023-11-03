@@ -141,6 +141,8 @@
                         <property name="row-spacing">25</property>
                         <property name="selection-mode">none</property>
                         <property name="valign">start</property>
+                        <property name="halign">center</property>
+                        <property name="homogeneous">True</property>
                       </object>
                     </child>
                   </object>
