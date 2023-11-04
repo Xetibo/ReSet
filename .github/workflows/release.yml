@@ -15,7 +15,7 @@ jobs:
       - name: Build rust package
         run: cargo build --release --verbose
       - name: Build Flatpak
-        run: 
+        run: |
           cd flatpak
           flatpak-builder build org.xetibo.ReSet.json --force-clean 
           flatpak build-export export build
