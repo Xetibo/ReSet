@@ -1,8 +1,8 @@
 # Maintainer: Fabio Lenherr <dashie@dashie.org>
 
 pkgname=reset
-pkgver=0
-pkgrel=1
+pkgver=0.1
+pkgrel=0
 arch=('x86_64')
 pkgdir="/usr/bin/${pkgname}"
 pkgdesc="A wip universal Linux settings application."
