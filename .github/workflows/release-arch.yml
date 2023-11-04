@@ -1,0 +1,21 @@
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  release:
+    runs-on: [self-hosted, arch]
+    steps:
+      - uses: actions/checkout@v3
+      - name: nightly-rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+      - name: Build rust package
+        run: makepkg PKGBUILD
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            reset-0-0-x86_64.pkg.tar.zst
