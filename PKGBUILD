@@ -2,11 +2,11 @@
 
 pkgname=reset
 pkgver=0
-pkgrel=0
+pkgrel=1
 arch=('x86_64')
 pkgdir="/usr/bin/${pkgname}"
 pkgdesc="A wip universal Linux settings application."
-depends=('rust' 'gtk4' 'dbus' 'gendesk')
+depends=('rust' 'gtk4' 'dbus')
 
 build() {
 	cargo build --release

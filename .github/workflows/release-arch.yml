@@ -18,4 +18,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            reset-0-0-x86_64.pkg.tar.zst
+            reset-${{github.ref}}-x86_64.pkg.tar.zst
