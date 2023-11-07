@@ -8,8 +8,6 @@ use crate::components::wifi::wifiBox::WifiBox;
 pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let wifiBox = SettingBox::new(&WifiBox::new());
     let bluetoothBox = SettingBox::new(&BluetoothBox::new());
-    wifiBox.set_width_request(500); // todo why not working from ui file
-    bluetoothBox.set_width_request(500); // todo why not working from ui file
     resetMain.remove_all();
     resetMain.insert(&wifiBox, -1);
     resetMain.insert(&bluetoothBox, -1);
@@ -18,7 +16,6 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
 
 pub const HANDLE_WIFI_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let wifiBox = SettingBox::new(&WifiBox::new());
-    wifiBox.set_width_request(500); // todo why not working from ui file
     resetMain.remove_all();
     resetMain.insert(&wifiBox, -1);
     resetMain.set_max_children_per_line(1);
@@ -26,7 +23,6 @@ pub const HANDLE_WIFI_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
 
 pub const HANDLE_BLUETOOTH_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let bluetoothBox = SettingBox::new(&BluetoothBox::new());
-    bluetoothBox.set_width_request(500); // todo why not working from ui file
     resetMain.remove_all();
     resetMain.insert(&bluetoothBox, -1);
     resetMain.set_max_children_per_line(1);

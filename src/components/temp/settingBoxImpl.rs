@@ -1,4 +1,3 @@
-use adw::NavigationView;
 use gtk::{CompositeTemplate, glib};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -6,7 +5,7 @@ use crate::components::temp::settingBox;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/Xetibo/ReSet/resetSetting.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetSettingBox.ui")]
 pub struct SettingBox {}
 
 #[glib::object_subclass]
