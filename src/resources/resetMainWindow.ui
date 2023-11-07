@@ -91,12 +91,6 @@
                                 <child>
                                   <object class="GtkButton">
                                     <property name="has-frame">False</property>
-                                    <property name="label">Help</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton">
-                                    <property name="has-frame">False</property>
                                     <property name="label">Preferences</property>
                                   </object>
                                 </child>
