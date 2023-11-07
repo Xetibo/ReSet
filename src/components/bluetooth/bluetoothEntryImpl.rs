@@ -29,7 +29,7 @@ pub struct BluetoothEntry {
 impl ObjectSubclass for BluetoothEntry {
     const NAME: &'static str = "resetBluetoothEntry";
     type Type = bluetoothEntry::BluetoothEntry;
-    type ParentType = gtk::ListBoxRow;
+    type ParentType = gtk::Box;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -46,7 +46,7 @@ impl ObjectImpl for BluetoothEntry {
     }
 }
 
-impl ListBoxRowImpl for BluetoothEntry {}
+impl BoxImpl for BluetoothEntry {}
 
 impl WidgetImpl for BluetoothEntry {}
 

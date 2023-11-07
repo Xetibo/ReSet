@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <template class="resetAudioSourceEntry" parent="GtkBox">
+  <template class="resetMicEntry" parent="GtkBox">
     <property name="margin-end">5</property>
     <property name="margin-start">5</property>
     <property name="orientation">vertical</property>
@@ -10,14 +10,14 @@
       <object class="GtkBox">
         <property name="margin-bottom">5</property>
         <child>
-          <object class="GtkImage" id="resetSourceIcon">
-            <property name="icon-name">audio-volume-high-symbolic</property>
+          <object class="GtkImage" id="resetMicIcon">
+            <property name="icon-name">audio-input-microphone-symbolic</property>
             <property name="margin-end">5</property>
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetSourceName">
-            <property name="label">System Volume</property>
+          <object class="GtkLabel" id="resetMicName">
+            <property name="label">Input Volume</property>
           </object>
         </child>
       </object>
@@ -27,14 +27,14 @@
         <property name="margin-bottom">5</property>
         <property name="margin-top">5</property>
         <child>
-          <object class="GtkButton" id="resetSourceMute">
-            <property name="icon-name">audio-volume-high-symbolic</property>
+          <object class="GtkButton" id="resetMicMute">
+            <property name="icon-name">audio-input-microphone-symbolic</property>
             <property name="margin-end">5</property>
             <property name="valign">center</property>
           </object>
         </child>
         <child>
-          <object class="GtkScale" id="resetVolumeSlider">
+          <object class="GtkScale" id="resetMicSlider">
             <property name="adjustment">
               <object class="GtkAdjustment">
                 <property name="page-increment">5.0</property>
@@ -47,7 +47,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetVolumePercentage">
+          <object class="GtkLabel" id="resetMicPercentage">
             <property name="label">100%</property>
             <property name="lines">1</property>
             <property name="width-request">40</property>
@@ -56,7 +56,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkProgressBar" id="resetVolumeMeter"/>
+      <object class="GtkProgressBar" id="resetMicMeter"/>
     </child>
   </template>
 </interface>

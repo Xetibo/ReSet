@@ -6,7 +6,7 @@ use crate::components::bluetooth::bluetoothEntryImpl::DeviceTypes;
 
 glib::wrapper! {
     pub struct BluetoothEntry(ObjectSubclass<bluetoothEntryImpl::BluetoothEntry>)
-        @extends gtk::Widget,
+        @extends gtk::Box, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget;
 }
 

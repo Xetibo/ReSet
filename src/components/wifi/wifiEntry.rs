@@ -7,7 +7,7 @@ use crate::components::wifi::wifiEntryImpl::WifiStrength;
 
 glib::wrapper! {
     pub struct WifiEntry(ObjectSubclass<wifiEntryImpl::WifiEntry>)
-        @extends gtk::ListBoxRow, gtk::Widget,
+        @extends gtk::Box, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget;
 }
 

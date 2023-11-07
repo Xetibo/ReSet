@@ -91,12 +91,6 @@
                                 <child>
                                   <object class="GtkButton">
                                     <property name="has-frame">False</property>
-                                    <property name="label">Help</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton">
-                                    <property name="has-frame">False</property>
                                     <property name="label">Preferences</property>
                                   </object>
                                 </child>
@@ -135,14 +129,14 @@
                     <child>
                       <object class="GtkFlowBox" id="resetMain">
                         <property name="column-spacing">25</property>
+                        <property name="halign">center</property>
                         <property name="hexpand">True</property>
                         <property name="hexpand-set">True</property>
+                        <property name="homogeneous">True</property>
                         <property name="margin-top">5</property>
                         <property name="row-spacing">25</property>
                         <property name="selection-mode">none</property>
                         <property name="valign">start</property>
-                        <property name="halign">center</property>
-                        <property name="homogeneous">True</property>
                       </object>
                     </child>
                   </object>
@@ -196,7 +190,7 @@
     <!-- Custom fragments -->
     <child>
       <object id="resetSidebarBreakpoint" class="AdwBreakpoint">
-      </object>
+    </object>
     </child>
   </template>
 </interface>

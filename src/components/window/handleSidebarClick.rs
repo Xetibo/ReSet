@@ -1,30 +1,27 @@
-use gtk::{FlowBox, FlowBoxChild, Label};
-use gtk::prelude::FlowBoxChildExt;
+use gtk::{FlowBox, Label};
 use crate::components::audio::audioBox::AudioBox;
 use crate::components::bluetooth::bluetoothBox::BluetoothBox;
+use crate::components::base::settingBox::SettingBox;
 use crate::components::wifi::wifiBox::WifiBox;
 
 pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let wifiBox = WifiBox::new();
-    let bluetoothBox = BluetoothBox::new();
+    let wifiBox = SettingBox::new(&WifiBox::new());
+    let bluetoothBox = SettingBox::new(&BluetoothBox::new());
     resetMain.remove_all();
     resetMain.insert(&wifiBox, -1);
     resetMain.insert(&bluetoothBox, -1);
-    // todo center flowbox children
     resetMain.set_max_children_per_line(2);
 };
 
 pub const HANDLE_WIFI_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let wifibox = WifiBox::new();
+    let wifiBox = SettingBox::new(&WifiBox::new());
     resetMain.remove_all();
-    let child = FlowBoxChild::new();
-    child.set_child(Some(&wifibox));
-    resetMain.insert(&child, -1);
+    resetMain.insert(&wifiBox, -1);
     resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_BLUETOOTH_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let bluetoothBox = BluetoothBox::new();
+    let bluetoothBox = SettingBox::new(&BluetoothBox::new());
     resetMain.remove_all();
     resetMain.insert(&bluetoothBox, -1);
     resetMain.set_max_children_per_line(1);
