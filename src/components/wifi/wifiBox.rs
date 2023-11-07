@@ -8,7 +8,7 @@ use dbus::blocking::Connection;
 use dbus::Error;
 use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
-use crate::components::temp::listEntry::ListEntry;
+use crate::components::base::listEntry::ListEntry;
 
 use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;

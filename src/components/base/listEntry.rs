@@ -1,4 +1,4 @@
-use crate::components::temp::listEntryImpl;
+use crate::components::base::listEntryImpl;
 use adw::glib;
 use adw::glib::{IsA, Object};
 use gtk::prelude::ListBoxRowExt;

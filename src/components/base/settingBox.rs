@@ -1,4 +1,4 @@
-use crate::components::temp::settingBoxImpl;
+use crate::components::base::settingBoxImpl;
 use adw::glib;
 use adw::glib::{IsA, Object};
 use gtk::prelude::BoxExt;

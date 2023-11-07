@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 use gtk::{Button, CompositeTemplate, glib, Image, Label};
 use gtk::subclass::prelude::*;
-use crate::components::temp::listEntry::ListEntry;
 use crate::components::wifi::wifiEntry;
 
 #[derive(Default, Copy, Clone)]

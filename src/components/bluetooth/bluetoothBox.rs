@@ -5,7 +5,7 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use crate::components::bluetooth::bluetoothBoxImpl;
 use crate::components::bluetooth::bluetoothEntry::BluetoothEntry;
 use crate::components::bluetooth::bluetoothEntryImpl::DeviceTypes;
-use crate::components::temp::listEntry::ListEntry;
+use crate::components::base::listEntry::ListEntry;
 
 glib::wrapper! {
     pub struct BluetoothBox(ObjectSubclass<bluetoothBoxImpl::BluetoothBox>)

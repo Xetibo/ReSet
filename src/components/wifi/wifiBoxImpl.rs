@@ -5,7 +5,7 @@ use gtk::subclass::prelude::*;
 use crate::components::wifi::wifiBox;
 
 use crate::components::wifi::wifiEntry::WifiEntry;
-use crate::components::temp::listEntry::ListEntry;
+use crate::components::base::listEntry::ListEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]

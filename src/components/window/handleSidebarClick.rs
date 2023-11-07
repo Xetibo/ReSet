@@ -1,8 +1,7 @@
 use gtk::{FlowBox, Label};
-use gtk::prelude::WidgetExt;
 use crate::components::audio::audioBox::AudioBox;
 use crate::components::bluetooth::bluetoothBox::BluetoothBox;
-use crate::components::temp::settingBox::SettingBox;
+use crate::components::base::settingBox::SettingBox;
 use crate::components::wifi::wifiBox::WifiBox;
 
 pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {

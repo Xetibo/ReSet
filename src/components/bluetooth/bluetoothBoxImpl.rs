@@ -5,7 +5,7 @@ use gtk::subclass::prelude::*;
 
 use crate::components::bluetooth::bluetoothBox;
 use crate::components::bluetooth::bluetoothEntry::BluetoothEntry;
-use crate::components::temp::listEntry::ListEntry;
+use crate::components::base::listEntry::ListEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
