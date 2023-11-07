@@ -5,6 +5,7 @@ use gtk::subclass::prelude::*;
 
 use crate::components::bluetooth::bluetoothBox;
 use crate::components::bluetooth::bluetoothEntry::BluetoothEntry;
+use crate::components::temp::listEntry::ListEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -16,8 +17,8 @@ pub struct BluetoothBox {
     pub resetBluetoothAvailableDevices: TemplateChild<ListBox>,
     #[template_child]
     pub resetBluetoothConnectedDevices: TemplateChild<ListBox>,
-    pub availableDevices: RefCell<Vec<BluetoothEntry>>,
-    pub connectedDevices: RefCell<Vec<BluetoothEntry>>,
+    pub availableDevices: RefCell<Vec<ListEntry>>,
+    pub connectedDevices: RefCell<Vec<ListEntry>>,
 }
 
 #[glib::object_subclass]
@@ -28,6 +29,7 @@ impl ObjectSubclass for BluetoothBox {
 
     fn class_init(klass: &mut Self::Class) {
         BluetoothEntry::ensure_type();
+        ListEntry::ensure_type();
         klass.bind_template();
     }
 

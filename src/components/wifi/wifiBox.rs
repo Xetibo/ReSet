@@ -2,12 +2,13 @@ use std::thread;
 use std::time::Duration;
 
 use adw::glib;
-use adw::glib::clone;
 use adw::glib::Object;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
-use gtk::prelude::ButtonExt;
+use gtk::glib::Variant;
+use gtk::prelude::ActionableExt;
+use crate::components::temp::listEntry::ListEntry;
 
 use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;
@@ -27,18 +28,17 @@ impl WifiBox {
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
 
-        selfImp.resetWifiDetails.connect_row_activated(clone!(@ weak selfImp as window => move |_, _y| {
-            // let result = y.downcast_ref()::<WifiEntry>().unwrap(); no worky smh
-        }));
+        selfImp.resetSavedNetworks.set_action_name(Some("navigation.push"));
+        selfImp.resetSavedNetworks.set_action_target_value(Some(&Variant::from("saved")));
     }
 
     pub fn scanForWifi(&self) {
         let selfImp = self.imp();
         let mut wifiEntries = selfImp.wifiEntries.borrow_mut();
-        wifiEntries.push(WifiEntry::new(WifiStrength::Excellent, "ina internet", true));
-        wifiEntries.push(WifiEntry::new(WifiStrength::Excellent, "watch ina", true));
-        wifiEntries.push(WifiEntry::new(WifiStrength::Ok, "INANET", true));
-        wifiEntries.push(WifiEntry::new(WifiStrength::Weak, "ina best waifu", false));
+        wifiEntries.push(ListEntry::new(&WifiEntry::new(WifiStrength::Excellent, "ina internet", true)));
+        wifiEntries.push(ListEntry::new(&WifiEntry::new(WifiStrength::Excellent, "watch ina", true)));
+        wifiEntries.push(ListEntry::new(&WifiEntry::new(WifiStrength::Ok, "INANET", true)));
+        wifiEntries.push(ListEntry::new(&WifiEntry::new(WifiStrength::Weak, "ina best waifu", false)));
 
         for wifiEntry in wifiEntries.iter() {
             selfImp.resetWifiList.append(wifiEntry);

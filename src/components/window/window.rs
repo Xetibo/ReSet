@@ -54,7 +54,7 @@ impl Window {
 
     pub fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 600sp").as_ref().ok());
+        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
             "collapsed",

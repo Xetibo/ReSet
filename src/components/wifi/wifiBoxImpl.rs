@@ -1,10 +1,11 @@
 use std::cell::RefCell;
-use gtk::{Button, CompositeTemplate, glib, ListBox, ListBoxRow, Revealer, Switch};
+use gtk::{Button, CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use crate::components::wifi::wifiBox;
 
 use crate::components::wifi::wifiEntry::WifiEntry;
+use crate::components::temp::listEntry::ListEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -13,14 +14,16 @@ pub struct WifiBox {
     #[template_child]
     pub resetWifiDetails: TemplateChild<ListBox>,
     #[template_child]
-    pub resetWifiSwitchRow: TemplateChild<ListBoxRow>,
+    pub resetWifiSwitchRow: TemplateChild<ListEntry>,
+    #[template_child]
+    pub resetSavedNetworks: TemplateChild<ListEntry>,
     #[template_child]
     pub resetWifiSwitch: TemplateChild<Switch>,
     #[template_child]
     pub resetWifiList: TemplateChild<ListBox>,
     #[template_child]
     pub resetWifiAdvanced: TemplateChild<Button>,
-    pub wifiEntries: RefCell<Vec<WifiEntry>>,
+    pub wifiEntries: RefCell<Vec<ListEntry>>,
 }
 
 #[glib::object_subclass]
@@ -31,6 +34,7 @@ impl ObjectSubclass for WifiBox {
 
     fn class_init(klass: &mut Self::Class) {
         WifiEntry::ensure_type();
+        ListEntry::ensure_type();
         klass.bind_template();
     }
 

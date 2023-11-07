@@ -4,10 +4,10 @@
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetWifi" parent="GtkBox">
-    <property name="halign">center</property>
+    <property name="hexpand">True</property>
+    <property name="hexpand-set">True</property>
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
-    <property name="width-request">400</property>
     <child>
       <object class="AdwNavigationView">
         <child>
@@ -24,8 +24,7 @@
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                     <child>
-                      <object class="GtkListBoxRow" id="resetWifiSwitchRow">
-                        <property name="selectable">False</property>
+                      <object class="resetListBoxRow" id="resetWifiSwitchRow">
                         <child>
                           <object class="GtkBox">
                             <property name="height-request">40</property>
@@ -49,10 +48,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkListBoxRow">
-                        <property name="action-name">navigation.push</property>
-                        <property name="action-target">'saved'</property>
-                        <property name="selectable">False</property>
+                      <object class="resetListBoxRow" id="resetSavedNetworks">
                         <child>
                           <object class="GtkBox">
                             <property name="height-request">40</property>

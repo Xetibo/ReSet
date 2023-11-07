@@ -2,34 +2,29 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
     <requires lib="gtk" version="4.12"/>
-    <template class="resetBluetoothEntry" parent="GtkListBoxRow">
-        <property name="selectable">False</property>
+    <template class="resetBluetoothEntry" parent="GtkBox">
+        <property name="margin-start">5</property>
         <child>
-            <object class="GtkBox">
-                <property name="margin-start">5</property>
-                <child>
-                    <object class="GtkImage" id="resetBluetoothDeviceType">
-                        <property name="icon-name">input-mouse-symbolic</property>
-                        <property name="margin-end">15</property>
-                    </object>
-                </child>
-                <child>
-                    <object class="GtkLabel" id="resetBluetoothLabel">
-                        <property name="ellipsize">end</property>
-                        <property name="hexpand">True</property>
-                        <property name="label">LoremIpsum Wireless Mouse</property>
-                        <property name="margin-end">10</property>
-                        <property name="single-line-mode">True</property>
-                        <property name="width-request">200</property>
-                        <property name="xalign">0.0</property>
-                    </object>
-                </child>
-                <child>
-                    <object class="GtkButton" id="resetBluetoothButton">
-                        <property name="has-frame">False</property>
-                        <property name="icon-name">emblem-system-symbolic</property>
-                    </object>
-                </child>
+            <object class="GtkImage" id="resetBluetoothDeviceType">
+                <property name="icon-name">input-mouse-symbolic</property>
+                <property name="margin-end">15</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkLabel" id="resetBluetoothLabel">
+                <property name="ellipsize">end</property>
+                <property name="hexpand">True</property>
+                <property name="label">LoremIpsum Wireless Mouse</property>
+                <property name="margin-end">10</property>
+                <property name="single-line-mode">True</property>
+                <property name="width-request">200</property>
+                <property name="xalign">0.0</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkButton" id="resetBluetoothButton">
+                <property name="has-frame">False</property>
+                <property name="icon-name">emblem-system-symbolic</property>
             </object>
         </child>
     </template>

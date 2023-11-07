@@ -3,10 +3,10 @@
 <interface>
     <requires lib="gtk" version="4.12"/>
     <template class="resetBluetooth" parent="GtkBox">
-        <property name="halign">center</property>
+        <property name="hexpand">True</property>
+        <property name="hexpand-set">True</property>
         <property name="orientation">vertical</property>
         <property name="valign">start</property>
-        <property name="width-request">400</property>
         <child>
             <object class="GtkListBox" id="resetBluetoothDetails">
                 <property name="css-classes">boxed-list</property>
@@ -15,8 +15,7 @@
                 <property name="show-separators">True</property>
                 <property name="valign">start</property>
                 <child>
-                    <object class="GtkListBoxRow" id="resetBluetoothSwitchRow">
-                        <property name="selectable">False</property>
+                    <object class="resetListBoxRow" id="resetBluetoothSwitchRow">
                         <child>
                             <object class="GtkBox">
                                 <property name="height-request">40</property>
