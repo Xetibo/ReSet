@@ -66,7 +66,7 @@ async fn daemon_check() {
         res
     });
     let res = handle.join();
-    if res.is_err() {
+    if res.unwrap().is_err() {
         println!("Daemon was not running");
         run_daemon().await;
     } else {
