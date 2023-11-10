@@ -1,9 +1,9 @@
-use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use adw::BreakpointCondition;
 use glib::Object;
-use gtk::{Application, gio, glib, ListBoxRow, Orientation};
 use gtk::prelude::*;
+use gtk::{gio, glib, Application, ListBoxRow, Orientation};
 
 use crate::components::window::handleSidebarClick::*;
 use crate::components::window::sidebarEntry::SidebarEntry;
@@ -17,6 +17,9 @@ glib::wrapper! {
                     gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager;
 }
 
+unsafe impl Send for Window {}
+unsafe impl Sync for Window {}
+
 #[allow(non_snake_case)]
 impl Window {
     pub fn new(app: &Application) -> Self {
@@ -26,13 +29,17 @@ impl Window {
     pub fn setupCallback(&self) {
         let selfImp = self.imp();
 
-        selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
-            window.filterList();
-        }));
+        selfImp
+            .resetSearchEntry
+            .connect_search_changed(clone!(@ weak self as window => move |_| {
+                window.filterList();
+            }));
 
-        selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
-            window.toggleSidebar();
-        }));
+        selfImp
+            .resetSideBarToggle
+            .connect_clicked(clone!(@ weak self as window => move |_| {
+                window.toggleSidebar();
+            }));
 
         selfImp.resetSidebarList.connect_row_activated(
             clone!(@ weak selfImp as flowbox => move |_, y| {
@@ -42,7 +49,9 @@ impl Window {
             }),
         );
 
-        selfImp.resetClose.connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp
+            .resetClose
+            .connect_clicked(clone!(@ weak self as window => move |_| {
                 window.close();
             }));
 
@@ -54,7 +63,9 @@ impl Window {
 
     pub fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
+        selfImp
+            .resetSidebarBreakpoint
+            .set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
             "collapsed",
@@ -77,13 +88,25 @@ impl Window {
                 }
                 continue;
             }
-            if mainEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
+            if mainEntry
+                .imp()
+                .name
+                .borrow()
+                .to_lowercase()
+                .contains(&text.to_lowercase())
+            {
                 mainEntry.set_visible(true);
             } else {
                 mainEntry.set_visible(false);
             }
             for subEntry in subEntries {
-                if subEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
+                if subEntry
+                    .imp()
+                    .name
+                    .borrow()
+                    .to_lowercase()
+                    .contains(&text.to_lowercase())
+                {
                     subEntry.set_visible(true);
                     mainEntry.set_visible(true);
                 } else {
@@ -218,24 +241,26 @@ impl Window {
 
     pub fn setupPopoverButtons(&self) {
         let selfImp = self.imp();
-        selfImp.resetAboutButton.connect_clicked(clone!(@ weak self as window => move |_| {
-                let dialog = adw::AboutWindow::builder()
-                    .application_name("ReSet")
-                    .application_icon("ReSet")
-                    .developer_name("Xetibo")
-                    .license("GPL-3.0")
-                    .license_type(gtk::License::Gpl30)
-                    .website("https://github.com/Xetibo/ReSet")
-                    .issue_url("https://github.com/Xetibo/ReSet/issues")
-                    .version("0.0.1")
-                    .transient_for(&window)
-                    .modal(true)
-                    .copyright("© 2022-2023 Xetibo")
-                    .developers(vec!["DashieTM".to_string(), "Takotori".to_string()])
-                    .designers(vec!["DashieTM".to_string(), "Takotori".to_string()])
-                    .build();
+        selfImp
+            .resetAboutButton
+            .connect_clicked(clone!(@ weak self as window => move |_| {
+                    let dialog = adw::AboutWindow::builder()
+                        .application_name("ReSet")
+                        .application_icon("ReSet")
+                        .developer_name("Xetibo")
+                        .license("GPL-3.0")
+                        .license_type(gtk::License::Gpl30)
+                        .website("https://github.com/Xetibo/ReSet")
+                        .issue_url("https://github.com/Xetibo/ReSet/issues")
+                        .version("0.0.1")
+                        .transient_for(&window)
+                        .modal(true)
+                        .copyright("© 2022-2023 Xetibo")
+                        .developers(vec!["DashieTM".to_string(), "Takotori".to_string()])
+                        .designers(vec!["DashieTM".to_string(), "Takotori".to_string()])
+                        .build();
 
-            dialog.present();
-        }));
+                dialog.present();
+            }));
     }
 }

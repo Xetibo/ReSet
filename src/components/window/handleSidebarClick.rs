@@ -1,11 +1,15 @@
+use std::sync::Arc;
+
 use gtk::{FlowBox, Label};
 use crate::components::audio::audioBox::AudioBox;
 use crate::components::bluetooth::bluetoothBox::BluetoothBox;
 use crate::components::base::settingBox::SettingBox;
-use crate::components::wifi::wifiBox::WifiBox;
+use crate::components::wifi::wifiBox::{WifiBox, scanForWifi};
 
 pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let wifiBox = SettingBox::new(&WifiBox::new());
+    let wifiBox = Arc::new(WifiBox::new());
+    scanForWifi(wifiBox.clone());
+    let wifiBox = SettingBox::new(&*wifiBox);
     let bluetoothBox = SettingBox::new(&BluetoothBox::new());
     resetMain.remove_all();
     resetMain.insert(&wifiBox, -1);

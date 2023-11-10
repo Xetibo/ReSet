@@ -13,7 +13,8 @@
 	(12,1,None,"resetMicrophone.ui",None,None,None,None,None,None,None),
 	(13,1,None,"resetMicSourceEntry.ui",None,None,None,None,None,None,None),
 	(14,1,None,"resetSettingBox.ui",None,None,None,None,None,None,None),
-	(15,1,None,"resetListBoxRow.ui",None,None,None,None,None,None,None)
+	(15,1,None,"resetListBoxRow.ui",None,None,None,None,None,None,None),
+	(16,1,None,"resetPasswordPopup.ui",None,None,None,None,None,None,None)
   </ui>
   <object>
 	(3,1,"AdwApplicationWindow","resetUI",None,None,None,None,-1,"  &lt;child&gt;\n    &lt;object id=\"resetSidebarBreakpoint\" class=\"AdwBreakpoint\"&gt;\n    &lt;/object&gt;\n  &lt;/child&gt;"),
@@ -33,7 +34,7 @@
 	(3,34,"GtkBox","resetPath",25,None,None,None,3,None),
 	(3,35,"GtkPopoverMenu","resetPopoverMenu",33,None,None,None,-1,None),
 	(3,36,"GtkBox",None,35,None,None,None,-1,None),
-	(3,38,"GtkButton",None,36,None,None,None,1,None),
+	(3,38,"GtkButton","resetPreferenceButton",36,None,None,None,1,None),
 	(3,39,"GtkButton","resetAboutButton",36,None,None,None,2,None),
 	(3,40,"GtkScrolledWindow",None,18,None,None,None,1,None),
 	(3,41,"GtkViewport",None,40,None,None,None,None,None),
@@ -46,6 +47,7 @@
 	(3,48,"GtkButton",None,34,None,None,None,4,None),
 	(3,49,"GtkLabel",None,34,None,None,None,1,None),
 	(3,50,"GtkLabel",None,34,None,None,None,3,None),
+	(3,51,"GtkButton","resetShortcutsButton",36,None,None,None,2,None),
 	(4,7,"GtkBox","resetWifi",None,None,None,None,None,None),
 	(4,70,"AdwNavigationView",None,7,None,None,None,-1,None),
 	(4,71,"AdwNavigationPage",None,70,None,None,None,-1,None),
@@ -78,7 +80,9 @@
 	(5,4,"GtkImage","resetWifiStrength",3,None,None,None,None,None),
 	(5,5,"GtkImage","resetWifiEncrypted",3,None,None,None,1,None),
 	(5,6,"GtkLabel","resetWifiLabel",2,None,None,None,1,None),
-	(5,7,"GtkButton","resetWifiButton",2,None,None,None,2,None),
+	(5,7,"GtkButton","resetWifiButton",2,None,None,None,4,None),
+	(5,8,"GtkImage","resetWifiConnected",2,None,None,None,3,None),
+	(5,10,"GtkImage","resetWifiStored",2,None,None,None,2,None),
 	(6,1,"GtkListBoxRow","resetSidebarEntry",None,None,None,None,None,None),
 	(6,2,"GtkBox",None,1,None,None,None,-1,None),
 	(6,6,"GtkImage","resetSidebarImage",2,None,None,None,None,None),
@@ -151,7 +155,11 @@
 	(13,9,"GtkLabel","resetMicPercentage",5,None,None,None,2,None),
 	(13,10,"GtkProgressBar","resetMicMeter",1,None,None,None,2,None),
 	(14,1,"GtkBox","resetSetting",None,None,None,None,-1,None),
-	(15,1,"GtkListBoxRow","resetListBoxRow",None,None,None,None,None,None)
+	(15,1,"GtkListBoxRow","resetListBoxRow",None,None,None,None,None,None),
+	(16,1,"AdwWindow","resetPasswordPopup",None,None,None,None,-1,None),
+	(16,2,"GtkBox",None,1,None,None,None,-1,None),
+	(16,3,"GtkEntry","resetWifiPasswordEntry",2,None,None,None,-1,None),
+	(16,4,"GtkButton","resetWifiPasswordButton",2,None,None,None,-1,None)
   </object>
   <object_property>
 	(3,1,"GtkWindow","default-height","500",None,None,None,None,None,None,None,None,None),
@@ -222,6 +230,8 @@
 	(3,48,"GtkButton","label","Advanced",None,None,None,None,None,None,None,None,None),
 	(3,49,"GtkLabel","label","&gt;",None,None,None,None,None,None,None,None,None),
 	(3,50,"GtkLabel","label","&gt;",None,None,None,None,None,None,None,None,None),
+	(3,51,"GtkButton","has-frame","False",None,None,None,None,None,None,None,None,None),
+	(3,51,"GtkButton","label","Shortcuts",None,None,None,None,None,None,None,None,None),
 	(4,7,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
 	(4,7,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
 	(4,7,"GtkWidget","hexpand-set","True",None,None,None,None,None,None,None,None,None),
@@ -304,6 +314,10 @@
 	(5,7,"GtkButton","icon-name","info-symbolic",None,None,None,None,None,None,None,None,None),
 	(5,7,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
 	(5,7,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
+	(5,8,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
+	(5,8,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
+	(5,10,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
+	(5,10,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
 	(6,1,"GtkListBoxRow","child",None,None,None,None,None,2,None,None,None,None),
 	(6,2,"GtkWidget","margin-bottom","10",None,None,None,None,None,None,None,None,None),
 	(6,2,"GtkWidget","margin-start","10",None,None,None,None,None,None,None,None,None),
@@ -462,7 +476,10 @@
 	(14,1,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
 	(14,1,"GtkWidget","width-request","500",None,None,None,None,None,None,None,None,None),
 	(15,1,"GtkListBoxRow","selectable","False",None,None,None,None,None,None,None,None,None),
-	(15,1,"GtkWidget","height-request","40",None,None,None,None,None,None,None,None,None)
+	(15,1,"GtkWidget","height-request","40",None,None,None,None,None,None,None,None,None),
+	(16,3,"GtkEntry","activates-default","True",None,None,None,None,None,None,None,None,None),
+	(16,3,"GtkEntry","invisible-char-set","True",None,None,None,None,None,None,None,None,None),
+	(16,4,"GtkButton","label","connect",None,None,None,None,None,None,None,None,None)
   </object_property>
   <object_data>
 	(3,42,"GtkWidget",1,1,None,None,None,None,None,None),

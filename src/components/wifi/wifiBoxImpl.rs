@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::sync::{Arc, Mutex};
 use gtk::{Button, CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -6,6 +7,8 @@ use crate::components::wifi::wifiBox;
 
 use crate::components::wifi::wifiEntry::WifiEntry;
 use crate::components::base::listEntry::ListEntry;
+
+use super::wifiBox::scanForWifi;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -23,8 +26,11 @@ pub struct WifiBox {
     pub resetWifiList: TemplateChild<ListBox>,
     #[template_child]
     pub resetWifiAdvanced: TemplateChild<Button>,
-    pub wifiEntries: RefCell<Vec<ListEntry>>,
+    pub wifiEntries: Arc<Mutex<Vec<ListEntry>>>,
 }
+
+unsafe impl Send for WifiBox {}
+unsafe impl Sync for WifiBox {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for WifiBox {
@@ -49,7 +55,6 @@ impl ObjectImpl for WifiBox {
 
         let obj = self.obj();
         obj.setupCallbacks();
-        obj.scanForWifi();
     }
 }
 
