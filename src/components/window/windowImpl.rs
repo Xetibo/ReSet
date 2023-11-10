@@ -38,6 +38,9 @@ pub struct Window {
     pub sidebarEntries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
 }
 
+unsafe impl Send for Window {}
+unsafe impl Sync for Window {}
+
 #[glib::object_subclass]
 impl ObjectSubclass for Window {
     const NAME: &'static str = "resetUI";
