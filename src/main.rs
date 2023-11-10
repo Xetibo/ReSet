@@ -19,19 +19,8 @@ const APP_ID: &str = "org.Xetibo.ReSet";
 #[tokio::main]
 async fn main() {
     // TODO is this the best way to handle this??
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(100),
-    );
-    let res: Result<(), Error> = proxy.method_call("org.xetibo.ReSet", "Check", ());
-    if res.is_err() {
-        println!("Daemon was not running");
-        tokio::task::spawn(run_daemon());
-    } else {
-        println!("Daemon was running");
-    }
+
+    tokio::task::spawn(daemon_check());
     gio::resources_register_include!("src.templates.gresource")
         .expect("Failed to register resources.");
     gio::resources_register_include!("src.icons.gresource").expect("Failed to register resources.");
@@ -63,4 +52,24 @@ fn loadCss() {
 fn buildUI(app: &Application) {
     let window = Window::new(app);
     window.present();
+}
+
+async fn daemon_check() {
+    let handle = thread::spawn(|| {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(100),
+        );
+        let res: Result<(), Error> = proxy.method_call("org.xetibo.ReSet", "Check", ());
+        res
+    });
+    let res = handle.join();
+    if res.is_err() {
+        println!("Daemon was not running");
+        run_daemon().await;
+    } else {
+        println!("Daemon was running");
+    }
 }
