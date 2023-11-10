@@ -262,5 +262,17 @@ impl Window {
 
                 dialog.present();
             }));
+        selfImp
+            .resetPreferenceButton
+            .connect_clicked(clone!(@weak self as window => move |_| {
+                let preferences = adw::PreferencesWindow::builder().build();
+                preferences.present();
+            }));
+        selfImp
+            .resetShortcutsButton
+            .connect_clicked(clone!(@weak self as window => move |_| {
+                let shortcuts = gtk::ShortcutsWindow::builder().build();
+                shortcuts.present();
+            }));
     }
 }
