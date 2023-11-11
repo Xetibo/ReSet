@@ -177,6 +177,7 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
 
     let result = Arc::new(AtomicBool::new(false));
     let result_ref = result.clone();
+    let result_ref_button = result.clone();
     let entryImp = entry.imp();
     let popupImp = entryImp.resetWifiPopup.imp();
     popupImp
@@ -190,8 +191,13 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
         }));
     popupImp
         .resetPopupButton
-        .connect_clicked(clone!(@weak popupImp => move |_| {
-            popupImp.resetPopupEntry.activate();
+        .connect_clicked(clone!(@weak entry as origEntry,@weak entryImp, @weak popupImp => move |_| {
+            let entry = entryImp.resetWifiPopup.imp().resetPopupEntry.text().to_string();
+            result_ref_button.store(
+                connect_new_network(origEntry, entryImp.accessPoint.clone().take(), entry),
+                std::sync::atomic::Ordering::SeqCst,
+            );
+            entryImp.resetWifiPopup.popdown();
         }));
     entryImp.resetWifiPopup.popup();
     println!(
