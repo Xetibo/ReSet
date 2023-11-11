@@ -109,6 +109,7 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
         }
     });
 }
+
 pub async fn wat() -> Vec<AccessPoint> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
