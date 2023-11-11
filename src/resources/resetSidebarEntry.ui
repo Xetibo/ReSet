@@ -18,5 +18,6 @@
         </child>
       </object>
     </property>
+    <property name="css-classes">resetSidebarEntry</property>
   </template>
 </interface>

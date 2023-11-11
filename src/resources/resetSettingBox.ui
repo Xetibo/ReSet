@@ -2,10 +2,14 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="resetSetting" parent="GtkBox">
+  <template class="resetSettingFrame" parent="GtkFrame">
+    <property name="css-classes">resetSettingFrame</property>
     <property name="halign">center</property>
-    <property name="orientation">vertical</property>
-    <property name="valign">start</property>
+    <property name="label-widget">
+      <object class="GtkLabel" id="resetSettingLabel">
+        <property name="css-classes">resetSettingLabel</property>
+      </object>
+    </property>
     <property name="width-request">500</property>
   </template>
 </interface>

@@ -1,17 +1,20 @@
-use gtk::{CompositeTemplate, glib};
+use gtk::{CompositeTemplate, glib, Label};
 use gtk::subclass::prelude::*;
 use crate::components::base::settingBox;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSettingBox.ui")]
-pub struct SettingBox {}
+pub struct SettingBox {
+    #[template_child]
+    pub resetSettingLabel: TemplateChild<Label>,
+}
 
 #[glib::object_subclass]
 impl ObjectSubclass for SettingBox {
-    const NAME: &'static str = "resetSetting";
+    const NAME: &'static str = "resetSettingFrame";
     type Type = settingBox::SettingBox;
-    type ParentType = gtk::Box;
+    type ParentType = gtk::Frame;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -28,7 +31,7 @@ impl ObjectImpl for SettingBox {
     }
 }
 
-impl BoxImpl for SettingBox {}
+impl FrameImpl for SettingBox {}
 
 impl WidgetImpl for SettingBox {}
 
