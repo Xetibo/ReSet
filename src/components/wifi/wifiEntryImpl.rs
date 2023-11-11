@@ -1,16 +1,8 @@
 use std::cell::RefCell;
-use gtk::{Button, CompositeTemplate, glib, Image, Label};
+use ReSet_Lib::network::network::{WifiStrength, AccessPoint};
+use gtk::{Button, CompositeTemplate, glib, Image, Label, Gesture, GestureClick};
 use gtk::subclass::prelude::*;
 use crate::components::wifi::wifiEntry;
-
-#[derive(Default, Copy, Clone)]
-pub enum WifiStrength {
-    Excellent,
-    Ok,
-    Weak,
-    #[default]
-    None,
-}
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -24,9 +16,17 @@ pub struct WifiEntry {
     pub resetWifiLabel: TemplateChild<Label>,
     #[template_child]
     pub resetWifiButton: TemplateChild<Button>,
+    #[template_child]
+    pub resetWifiConnected: TemplateChild<Image>,
+    #[template_child]
+    pub resetWifiStored: TemplateChild<Image>,
     pub wifiName: RefCell<String>,
     pub wifiStrength: RefCell<WifiStrength>,
+    pub accessPoint: RefCell<AccessPoint>,
 }
+
+unsafe impl Send for WifiEntry {}
+unsafe impl Sync for WifiEntry {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for WifiEntry {

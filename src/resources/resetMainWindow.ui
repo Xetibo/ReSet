@@ -89,7 +89,7 @@
                               <object class="GtkBox">
                                 <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkButton">
+                                  <object class="GtkButton" id="resetPreferenceButton">
                                     <property name="has-frame">False</property>
                                     <property name="label">Preferences</property>
                                   </object>
@@ -98,6 +98,12 @@
                                   <object class="GtkButton" id="resetAboutButton">
                                     <property name="has-frame">False</property>
                                     <property name="label">About</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="resetShortcutsButton">
+                                    <property name="has-frame">False</property>
+                                    <property name="label">Shortcuts</property>
                                   </object>
                                 </child>
                               </object>

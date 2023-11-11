@@ -10,6 +10,9 @@ glib::wrapper! {
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Actionable;
 }
 
+unsafe impl Send for ListEntry {}
+unsafe impl Sync for ListEntry {}
+
 impl ListEntry {
     pub fn new(child: &impl IsA<Widget>) -> Self {
         let entry: ListEntry = Object::builder().build();

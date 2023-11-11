@@ -35,6 +35,18 @@
       </object>
     </child>
     <child>
+      <object class="GtkImage" id="resetWifiStored">
+        <property name="halign">end</property>
+        <property name="valign">center</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImage" id="resetWifiConnected">
+        <property name="halign">end</property>
+        <property name="valign">center</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkButton" id="resetWifiButton">
         <property name="halign">start</property>
         <property name="has-frame">False</property>
