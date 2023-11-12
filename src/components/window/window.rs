@@ -259,19 +259,21 @@ impl Window {
                         .developers(vec!["DashieTM".to_string(), "Takotori".to_string()])
                         .designers(vec!["DashieTM".to_string(), "Takotori".to_string()])
                         .build();
-
+                window.imp().resetPopoverMenu.popdown();
                 dialog.present();
             }));
         selfImp
             .resetPreferenceButton
             .connect_clicked(clone!(@weak self as window => move |_| {
                 let preferences = adw::PreferencesWindow::builder().build();
+                window.imp().resetPopoverMenu.popdown();
                 preferences.present();
             }));
         selfImp
             .resetShortcutsButton
             .connect_clicked(clone!(@weak self as window => move |_| {
                 let shortcuts = gtk::ShortcutsWindow::builder().build();
+                window.imp().resetPopoverMenu.popdown();
                 shortcuts.present();
             }));
     }
