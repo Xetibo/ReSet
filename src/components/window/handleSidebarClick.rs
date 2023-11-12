@@ -65,10 +65,6 @@ pub const HANDLE_MICROPHONE_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
     resetMain.set_max_children_per_line(1);
 };
 
-pub const HANDLE_HOME: fn(FlowBox) = |resetMain: FlowBox| {
-    resetMain.remove_all();
-};
-
 pub const HANDLE_PERIPHERALS_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
     let label = Label::new(Some("not implemented yet"));
     resetMain.remove_all();

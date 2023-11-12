@@ -25,8 +25,6 @@ pub struct WifiBox {
     #[template_child]
     pub resetWifiList: TemplateChild<ListBox>,
     #[template_child]
-    pub resetWifiAdvanced: TemplateChild<Button>,
-    #[template_child]
     pub resetStoredWifiList: TemplateChild<ListBox>,
     pub wifiEntries: Arc<Mutex<Vec<ListEntry>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,

@@ -11,10 +11,5 @@
       </object>
     </property>
     <property name="width-request">500</property>
-    <child>
-      <object class="GtkLabel" id="resetSettingLabel">
-        <property name="css-classes">resetSettingLabel</property>
-      </object>
-    </child>
   </template>
 </interface>

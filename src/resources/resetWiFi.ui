@@ -105,41 +105,8 @@
                     </child>
                   </object>
                 </child>
-                <child>
-                  <object class="GtkButton" id="resetWifiAdvanced">
-                    <property name="halign">start</property>
-                    <property name="label">Advanced</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="valign">start</property>
-                  </object>
-                </child>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="AdwNavigationPage">
-            <property name="child">
-              <object class="GtkBox">
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label">advanced page</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="action-name">navigation.pop</property>
-                    <property name="halign">start</property>
-                    <property name="label">back</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="valign">start</property>
-                  </object>
-                </child>
-              </object>
-            </property>
-            <property name="tag">advanced</property>
           </object>
         </child>
         <child>
@@ -147,7 +114,6 @@
             <property name="tag">saved</property>
             <child>
               <object class="GtkBox">
-                <property name="homogeneous">True</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox">
