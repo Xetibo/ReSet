@@ -11,8 +11,9 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
 use dbus::Path;
-use gtk::glib::{clone, Variant};
+use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
+
 use gtk::{Button, Label, Orientation};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 use ReSet_Lib::signals::{
@@ -42,12 +43,8 @@ impl WifiBox {
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
 
-        selfImp
-            .resetSavedNetworks
-            .set_action_name(Some("navigation.push"));
-        selfImp
-            .resetSavedNetworks
-            .set_action_target_value(Some(&Variant::from("saved")));
+        selfImp.resetWifiSwitchRow.set_action_name(Some("navigation.push"));
+        selfImp.resetWifiSwitchRow.set_action_target_value(Some(&Variant::from("saved")))
     }
 
     // pub fn donotdisturb() {

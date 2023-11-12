@@ -13,25 +13,25 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
     let wifiBox = Arc::new(WifiBox::new());
     show_stored_connections(wifiBox.clone());
     scanForWifi(wifiBox.clone());
-    let wifiBox = SettingBox::new(&*wifiBox);
-    let bluetoothBox = SettingBox::new(&BluetoothBox::new());
+    let wifiBox = SettingBox::new(&*wifiBox, "WiFi");
+    let bluetoothBox = SettingBox::new(&BluetoothBox::new(), "Bluetooth");
     resetMain.remove_all();
     resetMain.insert(&wifiBox, -1);
     resetMain.insert(&bluetoothBox, -1);
     resetMain.set_max_children_per_line(2);
 };
 
-pub const HANDLE_WIFI_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
+pub const HANDLE_WIFI_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let wifiBox = Arc::new(WifiBox::new());
     scanForWifi(wifiBox.clone());
-    let wifiBox = SettingBox::new(&*wifiBox);
+    let wifiBox = SettingBox::new(&*wifiBox, "WiFi");
     resetMain.remove_all();
     resetMain.insert(&wifiBox, -1);
     resetMain.set_max_children_per_line(1);
 };
 
-pub const HANDLE_BLUETOOTH_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
-    let bluetoothBox = SettingBox::new(&BluetoothBox::new());
+pub const HANDLE_BLUETOOTH_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
+    let bluetoothBox = SettingBox::new(&BluetoothBox::new(), "Bluetooth");
     resetMain.remove_all();
     resetMain.insert(&bluetoothBox, -1);
     resetMain.set_max_children_per_line(1);
@@ -44,15 +44,15 @@ pub const HANDLE_VPN_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
     resetMain.set_max_children_per_line(1);
 };
 
-pub const HANDLE_AUDIO_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
-    let audioBox = AudioBox::new();
+pub const HANDLE_AUDIO_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
+    let audioBox = SettingBox::new(&AudioBox::new(), "Audio");
     resetMain.remove_all();
     resetMain.insert(&audioBox, -1);
     resetMain.set_max_children_per_line(1);
 };
 
-pub const HANDLE_VOLUME_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
-    let audioBox = AudioBox::new();
+pub const HANDLE_VOLUME_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
+    let audioBox = SettingBox::new(&AudioBox::new(), "Audio");
     resetMain.remove_all();
     resetMain.insert(&audioBox, -1);
     resetMain.set_max_children_per_line(1);
@@ -95,4 +95,8 @@ pub const HANDLE_KEYBOARD_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
     resetMain.remove_all();
     resetMain.insert(&label, -1);
     resetMain.set_max_children_per_line(1);
+};
+
+pub const HANDLE_HOME: fn(FlowBox) =  |resetMain: FlowBox|   {
+    resetMain.remove_all();
 };
