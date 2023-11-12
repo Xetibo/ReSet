@@ -1,6 +1,8 @@
+use std::collections::HashMap;
 use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex};
 use ReSet_Lib::network::network::AccessPoint;
+use dbus::Path;
 use gtk::{CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -25,7 +27,7 @@ pub struct WifiBox {
     pub resetStoredWifiList: TemplateChild<ListBox>,
     #[template_child]
     pub resetAvailableNetworks: TemplateChild<ListEntry>,
-    pub wifiEntries: Arc<Mutex<Vec<AccessPoint>>>,
+    pub wifiEntries: Arc<Mutex<HashMap<Path<'static>,Arc<ListEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
     pub listener_active: Arc<AtomicBool>,
 }

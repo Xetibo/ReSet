@@ -67,22 +67,15 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
         let accessPoints = get_access_points();
         let wifiEntriesListener = wifiEntries.clone();
         let wifiEntries = wifiEntries.clone();
-        {
-            let mut wifiEntries = wifiEntries.lock().unwrap();
-            for accessPoint in accessPoints {
-                wifiEntries.push(accessPoint);
-            }
-        }
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let mut wifiEntries = wifiEntries.lock().unwrap();
                 let selfImp = wifibox_ref.imp();
-                for _ in 0..wifiEntries.len() {
-                    selfImp
-                        .resetWifiList
-                        .append(&ListEntry::new(&*WifiEntry::new(
-                            wifiEntries.pop().unwrap(),
-                        )));
+                for accessPoint in accessPoints {
+                    let path = accessPoint.dbus_path.clone();
+                    let entry = Arc::new(ListEntry::new(&*WifiEntry::new(accessPoint)));
+                    wifiEntries.insert(path, entry.clone());
+                    selfImp.resetWifiList.append(&*entry);
                 }
             });
         });
@@ -109,6 +102,7 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
             println!("Could not connect listener");
         }
         loop {
+            let wifiEntriesListener = wifiEntriesListener.clone();
             if wifiBoxImpl
                 .listener_active
                 .load(std::sync::atomic::Ordering::SeqCst)
@@ -122,24 +116,38 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
                 let access_point = res.unwrap();
                 match access_point {
                     Events::AddedEvent(access_point) => {
-                        {
-                            let mut wifiEntries = wifiEntriesListener.lock().unwrap();
-                            println!("got this access point:");
-                            dbg!(access_point.0.clone());
-                            wifiEntries.push(access_point.0);
-                        }
                         let wifiEntriesListener = wifiEntriesListener.clone();
                         let wifiBoxImpl = wifibox_ref_listener.clone();
                         glib::spawn_future(async move {
                             glib::idle_add_once(move || {
                                 let mut wifiEntries = wifiEntriesListener.lock().unwrap();
-                                wifiBoxImpl.imp().resetWifiList.append(&ListEntry::new(
-                                    &*WifiEntry::new(wifiEntries.pop().unwrap()),
-                                ));
+                                let path = access_point.0.dbus_path.clone();
+                                if wifiEntries.get(&path).is_some() {
+                                    // don't add the entry if it exists, somehow networkmanager
+                                    // spams these added things?
+                                    // TODO perhaps use ssid?
+                                    return;
+                                }
+                                let entry =
+                                    Arc::new(ListEntry::new(&*WifiEntry::new(access_point.0)));
+                                wifiEntries.insert(path, entry.clone());
+                                wifiBoxImpl.imp().resetWifiList.append(&*entry);
                             });
                         });
                     }
-                    _ => (),
+                    Events::RemovedEvent(path) => {
+                        let wifiBoxImpl = wifibox_ref_listener.clone();
+                        glib::spawn_future(async move {
+                            glib::idle_add_once(move || {
+                                let mut wifiEntries = wifiEntriesListener.lock().unwrap();
+                                let entry = wifiEntries.remove(&path.0);
+                                if entry.is_none() {
+                                    return;
+                                }
+                                wifiBoxImpl.imp().resetWifiList.remove(&*entry.unwrap());
+                            });
+                        });
+                    }
                 };
             } else {
                 println!("no message there :)");

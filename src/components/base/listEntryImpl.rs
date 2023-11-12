@@ -1,6 +1,6 @@
-use gtk::{CompositeTemplate, glib};
-use gtk::subclass::prelude::*;
 use crate::components::base::listEntry;
+use gtk::subclass::prelude::*;
+use gtk::{glib, CompositeTemplate};
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
