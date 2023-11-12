@@ -8,16 +8,12 @@ use crate::components::wifi::wifiBox;
 use crate::components::wifi::wifiEntry::WifiEntry;
 use crate::components::base::listEntry::ListEntry;
 
-use super::wifiBox::scanForWifi;
-
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWiFi.ui")]
 pub struct WifiBox {
     #[template_child]
     pub resetWifiDetails: TemplateChild<ListBox>,
-    #[template_child]
-    pub resetWifiSwitchRow: TemplateChild<ListEntry>,
     #[template_child]
     pub resetSavedNetworks: TemplateChild<ListEntry>,
     #[template_child]
