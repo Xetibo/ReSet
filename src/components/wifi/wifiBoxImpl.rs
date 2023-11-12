@@ -1,4 +1,6 @@
+use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex};
+use ReSet_Lib::network::network::AccessPoint;
 use gtk::{CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -23,8 +25,9 @@ pub struct WifiBox {
     pub resetStoredWifiList: TemplateChild<ListBox>,
     #[template_child]
     pub resetAvailableNetworks: TemplateChild<ListEntry>,
-    pub wifiEntries: Arc<Mutex<Vec<ListEntry>>>,
+    pub wifiEntries: Arc<Mutex<Vec<AccessPoint>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
+    pub listener_active: Arc<AtomicBool>,
 }
 
 unsafe impl Send for WifiBox {}

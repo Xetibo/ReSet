@@ -1,6 +1,8 @@
 use std::collections::HashMap;
+use std::sync::atomic::Ordering;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{atomic::AtomicBool, Arc};
+use std::thread;
 use std::time::Duration;
 
 use crate::components::base::listEntry::ListEntry;
@@ -8,15 +10,16 @@ use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{BoxExt, ListBoxRowExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use dbus::arg::RefArg;
+use dbus::arg::{AppendAll, ReadAll, RefArg};
 use dbus::blocking::Connection;
 use dbus::Error;
 use dbus::Path;
+use gtk::gio;
 use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
 use ReSet_Lib::network::network::AccessPoint;
-use ReSet_Lib::signals::AccessPointAdded;
 use ReSet_Lib::signals::AccessPointRemoved;
+use ReSet_Lib::signals::{AccessPointAdded, GetVal};
 use ReSet_Lib::utils::Events;
 
 use crate::components::wifi::wifiBoxImpl;
@@ -42,72 +45,105 @@ impl WifiBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
-        selfImp.resetSavedNetworks.set_action_name(Some("navigation.push"));
-        selfImp.resetSavedNetworks.set_action_target_value(Some(&Variant::from("saved")));
+        selfImp
+            .resetSavedNetworks
+            .set_action_name(Some("navigation.push"));
+        selfImp
+            .resetSavedNetworks
+            .set_action_target_value(Some(&Variant::from("saved")));
 
-        selfImp.resetAvailableNetworks.set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetAvailableNetworks
+            .set_action_name(Some("navigation.pop"));
     }
-
-    // pub fn donotdisturb() {
-    //     thread::spawn(|| {
-    //         let conn = Connection::new_session().unwrap();
-    //         let proxy = conn.with_proxy(
-    //             "org.freedesktop.Notifications",
-    //             "/org/freedesktop/Notifications",
-    //             Duration::from_millis(1000),
-    //         );
-    //         let _: Result<(), Error> =
-    //             proxy.method_call("org.freedesktop.Notifications", "DoNotDisturb", ());
-    //     });
-    // }
 }
 
 pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
     let wifibox_ref = wifiBox.clone();
+    let wifibox_ref_listener = wifiBox.clone();
     let wifiEntries = wifiBox.imp().wifiEntries.clone();
 
-    glib::spawn_future_local(async move {
-        let accessPoints = get_access_points().await;
+    gio::spawn_blocking(move || {
+        let accessPoints = get_access_points();
+        let wifiEntriesListener = wifiEntries.clone();
         let wifiEntries = wifiEntries.clone();
         {
             let mut wifiEntries = wifiEntries.lock().unwrap();
             for accessPoint in accessPoints {
-                wifiEntries.push(ListEntry::new(&*WifiEntry::new(accessPoint)));
+                wifiEntries.push(accessPoint);
             }
         }
-        glib::MainContext::default().spawn_local(async move {
+        glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let wifiEntries = wifiEntries.lock().unwrap();
+                let mut wifiEntries = wifiEntries.lock().unwrap();
                 let selfImp = wifibox_ref.imp();
-                for wifiEntry in wifiEntries.iter() {
-                    selfImp.resetWifiList.append(wifiEntry);
+                for _ in 0..wifiEntries.len() {
+                    selfImp
+                        .resetWifiList
+                        .append(&ListEntry::new(&*WifiEntry::new(
+                            wifiEntries.pop().unwrap(),
+                        )));
                 }
             });
         });
+        let wifiBoxImpl = wifibox_ref_listener.imp();
+        wifiBoxImpl
+            .listener_active
+            .store(true, std::sync::atomic::Ordering::SeqCst);
+        dbus_start_network_events();
         let (sender, receiver): (
             Sender<Events<(AccessPoint,), (Path<'static>,)>>,
             Receiver<Events<(AccessPoint,), (Path<'static>,)>>,
         ) = channel();
         let sender_ref = Arc::new(sender);
-        let listener_active = Arc::new(AtomicBool::new(false));
-        ReSet_Lib::utils::start_event_listener::<
+        let res = start_event_listener::<
             (AccessPoint,),
             (Path<'static>,),
             AccessPointAdded,
             AccessPointRemoved,
-        >(listener_active, sender_ref);
-        // handle receiver...
-        let res = receiver.try_recv();
-        if res.is_ok() {
-            let access_point = res.unwrap();
-            match access_point {
-                Events::AddedEvent(access_point) => {
-                    dbg!(access_point);
-                }
-                _ => (),
-            };
-        } else {
-            println!("no message there :)");
+        >(
+            wifibox_ref_listener.imp().listener_active.clone(),
+            sender_ref,
+        );
+        if res.is_err() {
+            println!("Could not connect listener");
+        }
+        loop {
+            if wifiBoxImpl
+                .listener_active
+                .load(std::sync::atomic::Ordering::SeqCst)
+                == false
+            {
+                break;
+            }
+            println!("receiving!");
+            let res = receiver.recv();
+            if res.is_ok() {
+                let access_point = res.unwrap();
+                match access_point {
+                    Events::AddedEvent(access_point) => {
+                        {
+                            let mut wifiEntries = wifiEntriesListener.lock().unwrap();
+                            println!("got this access point:");
+                            dbg!(access_point.0.clone());
+                            wifiEntries.push(access_point.0);
+                        }
+                        let wifiEntriesListener = wifiEntriesListener.clone();
+                        let wifiBoxImpl = wifibox_ref_listener.clone();
+                        glib::spawn_future(async move {
+                            glib::idle_add_once(move || {
+                                let mut wifiEntries = wifiEntriesListener.lock().unwrap();
+                                wifiBoxImpl.imp().resetWifiList.append(&ListEntry::new(
+                                    &*WifiEntry::new(wifiEntries.pop().unwrap()),
+                                ));
+                            });
+                        });
+                    }
+                    _ => (),
+                };
+            } else {
+                println!("no message there :)");
+            }
         }
     });
 }
@@ -116,8 +152,8 @@ pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
     let wifibox_ref = wifiBox.clone();
     let wifiEntries = wifiBox.imp().savedWifiEntries.clone();
 
-    glib::spawn_future_local(async move {
-        let connections = get_stored_connections().await;
+    gio::spawn_blocking(move || {
+        let connections = get_stored_connections();
         let wifiEntries = wifiEntries.clone();
         {
             let mut wifiEntries = wifiEntries.lock().unwrap();
@@ -129,7 +165,7 @@ pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
                 wifiEntries.push(entry);
             }
         }
-        glib::MainContext::default().spawn_local(async move {
+        glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let wifiEntries = wifiEntries.lock().unwrap();
                 let selfImp = wifibox_ref.imp();
@@ -141,7 +177,17 @@ pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
     });
 }
 
-pub async fn get_access_points() -> Vec<AccessPoint> {
+pub fn dbus_start_network_events() {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(), Error> = proxy.method_call("org.xetibo.ReSet", "StartNetworkListener", ());
+}
+
+pub fn get_access_points() -> Vec<AccessPoint> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
@@ -157,7 +203,7 @@ pub async fn get_access_points() -> Vec<AccessPoint> {
     accessPoints
 }
 
-pub async fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
+pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
@@ -182,8 +228,10 @@ pub fn getConnectionSettings(path: Path<'static>) -> Option<ResetConnection> {
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>,>,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "GetConnectionSettings", (path,));
+    let res: Result<
+        (HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>>,),
+        Error,
+    > = proxy.method_call("org.xetibo.ReSet", "GetConnectionSettings", (path,));
     if res.is_err() {
         println!("lol not work");
         return None;
@@ -195,4 +243,81 @@ pub fn getConnectionSettings(path: Path<'static>) -> Option<ResetConnection> {
         return None;
     }
     Some(res.unwrap())
+}
+
+// temporary, testing this with lib is pain
+//
+
+pub fn start_event_listener<
+    AddedType: ReadAll + AppendAll + Send + Sync + 'static,
+    RemovedType: ReadAll + AppendAll + Send + Sync + 'static,
+    AddedEvent: ReadAll + AppendAll + dbus::message::SignalArgs + GetVal<AddedType>,
+    RemovedEvent: ReadAll + AppendAll + dbus::message::SignalArgs + GetVal<RemovedType>,
+>(
+    active_listener: Arc<AtomicBool>,
+    sender: Arc<Sender<Events<AddedType, RemovedType>>>,
+) -> Result<(), dbus::Error> {
+    thread::spawn(move || {
+        let added_sender = sender.clone();
+        let removed_sender = sender.clone();
+        let conn = Connection::new_session().unwrap();
+        let mr = AddedEvent::match_rule(
+            Some(&"org.xetibo.ReSet".into()),
+            Some(&Path::from("/org/xetibo/ReSet")),
+        )
+        .static_clone();
+        let mrb = RemovedEvent::match_rule(
+            Some(&"org.xetibo.ReSet".into()),
+            Some(&Path::from("/org/xetibo/ReSet")),
+        )
+        .static_clone();
+        let res = conn.add_match(mr, move |ir: AddedEvent, _, _| {
+            println!("received added event");
+            let res = added_sender.send(Events::AddedEvent(ir.get_value()));
+            if res.is_err() {
+                println!("fail on sending added");
+                return false;
+            }
+            true
+        });
+        if res.is_err() {
+            println!("fail on add");
+            return Err(dbus::Error::new_custom(
+                "SignalMatchFailed",
+                "Failed to match signal on ReSet.",
+            ));
+        }
+        let res = conn.add_match(mrb, move |ir: RemovedEvent, _, _| {
+            println!("received removed event");
+            let res = removed_sender.send(Events::RemovedEvent(ir.get_value()));
+            if res.is_err() {
+                println!("fail on sending removed");
+                return false;
+            }
+            true
+        });
+        if res.is_err() {
+            println!("fail on remove");
+            return Err(dbus::Error::new_custom(
+                "SignalMatchFailed",
+                "Failed to match signal on ReSet.",
+            ));
+        }
+        active_listener.store(true, Ordering::SeqCst);
+        println!("starting thread listener");
+        loop {
+            let _ = conn.process(Duration::from_millis(1000))?;
+            if !active_listener.load(Ordering::SeqCst) {
+                println!("stopping thread listener");
+                break;
+            }
+            thread::sleep(Duration::from_millis(1000));
+        }
+        Ok(())
+    });
+    Ok(())
+}
+
+pub fn stop_listener(active_listener: Arc<AtomicBool>) {
+    active_listener.store(false, Ordering::SeqCst);
 }
