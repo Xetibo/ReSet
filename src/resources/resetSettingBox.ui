@@ -2,10 +2,9 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="resetSetting" parent="GtkBox">
+  <template class="resetSettingBox" parent="GtkBox">
     <property name="halign">center</property>
     <property name="orientation">vertical</property>
-    <property name="valign">start</property>
     <property name="width-request">500</property>
   </template>
 </interface>

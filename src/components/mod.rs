@@ -1,5 +1,6 @@
 pub mod window;
 pub mod wifi;
 pub mod bluetooth;
-pub mod audio;
+pub mod output;
 mod base;
+mod input;

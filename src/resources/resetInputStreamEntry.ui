@@ -2,22 +2,26 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <template class="resetAudioSourceEntry" parent="GtkBox">
+  <template class="resetInputStreamEntry" parent="GtkBox">
+    <property name="margin-bottom">5</property>
     <property name="margin-end">5</property>
     <property name="margin-start">5</property>
+    <property name="margin-top">5</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkBox">
         <property name="margin-bottom">5</property>
         <child>
-          <object class="GtkImage" id="resetSourceIcon">
-            <property name="icon-name">audio-volume-high-symbolic</property>
-            <property name="margin-end">5</property>
+          <object class="GtkLabel" id="resetSourceName">
+            <property name="label">text</property>
+            <property name="margin-start">5</property>
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetSourceName">
-            <property name="label">Master Volume</property>
+          <object class="GtkDropDown" id="resetSelectedSource">
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="margin-end">5</property>
           </object>
         </child>
       </object>
@@ -28,7 +32,7 @@
         <property name="margin-top">5</property>
         <child>
           <object class="GtkButton" id="resetSourceMute">
-            <property name="icon-name">audio-volume-high-symbolic</property>
+            <property name="icon-name">audio-input-microphone-symbolic</property>
             <property name="margin-end">5</property>
             <property name="valign">center</property>
           </object>
@@ -56,7 +60,9 @@
       </object>
     </child>
     <child>
-      <object class="GtkProgressBar" id="resetVolumeMeter"/>
+      <object class="GtkProgressBar" id="resetVolumeMeter">
+        <property name="margin-top">5</property>
+      </object>
     </child>
   </template>
 </interface>

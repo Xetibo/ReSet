@@ -7,7 +7,7 @@ use gtk::Widget;
 glib::wrapper! {
     pub struct SettingBox(ObjectSubclass<settingBoxImpl::SettingBox>)
     @extends gtk::Box, gtk::Widget,
-    @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
+    @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl SettingBox {

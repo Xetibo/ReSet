@@ -1,58 +1,201 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-  <requires lib="gtk" version="4.6"/>
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.4"/>
   <template class="resetMicrophone" parent="GtkBox">
-    <property name="halign">start</property>
-    <property name="margin-start">5</property>
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
-    <property name="width-request">400</property>
     <child>
-      <object class="GtkBox">
-        <property name="height-request">40</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="label">Input Device</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkDropDown" id="resetOutputDevice">
-            <property name="halign">end</property>
-            <property name="hexpand">True</property>
-            <property name="valign">center</property>
-          </object>
-        </child>
+      <object class="GtkLabel">
+        <property name="css-classes">resetSettingLabel</property>
+        <property name="halign">start</property>
+        <property name="label">Input</property>
+        <property name="margin-start">5</property>
       </object>
     </child>
     <child>
-      <object class="GtkBox">
-        <property name="height-request">40</property>
-        <property name="margin-bottom">5</property>
+      <object class="AdwNavigationView">
         <child>
-          <object class="GtkLabel">
-            <property name="label">Show Applications</property>
+          <object class="AdwNavigationPage">
+            <property name="tag">output</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkListBox">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="show-separators">True</property>
+                    <property name="valign">start</property>
+                    <child>
+                      <object class="resetListBoxRow" id="resetSourceRow">
+                        <child>
+                          <object class="GtkBox">
+                            <property name="height-request">40</property>
+                            <property name="margin-start">5</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Input Device</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkDropDown" id="resetSourceDropdown">
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="valign">center</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">go-previous-symbolic-rtl</property>
+                                <property name="margin-end">5</property>
+                                <property name="margin-start">5</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="resetDefaultSource">
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">10</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="margin-bottom">5</property>
+                        <property name="margin-top">5</property>
+                        <child>
+                          <object class="GtkButton" id="resetSourceMute">
+                            <property name="icon-name">audio-input-microphone-symbolic</property>
+                            <property name="margin-end">5</property>
+                            <property name="valign">center</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="resetVolumeSlider">
+                            <property name="adjustment">
+                              <object class="GtkAdjustment">
+                                <property name="page-increment">5.0</property>
+                                <property name="upper">100.0</property>
+                              </object>
+                            </property>
+                            <property name="hexpand">True</property>
+                            <property name="valign">center</property>
+                            <property name="value-pos">bottom</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="resetVolumePercentage">
+                            <property name="label">100%</property>
+                            <property name="lines">1</property>
+                            <property name="width-request">40</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkProgressBar" id="resetVolumeMeter">
+                        <property name="margin-top">5</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSeparator"/>
+                </child>
+                <child>
+                  <object class="GtkBox" id="resetOutputStreams">
+                    <property name="margin-top">10</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label">Input Streams</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="resetInputStreamEntry"/>
+                    </child>
+                    <child>
+                      <object class="resetInputStreamEntry"/>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
         <child>
-          <object class="GtkSwitch">
-            <property name="active">True</property>
-            <property name="halign">end</property>
-            <property name="hexpand">True</property>
-            <property name="margin-end">5</property>
-            <property name="valign">center</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator"/>
-    </child>
-    <child>
-      <object class="GtkViewport">
-        <child>
-          <object class="resetMicEntry">
-            <property name="margin-top">5</property>
+          <object class="AdwNavigationPage">
+            <property name="tag">sources</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkListBox">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="show-separators">True</property>
+                    <property name="valign">start</property>
+                    <child>
+                      <object class="resetListBoxRow" id="resetInputStreamButton">
+                        <child>
+                          <object class="GtkBox">
+                            <property name="height-request">40</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Input Streams</property>
+                                <property name="margin-start">5</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="icon-name">go-previous-symbolic</property>
+                                <property name="margin-end">5</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="resetSinks">
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">10</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label">Input Devices</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="resetInputStreamEntry"/>
+                    </child>
+                    <child>
+                      <object class="resetInputStreamEntry"/>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
       </object>

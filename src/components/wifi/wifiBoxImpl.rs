@@ -1,14 +1,11 @@
-use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
-use gtk::{Button, CompositeTemplate, glib, ListBox, Switch};
+use gtk::{CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use crate::components::wifi::wifiBox;
 
 use crate::components::wifi::wifiEntry::WifiEntry;
 use crate::components::base::listEntry::ListEntry;
-
-use super::wifiBox::scanForWifi;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -17,16 +14,17 @@ pub struct WifiBox {
     #[template_child]
     pub resetWifiDetails: TemplateChild<ListBox>,
     #[template_child]
-    pub resetWifiSwitchRow: TemplateChild<ListEntry>,
-    #[template_child]
     pub resetSavedNetworks: TemplateChild<ListEntry>,
     #[template_child]
     pub resetWifiSwitch: TemplateChild<Switch>,
     #[template_child]
     pub resetWifiList: TemplateChild<ListBox>,
     #[template_child]
-    pub resetWifiAdvanced: TemplateChild<Button>,
+    pub resetStoredWifiList: TemplateChild<ListBox>,
+    #[template_child]
+    pub resetAvailableNetworks: TemplateChild<ListEntry>,
     pub wifiEntries: Arc<Mutex<Vec<ListEntry>>>,
+    pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
 }
 
 unsafe impl Send for WifiBox {}

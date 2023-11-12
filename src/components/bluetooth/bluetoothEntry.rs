@@ -18,7 +18,7 @@ impl BluetoothEntry {
         entryImp.resetBluetoothDeviceType.get().set_from_icon_name(match deviceType {
             DeviceTypes::Mouse => Some("input-mouse-symbolic"),
             DeviceTypes::Keyboard => Some("input-keyboard-symbolic"),
-            DeviceTypes::Headset => Some("audio-headset-symbolic"),
+            DeviceTypes::Headset => Some("output-headset-symbolic"),
             DeviceTypes::Controller => Some("input-gaming-symbolic"),
             DeviceTypes::None => Some("text-x-generic-symbolic") // no generic bluetooth device icon found
         });

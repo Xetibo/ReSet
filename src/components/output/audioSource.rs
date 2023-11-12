@@ -1,6 +1,6 @@
 use adw::glib;
 use adw::glib::Object;
-use crate::components::audio::audioSourceImpl;
+use crate::components::output::audioSourceImpl;
 
 glib::wrapper! {
     pub struct AudioSourceEntry(ObjectSubclass<audioSourceImpl::AudioSourceEntry>)

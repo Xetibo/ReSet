@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.12"/>
+  <template class="resetPopup" parent="GtkPopover">
+    <child>
+      <object class="GtkBox">
+        <property name="homogeneous">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="resetPopupLabel">
+            <property name="visible">False</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <child>
+              <object class="GtkPasswordEntry" id="resetPopupEntry">
+                <property name="activates-default">True</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-end">5</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+                <property name="placeholder-text">Wifi Password</property>
+                <property name="show-peek-icon">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="resetPopupButton">
+                <property name="label">connect</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-end">5</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -1,4 +1,4 @@
-use gtk::{CompositeTemplate, glib};
+use gtk::{CompositeTemplate, glib, Label};
 use gtk::subclass::prelude::*;
 use crate::components::base::settingBox;
 
@@ -9,7 +9,7 @@ pub struct SettingBox {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for SettingBox {
-    const NAME: &'static str = "resetSetting";
+    const NAME: &'static str = "resetSettingBox";
     type Type = settingBox::SettingBox;
     type ParentType = gtk::Box;
 

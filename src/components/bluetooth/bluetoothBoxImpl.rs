@@ -17,6 +17,10 @@ pub struct BluetoothBox {
     pub resetBluetoothAvailableDevices: TemplateChild<ListBox>,
     #[template_child]
     pub resetBluetoothConnectedDevices: TemplateChild<ListBox>,
+    #[template_child]
+    pub resetVisibility: TemplateChild<ListEntry>,
+    #[template_child]
+    pub resetBluetoothMainTab: TemplateChild<ListEntry>,
     pub availableDevices: RefCell<Vec<ListEntry>>,
     pub connectedDevices: RefCell<Vec<ListEntry>>,
 }
@@ -42,6 +46,7 @@ impl ObjectImpl for BluetoothBox {
     fn constructed(&self) {
         self.parent_constructed();
         let obj = self.obj();
+        obj.setupCallbacks();
         obj.scanForDevices();
         obj.addConnectedDevices();
     }

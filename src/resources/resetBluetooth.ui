@@ -1,11 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-  <requires lib="gtk" version="4.12"/>
+  <requires lib="gtk" version="4.6"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetBluetooth" parent="GtkBox">
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
+    <child>
+      <object class="GtkBox">
+        <property name="height-request">40</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="css-classes">resetSettingLabel</property>
+            <property name="label">Bluetooth</property>
+            <property name="margin-start">5</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSwitch" id="resetBluetoothSwitch">
+            <property name="active">True</property>
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="margin-end">5</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+      </object>
+    </child>
     <child>
       <object class="AdwNavigationView">
         <child>
@@ -18,27 +39,50 @@
                   <object class="GtkListBox" id="resetBluetoothDetails">
                     <property name="css-classes">boxed-list</property>
                     <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                     <child>
-                      <object class="resetListBoxRow" id="resetBluetoothSwitchRow">
+                      <object class="resetListBoxRow">
+                        <child>
+                          <object class="GtkBox">
+                            <property name="height-request">40</property>
+                            <property name="margin-start">5</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Bluetooth Device</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkDropDown" id="resetBluetoothDevice">
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="valign">center</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="resetListBoxRow" id="resetVisibility">
                         <child>
                           <object class="GtkBox">
                             <property name="height-request">40</property>
                             <child>
                               <object class="GtkLabel">
-                                <property name="label">Bluetooth</property>
+                                <property name="label">Visibility Settings</property>
                                 <property name="margin-start">5</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkSwitch" id="resetBluetoothSwitch">
-                                <property name="active">True</property>
+                              <object class="GtkImage">
                                 <property name="halign">end</property>
                                 <property name="hexpand">True</property>
+                                <property name="icon-name">go-previous-symbolic-rtl</property>
                                 <property name="margin-end">5</property>
-                                <property name="valign">center</property>
                               </object>
                             </child>
                           </object>
@@ -70,6 +114,7 @@
 </property>
                                 <property name="margin-end">5</property>
                                 <property name="margin-start">5</property>
+                                <property name="margin-top">5</property>
                                 <property name="show-separators">True</property>
                                 <property name="valign">start</property>
                               </object>
@@ -104,6 +149,7 @@
 </property>
                                 <property name="margin-end">5</property>
                                 <property name="margin-start">5</property>
+                                <property name="margin-top">5</property>
                                 <property name="show-separators">True</property>
                                 <property name="valign">start</property>
                               </object>
@@ -114,38 +160,55 @@
                     </child>
                   </object>
                 </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="action-name">navigation.push</property>
-                    <property name="action-target">'advanced'</property>
-                    <property name="halign">start</property>
-                    <property name="label">Advanced</property>
-                    <property name="margin-top">5</property>
-                    <property name="valign">start</property>
-                  </object>
-                </child>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="AdwNavigationPage">
-            <property name="tag">advanced</property>
+            <property name="tag">visibility</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label">advanced bluetooth</property>
+                  <object class="GtkListBox">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="show-separators">True</property>
+                    <property name="valign">start</property>
+                    <child>
+                      <object class="resetListBoxRow" id="resetBluetoothMainTab">
+                        <child>
+                          <object class="GtkBox">
+                            <property name="height-request">40</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Main</property>
+                                <property name="margin-start">5</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="icon-name">go-previous-symbolic</property>
+                                <property name="margin-end">5</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="action-name">navigation.pop</property>
+                  <object class="GtkLabel">
                     <property name="halign">start</property>
-                    <property name="label">Advanced</property>
-                    <property name="margin-top">5</property>
-                    <property name="valign">start</property>
+                    <property name="label">Visibility Settings</property>
+                    <property name="margin-start">5</property>
                   </object>
                 </child>
               </object>

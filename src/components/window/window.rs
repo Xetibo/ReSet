@@ -165,14 +165,14 @@ impl Window {
 
         let audioList = vec![
             SidebarEntry::new(
-                "Volume",
+                "Output",
                 "audio-volume-high-symbolic",
                 Categories::Audio,
                 true,
                 HANDLE_VOLUME_CLICK,
             ),
             SidebarEntry::new(
-                "Microphone",
+                "Input",
                 "audio-input-microphone-symbolic",
                 Categories::Audio,
                 true,
