@@ -6,6 +6,8 @@
   <template class="resetUI" parent="AdwApplicationWindow">
     <property name="default-height">500</property>
     <property name="default-width">800</property>
+    <property name="height-request">200</property>
+    <property name="width-request">600</property>
     <child>
       <object class="GtkWindowHandle"/>
     </child>
@@ -13,7 +15,9 @@
       <object class="AdwOverlaySplitView" id="resetOverlaySplitView">
         <property name="content">
           <object class="GtkBox">
+            <property name="margin-end">5</property>
             <property name="margin-start">5</property>
+            <property name="margin-top">5</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkWindowHandle">
@@ -21,16 +25,16 @@
                   <object class="GtkBox">
                     <property name="valign">start</property>
                     <child>
-                      <object class="GtkButton" id="resetSideBarToggle">
-                        <property name="icon-name">sidebar-show-symbolic</property>
-                        <property name="visible">False</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkButton" id="resetBack">
                         <property name="has-frame">False</property>
                         <property name="icon-name">go-previous-symbolic</property>
                         <property name="valign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="resetSideBarToggle">
+                        <property name="icon-name">sidebar-show-symbolic</property>
+                        <property name="visible">False</property>
                       </object>
                     </child>
                     <child>
@@ -89,9 +93,9 @@
                               <object class="GtkBox">
                                 <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkButton" id="resetPreferenceButton">
+                                  <object class="GtkButton" id="resetShortcutsButton">
                                     <property name="has-frame">False</property>
-                                    <property name="label">Preferences</property>
+                                    <property name="label">Shortcuts</property>
                                   </object>
                                 </child>
                                 <child>
@@ -101,9 +105,9 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="resetShortcutsButton">
+                                  <object class="GtkButton" id="resetPreferenceButton">
                                     <property name="has-frame">False</property>
-                                    <property name="label">Shortcuts</property>
+                                    <property name="label">Preferences</property>
                                   </object>
                                 </child>
                               </object>
@@ -151,13 +155,12 @@
             </child>
           </object>
         </property>
-        <property name="margin-end">5</property>
-        <property name="margin-start">5</property>
-        <property name="margin-top">5</property>
         <property name="max-sidebar-width">180.0</property>
         <property name="sidebar">
           <object class="GtkBox">
             <property name="margin-end">5</property>
+            <property name="margin-start">5</property>
+            <property name="margin-top">5</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkWindowHandle">
@@ -172,6 +175,7 @@
             </child>
             <child>
               <object class="GtkScrolledWindow">
+                <property name="margin-top">5</property>
                 <property name="propagate-natural-height">True</property>
                 <child>
                   <object class="GtkViewport">
