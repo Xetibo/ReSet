@@ -11,9 +11,9 @@
     <file compressed="true" preprocess="xml-stripblanks">resetBluetooth.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetBluetoothEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetAudio.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">resetAudioSourceEntry.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetOutputStreamEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetMicrophone.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">resetMicSourceEntry.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetInputStreamEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetPopup.ui</file>
   </gresource>
 </gresources>

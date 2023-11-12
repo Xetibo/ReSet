@@ -99,15 +99,15 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="resetAboutButton">
-                                    <property name="has-frame">False</property>
-                                    <property name="label">About</property>
-                                  </object>
-                                </child>
-                                <child>
                                   <object class="GtkButton" id="resetPreferenceButton">
                                     <property name="has-frame">False</property>
                                     <property name="label">Preferences</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="resetAboutButton">
+                                    <property name="has-frame">False</property>
+                                    <property name="label">About</property>
                                   </object>
                                 </child>
                               </object>

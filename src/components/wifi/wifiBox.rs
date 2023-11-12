@@ -1,30 +1,30 @@
+use std::collections::HashMap;
 use std::sync::mpsc::{channel, Receiver, Sender};
-use std::sync::{atomic::AtomicBool, Arc, Weak};
-use std::thread;
+use std::sync::{atomic::AtomicBool, Arc};
 use std::time::Duration;
 
 use crate::components::base::listEntry::ListEntry;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{BoxExt, ButtonExt, ListBoxRowExt};
+use adw::prelude::{BoxExt, ListBoxRowExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use dbus::arg::RefArg;
 use dbus::blocking::Connection;
 use dbus::Error;
 use dbus::Path;
 use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
-
-use gtk::{Button, Label, Orientation};
-use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
-use ReSet_Lib::signals::{
-    AccessPointAdded, AccessPointRemoved, BluetoothDeviceAdded, BluetoothDeviceRemoved,
-};
+use ReSet_Lib::network::network::AccessPoint;
+use ReSet_Lib::signals::AccessPointAdded;
+use ReSet_Lib::signals::AccessPointRemoved;
 use ReSet_Lib::utils::Events;
 
 use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;
 
 use super::savedWifiEntry::SavedWifiEntry;
+
+use ReSet_Lib::network::connection::Connection as ResetConnection;
 
 glib::wrapper! {
     pub struct WifiBox(ObjectSubclass<wifiBoxImpl::WifiBox>)
@@ -42,9 +42,10 @@ impl WifiBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
-
         selfImp.resetSavedNetworks.set_action_name(Some("navigation.push"));
-        selfImp.resetSavedNetworks.set_action_target_value(Some(&Variant::from("saved")))
+        selfImp.resetSavedNetworks.set_action_target_value(Some(&Variant::from("saved")));
+
+        selfImp.resetAvailableNetworks.set_action_name(Some("navigation.pop"));
     }
 
     // pub fn donotdisturb() {
@@ -172,4 +173,26 @@ pub async fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     let (connections,) = res.unwrap();
     dbg!(connections.clone());
     connections
+}
+
+pub fn getConnectionSettings(path: Path<'static>) -> Option<ResetConnection> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>,>,), Error> =
+        proxy.method_call("org.xetibo.ReSet", "GetConnectionSettings", (path,));
+    if res.is_err() {
+        println!("lol not work");
+        return None;
+    }
+    let (res,) = res.unwrap();
+    let res = ResetConnection::convert_from_propmap(res);
+    if res.is_err() {
+        println!("lol none");
+        return None;
+    }
+    Some(res.unwrap())
 }

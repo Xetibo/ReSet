@@ -1,14 +1,14 @@
+use crate::components::input::inputStreamEntryImpl;
 use adw::glib;
 use adw::glib::Object;
-use crate::components::audio::audioBoxImpl;
 
 glib::wrapper! {
-    pub struct AudioBox(ObjectSubclass<audioBoxImpl::AudioBox>)
+    pub struct InputStreamEntry(ObjectSubclass<inputStreamEntryImpl::InputStreamEntry>)
     @extends gtk::Box, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
-impl AudioBox {
+impl InputStreamEntry {
     pub fn new() -> Self {
         Object::builder().build()
     }

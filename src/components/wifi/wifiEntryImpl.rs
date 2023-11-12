@@ -16,7 +16,7 @@ pub struct WifiEntry {
     #[template_child]
     pub resetWifiLabel: TemplateChild<Label>,
     #[template_child]
-    pub resetWifiButton: TemplateChild<Button>,
+    pub resetWifiEditButton: TemplateChild<Button>,
     #[template_child]
     pub resetWifiConnected: TemplateChild<Image>,
     #[template_child]
@@ -49,6 +49,9 @@ impl ObjectSubclass for WifiEntry {
 impl ObjectImpl for WifiEntry {
     fn constructed(&self) {
         self.parent_constructed();
+
+        let obj = self.obj();
+        obj.setupCallbacks();
     }
 }
 

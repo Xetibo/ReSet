@@ -1,8 +1,9 @@
-use gtk::{CompositeTemplate, DropDown, TemplateChild, glib};
+use gtk::{CompositeTemplate, DropDown, TemplateChild, glib, Button};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use crate::components::audio::audioBox;
-use crate::components::audio::audioSource::AudioSourceEntry;
+use crate::components::output::audioBox;
+use crate::components::output::audioSource::AudioSourceEntry;
+use crate::components::base::listEntry::ListEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -10,6 +11,10 @@ use crate::components::audio::audioSource::AudioSourceEntry;
 pub struct AudioBox {
     #[template_child]
     pub resetOutputDevice: TemplateChild<DropDown>,
+    #[template_child]
+    pub resetSinksRow: TemplateChild<ListEntry>,
+    #[template_child]
+    pub resetOutputStreamButton: TemplateChild<ListEntry>,
 }
 
 
@@ -21,6 +26,7 @@ impl ObjectSubclass for AudioBox {
 
     fn class_init(klass: &mut Self::Class) {
         AudioSourceEntry::ensure_type();
+        ListEntry::ensure_type();
         klass.bind_template();
     }
 
@@ -31,7 +37,12 @@ impl ObjectSubclass for AudioBox {
 
 impl BoxImpl for AudioBox {}
 
-impl ObjectImpl for AudioBox {}
+impl ObjectImpl for AudioBox {
+    fn constructed(&self) {
+        let obj = self.obj();
+        obj.setupCallbacks();
+    }
+}
 
 impl ListBoxRowImpl for AudioBox {}
 
