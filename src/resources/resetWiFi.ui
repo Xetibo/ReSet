@@ -107,8 +107,6 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="resetWifiAdvanced">
-                    <property name="action-name">navigation.push</property>
-                    <property name="action-target">'advanced'</property>
                     <property name="halign">start</property>
                     <property name="label">Advanced</property>
                     <property name="margin-start">5</property>
@@ -149,18 +147,34 @@
             <property name="tag">saved</property>
             <child>
               <object class="GtkBox">
+                <property name="homogeneous">True</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label">saved networks</property>
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">saved networks</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton">
+                        <property name="action-name">navigation.pop</property>
+                        <property name="halign">start</property>
+                        <property name="label">back</property>
+                        <property name="margin-start">5</property>
+                        <property name="margin-top">5</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="action-name">navigation.pop</property>
-                    <property name="halign">start</property>
-                    <property name="label">back</property>
+                  <object class="GtkListBox" id="resetStoredWifiList">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
+                    <property name="show-separators">True</property>
                     <property name="valign">start</property>
                   </object>
                 </child>

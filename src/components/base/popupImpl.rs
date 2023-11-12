@@ -9,7 +9,8 @@ use gtk::gdk_pixbuf::subclass::prelude::{
 use gtk::prelude::PopupExt;
 use gtk::subclass::prelude::*;
 use gtk::{
-    gdk, glib, Button, CompositeTemplate, Entry, EntryBuffer, PasswordEntry, PasswordEntryBuffer, Popover,
+    gdk, glib, Button, CompositeTemplate, Entry, EntryBuffer, Label, PasswordEntry,
+    PasswordEntryBuffer, Popover,
 };
 
 use super::popup;
@@ -19,11 +20,16 @@ use super::popup;
 #[template(resource = "/org/Xetibo/ReSet/resetPopup.ui")]
 pub struct Popup {
     #[template_child]
+    pub resetPopupLabel: TemplateChild<Label>,
+    #[template_child]
     pub resetPopupEntry: TemplateChild<PasswordEntry>,
     #[template_child]
     pub resetPopupButton: TemplateChild<Button>,
     pub resetPopupText: Arc<RefCell<PasswordEntryBuffer>>,
 }
+
+unsafe impl Send for Popup {}
+unsafe impl Sync for Popup {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for Popup {
