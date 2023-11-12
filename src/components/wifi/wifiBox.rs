@@ -6,18 +6,25 @@ use std::time::Duration;
 use crate::components::base::listEntry::ListEntry;
 use adw::glib;
 use adw::glib::Object;
+use adw::prelude::{BoxExt, ButtonExt, ListBoxRowExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
 use dbus::Path;
 use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
-use ReSet_Lib::network::network::AccessPoint;
-use ReSet_Lib::signals::{AccessPointAdded, AccessPointRemoved};
+
+use gtk::{Button, Label, Orientation};
+use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
+use ReSet_Lib::signals::{
+    AccessPointAdded, AccessPointRemoved, BluetoothDeviceAdded, BluetoothDeviceRemoved,
+};
 use ReSet_Lib::utils::Events;
 
 use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;
+
+use super::savedWifiEntry::SavedWifiEntry;
 
 glib::wrapper! {
     pub struct WifiBox(ObjectSubclass<wifiBoxImpl::WifiBox>)
@@ -40,18 +47,18 @@ impl WifiBox {
         selfImp.resetWifiSwitchRow.set_action_target_value(Some(&Variant::from("saved")))
     }
 
-    pub fn donotdisturb() {
-        thread::spawn(|| {
-            let conn = Connection::new_session().unwrap();
-            let proxy = conn.with_proxy(
-                "org.freedesktop.Notifications",
-                "/org/freedesktop/Notifications",
-                Duration::from_millis(1000),
-            );
-            let _: Result<(), Error> =
-                proxy.method_call("org.freedesktop.Notifications", "DoNotDisturb", ());
-        });
-    }
+    // pub fn donotdisturb() {
+    //     thread::spawn(|| {
+    //         let conn = Connection::new_session().unwrap();
+    //         let proxy = conn.with_proxy(
+    //             "org.freedesktop.Notifications",
+    //             "/org/freedesktop/Notifications",
+    //             Duration::from_millis(1000),
+    //         );
+    //         let _: Result<(), Error> =
+    //             proxy.method_call("org.freedesktop.Notifications", "DoNotDisturb", ());
+    //     });
+    // }
 }
 
 pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
@@ -59,7 +66,7 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
     let wifiEntries = wifiBox.imp().wifiEntries.clone();
 
     glib::spawn_future_local(async move {
-        let accessPoints = wat().await;
+        let accessPoints = get_access_points().await;
         let wifiEntries = wifiEntries.clone();
         {
             let mut wifiEntries = wifiEntries.lock().unwrap();
@@ -103,7 +110,37 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
         }
     });
 }
-pub async fn wat() -> Vec<AccessPoint> {
+
+pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
+    let wifibox_ref = wifiBox.clone();
+    let wifiEntries = wifiBox.imp().savedWifiEntries.clone();
+
+    glib::spawn_future_local(async move {
+        let connections = get_stored_connections().await;
+        let wifiEntries = wifiEntries.clone();
+        {
+            let mut wifiEntries = wifiEntries.lock().unwrap();
+            for connection in connections {
+                // TODO include button for settings
+                let name = &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
+                let entry = ListEntry::new(&SavedWifiEntry::new(name, connection.0));
+                entry.set_activatable(false);
+                wifiEntries.push(entry);
+            }
+        }
+        glib::MainContext::default().spawn_local(async move {
+            glib::idle_add_once(move || {
+                let wifiEntries = wifiEntries.lock().unwrap();
+                let selfImp = wifibox_ref.imp();
+                for wifiEntry in wifiEntries.iter() {
+                    selfImp.resetStoredWifiList.append(wifiEntry);
+                }
+            });
+        });
+    });
+}
+
+pub async fn get_access_points() -> Vec<AccessPoint> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
@@ -117,4 +154,22 @@ pub async fn wat() -> Vec<AccessPoint> {
     }
     let (accessPoints,) = res.unwrap();
     accessPoints
+}
+
+pub async fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Vec<(Path<'static>, Vec<u8>)>,), Error> =
+        proxy.method_call("org.xetibo.ReSet", "ListStoredConnections", ());
+    if res.is_err() {
+        println!("we got error...");
+        return Vec::new();
+    }
+    let (connections,) = res.unwrap();
+    dbg!(connections.clone());
+    connections
 }

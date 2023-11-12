@@ -5,6 +5,9 @@
   <template class="resetWifiEntry" parent="GtkBox">
     <property name="margin-start">5</property>
     <child>
+      <object class="resetPopup" id="resetWifiPopup"/>
+    </child>
+    <child>
       <object class="GtkBox">
         <property name="width-request">35</property>
         <child>

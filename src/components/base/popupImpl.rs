@@ -1,19 +1,41 @@
+use std::cell::RefCell;
+use std::sync::Arc;
+
+use adw::subclass::prelude::{ActionRowImpl, PreferencesRowImpl};
 use adw::subclass::window::AdwWindowImpl;
+use gtk::gdk_pixbuf::subclass::prelude::{
+    PixbufAnimationImpl, PixbufAnimationIterImpl, PixbufLoaderImpl,
+};
+use gtk::prelude::PopupExt;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate};
+use gtk::{
+    gdk, glib, Button, CompositeTemplate, Entry, EntryBuffer, Label, PasswordEntry,
+    PasswordEntryBuffer, Popover,
+};
 
 use super::popup;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetPopup.ui")]
-pub struct Popup {}
+pub struct Popup {
+    #[template_child]
+    pub resetPopupLabel: TemplateChild<Label>,
+    #[template_child]
+    pub resetPopupEntry: TemplateChild<PasswordEntry>,
+    #[template_child]
+    pub resetPopupButton: TemplateChild<Button>,
+    pub resetPopupText: Arc<RefCell<PasswordEntryBuffer>>,
+}
+
+unsafe impl Send for Popup {}
+unsafe impl Sync for Popup {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for Popup {
     const NAME: &'static str = "resetPopup";
     type Type = popup::Popup;
-    type ParentType = adw::Window;
+    type ParentType = Popover;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -30,12 +52,12 @@ impl ObjectImpl for Popup {
     }
 }
 
-impl BoxImpl for Popup {}
-
 impl WidgetImpl for Popup {}
-
-impl AdwWindowImpl for Popup {}
 
 impl WindowImpl for Popup {}
 
+impl PopoverImpl for Popup {}
+
 impl ApplicationWindowImpl for Popup {}
+
+impl EditableImpl for Popup {}
