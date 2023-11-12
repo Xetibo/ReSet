@@ -16,7 +16,7 @@ frame.resetSettingFrame {
     padding: 10px;
 }
 
-frame > label {
+label.resetSettingLabel {
     font-size: 32px;
     font-weight: bold;
 }

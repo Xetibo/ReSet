@@ -42,9 +42,8 @@ impl WifiBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
-
-        selfImp.resetWifiSwitchRow.set_action_name(Some("navigation.push"));
-        selfImp.resetWifiSwitchRow.set_action_target_value(Some(&Variant::from("saved")))
+        selfImp.resetSavedNetworks.set_action_name(Some("navigation.push"));
+        selfImp.resetSavedNetworks.set_action_target_value(Some(&Variant::from("saved")));
     }
 
     // pub fn donotdisturb() {

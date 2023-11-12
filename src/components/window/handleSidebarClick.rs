@@ -13,8 +13,8 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
     let wifiBox = Arc::new(WifiBox::new());
     show_stored_connections(wifiBox.clone());
     scanForWifi(wifiBox.clone());
-    let wifiBox = SettingBox::new(&*wifiBox, "WiFi");
-    let bluetoothBox = SettingBox::new(&BluetoothBox::new(), "Bluetooth");
+    let wifiBox = SettingBox::new(&*wifiBox);
+    let bluetoothBox = SettingBox::new(&BluetoothBox::new());
     resetMain.remove_all();
     resetMain.insert(&wifiBox, -1);
     resetMain.insert(&bluetoothBox, -1);
@@ -24,14 +24,14 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
 pub const HANDLE_WIFI_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
     let wifiBox = Arc::new(WifiBox::new());
     scanForWifi(wifiBox.clone());
-    let wifiBox = SettingBox::new(&*wifiBox, "WiFi");
+    let wifiBox = SettingBox::new(&*wifiBox);
     resetMain.remove_all();
     resetMain.insert(&wifiBox, -1);
     resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_BLUETOOTH_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let bluetoothBox = SettingBox::new(&BluetoothBox::new(), "Bluetooth");
+    let bluetoothBox = SettingBox::new(&BluetoothBox::new());
     resetMain.remove_all();
     resetMain.insert(&bluetoothBox, -1);
     resetMain.set_max_children_per_line(1);
@@ -45,14 +45,14 @@ pub const HANDLE_VPN_CLICK: fn(FlowBox) = |resetMain: FlowBox| {
 };
 
 pub const HANDLE_AUDIO_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let audioBox = SettingBox::new(&AudioBox::new(), "Audio");
+    let audioBox = SettingBox::new(&AudioBox::new());
     resetMain.remove_all();
     resetMain.insert(&audioBox, -1);
     resetMain.set_max_children_per_line(1);
 };
 
 pub const HANDLE_VOLUME_CLICK: fn(FlowBox) =  |resetMain: FlowBox|   {
-    let audioBox = SettingBox::new(&AudioBox::new(), "Audio");
+    let audioBox = SettingBox::new(&AudioBox::new());
     resetMain.remove_all();
     resetMain.insert(&audioBox, -1);
     resetMain.set_max_children_per_line(1);
