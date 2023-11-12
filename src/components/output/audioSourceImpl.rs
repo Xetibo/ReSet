@@ -1,13 +1,11 @@
 use gtk::{Button, CompositeTemplate, glib, Image, Label, ProgressBar, Scale};
 use gtk::subclass::prelude::*;
-use crate::components::audio::audioSource;
+use crate::components::output::audioSource;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/Xetibo/ReSet/resetAudioSourceEntry.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]
 pub struct AudioSourceEntry {
-    #[template_child]
-    pub resetSourceIcon: TemplateChild<Image>,
     #[template_child]
     pub resetSourceName: TemplateChild<Label>,
     #[template_child]
@@ -22,7 +20,7 @@ pub struct AudioSourceEntry {
 
 #[glib::object_subclass]
 impl ObjectSubclass for AudioSourceEntry {
-    const NAME: &'static str = "resetAudioSourceEntry";
+    const NAME: &'static str = "resetOutputStreamEntry";
     type Type = audioSource::AudioSourceEntry;
     type ParentType = gtk::Box;
 

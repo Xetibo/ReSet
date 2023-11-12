@@ -50,7 +50,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="resetWifiButton">
+      <object class="GtkButton" id="resetWifiEditButton">
         <property name="halign">start</property>
         <property name="has-frame">False</property>
         <property name="icon-name">info-symbolic</property>

@@ -5,19 +5,23 @@
   <template class="resetSavedWifiEntry" parent="GtkBox">
     <property name="spacing">5</property>
     <child>
-      <object class="GtkButton" id="resetDeleteSavedWifiButton">
-        <property name="has-frame">False</property>
-        <property name="icon-name">user-trash-symbolic</property>
+      <object class="GtkLabel" id="resetSavedWifiLabel">
+        <property name="margin-start">5</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="resetEditSavedWifiButton">
+        <property name="halign">end</property>
         <property name="has-frame">False</property>
+        <property name="hexpand">True</property>
         <property name="icon-name">document-edit-symbolic</property>
       </object>
     </child>
     <child>
-      <object class="GtkLabel" id="resetSavedWifiLabel"/>
+      <object class="GtkButton" id="resetDeleteSavedWifiButton">
+        <property name="has-frame">False</property>
+        <property name="icon-name">user-trash-symbolic</property>
+      </object>
     </child>
   </template>
 </interface>

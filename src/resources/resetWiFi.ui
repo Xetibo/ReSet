@@ -1,13 +1,34 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-  <requires lib="gtk" version="4.12"/>
+  <requires lib="gtk" version="4.6"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetWifi" parent="GtkBox">
     <property name="hexpand">True</property>
     <property name="hexpand-set">True</property>
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
+    <child>
+      <object class="GtkBox">
+        <property name="height-request">40</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="css-classes">resetSettingLabel</property>
+            <property name="label">WiFi</property>
+            <property name="margin-start">5</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSwitch" id="resetWifiSwitch">
+            <property name="active">True</property>
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="margin-end">5</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+      </object>
+    </child>
     <child>
       <object class="AdwNavigationView">
         <child>
@@ -20,26 +41,26 @@
                   <object class="GtkListBox" id="resetWifiDetails">
                     <property name="css-classes">boxed-list</property>
                     <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                     <child>
-                      <object class="resetListBoxRow" id="resetWifiSwitchRow">
+                      <object class="resetListBoxRow">
                         <child>
                           <object class="GtkBox">
                             <property name="height-request">40</property>
+                            <property name="margin-start">5</property>
                             <child>
                               <object class="GtkLabel">
-                                <property name="label">WiFi</property>
-                                <property name="margin-start">5</property>
+                                <property name="label">WiFi Device</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkSwitch" id="resetWifiSwitch">
-                                <property name="active">True</property>
+                              <object class="GtkDropDown" id="resetWiFiDevice">
                                 <property name="halign">end</property>
                                 <property name="hexpand">True</property>
-                                <property name="margin-end">5</property>
                                 <property name="valign">center</property>
                               </object>
                             </child>
@@ -95,6 +116,7 @@
                                 <property name="margin-bottom">10</property>
                                 <property name="margin-end">5</property>
                                 <property name="margin-start">5</property>
+                                <property name="margin-top">5</property>
                                 <property name="show-separators">True</property>
                                 <property name="valign">start</property>
                               </object>
@@ -116,22 +138,44 @@
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkListBox">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="show-separators">True</property>
+                    <property name="valign">start</property>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="label">saved networks</property>
+                      <object class="resetListBoxRow" id="resetAvailableNetworks">
+                        <child>
+                          <object class="GtkBox">
+                            <property name="height-request">40</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Available Networks</property>
+                                <property name="margin-start">5</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="icon-name">go-previous-symbolic</property>
+                                <property name="margin-end">5</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="action-name">navigation.pop</property>
-                        <property name="halign">start</property>
-                        <property name="label">back</property>
-                        <property name="margin-start">5</property>
-                        <property name="margin-top">5</property>
-                        <property name="valign">start</property>
-                      </object>
-                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="halign">start</property>
+                    <property name="label">Saved Networks</property>
+                    <property name="margin-start">5</property>
                   </object>
                 </child>
                 <child>
@@ -140,6 +184,7 @@
                     <property name="margin-bottom">10</property>
                     <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                   </object>

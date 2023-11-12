@@ -1,18 +1,20 @@
-use crate::components::base::popup::{self, Popup};
-use crate::components::wifi::wifiEntryImpl;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::time::Duration;
+
 use adw::glib;
 use adw::glib::{Object, PropertySet};
 use adw::prelude::{ButtonExt, EditableExt, EntryExt, PopoverExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
-use glib::{clone, Cast};
+use glib::{Cast, clone};
+use gtk::{AlertDialog, GestureClick};
 use gtk::prelude::WidgetExt;
-use gtk::{AlertDialog, Editable, GestureClick, PasswordEntry, PasswordEntryBuffer, Window};
-use std::sync::atomic::AtomicBool;
-use std::sync::Arc;
-use std::time::Duration;
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
+
+use crate::components::wifi::wifiBox::getConnectionSettings;
+use crate::components::wifi::wifiEntryImpl;
 
 glib::wrapper! {
     pub struct WifiEntry(ObjectSubclass<wifiEntryImpl::WifiEntry>)
@@ -74,6 +76,15 @@ impl WifiEntry {
         }
         entry.add_controller(gesture);
         entry
+    }
+
+    pub fn setupCallbacks(&self) {
+        let selfImp = self.imp();
+        selfImp.resetWifiEditButton.connect_clicked(clone!(@ weak selfImp => move |_| {
+            // TODO open navigationpage
+            let option = getConnectionSettings(selfImp.accessPoint.borrow().associated_connection.clone());
+            dbg!(option);
+        }));
     }
 }
 

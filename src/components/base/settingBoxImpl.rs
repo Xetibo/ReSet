@@ -5,16 +5,13 @@ use crate::components::base::settingBox;
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSettingBox.ui")]
-pub struct SettingBox {
-    #[template_child]
-    pub resetSettingLabel: TemplateChild<Label>,
-}
+pub struct SettingBox {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for SettingBox {
-    const NAME: &'static str = "resetSettingFrame";
+    const NAME: &'static str = "resetSettingBox";
     type Type = settingBox::SettingBox;
-    type ParentType = gtk::Frame;
+    type ParentType = gtk::Box;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -31,7 +28,7 @@ impl ObjectImpl for SettingBox {
     }
 }
 
-impl FrameImpl for SettingBox {}
+impl BoxImpl for SettingBox {}
 
 impl WidgetImpl for SettingBox {}
 

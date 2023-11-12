@@ -1,6 +1,8 @@
 use adw::glib;
 use adw::glib::Object;
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use gtk::glib::Variant;
+use gtk::prelude::ActionableExt;
 
 use crate::components::bluetooth::bluetoothBoxImpl;
 use crate::components::bluetooth::bluetoothEntry::BluetoothEntry;
@@ -16,6 +18,14 @@ glib::wrapper! {
 impl BluetoothBox {
     pub fn new() -> Self {
         Object::builder().build()
+    }
+
+    pub fn setupCallbacks(&self) {
+        let selfImp = self.imp();
+        selfImp.resetVisibility.set_action_name(Some("navigation.push"));
+        selfImp.resetVisibility.set_action_target_value(Some(&Variant::from("visibility")));
+
+        selfImp.resetBluetoothMainTab.set_action_name(Some("navigation.pop"));
     }
 
     pub fn scanForDevices(&self) {
