@@ -27,9 +27,8 @@ pub struct WifiBox {
     pub resetStoredWifiList: TemplateChild<ListBox>,
     #[template_child]
     pub resetAvailableNetworks: TemplateChild<ListEntry>,
-    pub wifiEntries: Arc<Mutex<HashMap<Path<'static>,Arc<ListEntry>>>>,
+    pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>,Arc<ListEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
-    pub listener_active: Arc<AtomicBool>,
 }
 
 unsafe impl Send for WifiBox {}

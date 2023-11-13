@@ -38,12 +38,6 @@
       </object>
     </child>
     <child>
-      <object class="GtkImage" id="resetWifiStored">
-        <property name="halign">end</property>
-        <property name="valign">center</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkImage" id="resetWifiConnected">
         <property name="halign">end</property>
         <property name="valign">center</property>
@@ -53,7 +47,7 @@
       <object class="GtkButton" id="resetWifiEditButton">
         <property name="halign">start</property>
         <property name="has-frame">False</property>
-        <property name="icon-name">info-symbolic</property>
+        <property name="icon-name">document-edit-symbolic</property>
         <property name="valign">center</property>
       </object>
     </child>

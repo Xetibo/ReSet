@@ -45,7 +45,7 @@ impl Window {
             clone!(@ weak selfImp as flowbox => move |_, y| {
                 let result = y.downcast_ref::<SidebarEntry>().unwrap();
                 let clickEvent = result.imp().onClickEvent.borrow().onClickEvent;
-                (clickEvent)(flowbox.resetMain.get());
+                (clickEvent)(flowbox.listeners.clone(), flowbox.resetMain.get());
             }),
         );
 

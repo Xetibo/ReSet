@@ -62,14 +62,11 @@ impl WifiEntry {
         entryImp.accessPoint.set(access_point);
         let gesture = GestureClick::new();
         if stored {
-            entryImp
-                .resetWifiStored
-                .get()
-                .set_from_icon_name(Some("document-save-symbolic"));
             gesture.connect_released(move |_, _, _, _| {
                 click_stored_network(stored_entry.clone());
             });
         } else {
+            entryImp.resetWifiEditButton.set_sensitive(false);
             gesture.connect_released(move |_, _, _, _| {
                 click_new_network(new_entry.clone());
             });
@@ -93,11 +90,9 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
     let root = &entry.root().unwrap();
     let root = root.downcast_ref::<gtk::Window>();
     if root.is_none() {
-        println!("ERROR BRO");
         return;
     }
     let root = root.unwrap();
-    // TODO handle unknown access point -> should be done by having 2 different categories
     let entryImp = entry.imp();
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(

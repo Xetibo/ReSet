@@ -6,6 +6,7 @@ use std::thread;
 use std::time::Duration;
 
 use crate::components::base::listEntry::ListEntry;
+use crate::components::base::utils::Listeners;
 use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{BoxExt, ListBoxRowExt};
@@ -58,7 +59,7 @@ impl WifiBox {
     }
 }
 
-pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
+pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
     let wifibox_ref = wifiBox.clone();
     let wifibox_ref_listener = wifiBox.clone();
     let wifiEntries = wifiBox.imp().wifiEntries.clone();
@@ -72,39 +73,36 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
                 let mut wifiEntries = wifiEntries.lock().unwrap();
                 let selfImp = wifibox_ref.imp();
                 for accessPoint in accessPoints {
-                    let path = accessPoint.dbus_path.clone();
+                    let ssid = accessPoint.ssid.clone();
                     let entry = Arc::new(ListEntry::new(&*WifiEntry::new(accessPoint)));
-                    wifiEntries.insert(path, entry.clone());
+                    wifiEntries.insert(ssid, entry.clone());
                     selfImp.resetWifiList.append(&*entry);
                 }
             });
         });
-        let wifiBoxImpl = wifibox_ref_listener.imp();
-        wifiBoxImpl
-            .listener_active
-            .store(true, std::sync::atomic::Ordering::SeqCst);
+        if listeners.network_listener.load(Ordering::SeqCst) {
+            return;
+        }
+        listeners.network_listener.store(true, Ordering::SeqCst);
         dbus_start_network_events();
         let (sender, receiver): (
-            Sender<Events<(AccessPoint,), (Path<'static>,)>>,
-            Receiver<Events<(AccessPoint,), (Path<'static>,)>>,
+            Sender<Events<(AccessPoint,), (AccessPoint,)>>,
+            Receiver<Events<(AccessPoint,), (AccessPoint,)>>,
         ) = channel();
         let sender_ref = Arc::new(sender);
         let res = start_event_listener::<
             (AccessPoint,),
-            (Path<'static>,),
+            (AccessPoint,),
             AccessPointAdded,
             AccessPointRemoved,
-        >(
-            wifibox_ref_listener.imp().listener_active.clone(),
-            sender_ref,
-        );
+        >(listeners.clone(), sender_ref);
         if res.is_err() {
             println!("Could not connect listener");
         }
         loop {
             let wifiEntriesListener = wifiEntriesListener.clone();
-            if wifiBoxImpl
-                .listener_active
+            if listeners
+                .network_listener
                 .load(std::sync::atomic::Ordering::SeqCst)
                 == false
             {
@@ -121,26 +119,23 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
                         glib::spawn_future(async move {
                             glib::idle_add_once(move || {
                                 let mut wifiEntries = wifiEntriesListener.lock().unwrap();
-                                let path = access_point.0.dbus_path.clone();
-                                if wifiEntries.get(&path).is_some() {
-                                    // don't add the entry if it exists, somehow networkmanager
-                                    // spams these added things?
-                                    // TODO perhaps use ssid?
+                                let ssid = access_point.0.ssid.clone();
+                                if wifiEntries.get(&ssid).is_some() {
                                     return;
                                 }
                                 let entry =
                                     Arc::new(ListEntry::new(&*WifiEntry::new(access_point.0)));
-                                wifiEntries.insert(path, entry.clone());
+                                wifiEntries.insert(ssid, entry.clone());
                                 wifiBoxImpl.imp().resetWifiList.append(&*entry);
                             });
                         });
                     }
-                    Events::RemovedEvent(path) => {
+                    Events::RemovedEvent(access_point) => {
                         let wifiBoxImpl = wifibox_ref_listener.clone();
                         glib::spawn_future(async move {
                             glib::idle_add_once(move || {
                                 let mut wifiEntries = wifiEntriesListener.lock().unwrap();
-                                let entry = wifiEntries.remove(&path.0);
+                                let entry = wifiEntries.remove(&access_point.0.ssid);
                                 if entry.is_none() {
                                     return;
                                 }
@@ -158,27 +153,18 @@ pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
 
 pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
     let wifibox_ref = wifiBox.clone();
-    let wifiEntries = wifiBox.imp().savedWifiEntries.clone();
-
     gio::spawn_blocking(move || {
         let connections = get_stored_connections();
-        let wifiEntries = wifiEntries.clone();
-        {
-            let mut wifiEntries = wifiEntries.lock().unwrap();
-            for connection in connections {
-                // TODO include button for settings
-                let name = &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
-                let entry = ListEntry::new(&SavedWifiEntry::new(name, connection.0));
-                entry.set_activatable(false);
-                wifiEntries.push(entry);
-            }
-        }
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let wifiEntries = wifiEntries.lock().unwrap();
                 let selfImp = wifibox_ref.imp();
-                for wifiEntry in wifiEntries.iter() {
-                    selfImp.resetStoredWifiList.append(wifiEntry);
+                for connection in connections {
+                    // TODO include button for settings
+                    let name =
+                        &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
+                    let entry = ListEntry::new(&SavedWifiEntry::new(name, connection.0));
+                    entry.set_activatable(false);
+                    selfImp.resetStoredWifiList.append(&entry);
                 }
             });
         });
@@ -262,7 +248,7 @@ pub fn start_event_listener<
     AddedEvent: ReadAll + AppendAll + dbus::message::SignalArgs + GetVal<AddedType>,
     RemovedEvent: ReadAll + AppendAll + dbus::message::SignalArgs + GetVal<RemovedType>,
 >(
-    active_listener: Arc<AtomicBool>,
+    listeners: Arc<Listeners>,
     sender: Arc<Sender<Events<AddedType, RemovedType>>>,
 ) -> Result<(), dbus::Error> {
     thread::spawn(move || {
@@ -311,11 +297,11 @@ pub fn start_event_listener<
                 "Failed to match signal on ReSet.",
             ));
         }
-        active_listener.store(true, Ordering::SeqCst);
+        listeners.network_listener.store(true, Ordering::SeqCst);
         println!("starting thread listener");
         loop {
             let _ = conn.process(Duration::from_millis(1000))?;
-            if !active_listener.load(Ordering::SeqCst) {
+            if !listeners.network_listener.load(Ordering::SeqCst) {
                 println!("stopping thread listener");
                 break;
             }
