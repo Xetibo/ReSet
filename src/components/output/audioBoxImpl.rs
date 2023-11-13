@@ -1,22 +1,40 @@
-use gtk::{CompositeTemplate, DropDown, TemplateChild, glib};
-use gtk::prelude::*;
-use gtk::subclass::prelude::*;
+use std::cell::RefCell;
+use std::sync::{Arc, Mutex};
+
+use crate::components::base::listEntry::ListEntry;
 use crate::components::output::audioBox;
 use crate::components::output::audioSource::AudioSourceEntry;
-use crate::components::base::listEntry::ListEntry;
+use gtk::subclass::prelude::*;
+use gtk::{glib, Box, Button, CompositeTemplate, DropDown, Label, TemplateChild};
+use gtk::{prelude::*, ProgressBar, Scale};
+use ReSet_Lib::audio::audio::{InputStream, Sink};
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetAudio.ui")]
 pub struct AudioBox {
     #[template_child]
-    pub resetOutputDevice: TemplateChild<DropDown>,
-    #[template_child]
     pub resetSinksRow: TemplateChild<ListEntry>,
     #[template_child]
+    pub resetOutputDevice: TemplateChild<DropDown>,
+    #[template_child]
+    pub resetSinkMute: TemplateChild<Button>,
+    #[template_child]
+    pub resetVolumeSlider: TemplateChild<Scale>,
+    #[template_child]
+    pub resetVolumePercentage: TemplateChild<Label>,
+    #[template_child]
+    pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    #[template_child]
+    pub resetSinks: TemplateChild<Box>,
+    #[template_child]
     pub resetOutputStreamButton: TemplateChild<ListEntry>,
+    #[template_child]
+    pub resetOutputStreams: TemplateChild<Box>,
+    pub resetDefaultSink: RefCell<Option<Sink>>,
+    pub resetSinkList: Arc<Mutex<Vec<Sink>>>,
+    pub resetInputStreamList: Arc<Mutex<Vec<InputStream>>>,
 }
-
 
 #[glib::object_subclass]
 impl ObjectSubclass for AudioBox {

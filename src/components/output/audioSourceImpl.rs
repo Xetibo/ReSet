@@ -1,6 +1,8 @@
-use gtk::{Button, CompositeTemplate, glib, Label, ProgressBar, Scale};
-use gtk::subclass::prelude::*;
+use std::cell::{Cell, RefCell};
+
 use crate::components::output::audioSource;
+use gtk::subclass::prelude::*;
+use gtk::{glib, Button, CompositeTemplate, DropDown, Label, ProgressBar, Scale};
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -9,6 +11,8 @@ pub struct AudioSourceEntry {
     #[template_child]
     pub resetSourceName: TemplateChild<Label>,
     #[template_child]
+    pub resetSelectedSink: TemplateChild<DropDown>,
+    #[template_child]
     pub resetSourceMute: TemplateChild<Button>,
     #[template_child]
     pub resetVolumeSlider: TemplateChild<Scale>,
@@ -16,6 +20,9 @@ pub struct AudioSourceEntry {
     pub resetVolumePercentage: TemplateChild<Label>,
     #[template_child]
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub associatedIndex: Cell<u32>,
+    pub isMuted: Cell<bool>,
+    pub volume: RefCell<Vec<u32>>,
 }
 
 #[glib::object_subclass]
