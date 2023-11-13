@@ -63,7 +63,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox" id="resetDefaultSink">
+                  <object class="GtkBox">
                     <property name="margin-bottom">10</property>
                     <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
@@ -74,7 +74,7 @@
                         <property name="margin-bottom">5</property>
                         <property name="margin-top">5</property>
                         <child>
-                          <object class="GtkButton" id="resetSourceMute">
+                          <object class="GtkButton" id="resetSinkMute">
                             <property name="icon-name">audio-volume-high-symbolic</property>
                             <property name="margin-end">5</property>
                             <property name="valign">center</property>
@@ -120,15 +120,6 @@
                       <object class="GtkLabel">
                         <property name="halign">start</property>
                         <property name="label">Output Streams</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="resetOutputStreamEntry" id="resetDefaultSink_2"/>
-                    </child>
-                    <child>
-                      <object class="resetOutputStreamEntry" id="resetDefaultSink_3">
-                        <property name="margin-bottom">5</property>
-                        <property name="margin-top">5</property>
                       </object>
                     </child>
                   </object>
@@ -191,12 +182,6 @@
                         <property name="halign">start</property>
                         <property name="label">Output Devices</property>
                       </object>
-                    </child>
-                    <child>
-                      <object class="resetOutputStreamEntry" id="resetDefaultSink_4"/>
-                    </child>
-                    <child>
-                      <object class="resetOutputStreamEntry" id="resetDefaultSink_5"/>
                     </child>
                   </object>
                 </child>

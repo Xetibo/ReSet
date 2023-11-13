@@ -1,9 +1,12 @@
-use gtk::{CompositeTemplate, DropDown, TemplateChild, glib};
-use gtk::prelude::*;
-use gtk::subclass::prelude::*;
+use std::sync::{Arc, Mutex};
+
 use crate::components::base::listEntry::ListEntry;
 use crate::components::input::inputStreamEntry::InputStreamEntry;
 use crate::components::input::sourceBox;
+use gtk::prelude::*;
+use gtk::subclass::prelude::*;
+use gtk::{glib, CompositeTemplate, DropDown, TemplateChild};
+use ReSet_Lib::audio::audio::{OutputStream, Source};
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -15,6 +18,8 @@ pub struct SourceBox {
     pub resetSourceRow: TemplateChild<ListEntry>,
     #[template_child]
     pub resetInputStreamButton: TemplateChild<ListEntry>,
+    pub resetSources: Arc<Mutex<Vec<Source>>>,
+    pub resetOutputStreams: Arc<Mutex<Vec<OutputStream>>>,
 }
 
 #[glib::object_subclass]
@@ -50,3 +55,4 @@ impl WidgetImpl for SourceBox {}
 impl WindowImpl for SourceBox {}
 
 impl ApplicationWindowImpl for SourceBox {}
+
