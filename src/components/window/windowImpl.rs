@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::sync::Arc;
 
 use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;
@@ -7,6 +8,7 @@ use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, SearchEntry};
 
+use crate::components::base::utils::Listeners;
 use crate::components::wifi::wifiBox::WifiBox;
 use crate::components::window::sidebarEntry::SidebarEntry;
 use crate::components::window::window;
@@ -40,6 +42,7 @@ pub struct Window {
     #[template_child]
     pub resetShortcutsButton: TemplateChild<Button>,
     pub sidebarEntries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
+    pub listeners: Arc<Listeners>,
 }
 
 unsafe impl Send for Window {}

@@ -1,17 +1,8 @@
 use std::cell::RefCell;
 use std::sync::Arc;
 
-use adw::subclass::prelude::{ActionRowImpl, PreferencesRowImpl};
-use adw::subclass::window::AdwWindowImpl;
-use gtk::gdk_pixbuf::subclass::prelude::{
-    PixbufAnimationImpl, PixbufAnimationIterImpl, PixbufLoaderImpl,
-};
-use gtk::prelude::PopupExt;
 use gtk::subclass::prelude::*;
-use gtk::{
-    gdk, glib, Button, CompositeTemplate, Entry, EntryBuffer, Label, PasswordEntry,
-    PasswordEntryBuffer, Popover,
-};
+use gtk::{glib, Button, CompositeTemplate, Label, PasswordEntry, PasswordEntryBuffer, Popover};
 
 use super::popup;
 

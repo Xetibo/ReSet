@@ -20,8 +20,6 @@ pub struct WifiEntry {
     #[template_child]
     pub resetWifiConnected: TemplateChild<Image>,
     #[template_child]
-    pub resetWifiStored: TemplateChild<Image>,
-    #[template_child]
     pub resetWifiPopup: TemplateChild<Popup>,
     pub wifiName: RefCell<String>,
     pub wifiStrength: RefCell<WifiStrength>,

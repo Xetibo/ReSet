@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use gtk::{CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
@@ -23,7 +24,7 @@ pub struct WifiBox {
     pub resetStoredWifiList: TemplateChild<ListBox>,
     #[template_child]
     pub resetAvailableNetworks: TemplateChild<ListEntry>,
-    pub wifiEntries: Arc<Mutex<Vec<ListEntry>>>,
+    pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>,Arc<ListEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
 }
 

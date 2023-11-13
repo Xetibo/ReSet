@@ -1,7 +1,10 @@
+use std::sync::Arc;
+
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::{FlowBox, glib};
 use gtk::prelude::*;
+use crate::components::base::utils::Listeners;
 use crate::components::window::sidebarEntryImpl;
 use crate::components::window::sidebarEntryImpl::{Categories, SidebarAction};
 
@@ -17,7 +20,7 @@ impl SidebarEntry {
         iconName: &str,
         category: Categories,
         isSubcategory: bool,
-        clickEvent: fn(FlowBox),
+        clickEvent: fn(Arc<Listeners>, FlowBox),
     ) -> Self {
         let entry: SidebarEntry = Object::builder().build();
         let entryImp = entry.imp();
