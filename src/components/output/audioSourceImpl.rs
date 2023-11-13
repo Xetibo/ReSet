@@ -1,4 +1,4 @@
-use gtk::{Button, CompositeTemplate, glib, Image, Label, ProgressBar, Scale};
+use gtk::{Button, CompositeTemplate, glib, Label, ProgressBar, Scale};
 use gtk::subclass::prelude::*;
 use crate::components::output::audioSource;
 

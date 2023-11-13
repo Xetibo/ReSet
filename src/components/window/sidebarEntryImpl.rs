@@ -1,6 +1,5 @@
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
 
 use glib::subclass::InitializingObject;
 use gtk::{CompositeTemplate, FlowBox, glib, Image, Label, ListBoxRow};

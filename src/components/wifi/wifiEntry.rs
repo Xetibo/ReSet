@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use adw::glib;
 use adw::glib::{Object, PropertySet};
-use adw::prelude::{ButtonExt, EditableExt, EntryExt, PopoverExt};
+use adw::prelude::{ButtonExt, EditableExt, PopoverExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;

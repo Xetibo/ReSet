@@ -1,6 +1,5 @@
 use std::cell::RefCell;
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
 
 use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;

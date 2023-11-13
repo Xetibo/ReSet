@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
 
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;

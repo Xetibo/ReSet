@@ -3,7 +3,6 @@ use adw::glib::Object;
 use glib::subclass::prelude::ObjectSubclassIsExt;
 use glib::Variant;
 use gtk::prelude::ActionableExt;
-use crate::components::base::listEntry::ListEntry;
 use crate::components::output::audioBoxImpl;
 
 glib::wrapper! {

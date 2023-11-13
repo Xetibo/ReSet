@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc::{channel, Receiver, Sender};
-use std::sync::{atomic::AtomicBool, Arc};
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
@@ -9,7 +9,7 @@ use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::Listeners;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{BoxExt, ListBoxRowExt};
+use adw::prelude::ListBoxRowExt;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::{AppendAll, ReadAll, RefArg};
 use dbus::blocking::Connection;
@@ -310,8 +310,4 @@ pub fn start_event_listener<
         Ok(())
     });
     Ok(())
-}
-
-pub fn stop_listener(active_listener: Arc<AtomicBool>) {
-    active_listener.store(false, Ordering::SeqCst);
 }
