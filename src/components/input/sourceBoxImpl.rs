@@ -9,6 +9,7 @@ use gtk::{prelude::*, Button, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::{OutputStream, Source};
 
 use super::outputStreamEntry::OutputStreamEntry;
+use super::sourceEntry::SourceEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -32,7 +33,7 @@ pub struct SourceBox {
     pub resetOutputStreamButton: TemplateChild<ListEntry>,
     #[template_child]
     pub resetOutputStreams: TemplateChild<gtk::Box>,
-    pub resetDefaultSource: RefCell<Option<Source>>,
+    pub resetDefaultSource: Arc<RefCell<Source>>,
     pub resetSourceList: Arc<Mutex<Vec<Source>>>,
     pub resetOutputStreamList: Arc<Mutex<Vec<OutputStream>>>,
 }
@@ -45,6 +46,7 @@ impl ObjectSubclass for SourceBox {
 
     fn class_init(klass: &mut Self::Class) {
         OutputStreamEntry::ensure_type();
+        SourceEntry::ensure_type();
         ListEntry::ensure_type();
         klass.bind_template();
     }

@@ -42,7 +42,7 @@ impl SinkEntry {
                     println!("{fraction}");
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);
-                    set_inputstream_volume(value, imp.stream.clone());
+                    set_sink_volume(value, imp.stream.clone());
                     Propagation::Proceed
                 }),
             );
@@ -51,7 +51,7 @@ impl SinkEntry {
     }
 }
 
-fn set_inputstream_volume(value: f64, stream: Arc<RefCell<Sink>>) -> bool {
+pub fn set_sink_volume(value: f64, stream: Arc<RefCell<Sink>>) -> bool {
     let mut stream = stream.borrow_mut().clone();
     // let x = stream.volume.iter_mut().map(|_| value as u32);
     stream.volume = vec![value as u32; stream.channels as usize];
@@ -61,7 +61,7 @@ fn set_inputstream_volume(value: f64, stream: Arc<RefCell<Sink>>) -> bool {
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
-        Duration::from_millis(100),
+        Duration::from_millis(1000),
     );
     let res: Result<(bool,), Error> =
         proxy.method_call("org.xetibo.ReSet", "SetSinkVolume", (stream,));

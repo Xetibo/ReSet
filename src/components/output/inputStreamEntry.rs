@@ -23,13 +23,12 @@ impl InputStreamEntry {
     pub fn new(stream: InputStream) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO map the slider to volume
-        // TODO properly use volume fraction
         // TODO map mute to callback
         // TODO map dropdown
         {
             let imp = obj.imp();
-            imp.resetSinkName.set_text(stream.name.clone().as_str());
+            let name = stream.application_name.clone() + ": " + stream.name.as_str();
+            imp.resetSinkName.set_text(name.as_str());
             let volume = stream.volume.first().unwrap_or_else(|| &(0 as u32));
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
@@ -39,7 +38,6 @@ impl InputStreamEntry {
             imp.resetVolumeSlider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
-                    println!("{fraction}");
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);
                     set_inputstream_volume(value, imp.stream.clone());
@@ -61,7 +59,7 @@ fn set_inputstream_volume(value: f64, stream: Arc<RefCell<InputStream>>) -> bool
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
-        Duration::from_millis(100),
+        Duration::from_millis(1000),
     );
     let res: Result<(bool,), Error> =
         proxy.method_call("org.xetibo.ReSet", "SetInputStreamVolume", (stream,));

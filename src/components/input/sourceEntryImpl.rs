@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::sync::Arc;
 
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, DropDown, Label, ProgressBar, Scale, CheckButton};
+use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale, CheckButton};
 use ReSet_Lib::audio::audio::Source;
 
 use super::sourceEntry;

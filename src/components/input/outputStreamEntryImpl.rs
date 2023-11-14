@@ -1,4 +1,8 @@
+use std::cell::RefCell;
+use std::sync::Arc;
+
 use crate::components::input::outputStreamEntry;
+use ReSet_Lib::audio::audio::OutputStream;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale, DropDown};
 
@@ -18,6 +22,7 @@ pub struct OutputStreamEntry {
     pub resetVolumePercentage: TemplateChild<Label>,
     #[template_child]
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub stream: Arc<RefCell<OutputStream>>,
 }
 
 #[glib::object_subclass]

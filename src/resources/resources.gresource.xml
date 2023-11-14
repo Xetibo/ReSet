@@ -15,6 +15,7 @@
     <file compressed="true" preprocess="xml-stripblanks">resetAudioInput.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetInputStreamEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSinkEntry.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetSourceEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetPopup.ui</file>
   </gresource>
 </gresources>

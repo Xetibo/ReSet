@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.16.0 -->
+<!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <object class="GtkBox" id="resetSinkEntry">
+  <template class="resetSinkEntry" parent="GtkBox">
     <property name="margin-bottom">5</property>
     <property name="margin-end">5</property>
     <property name="margin-start">5</property>
@@ -15,6 +15,7 @@
           <object class="GtkLabel" id="resetSinkName">
             <property name="label">text</property>
             <property name="margin-start">5</property>
+            <property name="wrap">True</property>
           </object>
         </child>
         <child>
@@ -41,9 +42,9 @@
           <object class="GtkScale" id="resetVolumeSlider">
             <property name="adjustment">
               <object class="GtkAdjustment">
-                <property name="page-increment">655.36</property>
-                <property name="step-increment">65536.0</property>
-                <property name="upper">65536.0</property>
+                <property name="page-increment">2005.4016</property>
+                <property name="step-increment">2005.4016</property>
+                <property name="upper">100270.08</property>
               </object>
             </property>
             <property name="hexpand">True</property>
@@ -65,5 +66,5 @@
         <property name="margin-top">5</property>
       </object>
     </child>
-  </object>
+  </template>
 </interface>
