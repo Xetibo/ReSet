@@ -15,7 +15,8 @@ use gtk::gio;
 use gtk::prelude::ActionableExt;
 use ReSet_Lib::audio::audio::{InputStream, Sink};
 
-use super::audioSource::{self, AudioSourceEntry};
+use super::inputStreamEntry::InputStreamEntry;
+use super::sinkEntry::SinkEntry;
 
 glib::wrapper! {
     pub struct AudioBox(ObjectSubclass<audioBoxImpl::AudioBox>)
@@ -41,7 +42,7 @@ impl AudioBox {
             .set_action_target_value(Some(&Variant::from("outputDevices")));
 
         selfImp
-            .resetOutputStreamButton
+            .resetInputStreamButton
             .set_action_name(Some("navigation.pop"));
     }
 }
@@ -55,16 +56,12 @@ pub fn populate_sinks(output_box: Arc<AudioBox>) {
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box_imp = output_box_ref.imp();
-                // TODO handle default mapping 
+                // TODO handle default mapping
                 // output_box_imp.resetVolumePercentage.set_text();
                 // output_box_imp.resetVolumeSlider.let
                 for stream in sinks {
-                    let entry = ListEntry::new(&AudioSourceEntry::new(
-                        stream.name,
-                        stream.volume,
-                        stream.muted,
-                        stream.index,
-                    ));
+                    // TODO create sink handler -> currently only allows input streams
+                    let entry = ListEntry::new(&SinkEntry::new(stream));
                     entry.set_activatable(false);
                     output_box_imp.resetSinks.append(&entry);
                 }
@@ -87,14 +84,9 @@ pub fn populate_streams(listeners: Arc<Listeners>, output_box: Arc<AudioBox>) {
             glib::idle_add_once(move || {
                 let output_box_imp = output_box_ref.imp();
                 for stream in streams {
-                    let entry = ListEntry::new(&AudioSourceEntry::new(
-                        stream.name,
-                        stream.volume,
-                        stream.muted,
-                        stream.index,
-                    ));
+                    let entry = ListEntry::new(&InputStreamEntry::new(stream));
                     entry.set_activatable(false);
-                    output_box_imp.resetOutputStreams.append(&entry);
+                    output_box_imp.resetInputStreams.append(&entry);
                 }
             });
         });

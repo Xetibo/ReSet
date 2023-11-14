@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.17.0 -->
+<!-- Created with Cambalache 0.16.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
-  <template class="resetAudio" parent="GtkBox">
+  <template class="resetAudioOutput" parent="GtkBox">
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
     <child>
@@ -43,7 +43,7 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkDropDown" id="resetOutputDevice">
+                              <object class="GtkDropDown" id="resetInputDevice">
                                 <property name="halign">end</property>
                                 <property name="hexpand">True</property>
                                 <property name="valign">center</property>
@@ -113,7 +113,7 @@
                   <object class="GtkSeparator"/>
                 </child>
                 <child>
-                  <object class="GtkBox" id="resetOutputStreams">
+                  <object class="GtkBox" id="resetInputStreams">
                     <property name="margin-top">10</property>
                     <property name="orientation">vertical</property>
                     <child>
@@ -144,7 +144,7 @@
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                     <child>
-                      <object class="resetListBoxRow" id="resetOutputStreamButton">
+                      <object class="resetListBoxRow" id="resetInputStreamButton">
                         <child>
                           <object class="GtkBox">
                             <property name="height-request">40</property>

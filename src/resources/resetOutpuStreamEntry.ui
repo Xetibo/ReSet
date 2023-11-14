@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.16.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <template class="resetInputStreamEntry" parent="GtkBox">
+  <template class="resetOutpuStreamEntry" parent="GtkBox">
     <property name="margin-bottom">5</property>
     <property name="margin-end">5</property>
     <property name="margin-start">5</property>
@@ -12,13 +12,13 @@
       <object class="GtkBox">
         <property name="margin-bottom">5</property>
         <child>
-          <object class="GtkLabel" id="resetSinkName">
+          <object class="GtkLabel" id="resetSourceName">
             <property name="label">text</property>
             <property name="margin-start">5</property>
           </object>
         </child>
         <child>
-          <object class="GtkDropDown" id="resetSelectedSink">
+          <object class="GtkDropDown" id="resetSelectedSource">
             <property name="halign">end</property>
             <property name="hexpand">True</property>
             <property name="margin-end">5</property>
@@ -31,8 +31,8 @@
         <property name="margin-bottom">5</property>
         <property name="margin-top">5</property>
         <child>
-          <object class="GtkButton" id="resetSinkMute">
-            <property name="icon-name">audio-volume-high-symbolic</property>
+          <object class="GtkButton" id="resetSourceMute">
+            <property name="icon-name">audio-input-microphone-symbolic</property>
             <property name="margin-end">5</property>
             <property name="valign">center</property>
           </object>
@@ -41,9 +41,8 @@
           <object class="GtkScale" id="resetVolumeSlider">
             <property name="adjustment">
               <object class="GtkAdjustment">
-                <property name="page-increment">655.36</property>
-                <property name="step-increment">65536.0</property>
-                <property name="upper">65536.0</property>
+                <property name="page-increment">5.0</property>
+                <property name="upper">100.0</property>
               </object>
             </property>
             <property name="hexpand">True</property>

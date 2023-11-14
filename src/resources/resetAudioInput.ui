@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.17.0 -->
+<!-- Created with Cambalache 0.16.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
-  <template class="resetMicrophone" parent="GtkBox">
+  <template class="resetAudioInput" parent="GtkBox">
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
     <child>
@@ -63,7 +63,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox" id="resetDefaultSource">
+                  <object class="GtkBox">
                     <property name="margin-bottom">10</property>
                     <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
@@ -122,12 +122,6 @@
                         <property name="label">Input Streams</property>
                       </object>
                     </child>
-                    <child>
-                      <object class="resetInputStreamEntry"/>
-                    </child>
-                    <child>
-                      <object class="resetInputStreamEntry"/>
-                    </child>
                   </object>
                 </child>
               </object>
@@ -150,7 +144,7 @@
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                     <child>
-                      <object class="resetListBoxRow" id="resetInputStreamButton">
+                      <object class="resetListBoxRow" id="resetOutputStreamButton">
                         <child>
                           <object class="GtkBox">
                             <property name="height-request">40</property>
@@ -175,7 +169,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox" id="resetSinks">
+                  <object class="GtkBox" id="resetSources">
                     <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
@@ -185,12 +179,6 @@
                         <property name="halign">start</property>
                         <property name="label">Input Devices</property>
                       </object>
-                    </child>
-                    <child>
-                      <object class="resetInputStreamEntry"/>
-                    </child>
-                    <child>
-                      <object class="resetInputStreamEntry"/>
                     </child>
                   </object>
                 </child>

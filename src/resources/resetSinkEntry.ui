@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.16.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <template class="resetInputStreamEntry" parent="GtkBox">
+  <object class="GtkBox" id="resetSinkEntry">
     <property name="margin-bottom">5</property>
     <property name="margin-end">5</property>
     <property name="margin-start">5</property>
@@ -18,10 +18,10 @@
           </object>
         </child>
         <child>
-          <object class="GtkDropDown" id="resetSelectedSink">
+          <object class="GtkCheckButton" id="resetSelectedSink">
             <property name="halign">end</property>
             <property name="hexpand">True</property>
-            <property name="margin-end">5</property>
+            <property name="hexpand-set">True</property>
           </object>
         </child>
       </object>
@@ -65,5 +65,5 @@
         <property name="margin-top">5</property>
       </object>
     </child>
-  </template>
+  </object>
 </interface>

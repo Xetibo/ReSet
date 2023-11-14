@@ -1,17 +1,20 @@
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
+use std::sync::Arc;
 
-use crate::components::output::audioSource;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, DropDown, Label, ProgressBar, Scale};
+use gtk::{glib, Button, CompositeTemplate, DropDown, Label, ProgressBar, Scale, CheckButton};
+use ReSet_Lib::audio::audio::Source;
+
+use super::sourceEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]
-pub struct AudioSourceEntry {
+#[template(resource = "/org/Xetibo/ReSet/resetSourceEntry.ui")]
+pub struct SourceEntry {
     #[template_child]
     pub resetSourceName: TemplateChild<Label>,
     #[template_child]
-    pub resetSelectedSink: TemplateChild<DropDown>,
+    pub resetSelectedSource: TemplateChild<CheckButton>,
     #[template_child]
     pub resetSourceMute: TemplateChild<Button>,
     #[template_child]
@@ -20,15 +23,13 @@ pub struct AudioSourceEntry {
     pub resetVolumePercentage: TemplateChild<Label>,
     #[template_child]
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
-    pub associatedIndex: Cell<u32>,
-    pub isMuted: Cell<bool>,
-    pub volume: RefCell<Vec<u32>>,
+    pub stream: Arc<RefCell<Source>>,
 }
 
 #[glib::object_subclass]
-impl ObjectSubclass for AudioSourceEntry {
-    const NAME: &'static str = "resetOutputStreamEntry";
-    type Type = audioSource::AudioSourceEntry;
+impl ObjectSubclass for SourceEntry {
+    const NAME: &'static str = "resetSourceEntry";
+    type Type = sourceEntry::SourceEntry;
     type ParentType = gtk::Box;
 
     fn class_init(klass: &mut Self::Class) {
@@ -40,8 +41,8 @@ impl ObjectSubclass for AudioSourceEntry {
     }
 }
 
-impl BoxImpl for AudioSourceEntry {}
+impl BoxImpl for SourceEntry {}
 
-impl ObjectImpl for AudioSourceEntry {}
+impl ObjectImpl for SourceEntry {}
 
-impl WidgetImpl for AudioSourceEntry {}
+impl WidgetImpl for SourceEntry {}

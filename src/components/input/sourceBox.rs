@@ -21,6 +21,6 @@ impl SourceBox {
         selfImp.resetSourceRow.set_action_name(Some("navigation.push"));
         selfImp.resetSourceRow.set_action_target_value(Some(&Variant::from("sources")));
 
-        selfImp.resetInputStreamButton.set_action_name(Some("navigation.pop"));
+        selfImp.resetOutputStreamButton.set_action_name(Some("navigation.pop"));
     }
 }

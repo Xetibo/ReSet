@@ -3,20 +3,22 @@ use std::sync::{Arc, Mutex};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::output::audioBox;
-use crate::components::output::audioSource::AudioSourceEntry;
+use crate::components::output::inputStreamEntry::InputStreamEntry;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Box, Button, CompositeTemplate, DropDown, Label, TemplateChild};
 use gtk::{prelude::*, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::{InputStream, Sink};
 
+use super::sinkEntry::SinkEntry;
+
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/Xetibo/ReSet/resetAudio.ui")]
+#[template(resource = "/org/Xetibo/ReSet/resetAudioOutput.ui")]
 pub struct AudioBox {
     #[template_child]
     pub resetSinksRow: TemplateChild<ListEntry>,
     #[template_child]
-    pub resetOutputDevice: TemplateChild<DropDown>,
+    pub resetInputDevice: TemplateChild<DropDown>,
     #[template_child]
     pub resetSinkMute: TemplateChild<Button>,
     #[template_child]
@@ -28,9 +30,9 @@ pub struct AudioBox {
     #[template_child]
     pub resetSinks: TemplateChild<Box>,
     #[template_child]
-    pub resetOutputStreamButton: TemplateChild<ListEntry>,
+    pub resetInputStreamButton: TemplateChild<ListEntry>,
     #[template_child]
-    pub resetOutputStreams: TemplateChild<Box>,
+    pub resetInputStreams: TemplateChild<Box>,
     pub resetDefaultSink: RefCell<Option<Sink>>,
     pub resetSinkList: Arc<Mutex<Vec<Sink>>>,
     pub resetInputStreamList: Arc<Mutex<Vec<InputStream>>>,
@@ -38,12 +40,13 @@ pub struct AudioBox {
 
 #[glib::object_subclass]
 impl ObjectSubclass for AudioBox {
-    const NAME: &'static str = "resetAudio";
+    const NAME: &'static str = "resetAudioOutput";
     type Type = audioBox::AudioBox;
     type ParentType = gtk::Box;
 
     fn class_init(klass: &mut Self::Class) {
-        AudioSourceEntry::ensure_type();
+        InputStreamEntry::ensure_type();
+        SinkEntry::ensure_type();
         ListEntry::ensure_type();
         klass.bind_template();
     }
