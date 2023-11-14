@@ -5,7 +5,7 @@ use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::Listeners;
 use crate::components::output::sinkEntry::set_sink_volume;
 use adw::glib::Object;
-use adw::prelude::{BoxExt, RangeExt};
+use adw::prelude::{BoxExt, ButtonExt, RangeExt};
 use adw::{glib, prelude::ListBoxRowExt};
 use dbus::blocking::Connection;
 use dbus::Error;
@@ -17,7 +17,7 @@ use ReSet_Lib::audio::audio::{InputStream, Sink};
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
-use super::sinkEntry::SinkEntry;
+use super::sinkEntry::{toggle_sink_mute, SinkEntry};
 
 glib::wrapper! {
     pub struct SinkBox(ObjectSubclass<sinkBoxImpl::SinkBox>)
@@ -60,6 +60,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
             glib::idle_add_once(move || {
                 // TODO handle default mapping
                 let output_box_ref_slider = output_box.clone();
+                let output_box_ref_mute = output_box.clone();
                 {
                     let output_box_imp = output_box_ref.imp();
                     let default_sink = output_box_imp.resetDefaultSink.clone(); // Clone outside closure
@@ -86,8 +87,30 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                         println!("{fraction}");
                         let percentage = (fraction).to_string() + "%";
                         imp.resetVolumePercentage.set_text(&percentage);
-                        set_sink_volume(value, imp.resetDefaultSink.clone());
+                        let sink = imp.resetDefaultSink.borrow();
+                        let index = sink.index;
+                        let channels = sink.channels;
+                        set_sink_volume(value, index, channels);
                         Propagation::Proceed
+                    });
+                output_box_ref
+                    .imp()
+                    .resetSinkMute
+                    .connect_clicked(move |_| {
+                        let imp = output_box_ref_mute.imp();
+                        let stream = imp.resetDefaultSink.clone();
+                        let mut stream = stream.borrow_mut();
+                        stream.muted = !stream.muted;
+                        let muted = stream.muted;
+                        let index = stream.index;
+                        if muted {
+                            imp.resetSinkMute
+                                .set_icon_name("audio-volume-muted-symbolic");
+                        } else {
+                            imp.resetSinkMute
+                                .set_icon_name("audio-volume-high-symbolic");
+                        }
+                        toggle_sink_mute(index, muted);
                     });
             });
         });

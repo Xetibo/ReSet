@@ -7,7 +7,7 @@ use crate::components::input::sourceBoxImpl;
 use crate::components::input::sourceEntry::set_source_volume;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{BoxExt, ListBoxRowExt, RangeExt};
+use adw::prelude::{BoxExt, ButtonExt, ListBoxRowExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::prelude::ObjectSubclassIsExt;
@@ -17,7 +17,7 @@ use gtk::prelude::ActionableExt;
 use ReSet_Lib::audio::audio::{OutputStream, Source};
 
 use super::outputStreamEntry::OutputStreamEntry;
-use super::sourceEntry::SourceEntry;
+use super::sourceEntry::{toggle_source_mute, SourceEntry};
 
 glib::wrapper! {
     pub struct SourceBox(ObjectSubclass<sourceBoxImpl::SourceBox>)
@@ -59,6 +59,7 @@ pub fn populate_sources(output_box: Arc<SourceBox>) {
             glib::idle_add_once(move || {
                 // TODO handle default mapping
                 let output_box_ref_slider = output_box.clone();
+                let output_box_ref_mute = output_box.clone();
                 let output_box_ref = output_box.clone();
                 {
                     let output_box_imp = output_box_ref.imp();
@@ -85,8 +86,31 @@ pub fn populate_sources(output_box: Arc<SourceBox>) {
                         println!("{fraction}");
                         let percentage = (fraction).to_string() + "%";
                         imp.resetVolumePercentage.set_text(&percentage);
-                        set_source_volume(value, imp.resetDefaultSource.clone());
+                        let source = imp.resetDefaultSource.borrow();
+                        let index = source.index;
+                        let channels = source.channels;
+                        set_source_volume(value, index, channels);
                         Propagation::Proceed
+                    });
+
+                output_box_ref
+                    .imp()
+                    .resetSourceMute
+                    .connect_clicked(move |_| {
+                        let imp = output_box_ref_mute.imp();
+                        let stream = imp.resetDefaultSource.clone();
+                        let mut stream = stream.borrow_mut();
+                        stream.muted = !stream.muted;
+                        let muted = stream.muted;
+                        let index = stream.index;
+                        if muted {
+                            imp.resetSourceMute
+                                .set_icon_name("audio-volume-muted-symbolic");
+                        } else {
+                            imp.resetSourceMute
+                                .set_icon_name("audio-volume-high-symbolic");
+                        }
+                        toggle_source_mute(index, muted);
                     });
             });
         });

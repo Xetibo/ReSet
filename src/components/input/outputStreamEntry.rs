@@ -4,12 +4,12 @@ use std::time::Duration;
 
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::RangeExt;
+use adw::prelude::{ButtonExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
-use ReSet_Lib::audio::audio::OutputStream;
-use glib::{clone, Propagation};
 use glib::subclass::types::ObjectSubclassIsExt;
+use glib::{clone, Propagation};
+use ReSet_Lib::audio::audio::OutputStream;
 
 use super::outputStreamEntryImpl;
 
@@ -40,21 +40,53 @@ impl OutputStreamEntry {
                     let fraction = (value / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);
-                    set_outputstream_volume(value, imp.stream.clone());
+                    let stream = imp.stream.borrow();
+                    let index = stream.index;
+                    let channels = stream.channels;
+                    set_outputstream_volume(value, index, channels);
                     Propagation::Proceed
                 }),
             );
+            imp.resetSourceMute
+                .connect_clicked(clone!(@weak imp => move |_| {
+                    let stream = imp.stream.clone();
+                    let mut stream = stream.borrow_mut();
+                    stream.muted = !stream.muted;
+                    let muted = stream.muted;
+                    let index = stream.index;
+                    if muted {
+                        imp.resetSourceMute
+                           .set_icon_name("audio-volume-muted-symbolic");
+                    } else {
+                        imp.resetSourceMute
+                           .set_icon_name("audio-volume-high-symbolic");
+                    }
+                    toggle_output_stream_mute(index, muted);
+                }));
         }
         obj
     }
 }
 
-fn set_outputstream_volume(value: f64, stream: Arc<RefCell<OutputStream>>) -> bool {
-    let mut stream = stream.borrow_mut().clone();
-    // let x = stream.volume.iter_mut().map(|_| value as u32);
-    stream.volume = vec![value as u32; stream.channels as usize];
-    dbg!(stream.volume.clone());
+fn set_outputstream_volume(value: f64, index: u32, channels: u16) -> bool {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(bool,), Error> = proxy.method_call(
+        "org.xetibo.ReSet",
+        "SetOutputStreamVolume",
+        (index, channels, value as u32),
+    );
+    if res.is_err() {
+        return false;
+    }
+    res.unwrap().0
+}
 
+fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
@@ -62,7 +94,7 @@ fn set_outputstream_volume(value: f64, stream: Arc<RefCell<OutputStream>>) -> bo
         Duration::from_millis(1000),
     );
     let res: Result<(bool,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetOutputStreamVolume", (stream,));
+        proxy.method_call("org.xetibo.ReSet", "SetOutputStreamMute", (index, muted));
     if res.is_err() {
         return false;
     }

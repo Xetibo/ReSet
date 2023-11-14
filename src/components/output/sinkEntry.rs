@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::RangeExt;
+use adw::prelude::{ButtonExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
@@ -42,21 +42,53 @@ impl SinkEntry {
                     println!("{fraction}");
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);
-                    set_sink_volume(value, imp.stream.clone());
+                     let sink = imp.stream.borrow();
+                     let index = sink.index;
+                     let channels = sink.channels;
+                     set_sink_volume(value, index, channels);
                     Propagation::Proceed
                 }),
             );
+            imp.resetSinkMute
+                .connect_clicked(clone!(@weak imp => move |_| {
+                    let stream = imp.stream.clone();
+                    let mut stream = stream.borrow_mut();
+                    stream.muted = !stream.muted;
+                    let muted = stream.muted;
+                    let index = stream.index;
+                    if muted {
+                        imp.resetSinkMute
+                           .set_icon_name("audio-volume-muted-symbolic");
+                    } else {
+                        imp.resetSinkMute
+                           .set_icon_name("audio-volume-high-symbolic");
+                    }
+                    toggle_sink_mute(index, muted);
+                }));
         }
         obj
     }
 }
 
-pub fn set_sink_volume(value: f64, stream: Arc<RefCell<Sink>>) -> bool {
-    let mut stream = stream.borrow_mut().clone();
-    // let x = stream.volume.iter_mut().map(|_| value as u32);
-    stream.volume = vec![value as u32; stream.channels as usize];
-    dbg!(stream.volume.clone());
+pub fn set_sink_volume(value: f64, index: u32, channels: u16) -> bool {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(bool,), Error> = proxy.method_call(
+        "org.xetibo.ReSet",
+        "SetSinkVolume",
+        (index, channels, value as u32),
+    );
+    if res.is_err() {
+        return false;
+    }
+    res.unwrap().0
+}
 
+pub fn toggle_sink_mute(index: u32, muted: bool) -> bool {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
@@ -64,7 +96,7 @@ pub fn set_sink_volume(value: f64, stream: Arc<RefCell<Sink>>) -> bool {
         Duration::from_millis(1000),
     );
     let res: Result<(bool,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetSinkVolume", (stream,));
+        proxy.method_call("org.xetibo.ReSet", "SetSinkMute", (index, muted));
     if res.is_err() {
         return false;
     }
