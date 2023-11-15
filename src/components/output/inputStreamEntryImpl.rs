@@ -24,6 +24,7 @@ pub struct InputStreamEntry {
     #[template_child]
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<InputStream>>,
+    pub associatedSink: Arc<RefCell<(u32, String)>>,
 }
 
 #[glib::object_subclass]

@@ -24,10 +24,10 @@ impl SinkEntry {
     pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Sink) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO map dropdown
+        // TODO handle events
         {
             let imp = obj.imp();
-            imp.resetSinkName.set_text(stream.name.clone().as_str());
+            imp.resetSinkName.set_text(stream.alias.clone().as_str());
             let name = Arc::new(stream.name.clone());
             let volume = stream.volume.first().unwrap_or_else(|| &(0 as u32));
             let fraction = (*volume as f64 / 655.36).round();
@@ -49,7 +49,6 @@ impl SinkEntry {
                 }),
             );
             imp.resetSelectedSink.set_group(Some(&*check_group));
-            // check_group.set_group(Some(&*imp.resetSelectedSink));
             if is_default {
                 imp.resetSelectedSink.set_active(true);
             } else {

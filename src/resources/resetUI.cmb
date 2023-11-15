@@ -114,7 +114,7 @@
 	(8,74,"resetListBoxRow","resetSinksRow",73,None,None,None,None,None),
 	(8,75,"GtkBox",None,74,None,None,None,None,None),
 	(8,76,"GtkLabel",None,75,None,None,None,None,None),
-	(8,77,"GtkDropDown","resetInputDevice",75,None,None,None,1,None),
+	(8,77,"GtkDropDown","resetSinkDropdown",75,None,None,None,1,None),
 	(8,78,"GtkImage",None,75,None,None,None,2,None),
 	(8,81,"GtkLabel",None,72,None,None,None,1,None),
 	(8,85,"GtkBox","resetInputStreams",56,None,None,None,4,None),

@@ -11,13 +11,13 @@ use adw::prelude::{BoxExt, ButtonExt, ListBoxRowExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::{Propagation, Variant};
-use gtk::gio;
+use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
+use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::{OutputStream, Source};
 
 use super::outputStreamEntry::OutputStreamEntry;
-use super::sourceEntry::{toggle_source_mute, SourceEntry};
+use super::sourceEntry::{set_default_source, toggle_source_mute, SourceEntry};
 
 glib::wrapper! {
     pub struct SourceBox(ObjectSubclass<sourceBoxImpl::SourceBox>)
@@ -51,13 +51,23 @@ impl SourceBox {
 pub fn populate_sources(output_box: Arc<SourceBox>) {
     gio::spawn_blocking(move || {
         let output_box_imp = output_box.imp();
-        let sinks = get_sources();
+        let sources = get_sources();
+        {
+            let list = output_box_imp.resetModelList.borrow_mut();
+            let mut map = output_box_imp.resetSourceMap.borrow_mut();
+            let mut i: u32 = 0;
+            for source in sources.iter() {
+                list.append(&source.alias);
+                map.insert(source.alias.clone(), (source.index, i, source.name.clone()));
+                i += 1;
+            }
+        }
         output_box_imp
             .resetDefaultSource
             .replace(get_default_source());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                // TODO handle default mapping
+                // TODO handle events
                 let output_box_ref_slider = output_box.clone();
                 let output_box_ref_mute = output_box.clone();
                 let output_box_ref = output_box.clone();
@@ -71,15 +81,49 @@ pub fn populate_sources(output_box: Arc<SourceBox>) {
                     let percentage = (fraction).to_string() + "%";
                     output_box_imp.resetVolumePercentage.set_text(&percentage);
                     output_box_imp.resetVolumeSlider.set_value(*volume as f64);
-                    for stream in sinks {
+                    for stream in sources {
                         let mut is_default = false;
                         if output_box_imp.resetDefaultSource.borrow().name == stream.name {
                             is_default = true;
                         }
-                        let entry = ListEntry::new(&SourceEntry::new(is_default, output_box_imp.resetDefaultCheckButton.clone(), stream));
+                        let entry = ListEntry::new(&SourceEntry::new(
+                            is_default,
+                            output_box_imp.resetDefaultCheckButton.clone(),
+                            stream,
+                        ));
                         entry.set_activatable(false);
                         output_box_imp.resetSources.append(&entry);
                     }
+                    let list = output_box_imp.resetModelList.borrow();
+                    output_box_imp.resetSourceDropdown.set_model(Some(&*list));
+                    let map = output_box_imp.resetSourceMap.borrow();
+                    let name = output_box_imp.resetDefaultSource.borrow();
+                    let name = &name.alias;
+                    let index = map.get(name);
+                    if index.is_some() {
+                        output_box_imp
+                            .resetSourceDropdown
+                            .set_selected(index.unwrap().1);
+                    }
+                    output_box_imp.resetSourceDropdown.connect_selected_notify(
+                        clone!(@weak output_box_imp => move |dropdown| {
+                            let selected = dropdown.selected_item();
+                            if selected.is_none() {
+                                return;
+                            }
+                            let selected = selected.unwrap();
+                            let selected = selected.downcast_ref::<StringObject>().unwrap();
+                            let selected = selected.string().to_string();
+
+                            let source = output_box_imp.resetSourceMap.borrow();
+                            let source = source.get(&selected);
+                            if source.is_none() {
+                                return;
+                            }
+                            let sink = Arc::new(source.unwrap().2.clone());
+                            set_default_source(sink);
+                        }),
+                    );
                 }
                 output_box_ref
                     .imp()
@@ -121,7 +165,7 @@ pub fn populate_sources(output_box: Arc<SourceBox>) {
     });
 }
 
-pub fn populate_outputstreams(listeners: Arc<Listeners>, output_box: Arc<SourceBox>) {
+pub fn populate_outputstreams(_listeners: Arc<Listeners>, output_box: Arc<SourceBox>) {
     // TODO add listener
     let output_box_ref = output_box.clone();
 
@@ -131,7 +175,7 @@ pub fn populate_outputstreams(listeners: Arc<Listeners>, output_box: Arc<SourceB
             glib::idle_add_once(move || {
                 let output_box_imp = output_box_ref.imp();
                 for stream in streams {
-                    let entry = ListEntry::new(&OutputStreamEntry::new(stream));
+                    let entry = ListEntry::new(&OutputStreamEntry::new(output_box.clone(), stream));
                     entry.set_activatable(false);
                     output_box_imp.resetOutputStreams.append(&entry);
                 }
