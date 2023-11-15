@@ -1,21 +1,29 @@
-use gtk::{Button, CompositeTemplate, glib, Label, ProgressBar, Scale};
+use std::cell::RefCell;
+use std::sync::Arc;
+
 use gtk::subclass::prelude::*;
-use crate::components::input::inputStreamEntry;
+use gtk::{glib, Button, CompositeTemplate, DropDown, Label, ProgressBar, Scale};
+use ReSet_Lib::audio::audio::InputStream;
+
+use super::inputStreamEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetInputStreamEntry.ui")]
 pub struct InputStreamEntry {
     #[template_child]
-    pub resetSourceName: TemplateChild<Label>,
+    pub resetSinkName: TemplateChild<Label>,
     #[template_child]
-    pub resetSourceMute: TemplateChild<Button>,
+    pub resetSelectedSink: TemplateChild<DropDown>,
+    #[template_child]
+    pub resetSinkMute: TemplateChild<Button>,
     #[template_child]
     pub resetVolumeSlider: TemplateChild<Scale>,
     #[template_child]
     pub resetVolumePercentage: TemplateChild<Label>,
     #[template_child]
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub stream: Arc<RefCell<InputStream>>,
 }
 
 #[glib::object_subclass]

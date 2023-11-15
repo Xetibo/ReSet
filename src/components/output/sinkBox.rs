@@ -3,32 +3,32 @@ use std::time::Duration;
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::Listeners;
-use crate::components::input::sourceBoxImpl;
-use crate::components::input::sourceEntry::set_source_volume;
-use adw::glib;
+use crate::components::output::sinkEntry::set_sink_volume;
 use adw::glib::Object;
-use adw::prelude::{BoxExt, ButtonExt, ListBoxRowExt, RangeExt};
+use adw::prelude::{BoxExt, ButtonExt, RangeExt};
+use adw::{glib, prelude::ListBoxRowExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::{Propagation, Variant};
+use glib::{clone, Propagation, Variant};
 use gtk::gio;
 use gtk::prelude::ActionableExt;
-use ReSet_Lib::audio::audio::{OutputStream, Source};
+use ReSet_Lib::audio::audio::{InputStream, Sink};
 
-use super::outputStreamEntry::OutputStreamEntry;
-use super::sourceEntry::{toggle_source_mute, SourceEntry};
+use super::inputStreamEntry::InputStreamEntry;
+use super::sinkBoxImpl;
+use super::sinkEntry::{toggle_sink_mute, SinkEntry};
 
 glib::wrapper! {
-    pub struct SourceBox(ObjectSubclass<sourceBoxImpl::SourceBox>)
+    pub struct SinkBox(ObjectSubclass<sinkBoxImpl::SinkBox>)
     @extends gtk::Box, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
-unsafe impl Send for SourceBox {}
-unsafe impl Sync for SourceBox {}
+unsafe impl Send for SinkBox {}
+unsafe impl Sync for SinkBox {}
 
-impl SourceBox {
+impl SinkBox {
     pub fn new() -> Self {
         Object::builder().build()
     }
@@ -36,49 +36,50 @@ impl SourceBox {
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
         selfImp
-            .resetSourceRow
+            .resetSinksRow
             .set_action_name(Some("navigation.push"));
         selfImp
-            .resetSourceRow
-            .set_action_target_value(Some(&Variant::from("sources")));
+            .resetSinksRow
+            .set_action_target_value(Some(&Variant::from("outputDevices")));
 
         selfImp
-            .resetOutputStreamButton
+            .resetInputStreamButton
             .set_action_name(Some("navigation.pop"));
     }
 }
 
-pub fn populate_sources(output_box: Arc<SourceBox>) {
+pub fn populate_sinks(output_box: Arc<SinkBox>) {
     gio::spawn_blocking(move || {
-        let output_box_imp = output_box.imp();
-        let sinks = get_sources();
-        output_box_imp
-            .resetDefaultSource
-            .replace(get_default_source());
+        let output_box_ref = output_box.clone();
+        {
+            let output_box_imp = output_box.imp();
+            output_box_imp.resetDefaultSink.replace(get_default_sink());
+        }
+        let sinks = get_sinks();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 // TODO handle default mapping
                 let output_box_ref_slider = output_box.clone();
                 let output_box_ref_mute = output_box.clone();
-                let output_box_ref = output_box.clone();
                 {
                     let output_box_imp = output_box_ref.imp();
-                    let default_sink = output_box_imp.resetDefaultSource.clone(); // Clone outside closure
-                    let source = default_sink.borrow(); //
+                    let default_sink = output_box_imp.resetDefaultSink.clone(); // Clone outside closure
+                    let sink = default_sink.borrow(); //
 
-                    let volume = source.volume.first().unwrap_or_else(|| &(0 as u32));
+                    let volume = sink.volume.first().unwrap_or_else(|| &(0 as u32));
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
                     output_box_imp.resetVolumePercentage.set_text(&percentage);
                     output_box_imp.resetVolumeSlider.set_value(*volume as f64);
                     for stream in sinks {
+                        // TODO create sink handler -> currently only allows input streams
                         let mut is_default = false;
-                        if output_box_imp.resetDefaultSource.borrow().name == stream.name {
+                        if output_box_imp.resetDefaultSink.borrow().name == stream.name {
                             is_default = true;
                         }
-                        let entry = ListEntry::new(&SourceEntry::new(is_default, output_box_imp.resetDefaultCheckButton.clone(), stream));
+                        let entry = ListEntry::new(&SinkEntry::new(is_default, output_box_imp.resetDefaultCheckButton.clone(), stream));
                         entry.set_activatable(false);
-                        output_box_imp.resetSources.append(&entry);
+                        output_box_imp.resetSinks.append(&entry);
                     }
                 }
                 output_box_ref
@@ -90,97 +91,98 @@ pub fn populate_sources(output_box: Arc<SourceBox>) {
                         println!("{fraction}");
                         let percentage = (fraction).to_string() + "%";
                         imp.resetVolumePercentage.set_text(&percentage);
-                        let source = imp.resetDefaultSource.borrow();
-                        let index = source.index;
-                        let channels = source.channels;
-                        set_source_volume(value, index, channels);
+                        let sink = imp.resetDefaultSink.borrow();
+                        let index = sink.index;
+                        let channels = sink.channels;
+                        set_sink_volume(value, index, channels);
                         Propagation::Proceed
                     });
-
                 output_box_ref
                     .imp()
-                    .resetSourceMute
+                    .resetSinkMute
                     .connect_clicked(move |_| {
                         let imp = output_box_ref_mute.imp();
-                        let stream = imp.resetDefaultSource.clone();
+                        let stream = imp.resetDefaultSink.clone();
                         let mut stream = stream.borrow_mut();
                         stream.muted = !stream.muted;
                         let muted = stream.muted;
                         let index = stream.index;
                         if muted {
-                            imp.resetSourceMute
+                            imp.resetSinkMute
                                 .set_icon_name("audio-volume-muted-symbolic");
                         } else {
-                            imp.resetSourceMute
+                            imp.resetSinkMute
                                 .set_icon_name("audio-volume-high-symbolic");
                         }
-                        toggle_source_mute(index, muted);
+                        toggle_sink_mute(index, muted);
                     });
             });
         });
     });
 }
 
-pub fn populate_outputstreams(listeners: Arc<Listeners>, output_box: Arc<SourceBox>) {
+pub fn populate_inputstreams(listeners: Arc<Listeners>, output_box: Arc<SinkBox>) {
     // TODO add listener
     let output_box_ref = output_box.clone();
+    // let output_box_ref_listener = output_box.clone();
+    let output_box_imp = output_box.imp();
+    // let sources = output_box_imp.resetSinks.clone();
+    // let output_streams = output_box_imp.resetInputStreams.clone();
 
     gio::spawn_blocking(move || {
-        let streams = get_output_streams();
+        let streams = get_input_streams();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box_imp = output_box_ref.imp();
                 for stream in streams {
-                    let entry = ListEntry::new(&OutputStreamEntry::new(stream));
+                    let entry = ListEntry::new(&InputStreamEntry::new(stream));
                     entry.set_activatable(false);
-                    output_box_imp.resetOutputStreams.append(&entry);
+                    output_box_imp.resetInputStreams.append(&entry);
                 }
             });
         });
     });
 }
 
-fn get_output_streams() -> Vec<OutputStream> {
+fn get_input_streams() -> Vec<InputStream> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(Vec<OutputStream>,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "ListOutputStreams", ());
+    let res: Result<(Vec<InputStream>,), Error> =
+        proxy.method_call("org.xetibo.ReSet", "ListInputStreams", ());
     if res.is_err() {
         return Vec::new();
     }
     res.unwrap().0
 }
 
-fn get_sources() -> Vec<Source> {
+fn get_sinks() -> Vec<Sink> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(Vec<Source>,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "ListSources", ());
+    let res: Result<(Vec<Sink>,), Error> = proxy.method_call("org.xetibo.ReSet", "ListSinks", ());
     if res.is_err() {
         return Vec::new();
     }
     res.unwrap().0
 }
 
-fn get_default_source() -> Source {
+fn get_default_sink() -> Sink {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(Source,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "GetDefaultSource", ());
+    let res: Result<(Sink,), Error> = proxy.method_call("org.xetibo.ReSet", "GetDefaultSink", ());
     if res.is_err() {
-        return Source::default();
+        return Sink::default();
     }
     res.unwrap().0
 }

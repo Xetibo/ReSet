@@ -2,22 +2,27 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <template class="resetMicEntry" parent="GtkBox">
+  <template class="resetSourceEntry" parent="GtkBox">
+    <property name="margin-bottom">5</property>
     <property name="margin-end">5</property>
     <property name="margin-start">5</property>
+    <property name="margin-top">5</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkBox">
         <property name="margin-bottom">5</property>
         <child>
-          <object class="GtkImage" id="resetMicIcon">
-            <property name="icon-name">audio-input-microphone-symbolic</property>
-            <property name="margin-end">5</property>
+          <object class="GtkLabel" id="resetSourceName">
+            <property name="label">text</property>
+            <property name="margin-start">5</property>
+            <property name="wrap">True</property>
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetMicName">
-            <property name="label">Input Volume</property>
+          <object class="GtkCheckButton" id="resetSelectedSource">
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="hexpand-set">True</property>
           </object>
         </child>
       </object>
@@ -27,18 +32,19 @@
         <property name="margin-bottom">5</property>
         <property name="margin-top">5</property>
         <child>
-          <object class="GtkButton" id="resetMicMute">
-            <property name="icon-name">audio-input-microphone-symbolic</property>
+          <object class="GtkButton" id="resetSourceMute">
+            <property name="icon-name">microphone-sensitivity-high-symbolic</property>
             <property name="margin-end">5</property>
             <property name="valign">center</property>
           </object>
         </child>
         <child>
-          <object class="GtkScale" id="resetMicSlider">
+          <object class="GtkScale" id="resetVolumeSlider">
             <property name="adjustment">
               <object class="GtkAdjustment">
-                <property name="page-increment">5.0</property>
-                <property name="upper">100.0</property>
+                <property name="page-increment">2005.4016</property>
+                <property name="step-increment">2005.4016</property>
+                <property name="upper">100270.08</property>
               </object>
             </property>
             <property name="hexpand">True</property>
@@ -47,7 +53,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetMicPercentage">
+          <object class="GtkLabel" id="resetVolumePercentage">
             <property name="label">100%</property>
             <property name="lines">1</property>
             <property name="width-request">40</property>
@@ -56,7 +62,9 @@
       </object>
     </child>
     <child>
-      <object class="GtkProgressBar" id="resetMicMeter"/>
+      <object class="GtkProgressBar" id="resetVolumeMeter">
+        <property name="margin-top">5</property>
+      </object>
     </child>
   </template>
 </interface>

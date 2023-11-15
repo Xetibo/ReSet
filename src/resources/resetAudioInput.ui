@@ -3,14 +3,14 @@
 <interface>
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
-  <template class="resetAudio" parent="GtkBox">
+  <template class="resetAudioInput" parent="GtkBox">
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
     <child>
       <object class="GtkLabel">
         <property name="css-classes">resetSettingLabel</property>
         <property name="halign">start</property>
-        <property name="label">Output</property>
+        <property name="label">Input</property>
         <property name="margin-start">5</property>
       </object>
     </child>
@@ -32,18 +32,18 @@
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                     <child>
-                      <object class="resetListBoxRow" id="resetSinksRow">
+                      <object class="resetListBoxRow" id="resetSourceRow">
                         <child>
                           <object class="GtkBox">
                             <property name="height-request">40</property>
                             <property name="margin-start">5</property>
                             <child>
                               <object class="GtkLabel">
-                                <property name="label">Output Device</property>
+                                <property name="label">Input Device</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkDropDown" id="resetOutputDevice">
+                              <object class="GtkDropDown" id="resetSourceDropdown">
                                 <property name="halign">end</property>
                                 <property name="hexpand">True</property>
                                 <property name="valign">center</property>
@@ -74,8 +74,8 @@
                         <property name="margin-bottom">5</property>
                         <property name="margin-top">5</property>
                         <child>
-                          <object class="GtkButton" id="resetSinkMute">
-                            <property name="icon-name">audio-volume-high-symbolic</property>
+                          <object class="GtkButton" id="resetSourceMute">
+                            <property name="icon-name">audio-input-microphone-symbolic</property>
                             <property name="margin-end">5</property>
                             <property name="valign">center</property>
                           </object>
@@ -84,8 +84,9 @@
                           <object class="GtkScale" id="resetVolumeSlider">
                             <property name="adjustment">
                               <object class="GtkAdjustment">
-                                <property name="page-increment">5.0</property>
-                                <property name="upper">100.0</property>
+                                <property name="page-increment">2005.4016</property>
+                                <property name="step-increment">2005.4016</property>
+                                <property name="upper">100270.08</property>
                               </object>
                             </property>
                             <property name="hexpand">True</property>
@@ -119,7 +120,7 @@
                     <child>
                       <object class="GtkLabel">
                         <property name="halign">start</property>
-                        <property name="label">Output Streams</property>
+                        <property name="label">Input Streams</property>
                       </object>
                     </child>
                   </object>
@@ -130,7 +131,7 @@
         </child>
         <child>
           <object class="AdwNavigationPage">
-            <property name="tag">outputDevices</property>
+            <property name="tag">sources</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
@@ -150,7 +151,7 @@
                             <property name="height-request">40</property>
                             <child>
                               <object class="GtkLabel">
-                                <property name="label">Output Streams</property>
+                                <property name="label">Input Streams</property>
                                 <property name="margin-start">5</property>
                               </object>
                             </child>
@@ -169,10 +170,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel"/>
-                </child>
-                <child>
-                  <object class="GtkBox" id="resetSinks">
+                  <object class="GtkBox" id="resetSources">
                     <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
@@ -180,7 +178,7 @@
                     <child>
                       <object class="GtkLabel">
                         <property name="halign">start</property>
-                        <property name="label">Output Devices</property>
+                        <property name="label">Input Devices</property>
                       </object>
                     </child>
                   </object>

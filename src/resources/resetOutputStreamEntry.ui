@@ -15,10 +15,11 @@
           <object class="GtkLabel" id="resetSourceName">
             <property name="label">text</property>
             <property name="margin-start">5</property>
+            <property name="wrap">True</property>
           </object>
         </child>
         <child>
-          <object class="GtkDropDown" id="resetSelectedSink">
+          <object class="GtkDropDown" id="resetSelectedSource">
             <property name="halign">end</property>
             <property name="hexpand">True</property>
             <property name="margin-end">5</property>
@@ -32,7 +33,7 @@
         <property name="margin-top">5</property>
         <child>
           <object class="GtkButton" id="resetSourceMute">
-            <property name="icon-name">audio-volume-high-symbolic</property>
+            <property name="icon-name">audio-input-microphone-symbolic</property>
             <property name="margin-end">5</property>
             <property name="valign">center</property>
           </object>
@@ -41,8 +42,9 @@
           <object class="GtkScale" id="resetVolumeSlider">
             <property name="adjustment">
               <object class="GtkAdjustment">
-                <property name="page-increment">5.0</property>
-                <property name="upper">100.0</property>
+                <property name="page-increment">2005.4016</property>
+                <property name="step-increment">2005.4016</property>
+                <property name="upper">100270.08</property>
               </object>
             </property>
             <property name="hexpand">True</property>

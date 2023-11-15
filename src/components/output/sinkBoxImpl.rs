@@ -2,21 +2,23 @@ use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
 
 use crate::components::base::listEntry::ListEntry;
-use crate::components::output::audioBox;
-use crate::components::output::audioSource::AudioSourceEntry;
+use crate::components::output::inputStreamEntry::InputStreamEntry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Box, Button, CompositeTemplate, DropDown, Label, TemplateChild};
+use gtk::{glib, Box, Button, CompositeTemplate, DropDown, Label, TemplateChild, CheckButton};
 use gtk::{prelude::*, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::{InputStream, Sink};
 
+use super::sinkBox;
+use super::sinkEntry::SinkEntry;
+
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/Xetibo/ReSet/resetAudio.ui")]
-pub struct AudioBox {
+#[template(resource = "/org/Xetibo/ReSet/resetAudioOutput.ui")]
+pub struct SinkBox {
     #[template_child]
     pub resetSinksRow: TemplateChild<ListEntry>,
     #[template_child]
-    pub resetOutputDevice: TemplateChild<DropDown>,
+    pub resetInputDevice: TemplateChild<DropDown>,
     #[template_child]
     pub resetSinkMute: TemplateChild<Button>,
     #[template_child]
@@ -28,22 +30,24 @@ pub struct AudioBox {
     #[template_child]
     pub resetSinks: TemplateChild<Box>,
     #[template_child]
-    pub resetOutputStreamButton: TemplateChild<ListEntry>,
+    pub resetInputStreamButton: TemplateChild<ListEntry>,
     #[template_child]
-    pub resetOutputStreams: TemplateChild<Box>,
-    pub resetDefaultSink: RefCell<Option<Sink>>,
+    pub resetInputStreams: TemplateChild<Box>,
+    pub resetDefaultCheckButton: Arc<CheckButton>,
+    pub resetDefaultSink: Arc<RefCell<Sink>>,
     pub resetSinkList: Arc<Mutex<Vec<Sink>>>,
     pub resetInputStreamList: Arc<Mutex<Vec<InputStream>>>,
 }
 
 #[glib::object_subclass]
-impl ObjectSubclass for AudioBox {
-    const NAME: &'static str = "resetAudio";
-    type Type = audioBox::AudioBox;
+impl ObjectSubclass for SinkBox {
+    const NAME: &'static str = "resetAudioOutput";
+    type Type = sinkBox::SinkBox;
     type ParentType = gtk::Box;
 
     fn class_init(klass: &mut Self::Class) {
-        AudioSourceEntry::ensure_type();
+        InputStreamEntry::ensure_type();
+        SinkEntry::ensure_type();
         ListEntry::ensure_type();
         klass.bind_template();
     }
@@ -53,19 +57,19 @@ impl ObjectSubclass for AudioBox {
     }
 }
 
-impl BoxImpl for AudioBox {}
+impl BoxImpl for SinkBox {}
 
-impl ObjectImpl for AudioBox {
+impl ObjectImpl for SinkBox {
     fn constructed(&self) {
         let obj = self.obj();
         obj.setupCallbacks();
     }
 }
 
-impl ListBoxRowImpl for AudioBox {}
+impl ListBoxRowImpl for SinkBox {}
 
-impl WidgetImpl for AudioBox {}
+impl WidgetImpl for SinkBox {}
 
-impl WindowImpl for AudioBox {}
+impl WindowImpl for SinkBox {}
 
-impl ApplicationWindowImpl for AudioBox {}
+impl ApplicationWindowImpl for SinkBox {}

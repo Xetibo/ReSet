@@ -1,5 +1,7 @@
 #![allow(non_snake_case)]
-pub mod audioSource;
-pub mod audioBox;
-pub mod audioBoxImpl;
-pub mod audioSourceImpl;
+pub mod sinkBox;
+pub mod sinkBoxImpl;
+pub mod inputStreamEntry;
+pub mod inputStreamEntryImpl;
+pub mod sinkEntry;
+pub mod sinkEntryImpl;
