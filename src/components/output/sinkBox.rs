@@ -10,7 +10,7 @@ use crate::components::base::utils::{
 };
 use crate::components::output::sinkEntry::set_sink_volume;
 use adw::glib::Object;
-use adw::prelude::{BoxExt, ButtonExt, RangeExt};
+use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, RangeExt};
 use adw::{glib, prelude::ListBoxRowExt};
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
@@ -333,6 +333,39 @@ pub fn start_output_box_listener(listeners: Arc<Listeners>, sink_box: Arc<SinkBo
                     output_box_imp.resetSinks.remove(&*entry.unwrap().0);
                     list.remove(&ir.index);
                     // TODO delete from other map -> alias to index in dropdown
+                });
+            });
+            true
+        });
+        if res.is_err() {
+            println!("fail on sink remove");
+            return;
+        }
+        let res = conn.add_match(sink_changed, move |ir: SinkChanged, _, _| {
+            let sink_box = sink_changed_box.clone();
+            let default_sink = get_default_sink();
+            glib::spawn_future(async move {
+                glib::idle_add_once(move || {
+                    let output_box = sink_box.clone();
+                    let output_box_imp = output_box.imp();
+                    let list = output_box_imp.resetSinkList.lock().unwrap();
+                    let entry = list.get(&ir.sink.index);
+                    if entry.is_none() {
+                        return;
+                    }
+                    let imp = entry.unwrap().1.imp();
+                    let is_default = ir.sink.name == default_sink.name;
+                    imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
+                    let volume = ir.sink.volume.first().unwrap_or_else(|| &(0 as u32));
+                    let fraction = (*volume as f64 / 655.36).round();
+                    let percentage = (fraction).to_string() + "%";
+                    imp.resetVolumePercentage.set_text(&percentage);
+                    imp.resetVolumeSlider.set_value(*volume as f64);
+                    if is_default {
+                        imp.resetSelectedSink.set_active(true);
+                    } else {
+                        imp.resetSelectedSink.set_active(false);
+                    }
                 });
             });
             true
