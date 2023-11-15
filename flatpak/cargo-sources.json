@@ -2,14 +2,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/ReSet-Lib/ReSet-Lib-0.2.3.crate",
-        "sha256": "3e3ef13734e2a2324ffed82ac9b24acab15306c2de644ac649d1ae3a16be0960",
-        "dest": "cargo/vendor/ReSet-Lib-0.2.3"
+        "url": "https://static.crates.io/crates/ReSet-Lib/ReSet-Lib-0.2.8.crate",
+        "sha256": "6761097b3d41653f8ad3b265625c840b6c415282ba20a0491fe6a7a7e817873a",
+        "dest": "cargo/vendor/ReSet-Lib-0.2.8"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"3e3ef13734e2a2324ffed82ac9b24acab15306c2de644ac649d1ae3a16be0960\", \"files\": {}}",
-        "dest": "cargo/vendor/ReSet-Lib-0.2.3",
+        "contents": "{\"package\": \"6761097b3d41653f8ad3b265625c840b6c415282ba20a0491fe6a7a7e817873a\", \"files\": {}}",
+        "dest": "cargo/vendor/ReSet-Lib-0.2.8",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -1042,14 +1042,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/reset_daemon/reset_daemon-0.1.0.crate",
-        "sha256": "6c6c0fa05313f248b7283c371f1aa7eced0421a6dbeaf4aef0db3f291a75bec1",
-        "dest": "cargo/vendor/reset_daemon-0.1.0"
+        "url": "https://static.crates.io/crates/reset_daemon/reset_daemon-0.1.3.crate",
+        "sha256": "1d7b1c575b773eadd0fc8991de8abb883cfb7bce9c5e8c4f9e10b85cb142efee",
+        "dest": "cargo/vendor/reset_daemon-0.1.3"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"6c6c0fa05313f248b7283c371f1aa7eced0421a6dbeaf4aef0db3f291a75bec1\", \"files\": {}}",
-        "dest": "cargo/vendor/reset_daemon-0.1.0",
+        "contents": "{\"package\": \"1d7b1c575b773eadd0fc8991de8abb883cfb7bce9c5e8c4f9e10b85cb142efee\", \"files\": {}}",
+        "dest": "cargo/vendor/reset_daemon-0.1.3",
         "dest-filename": ".cargo-checksum.json"
     },
     {
