@@ -79,7 +79,7 @@ impl WifiEntry {
         let selfImp = self.imp();
         selfImp.resetWifiEditButton.connect_clicked(clone!(@ weak selfImp => move |_| {
             // TODO open navigationpage
-            let option = getConnectionSettings(selfImp.accessPoint.borrow().associated_connection.clone());
+            let _option = getConnectionSettings(selfImp.accessPoint.borrow().associated_connection.clone());
         }));
     }
 }
