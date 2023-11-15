@@ -1,5 +1,5 @@
 use std::{
-    sync::atomic::{AtomicBool, Ordering},
+    sync::{atomic::{AtomicBool, Ordering}, Arc},
     thread,
     time::Duration,
 };
@@ -9,10 +9,13 @@ use dbus::{
     blocking::Connection,
     Error,
 };
+use gtk::gio;
 use ReSet_Lib::{
-    audio::audio::{InputStream, Sink},
+    audio::audio::{InputStream, OutputStream, Sink, Source},
     signals::GetVal,
 };
+
+use crate::components::{input::sourceBox::{SourceBox, start_input_box_listener}, output::sinkBox::{SinkBox, start_output_box_listener}};
 
 #[derive(Default)]
 pub struct Listeners {
@@ -200,4 +203,189 @@ impl GetVal<(u32,)> for InputStreamRemoved {
     fn get_value(&self) -> (u32,) {
         (self.index.clone(),)
     }
+}
+
+#[derive(Debug)]
+pub struct SourceAdded {
+    pub source: Source,
+}
+
+impl arg::AppendAll for SourceAdded {
+    fn append(&self, i: &mut arg::IterAppend) {
+        self.source.append_by_ref(i);
+    }
+}
+
+impl arg::ReadAll for SourceAdded {
+    fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
+        Ok(SourceAdded { source: i.read()? })
+    }
+}
+
+impl dbus::message::SignalArgs for SourceAdded {
+    const NAME: &'static str = "SourceAdded";
+    const INTERFACE: &'static str = "org.xetibo.ReSet";
+}
+
+impl GetVal<(Source,)> for SourceAdded {
+    fn get_value(&self) -> (Source,) {
+        (self.source.clone(),)
+    }
+}
+
+#[derive(Debug)]
+pub struct SourceChanged {
+    pub source: Source,
+}
+
+impl arg::AppendAll for SourceChanged {
+    fn append(&self, i: &mut arg::IterAppend) {
+        self.source.append_by_ref(i);
+    }
+}
+
+impl arg::ReadAll for SourceChanged {
+    fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
+        Ok(SourceChanged { source: i.read()? })
+    }
+}
+
+impl dbus::message::SignalArgs for SourceChanged {
+    const NAME: &'static str = "SourceChanged";
+    const INTERFACE: &'static str = "org.xetibo.ReSet";
+}
+
+impl GetVal<(Source,)> for SourceChanged {
+    fn get_value(&self) -> (Source,) {
+        (self.source.clone(),)
+    }
+}
+
+#[derive(Debug)]
+pub struct SourceRemoved {
+    pub index: u32,
+}
+
+impl arg::AppendAll for SourceRemoved {
+    fn append(&self, i: &mut arg::IterAppend) {
+        self.index.append_by_ref(i);
+    }
+}
+
+impl arg::ReadAll for SourceRemoved {
+    fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
+        Ok(SourceRemoved { index: i.read()? })
+    }
+}
+
+impl dbus::message::SignalArgs for SourceRemoved {
+    const NAME: &'static str = "SourceRemoved";
+    const INTERFACE: &'static str = "org.xetibo.ReSet";
+}
+
+impl GetVal<(u32,)> for SourceRemoved {
+    fn get_value(&self) -> (u32,) {
+        (self.index.clone(),)
+    }
+}
+
+#[derive(Debug)]
+pub struct OutputStreamAdded {
+    pub stream: OutputStream,
+}
+
+impl arg::AppendAll for OutputStreamAdded {
+    fn append(&self, i: &mut arg::IterAppend) {
+        self.stream.append_by_ref(i);
+    }
+}
+
+impl arg::ReadAll for OutputStreamAdded {
+    fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
+        Ok(OutputStreamAdded { stream: i.read()? })
+    }
+}
+
+impl dbus::message::SignalArgs for OutputStreamAdded {
+    const NAME: &'static str = "OutputStreamAdded";
+    const INTERFACE: &'static str = "org.xetibo.ReSet";
+}
+
+impl GetVal<(OutputStream,)> for OutputStreamAdded {
+    fn get_value(&self) -> (OutputStream,) {
+        (self.stream.clone(),)
+    }
+}
+
+#[derive(Debug)]
+pub struct OutputStreamChanged {
+    pub stream: OutputStream,
+}
+
+impl arg::AppendAll for OutputStreamChanged {
+    fn append(&self, i: &mut arg::IterAppend) {
+        self.stream.append_by_ref(i);
+    }
+}
+
+impl arg::ReadAll for OutputStreamChanged {
+    fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
+        Ok(OutputStreamChanged { stream: i.read()? })
+    }
+}
+
+impl dbus::message::SignalArgs for OutputStreamChanged {
+    const NAME: &'static str = "OutputStreamChanged";
+    const INTERFACE: &'static str = "org.xetibo.ReSet";
+}
+
+#[derive(Debug)]
+pub struct OutputStreamRemoved {
+    pub index: u32,
+}
+
+impl arg::AppendAll for OutputStreamRemoved {
+    fn append(&self, i: &mut arg::IterAppend) {
+        self.index.append_by_ref(i);
+    }
+}
+
+impl arg::ReadAll for OutputStreamRemoved {
+    fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
+        Ok(OutputStreamRemoved { index: i.read()? })
+    }
+}
+
+impl dbus::message::SignalArgs for OutputStreamRemoved {
+    const NAME: &'static str = "OutputStreamRemoved";
+    const INTERFACE: &'static str = "org.xetibo.ReSet";
+}
+
+impl GetVal<(u32,)> for OutputStreamRemoved {
+    fn get_value(&self) -> (u32,) {
+        (self.index.clone(),)
+    }
+}
+
+pub fn start_event_listener(listeners: Arc<Listeners>, sink_box: Option<Arc<SinkBox>>,source_box: Option<Arc<SourceBox>>) {
+    gio::spawn_blocking(move || {
+        let mut conn = Connection::new_session().unwrap();
+
+        if sink_box.is_some() {
+            conn = start_output_box_listener(conn, listeners.clone(), sink_box.unwrap());
+        }
+        if source_box.is_some() {
+            conn = start_input_box_listener(conn, listeners.clone(), source_box.unwrap());
+        }
+
+        loop {
+            let _ = conn.process(Duration::from_millis(1000));
+            if !listeners.network_listener.load(Ordering::SeqCst) {
+                println!("stopping audio listener");
+                break;
+            }
+            // thread::sleep(Duration::from_millis(1000));
+            // TODO is this really how we should do this?
+        }
+    });
 }

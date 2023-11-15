@@ -80,7 +80,6 @@ impl WifiEntry {
         selfImp.resetWifiEditButton.connect_clicked(clone!(@ weak selfImp => move |_| {
             // TODO open navigationpage
             let option = getConnectionSettings(selfImp.accessPoint.borrow().associated_connection.clone());
-            dbg!(option);
         }));
     }
 }
@@ -120,7 +119,6 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
         }
         return;
     }
-    dbg!(access_point.clone());
     let res: Result<(bool,), Error> = proxy.method_call(
         "org.xetibo.ReSet",
         "ConnectToKnownAccessPoint",
@@ -214,8 +212,4 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
         }),
     );
     entryImp.resetWifiPopup.popup();
-    println!(
-        "result is {}",
-        result.load(std::sync::atomic::Ordering::SeqCst)
-    );
 }

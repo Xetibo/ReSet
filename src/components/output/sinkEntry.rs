@@ -38,7 +38,6 @@ impl SinkEntry {
             imp.resetVolumeSlider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
-                    println!("{fraction}");
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);
                      let sink = imp.stream.borrow();
@@ -115,7 +114,6 @@ pub fn toggle_sink_mute(index: u32, muted: bool) -> bool {
 
 pub fn set_default_sink(name: Arc<String>) {
     thread::spawn(move || {
-        dbg!(name.clone());
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
             "org.xetibo.ReSet",

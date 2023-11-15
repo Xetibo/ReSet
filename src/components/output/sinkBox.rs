@@ -1,6 +1,5 @@
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use std::thread;
 use std::time::Duration;
 
 use crate::components::base::listEntry::ListEntry;
@@ -20,7 +19,6 @@ use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::{InputStream, Sink};
-use ReSet_Lib::signals::GetVal;
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
@@ -61,15 +59,16 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
         let sinks = get_sinks();
         {
             let output_box_imp = output_box.imp();
-            let mut map = output_box_imp.resetSinkMap.lock().unwrap();
-            let list = output_box_imp.resetModelList.borrow_mut();
+            let mut map = output_box_imp.resetSinkMap.write().unwrap();
+            let list = output_box_imp.resetModelList.write().unwrap();
+            let mut model_index = output_box_imp.resetModelIndex.write().unwrap();
             output_box_imp.resetDefaultSink.replace(get_default_sink());
             let mut i: u32 = 0;
             for sink in sinks.iter() {
-                dbg!(sink.clone());
                 list.append(&sink.alias);
                 map.insert(sink.alias.clone(), (sink.index, i, sink.name.clone()));
                 i += 1;
+                *model_index += 1;
             }
         }
         populate_inputstreams(output_box.clone());
@@ -87,8 +86,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     let percentage = (fraction).to_string() + "%";
                     output_box_imp.resetVolumePercentage.set_text(&percentage);
                     output_box_imp.resetVolumeSlider.set_value(*volume as f64);
-                    let mut list = output_box_imp.resetSinkList.lock().unwrap();
-                    println!("locked");
+                    let mut list = output_box_imp.resetSinkList.write().unwrap();
                     for sink in sinks {
                         let index = sink.index;
                         let alias = sink.alias.clone();
@@ -107,9 +105,9 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                         list.insert(index, (entry.clone(), sink_clone, alias));
                         output_box_imp.resetSinks.append(&*entry);
                     }
-                    let list = output_box_imp.resetModelList.borrow();
+                    let list = output_box_imp.resetModelList.read().unwrap();
                     output_box_imp.resetSinkDropdown.set_model(Some(&*list));
-                    let map = output_box_imp.resetSinkMap.lock().unwrap();
+                    let map = output_box_imp.resetSinkMap.read().unwrap();
                     let name = output_box_imp.resetDefaultSink.borrow();
                     let name = &name.alias;
                     let index = map.get(name);
@@ -128,7 +126,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                             let selected = selected.downcast_ref::<StringObject>().unwrap();
                             let selected = selected.string().to_string();
 
-                            let sink = output_box_imp.resetSinkMap.lock().unwrap();
+                            let sink = output_box_imp.resetSinkMap.read().unwrap();
                             let sink = sink.get(&selected);
                             if sink.is_none() {
                                 return;
@@ -144,7 +142,6 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     .connect_change_value(move |_, _, value| {
                         let imp = output_box_ref_slider.imp();
                         let fraction = (value / 655.36).round();
-                        println!("{fraction}");
                         let percentage = (fraction).to_string() + "%";
                         imp.resetVolumePercentage.set_text(&percentage);
                         let sink = imp.resetDefaultSink.borrow();
@@ -178,7 +175,6 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
 }
 
 pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
-    // TODO add listener
     let output_box_ref = output_box.clone();
 
     gio::spawn_blocking(move || {
@@ -186,7 +182,7 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box_imp = output_box_ref.imp();
-                let mut list = output_box_imp.resetInputStreamList.lock().unwrap();
+                let mut list = output_box_imp.resetInputStreamList.write().unwrap();
                 for stream in streams {
                     let index = stream.index;
                     let input_stream = Arc::new(InputStreamEntry::new(output_box.clone(), stream));
@@ -243,255 +239,249 @@ fn get_default_sink() -> Sink {
     res.unwrap().0
 }
 
-pub fn start_output_box_listener(listeners: Arc<Listeners>, sink_box: Arc<SinkBox>) {
-    gio::spawn_blocking(move || {
-        if listeners.network_listener.load(Ordering::SeqCst) {
-            return;
-        }
-        listeners.network_listener.store(true, Ordering::SeqCst);
+pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, sink_box: Arc<SinkBox>) -> Connection {
+    if listeners.network_listener.load(Ordering::SeqCst) {
+        return conn;
+    }
+    listeners.network_listener.store(true, Ordering::SeqCst);
 
-        let conn = Connection::new_session().unwrap();
-        let sink_added = SinkAdded::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
-        )
-        .static_clone();
-        let sink_removed = SinkRemoved::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
-        )
-        .static_clone();
-        let sink_changed = SinkChanged::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
-        )
-        .static_clone();
-        let input_stream_added = InputStreamAdded::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
-        )
-        .static_clone();
-        let input_stream_removed = InputStreamRemoved::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
-        )
-        .static_clone();
-        let input_stream_changed = InputStreamChanged::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
-        )
-        .static_clone();
-        let sink_added_box = sink_box.clone();
-        let sink_removed_box = sink_box.clone();
-        let sink_changed_box = sink_box.clone();
-        let input_stream_added_box = sink_box.clone();
-        let input_stream_removed_box = sink_box.clone();
-        let input_stream_changed_box = sink_box.clone();
-        let res = conn.add_match(sink_added, move |ir: SinkAdded, _, _| {
-            let sink_box = sink_added_box.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let output_box = sink_box.clone();
-                    let output_box_imp = output_box.imp();
-                    let mut list = output_box_imp.resetSinkList.lock().unwrap();
-                    let index = ir.sink.index;
-                    let alias = ir.sink.alias.clone();
-                    let mut is_default = false;
-                    if output_box_imp.resetDefaultSink.borrow().name == ir.sink.name {
-                        is_default = true;
-                    }
-                    let sink_entry = Arc::new(SinkEntry::new(
-                        is_default,
-                        output_box_imp.resetDefaultCheckButton.clone(),
-                        ir.sink,
-                    ));
-                    let sink_clone = sink_entry.clone();
-                    let entry = Arc::new(ListEntry::new(&*sink_entry));
-                    entry.set_activatable(false);
-                    list.insert(index, (entry.clone(), sink_clone, alias));
-                    output_box_imp.resetSinks.append(&*entry);
-                    // TODO add to other map -> alias to index in dropdown
-                });
-            });
-            true
-        });
-        if res.is_err() {
-            println!("fail on sink add");
-            return;
-        }
-        let res = conn.add_match(sink_removed, move |ir: SinkRemoved, _, _| {
-            let sink_box = sink_removed_box.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let output_box = sink_box.clone();
-                    let output_box_imp = output_box.imp();
-                    let mut list = output_box_imp.resetSinkList.lock().unwrap();
-                    let entry = list.get(&ir.index);
-                    if entry.is_none() {
-                        return;
-                    }
-                    output_box_imp.resetSinks.remove(&*entry.unwrap().0);
-                    list.remove(&ir.index);
-                    // TODO delete from other map -> alias to index in dropdown
-                });
-            });
-            true
-        });
-        if res.is_err() {
-            println!("fail on sink remove");
-            return;
-        }
-        let res = conn.add_match(sink_changed, move |ir: SinkChanged, _, _| {
-            let sink_box = sink_changed_box.clone();
-            let default_sink = get_default_sink();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let output_box = sink_box.clone();
-                    let output_box_imp = output_box.imp();
-                    let list = output_box_imp.resetSinkList.lock().unwrap();
-                    let entry = list.get(&ir.sink.index);
-                    if entry.is_none() {
-                        return;
-                    }
-                    let imp = entry.unwrap().1.imp();
-                    let is_default = ir.sink.name == default_sink.name;
-                    imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
-                    let volume = ir.sink.volume.first().unwrap_or_else(|| &(0 as u32));
-                    let fraction = (*volume as f64 / 655.36).round();
-                    let percentage = (fraction).to_string() + "%";
-                    imp.resetVolumePercentage.set_text(&percentage);
-                    imp.resetVolumeSlider.set_value(*volume as f64);
-                    if is_default {
-                        imp.resetSelectedSink.set_active(true);
-                    } else {
-                        imp.resetSelectedSink.set_active(false);
-                    }
-                });
-            });
-            true
-        });
-        if res.is_err() {
-            println!("fail on sink remove");
-            return;
-        }
-        let res = conn.add_match(input_stream_added, move |ir: InputStreamAdded, _, _| {
-            let sink_box = input_stream_added_box.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let output_box = sink_box.clone();
-                    let output_box_imp = output_box.imp();
-                    let mut list = output_box_imp.resetInputStreamList.lock().unwrap();
-                    let index = ir.stream.index;
-                    let input_stream =
-                        Arc::new(InputStreamEntry::new(output_box.clone(), ir.stream));
-                    let entry = Arc::new(ListEntry::new(&*input_stream));
-                    entry.set_activatable(false);
-                    list.insert(index, (entry.clone(), input_stream.clone()));
-                    output_box_imp.resetInputStreams.append(&*entry);
-                });
-            });
-            true
-        });
-        if res.is_err() {
-            println!("fail on stream add");
-            return;
-        }
-        let res = conn.add_match(input_stream_changed, move |ir: InputStreamChanged, _, _| {
-            let imp = input_stream_changed_box.imp();
-            dbg!(ir.stream.clone());
-            let alias: String;
-            {
-                let sink_list = imp.resetSinkList.lock().unwrap();
-                let alias_opt = sink_list.get(&ir.stream.sink_index);
-                if alias_opt.is_some() {
-                    alias = alias_opt.unwrap().2.clone();
-                } else {
-                    alias = String::from("");
+    let sink_added = SinkAdded::match_rule(
+        Some(&"org.xetibo.ReSet".into()),
+        Some(&Path::from("/org/xetibo/ReSet")),
+    )
+    .static_clone();
+    let sink_removed = SinkRemoved::match_rule(
+        Some(&"org.xetibo.ReSet".into()),
+        Some(&Path::from("/org/xetibo/ReSet")),
+    )
+    .static_clone();
+    let sink_changed = SinkChanged::match_rule(
+        Some(&"org.xetibo.ReSet".into()),
+        Some(&Path::from("/org/xetibo/ReSet")),
+    )
+    .static_clone();
+    let input_stream_added = InputStreamAdded::match_rule(
+        Some(&"org.xetibo.ReSet".into()),
+        Some(&Path::from("/org/xetibo/ReSet")),
+    )
+    .static_clone();
+    let input_stream_removed = InputStreamRemoved::match_rule(
+        Some(&"org.xetibo.ReSet".into()),
+        Some(&Path::from("/org/xetibo/ReSet")),
+    )
+    .static_clone();
+    let input_stream_changed = InputStreamChanged::match_rule(
+        Some(&"org.xetibo.ReSet".into()),
+        Some(&Path::from("/org/xetibo/ReSet")),
+    )
+    .static_clone();
+
+    let sink_added_box = sink_box.clone();
+    let sink_removed_box = sink_box.clone();
+    let sink_changed_box = sink_box.clone();
+    let input_stream_added_box = sink_box.clone();
+    let input_stream_removed_box = sink_box.clone();
+    let input_stream_changed_box = sink_box.clone();
+
+    let res = conn.add_match(sink_added, move |ir: SinkAdded, _, _| {
+        let sink_box = sink_added_box.clone();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let output_box = sink_box.clone();
+                let output_box_imp = output_box.imp();
+                let mut list = output_box_imp.resetSinkList.write().unwrap();
+                let index = ir.sink.index;
+                let alias = ir.sink.alias.clone();
+                let name = ir.sink.name.clone();
+                let mut is_default = false;
+                if output_box_imp.resetDefaultSink.borrow().name == ir.sink.name {
+                    is_default = true;
                 }
-                dbg!(alias.clone());
-            }
-            let sink_box = input_stream_changed_box.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let output_box = sink_box.clone();
-                    let output_box_imp = output_box.imp();
-                    let entry: Arc<InputStreamEntry>;
-                    {
-                        println!("getting lock on streamlist");
-                        let list = output_box_imp.resetInputStreamList.lock().unwrap();
-                        let entry_opt = list.get(&ir.stream.index);
-                        if entry_opt.is_none() {
-                            return;
-                        }
-                        entry = entry_opt.unwrap().1.clone();
-                    }
-                    println!("dropped lock on streamlist");
-                    let imp = entry.imp();
-                    if ir.stream.muted {
-                        imp.resetSinkMute
-                            .set_icon_name("audio-volume-muted-symbolic");
-                    } else {
-                        imp.resetSinkMute
-                            .set_icon_name("audio-volume-high-symbolic");
-                    }
-                    let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
-                    imp.resetSinkName.set_text(name.as_str());
-                    let volume = ir.stream.volume.first().unwrap_or_else(|| &(0 as u32));
-                    let fraction = (*volume as f64 / 655.36).round();
-                    let percentage = (fraction).to_string() + "%";
-                    imp.resetVolumePercentage.set_text(&percentage);
-                    imp.resetVolumeSlider.set_value(*volume as f64);
-                    // imp.stream.replace(ir.stream);
-                    // {
-                    //     let sink = output_box_imp.resetDefaultSink.borrow();
-                    //     imp.associatedSink.replace((sink.index, sink.name.clone()));
-                    // }
-                    println!("getting lock on map");
-                    let map = output_box_imp.resetSinkMap.lock().unwrap();
-                    let index = map.get(&alias);
-                    if index.is_some() {
-                        imp.resetSelectedSink.set_selected(index.unwrap().1);
-                    }
-                    println!("dropped lock on streamlist");
-                });
+                let sink_entry = Arc::new(SinkEntry::new(
+                    is_default,
+                    output_box_imp.resetDefaultCheckButton.clone(),
+                    ir.sink,
+                ));
+                let sink_clone = sink_entry.clone();
+                let entry = Arc::new(ListEntry::new(&*sink_entry));
+                entry.set_activatable(false);
+                list.insert(index, (entry.clone(), sink_clone, alias.clone()));
+                output_box_imp.resetSinks.append(&*entry);
+                let mut map = output_box_imp.resetSinkMap.write().unwrap();
+                let mut index = output_box_imp.resetModelIndex.write().unwrap();
+                map.insert(alias, (*index, *index, name));
+                *index += 1;
             });
-            true
         });
-        if res.is_err() {
-            println!("fail on stream change");
-            return;
+        true
+    });
+    if res.is_err() {
+        println!("fail on sink add");
+        return conn;
+    }
+
+    let res = conn.add_match(sink_removed, move |ir: SinkRemoved, _, _| {
+        let sink_box = sink_removed_box.clone();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let output_box = sink_box.clone();
+                let output_box_imp = output_box.imp();
+                let mut list = output_box_imp.resetSinkList.write().unwrap();
+                let entry = list.get(&ir.index);
+                if entry.is_none() {
+                    return;
+                }
+                output_box_imp.resetSinks.remove(&*entry.unwrap().0);
+                let alias = list.remove(&ir.index);
+                if alias.is_none() {
+                    return;
+                }
+                let mut map = output_box_imp.resetSinkMap.write().unwrap();
+                map.remove(&alias.unwrap().2);
+                let mut index = output_box_imp.resetModelIndex.write().unwrap();
+                *index -= 1;
+            });
+        });
+        true
+    });
+    if res.is_err() {
+        println!("fail on sink remove");
+        return conn;
+    }
+
+    let res = conn.add_match(sink_changed, move |ir: SinkChanged, _, _| {
+        let sink_box = sink_changed_box.clone();
+        let default_sink = get_default_sink();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let output_box = sink_box.clone();
+                let output_box_imp = output_box.imp();
+                let list = output_box_imp.resetSinkList.read().unwrap();
+                let entry = list.get(&ir.sink.index);
+                if entry.is_none() {
+                    return;
+                }
+                let imp = entry.unwrap().1.imp();
+                let is_default = ir.sink.name == default_sink.name;
+                imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
+                let volume = ir.sink.volume.first().unwrap_or_else(|| &(0 as u32));
+                let fraction = (*volume as f64 / 655.36).round();
+                let percentage = (fraction).to_string() + "%";
+                imp.resetVolumePercentage.set_text(&percentage);
+                imp.resetVolumeSlider.set_value(*volume as f64);
+                if is_default {
+                    imp.resetSelectedSink.set_active(true);
+                } else {
+                    imp.resetSelectedSink.set_active(false);
+                }
+            });
+        });
+        true
+    });
+    if res.is_err() {
+        println!("fail on sink remove");
+        return conn;
+    }
+
+    let res = conn.add_match(input_stream_added, move |ir: InputStreamAdded, _, _| {
+        let sink_box = input_stream_added_box.clone();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let output_box = sink_box.clone();
+                let output_box_imp = output_box.imp();
+                let mut list = output_box_imp.resetInputStreamList.write().unwrap();
+                let index = ir.stream.index;
+                let input_stream = Arc::new(InputStreamEntry::new(output_box.clone(), ir.stream));
+                let entry = Arc::new(ListEntry::new(&*input_stream));
+                entry.set_activatable(false);
+                list.insert(index, (entry.clone(), input_stream.clone()));
+                output_box_imp.resetInputStreams.append(&*entry);
+            });
+        });
+        true
+    });
+    if res.is_err() {
+        println!("fail on stream add");
+        return conn;
+    }
+
+    let res = conn.add_match(input_stream_changed, move |ir: InputStreamChanged, _, _| {
+        let imp = input_stream_changed_box.imp();
+        let alias: String;
+        {
+            let sink_list = imp.resetSinkList.read().unwrap();
+            let alias_opt = sink_list.get(&ir.stream.sink_index);
+            if alias_opt.is_some() {
+                alias = alias_opt.unwrap().2.clone();
+            } else {
+                alias = String::from("");
+            }
         }
-        let res = conn.add_match(input_stream_removed, move |ir: InputStreamRemoved, _, _| {
-            let sink_box = input_stream_removed_box.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let output_box = sink_box.clone();
-                    let output_box_imp = output_box.imp();
-                    let mut list = output_box_imp.resetInputStreamList.lock().unwrap();
-                    let entry = list.get(&ir.index);
-                    if entry.is_none() {
+        let sink_box = input_stream_changed_box.clone();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let output_box = sink_box.clone();
+                let output_box_imp = output_box.imp();
+                let entry: Arc<InputStreamEntry>;
+                {
+                    let list = output_box_imp.resetInputStreamList.read().unwrap();
+                    let entry_opt = list.get(&ir.stream.index);
+                    if entry_opt.is_none() {
                         return;
                     }
-                    output_box_imp.resetInputStreams.remove(&*entry.unwrap().0);
-                    list.remove(&ir.index);
-                });
+                    entry = entry_opt.unwrap().1.clone();
+                }
+                let imp = entry.imp();
+                if ir.stream.muted {
+                    imp.resetSinkMute
+                        .set_icon_name("audio-volume-muted-symbolic");
+                } else {
+                    imp.resetSinkMute
+                        .set_icon_name("audio-volume-high-symbolic");
+                }
+                let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
+                imp.resetSinkName.set_text(name.as_str());
+                let volume = ir.stream.volume.first().unwrap_or_else(|| &(0 as u32));
+                let fraction = (*volume as f64 / 655.36).round();
+                let percentage = (fraction).to_string() + "%";
+                imp.resetVolumePercentage.set_text(&percentage);
+                imp.resetVolumeSlider.set_value(*volume as f64);
+                let map = output_box_imp.resetSinkMap.read().unwrap();
+                let index = map.get(&alias);
+                if index.is_some() {
+                    imp.resetSelectedSink.set_selected(index.unwrap().1);
+                }
             });
-            true
         });
-        if res.is_err() {
-            println!("fail on stream remove");
-            return;
-        }
-        listeners.network_listener.store(true, Ordering::SeqCst);
-        println!("starting thread listener");
-        loop {
-            let _ = conn.process(Duration::from_millis(1000));
-            if !listeners.network_listener.load(Ordering::SeqCst) {
-                println!("stopping thread listener");
-                break;
-            }
-            // thread::sleep(Duration::from_millis(1000));
-            // TODO is this really how we should do this?
-        }
+        true
     });
+    if res.is_err() {
+        println!("fail on stream change");
+        return conn;
+    }
+
+    let res = conn.add_match(input_stream_removed, move |ir: InputStreamRemoved, _, _| {
+        let sink_box = input_stream_removed_box.clone();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let output_box = sink_box.clone();
+                let output_box_imp = output_box.imp();
+                let mut list = output_box_imp.resetInputStreamList.write().unwrap();
+                let entry = list.get(&ir.index);
+                if entry.is_none() {
+                    return;
+                }
+                output_box_imp.resetInputStreams.remove(&*entry.unwrap().0);
+                list.remove(&ir.index);
+            });
+        });
+        true
+    });
+    if res.is_err() {
+        println!("fail on stream remove");
+        return conn;
+    }
+
+    listeners.network_listener.store(true, Ordering::SeqCst);
+    conn
 }

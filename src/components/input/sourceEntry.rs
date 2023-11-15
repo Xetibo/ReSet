@@ -24,7 +24,6 @@ impl SourceEntry {
     pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Source) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO handle events
         {
             let imp = obj.imp();
             imp.resetSourceName.set_text(stream.alias.clone().as_str());
@@ -38,7 +37,6 @@ impl SourceEntry {
             imp.resetVolumeSlider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
-                    println!("{fraction}");
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);
                     let source = imp.stream.borrow();

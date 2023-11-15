@@ -108,7 +108,6 @@ pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
             {
                 break;
             }
-            println!("receiving!");
             let res = receiver.recv();
             if res.is_ok() {
                 let access_point = res.unwrap();
@@ -211,7 +210,6 @@ pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
         return Vec::new();
     }
     let (connections,) = res.unwrap();
-    dbg!(connections.clone());
     connections
 }
 
@@ -227,13 +225,11 @@ pub fn getConnectionSettings(path: Path<'static>) -> Option<ResetConnection> {
         Error,
     > = proxy.method_call("org.xetibo.ReSet", "GetConnectionSettings", (path,));
     if res.is_err() {
-        println!("lol not work");
         return None;
     }
     let (res,) = res.unwrap();
     let res = ResetConnection::convert_from_propmap(res);
     if res.is_err() {
-        println!("lol none");
         return None;
     }
     Some(res.unwrap())

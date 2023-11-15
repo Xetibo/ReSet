@@ -54,17 +54,17 @@ impl OutputStreamEntry {
                 }),
             );
             {
-                let mut list = box_imp.resetModelList.try_borrow();
-                while list.is_err() {
-                    list = box_imp.resetModelList.try_borrow();
-                }
-                let list = list.unwrap();
+                let list = box_imp.resetModelList.read().unwrap();
+                // while list.is_err() {
+                //     list = box_imp.resetModelList.try_borrow();
+                // }
+                // let list = list.unwrap();
                 imp.resetSelectedSource.set_model(Some(&*list));
-                let mut map = box_imp.resetSourceMap.try_borrow();
-                while map.is_err() {
-                    map = box_imp.resetSourceMap.try_borrow();
-                }
-                let map = map.unwrap();
+                let map = box_imp.resetSourceMap.write().unwrap();
+                // while map.is_err() {
+                //     map = box_imp.resetSourceMap.try_borrow();
+                // }
+                // let map = map.unwrap();
                 let mut name = box_imp.resetDefaultSource.try_borrow();
                 while name.is_err() {
                     name = box_imp.resetDefaultSource.try_borrow();
@@ -85,11 +85,7 @@ impl OutputStreamEntry {
                     let selected = selected.unwrap();
                     let selected = selected.downcast_ref::<StringObject>().unwrap();
                     let selected = selected.string().to_string();
-                    let mut source = box_imp.resetSourceMap.try_borrow();
-                    while source.is_err() {
-                        source = box_imp.resetSourceMap.try_borrow();
-                    }
-                    let source = source.unwrap();
+                    let source = box_imp.resetSourceMap.write().unwrap();
                     let source = source.get(&selected);
                     if source.is_none() {
                         return;
@@ -116,10 +112,10 @@ impl OutputStreamEntry {
                     let index = stream.index;
                     if muted {
                         imp.resetSourceMute
-                           .set_icon_name("audio-volume-muted-symbolic");
+                           .set_icon_name("microphone-volume-muted-symbolic");
                     } else {
                         imp.resetSourceMute
-                           .set_icon_name("audio-volume-high-symbolic");
+                           .set_icon_name("microphone-volume-high-symbolic");
                     }
                     toggle_output_stream_mute(index, muted);
                 }));

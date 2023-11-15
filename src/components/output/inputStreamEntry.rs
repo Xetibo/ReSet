@@ -65,14 +65,14 @@ impl InputStreamEntry {
                 }),
             );
             {
-                let mut list = box_imp.resetModelList.try_borrow();
-                while list.is_err() {
-                    list = box_imp.resetModelList.try_borrow();
-                }
-                let list = list.unwrap();
+                let list = box_imp.resetModelList.read().unwrap();
+                // while list.is_err() {
+                //     list = box_imp.resetModelList.try_borrow();
+                // }
+                // let list = list.unwrap();
                 imp.resetSelectedSink.set_model(Some(&*list));
-                let map = box_imp.resetSinkMap.lock().unwrap();
-                let sink_list = box_imp.resetSinkList.lock().unwrap();
+                let map = box_imp.resetSinkMap.read().unwrap();
+                let sink_list = box_imp.resetSinkList.read().unwrap();
                 let name = sink_list.get(&index);
                 if name.is_some() {
                     let name = &name.unwrap().2;
@@ -101,11 +101,11 @@ impl InputStreamEntry {
                     let selected = selected.unwrap();
                     let selected = selected.downcast_ref::<StringObject>().unwrap();
                     let selected = selected.string().to_string();
-                    let sink = box_imp.resetSinkMap.try_lock();
-                    if sink.is_err() {
-                        return;
-                    }
-                    let sink = sink.unwrap();
+                    let sink = box_imp.resetSinkMap.read().unwrap();
+                    // if sink.is_err() {
+                    //     return;
+                    // }
+                    // let sink = sink.unwrap();
                     let sink = sink.get(&selected);
                     if sink.is_none() {
                         return;
