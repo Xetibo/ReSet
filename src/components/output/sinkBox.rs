@@ -73,7 +73,11 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     output_box_imp.resetVolumeSlider.set_value(*volume as f64);
                     for stream in sinks {
                         // TODO create sink handler -> currently only allows input streams
-                        let entry = ListEntry::new(&SinkEntry::new(stream));
+                        let mut is_default = false;
+                        if output_box_imp.resetDefaultSink.borrow().name == stream.name {
+                            is_default = true;
+                        }
+                        let entry = ListEntry::new(&SinkEntry::new(is_default, output_box_imp.resetDefaultCheckButton.clone(), stream));
                         entry.set_activatable(false);
                         output_box_imp.resetSinks.append(&entry);
                     }

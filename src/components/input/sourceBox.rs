@@ -72,7 +72,11 @@ pub fn populate_sources(output_box: Arc<SourceBox>) {
                     output_box_imp.resetVolumePercentage.set_text(&percentage);
                     output_box_imp.resetVolumeSlider.set_value(*volume as f64);
                     for stream in sinks {
-                        let entry = ListEntry::new(&SourceEntry::new(stream));
+                        let mut is_default = false;
+                        if output_box_imp.resetDefaultSource.borrow().name == stream.name {
+                            is_default = true;
+                        }
+                        let entry = ListEntry::new(&SourceEntry::new(is_default, output_box_imp.resetDefaultCheckButton.clone(), stream));
                         entry.set_activatable(false);
                         output_box_imp.resetSources.append(&entry);
                     }

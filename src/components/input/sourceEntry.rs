@@ -1,15 +1,17 @@
 use std::cell::RefCell;
 use std::sync::Arc;
+use std::thread;
 use std::time::Duration;
 
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{ButtonExt, RangeExt};
+use adw::prelude::{ButtonExt, RangeExt, CheckButtonExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
 use ReSet_Lib::audio::audio::Source;
+use gtk::CheckButton;
 
 use super::sourceEntryImpl;
 
@@ -20,7 +22,7 @@ glib::wrapper! {
 }
 
 impl SourceEntry {
-    pub fn new(stream: Source) -> Self {
+    pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Source) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
         // TODO map the slider to volume
@@ -30,6 +32,7 @@ impl SourceEntry {
         {
             let imp = obj.imp();
             imp.resetSourceName.set_text(stream.name.clone().as_str());
+            let name = Arc::new(stream.name.clone());
             let volume = stream.volume.first().unwrap_or_else(|| &(0 as u32));
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
@@ -49,6 +52,18 @@ impl SourceEntry {
                     Propagation::Proceed
                 }),
             );
+            imp.resetSelectedSource.set_group(Some(&*check_group));
+            // check_group.set_group(Some(&*imp.resetSelectedSink));
+            if is_default {
+                imp.resetSelectedSource.set_active(true);
+            } else {
+                imp.resetSelectedSource.set_active(false);
+            }
+            imp.resetSelectedSource.connect_toggled(move |button| {
+                if button.is_active() {
+                    set_default_source(name.clone());
+                }
+            });
             imp.resetSourceMute
                 .connect_clicked(clone!(@weak imp => move |_| {
                     let stream = imp.stream.clone();
@@ -101,4 +116,21 @@ pub fn toggle_source_mute(index: u32, muted: bool) -> bool {
         return false;
     }
     res.unwrap().0
+}
+
+pub fn set_default_source(name: Arc<String>) {
+    thread::spawn(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let res: Result<(bool,), Error> =
+            proxy.method_call("org.xetibo.ReSet", "SetDefaultSink", (name.as_str(),));
+        if res.is_err() {
+            return;
+        }
+        // handle change
+    });
 }

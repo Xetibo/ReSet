@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 use crate::components::base::listEntry::ListEntry;
 use crate::components::output::inputStreamEntry::InputStreamEntry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Box, Button, CompositeTemplate, DropDown, Label, TemplateChild};
+use gtk::{glib, Box, Button, CompositeTemplate, DropDown, Label, TemplateChild, CheckButton};
 use gtk::{prelude::*, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::{InputStream, Sink};
 
@@ -33,6 +33,7 @@ pub struct SinkBox {
     pub resetInputStreamButton: TemplateChild<ListEntry>,
     #[template_child]
     pub resetInputStreams: TemplateChild<Box>,
+    pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSink: Arc<RefCell<Sink>>,
     pub resetSinkList: Arc<Mutex<Vec<Sink>>>,
     pub resetInputStreamList: Arc<Mutex<Vec<InputStream>>>,
