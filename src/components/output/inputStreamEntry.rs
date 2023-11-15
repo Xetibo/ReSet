@@ -8,7 +8,7 @@ use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
-use gtk::StringObject;
+use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::InputStream;
 
 use super::inputStreamEntryImpl;
@@ -24,7 +24,6 @@ impl InputStreamEntry {
     pub fn new(sink_box: Arc<SinkBox>, stream: InputStream) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO handle events
         {
             let index = stream.sink_index;
             let box_imp = sink_box.imp();
@@ -145,49 +144,60 @@ impl InputStreamEntry {
 }
 
 fn set_inputstream_volume(value: f64, index: u32, channels: u16) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> = proxy.method_call(
-        "org.xetibo.ReSet",
-        "SetInputStreamVolume",
-        (index, channels, value as u32),
-    );
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> = proxy.method_call(
+            "org.xetibo.ReSet",
+            "SetInputStreamVolume",
+            (index, channels, value as u32),
+        );
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
 }
 
 fn toggle_input_stream_mute(index: u32, muted: bool) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetInputStreamMute", (index, muted));
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> =
+            proxy.method_call("org.xetibo.ReSet", "SetInputStreamMute", (index, muted));
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
 }
 
 fn set_sink_of_input_stream(stream: u32, sink: u32) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetSinkOfInputStream", (stream, sink));
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> =
+            proxy.method_call("org.xetibo.ReSet", "SetSinkOfInputStream", (stream, sink));
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
 }
+
+// TODO propagate error from dbus

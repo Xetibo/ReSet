@@ -8,7 +8,7 @@ use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
-use gtk::StringObject;
+use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::OutputStream;
 
 use super::outputStreamEntryImpl;
@@ -125,52 +125,63 @@ impl OutputStreamEntry {
 }
 
 fn set_outputstream_volume(value: f64, index: u32, channels: u16) -> bool {
+    gio::spawn_blocking(move || {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(bool,), Error> = proxy.method_call(
+    let _: Result<(), Error> = proxy.method_call(
         "org.xetibo.ReSet",
         "SetOutputStreamVolume",
         (index, channels, value as u32),
     );
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    // if res.is_err() {
+    //     return false;
+    // }
+    // res.unwrap().0
+    });
+    true
 }
 
 fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
+    gio::spawn_blocking(move || {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(bool,), Error> =
+    let _: Result<(), Error> =
         proxy.method_call("org.xetibo.ReSet", "SetOutputStreamMute", (index, muted));
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    // if res.is_err() {
+    //     return false;
+    // }
+    // res.unwrap().0
+    });
+    true
 }
 
 fn set_source_of_output_stream(stream: u32, source: u32) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> = proxy.method_call(
-        "org.xetibo.ReSet",
-        "SetSourceOfOutputStream",
-        (stream, source),
-    );
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(bool,), Error> = proxy.method_call(
+            "org.xetibo.ReSet",
+            "SetSourceOfOutputStream",
+            (stream, source),
+        );
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
 }
+
+// TODO propagate error from dbus
