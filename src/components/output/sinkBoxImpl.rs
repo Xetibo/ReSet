@@ -38,11 +38,13 @@ pub struct SinkBox {
     pub resetInputStreams: TemplateChild<Box>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSink: Arc<RefCell<Sink>>,
-    pub resetSinkList: Arc<Mutex<Vec<Sink>>>,
-    pub resetInputStreamList: Arc<Mutex<Vec<InputStream>>>,
+    pub resetSinkList: Arc<Mutex<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, String)>>>,
+    pub resetInputStreamList: Arc<Mutex<HashMap<u32, (Arc<ListEntry>, Arc<InputStreamEntry>)>>>,
     pub resetModelList: Arc<RefCell<StringList>>,
-    // first u32 is the index of the sink, the second the index in the model list
-    pub resetSinkMap: Arc<RefCell<HashMap<String, (u32, u32, String)>>>,
+    // first u32 is the index of the sink, the second the index in the model list and the third is
+    // the full name
+    pub resetSinkMap: Arc<Mutex<HashMap<String, (u32, u32, String)>>>,
+    // pub : Arc<Mutex<Vec<ListEntry>>>,
 }
 
 #[glib::object_subclass]

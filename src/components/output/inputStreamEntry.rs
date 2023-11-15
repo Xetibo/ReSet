@@ -26,6 +26,7 @@ impl InputStreamEntry {
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
         // TODO handle events
         {
+            let index = stream.sink_index;
             let box_imp = sink_box.imp();
             let imp = obj.imp();
             if stream.muted {
@@ -70,20 +71,25 @@ impl InputStreamEntry {
                 }
                 let list = list.unwrap();
                 imp.resetSelectedSink.set_model(Some(&*list));
-                let mut map = box_imp.resetSinkMap.try_borrow();
-                while map.is_err() {
-                    map = box_imp.resetSinkMap.try_borrow();
-                }
-                let map = map.unwrap();
-                let mut name = box_imp.resetDefaultSink.try_borrow();
-                while name.is_err() {
-                    name = box_imp.resetDefaultSink.try_borrow();
-                }
-                let name = name.unwrap();
-                let name = &name.alias;
-                let index = map.get(name);
-                if index.is_some() {
-                    imp.resetSelectedSink.set_selected(index.unwrap().1);
+                let map = box_imp.resetSinkMap.lock().unwrap();
+                let sink_list = box_imp.resetSinkList.lock().unwrap();
+                let name = sink_list.get(&index);
+                if name.is_some() {
+                    let name = &name.unwrap().2;
+                    let index = map.get(name);
+                    if index.is_some() {
+                        imp.resetSelectedSink.set_selected(index.unwrap().1);
+                    }
+                } else {
+                    let mut name = box_imp.resetDefaultSink.try_borrow();
+                    while name.is_err() {
+                        name = box_imp.resetDefaultSink.try_borrow();
+                    }
+                    let name = &name.unwrap().alias;
+                    let index = map.get(name);
+                    if index.is_some() {
+                        imp.resetSelectedSink.set_selected(index.unwrap().1);
+                    }
                 }
             }
             imp.resetSelectedSink.connect_selected_notify(
@@ -95,9 +101,9 @@ impl InputStreamEntry {
                     let selected = selected.unwrap();
                     let selected = selected.downcast_ref::<StringObject>().unwrap();
                     let selected = selected.string().to_string();
-                    let mut sink = box_imp.resetSinkMap.try_borrow();
-                    while sink.is_err() {
-                        sink = box_imp.resetSinkMap.try_borrow();
+                    let sink = box_imp.resetSinkMap.try_lock();
+                    if sink.is_err() {
+                        return;
                     }
                     let sink = sink.unwrap();
                     let sink = sink.get(&selected);
