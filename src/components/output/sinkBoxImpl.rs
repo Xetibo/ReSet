@@ -1,10 +1,13 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::output::inputStreamEntry::InputStreamEntry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Box, Button, CompositeTemplate, DropDown, Label, TemplateChild, CheckButton};
+use gtk::{
+    glib, Box, Button, CheckButton, CompositeTemplate, DropDown, Label, StringList, TemplateChild,
+};
 use gtk::{prelude::*, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::{InputStream, Sink};
 
@@ -18,7 +21,7 @@ pub struct SinkBox {
     #[template_child]
     pub resetSinksRow: TemplateChild<ListEntry>,
     #[template_child]
-    pub resetInputDevice: TemplateChild<DropDown>,
+    pub resetSinkDropdown: TemplateChild<DropDown>,
     #[template_child]
     pub resetSinkMute: TemplateChild<Button>,
     #[template_child]
@@ -37,6 +40,9 @@ pub struct SinkBox {
     pub resetDefaultSink: Arc<RefCell<Sink>>,
     pub resetSinkList: Arc<Mutex<Vec<Sink>>>,
     pub resetInputStreamList: Arc<Mutex<Vec<InputStream>>>,
+    pub resetModelList: Arc<RefCell<StringList>>,
+    // first u32 is the index of the sink, the second the index in the model list
+    pub resetSinkMap: Arc<RefCell<HashMap<String, (u32, u32, String)>>>,
 }
 
 #[glib::object_subclass]

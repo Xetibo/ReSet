@@ -1,10 +1,11 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::input::sourceBox;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, DropDown, TemplateChild, CheckButton};
+use gtk::{glib, CheckButton, CompositeTemplate, DropDown, StringList, TemplateChild};
 use gtk::{prelude::*, Button, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::{OutputStream, Source};
 
@@ -37,6 +38,9 @@ pub struct SourceBox {
     pub resetDefaultSource: Arc<RefCell<Source>>,
     pub resetSourceList: Arc<Mutex<Vec<Source>>>,
     pub resetOutputStreamList: Arc<Mutex<Vec<OutputStream>>>,
+    pub resetModelList: Arc<RefCell<StringList>>,
+    // first u32 is the index of the source, the second the index in the model list
+    pub resetSourceMap: Arc<RefCell<HashMap<String, (u32, u32, String)>>>,
 }
 
 #[glib::object_subclass]

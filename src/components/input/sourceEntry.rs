@@ -1,4 +1,3 @@
-use std::cell::RefCell;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
@@ -25,13 +24,10 @@ impl SourceEntry {
     pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Source) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO map the slider to volume
-        // TODO properly use volume fraction
-        // TODO map mute to callback
-        // TODO map dropdown
+        // TODO handle events
         {
             let imp = obj.imp();
-            imp.resetSourceName.set_text(stream.name.clone().as_str());
+            imp.resetSourceName.set_text(stream.alias.clone().as_str());
             let name = Arc::new(stream.name.clone());
             let volume = stream.volume.first().unwrap_or_else(|| &(0 as u32));
             let fraction = (*volume as f64 / 655.36).round();
