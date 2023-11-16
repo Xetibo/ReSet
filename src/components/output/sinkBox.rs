@@ -290,7 +290,7 @@ pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, si
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
                 let mut list = output_box_imp.resetSinkList.write().unwrap();
-                let index = ir.sink.index;
+                let sink_index = ir.sink.index;
                 let alias = ir.sink.alias.clone();
                 let name = ir.sink.name.clone();
                 let mut is_default = false;
@@ -305,11 +305,11 @@ pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, si
                 let sink_clone = sink_entry.clone();
                 let entry = Arc::new(ListEntry::new(&*sink_entry));
                 entry.set_activatable(false);
-                list.insert(index, (entry.clone(), sink_clone, alias.clone()));
+                list.insert(sink_index, (entry.clone(), sink_clone, alias.clone()));
                 output_box_imp.resetSinks.append(&*entry);
                 let mut map = output_box_imp.resetSinkMap.write().unwrap();
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
-                map.insert(alias, (*index, *index, name));
+                map.insert(alias, (sink_index, *index, name));
                 *index += 1;
             });
         });

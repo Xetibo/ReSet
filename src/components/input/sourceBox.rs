@@ -302,7 +302,7 @@ pub fn start_input_box_listener(
                 let output_box = source_box.clone();
                 let output_box_imp = output_box.imp();
                 let mut list = output_box_imp.resetSourceList.write().unwrap();
-                let index = ir.source.index;
+                let source_index = ir.source.index;
                 let alias = ir.source.alias.clone();
                 let name = ir.source.name.clone();
                 let mut is_default = false;
@@ -317,11 +317,11 @@ pub fn start_input_box_listener(
                 let source_clone = source_entry.clone();
                 let entry = Arc::new(ListEntry::new(&*source_entry));
                 entry.set_activatable(false);
-                list.insert(index, (entry.clone(), source_clone, alias.clone()));
+                list.insert(source_index, (entry.clone(), source_clone, alias.clone()));
                 output_box_imp.resetSources.append(&*entry);
                 let mut map = output_box_imp.resetSourceMap.write().unwrap();
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
-                map.insert(alias, (*index, *index, name));
+                map.insert(alias, (source_index, *index, name));
                 *index += 1;
             });
         });
