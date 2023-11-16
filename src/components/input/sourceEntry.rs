@@ -66,10 +66,10 @@ impl SourceEntry {
                     let index = stream.index;
                     if muted {
                         imp.resetSourceMute
-                           .set_icon_name("audio-volume-muted-symbolic");
+                           .set_icon_name("microphone-disabled-symbolic");
                     } else {
                         imp.resetSourceMute
-                           .set_icon_name("audio-volume-high-symbolic");
+                           .set_icon_name("audio-input-microphone-symbolic");
                     }
                     toggle_source_mute(index, muted);
                 }));

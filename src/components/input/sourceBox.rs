@@ -167,10 +167,10 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                         let index = stream.index;
                         if muted {
                             imp.resetSourceMute
-                                .set_icon_name("audio-volume-muted-symbolic");
+                                .set_icon_name("microphone-disabled-symbolic");
                         } else {
                             imp.resetSourceMute
-                                .set_icon_name("audio-volume-high-symbolic");
+                                .set_icon_name("audio-input-microphone-symbolic");
                         }
                         toggle_source_mute(index, muted);
                     });
@@ -450,10 +450,10 @@ pub fn start_input_box_listener(
                     let imp = entry.imp();
                     if ir.stream.muted {
                         imp.resetSourceMute
-                            .set_icon_name("microphone-volume-muted-symbolic");
+                            .set_icon_name("microphone-disabled-symbolic");
                     } else {
                         imp.resetSourceMute
-                            .set_icon_name("microphone-volume-high-symbolic");
+                            .set_icon_name("audio-input-microphone-symbolic");
                     }
                     let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
                     imp.resetSourceName.set_text(name.as_str());

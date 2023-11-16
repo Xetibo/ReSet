@@ -24,8 +24,6 @@ impl OutputStreamEntry {
     pub fn new(source_box: Arc<SourceBox>, stream: OutputStream) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO map mute to callback
-        // TODO map dropdown
         {
             let box_imp = source_box.imp();
             let imp = obj.imp();
@@ -112,10 +110,10 @@ impl OutputStreamEntry {
                     let index = stream.index;
                     if muted {
                         imp.resetSourceMute
-                           .set_icon_name("microphone-volume-muted-symbolic");
+                           .set_icon_name("microphone-disabled-symbolic");
                     } else {
                         imp.resetSourceMute
-                           .set_icon_name("microphone-volume-high-symbolic");
+                           .set_icon_name("audio-input-microphone-symbolic");
                     }
                     toggle_output_stream_mute(index, muted);
                 }));
