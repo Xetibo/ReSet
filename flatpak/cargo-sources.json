@@ -1042,14 +1042,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/reset_daemon/reset_daemon-0.1.6.crate",
-        "sha256": "a0f96caf82e3281d951d112167384cf5e44bab6f5e5dbc073b845e47154dc512",
-        "dest": "cargo/vendor/reset_daemon-0.1.6"
+        "url": "https://static.crates.io/crates/reset_daemon/reset_daemon-0.1.7.crate",
+        "sha256": "f7b48ba0698bdb4ead119140a557346907b40ae17cac324687a032b4d6ea9851",
+        "dest": "cargo/vendor/reset_daemon-0.1.7"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"a0f96caf82e3281d951d112167384cf5e44bab6f5e5dbc073b845e47154dc512\", \"files\": {}}",
-        "dest": "cargo/vendor/reset_daemon-0.1.6",
+        "contents": "{\"package\": \"f7b48ba0698bdb4ead119140a557346907b40ae17cac324687a032b4d6ea9851\", \"files\": {}}",
+        "dest": "cargo/vendor/reset_daemon-0.1.7",
         "dest-filename": ".cargo-checksum.json"
     },
     {
