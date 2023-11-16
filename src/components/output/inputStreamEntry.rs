@@ -8,7 +8,7 @@ use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
-use gtk::StringObject;
+use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::InputStream;
 
 use super::inputStreamEntryImpl;
@@ -24,8 +24,8 @@ impl InputStreamEntry {
     pub fn new(sink_box: Arc<SinkBox>, stream: InputStream) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO handle events
         {
+            let index = stream.sink_index;
             let box_imp = sink_box.imp();
             let imp = obj.imp();
             if stream.muted {
@@ -64,26 +64,31 @@ impl InputStreamEntry {
                 }),
             );
             {
-                let mut list = box_imp.resetModelList.try_borrow();
-                while list.is_err() {
-                    list = box_imp.resetModelList.try_borrow();
-                }
-                let list = list.unwrap();
+                let list = box_imp.resetModelList.read().unwrap();
+                // while list.is_err() {
+                //     list = box_imp.resetModelList.try_borrow();
+                // }
+                // let list = list.unwrap();
                 imp.resetSelectedSink.set_model(Some(&*list));
-                let mut map = box_imp.resetSinkMap.try_borrow();
-                while map.is_err() {
-                    map = box_imp.resetSinkMap.try_borrow();
-                }
-                let map = map.unwrap();
-                let mut name = box_imp.resetDefaultSink.try_borrow();
-                while name.is_err() {
-                    name = box_imp.resetDefaultSink.try_borrow();
-                }
-                let name = name.unwrap();
-                let name = &name.alias;
-                let index = map.get(name);
-                if index.is_some() {
-                    imp.resetSelectedSink.set_selected(index.unwrap().1);
+                let map = box_imp.resetSinkMap.read().unwrap();
+                let sink_list = box_imp.resetSinkList.read().unwrap();
+                let name = sink_list.get(&index);
+                if name.is_some() {
+                    let name = &name.unwrap().2;
+                    let index = map.get(name);
+                    if index.is_some() {
+                        imp.resetSelectedSink.set_selected(index.unwrap().1);
+                    }
+                } else {
+                    let mut name = box_imp.resetDefaultSink.try_borrow();
+                    while name.is_err() {
+                        name = box_imp.resetDefaultSink.try_borrow();
+                    }
+                    let name = &name.unwrap().alias;
+                    let index = map.get(name);
+                    if index.is_some() {
+                        imp.resetSelectedSink.set_selected(index.unwrap().1);
+                    }
                 }
             }
             imp.resetSelectedSink.connect_selected_notify(
@@ -95,11 +100,11 @@ impl InputStreamEntry {
                     let selected = selected.unwrap();
                     let selected = selected.downcast_ref::<StringObject>().unwrap();
                     let selected = selected.string().to_string();
-                    let mut sink = box_imp.resetSinkMap.try_borrow();
-                    while sink.is_err() {
-                        sink = box_imp.resetSinkMap.try_borrow();
-                    }
-                    let sink = sink.unwrap();
+                    let sink = box_imp.resetSinkMap.read().unwrap();
+                    // if sink.is_err() {
+                    //     return;
+                    // }
+                    // let sink = sink.unwrap();
                     let sink = sink.get(&selected);
                     if sink.is_none() {
                         return;
@@ -139,49 +144,60 @@ impl InputStreamEntry {
 }
 
 fn set_inputstream_volume(value: f64, index: u32, channels: u16) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> = proxy.method_call(
-        "org.xetibo.ReSet",
-        "SetInputStreamVolume",
-        (index, channels, value as u32),
-    );
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> = proxy.method_call(
+            "org.xetibo.ReSet",
+            "SetInputStreamVolume",
+            (index, channels, value as u32),
+        );
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
 }
 
 fn toggle_input_stream_mute(index: u32, muted: bool) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetInputStreamMute", (index, muted));
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> =
+            proxy.method_call("org.xetibo.ReSet", "SetInputStreamMute", (index, muted));
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
 }
 
 fn set_sink_of_input_stream(stream: u32, sink: u32) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetSinkOfInputStream", (stream, sink));
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> =
+            proxy.method_call("org.xetibo.ReSet", "SetSinkOfInputStream", (stream, sink));
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
 }
+
+// TODO propagate error from dbus

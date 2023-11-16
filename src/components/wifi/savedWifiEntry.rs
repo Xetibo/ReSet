@@ -32,10 +32,8 @@ impl SavedWifiEntry {
         let res: Result<(bool,), Error> = proxy.method_call("org.xetibo.ReSet", "DeleteConnection", (entry.imp().resetConnectionPath.take(),));
         if res.is_err() || res.unwrap() == (false,) { 
             // TODO handle error -> inform user
-            println!("no worky");
            return; 
         }
-        println!("worked, should be ded");
         let parent = entry.parent().unwrap();
         parent.set_visible(false);
         parent.unparent();

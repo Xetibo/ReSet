@@ -1,13 +1,13 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::input::sourceBox;
 use gtk::subclass::prelude::*;
 use gtk::{glib, CheckButton, CompositeTemplate, DropDown, StringList, TemplateChild};
 use gtk::{prelude::*, Button, Label, ProgressBar, Scale};
-use ReSet_Lib::audio::audio::{OutputStream, Source};
+use ReSet_Lib::audio::audio::Source;
 
 use super::outputStreamEntry::OutputStreamEntry;
 use super::sourceEntry::SourceEntry;
@@ -36,11 +36,13 @@ pub struct SourceBox {
     pub resetOutputStreams: TemplateChild<gtk::Box>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSource: Arc<RefCell<Source>>,
-    pub resetSourceList: Arc<Mutex<Vec<Source>>>,
-    pub resetOutputStreamList: Arc<Mutex<Vec<OutputStream>>>,
-    pub resetModelList: Arc<RefCell<StringList>>,
-    // first u32 is the index of the source, the second the index in the model list
-    pub resetSourceMap: Arc<RefCell<HashMap<String, (u32, u32, String)>>>,
+    pub resetSourceList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SourceEntry>, String)>>>,
+    pub resetOutputStreamList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<OutputStreamEntry>)>>>,
+    pub resetModelList: Arc<RwLock<StringList>>,
+    pub resetModelIndex: Arc<RwLock<u32>>,
+    // first u32 is the index of the source, the second the index in the model list and the third is
+    // the full name
+    pub resetSourceMap: Arc<RwLock<HashMap<String, (u32, u32, String)>>>,
 }
 
 #[glib::object_subclass]

@@ -10,3 +10,8 @@
 ### instructions for installation:
 
 `flatpak install --user reset.flatpak`
+
+### permissions
+currently ReSet uses permission on all devices, for some reason otherwise it can't access sound settings like volume changes etc.
+
+This can likely be fixed by implementing portal integration later.

@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use std::thread;
 use std::time::Duration;
 
 use adw::glib;
@@ -9,7 +8,7 @@ use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
-use gtk::CheckButton;
+use gtk::{gio, CheckButton};
 use ReSet_Lib::audio::audio::Sink;
 
 use super::sinkEntryImpl;
@@ -38,7 +37,6 @@ impl SinkEntry {
             imp.resetVolumeSlider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
-                    println!("{fraction}");
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);
                      let sink = imp.stream.borrow();
@@ -81,52 +79,59 @@ impl SinkEntry {
 }
 
 pub fn set_sink_volume(value: f64, index: u32, channels: u16) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> = proxy.method_call(
-        "org.xetibo.ReSet",
-        "SetSinkVolume",
-        (index, channels, value as u32),
-    );
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
-}
-
-pub fn toggle_sink_mute(index: u32, muted: bool) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetSinkMute", (index, muted));
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
-}
-
-pub fn set_default_sink(name: Arc<String>) {
-    thread::spawn(move || {
-        dbg!(name.clone());
+    gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
             "org.xetibo.ReSet",
             "/org/xetibo/ReSet",
             Duration::from_millis(1000),
         );
-        let res: Result<(bool,), Error> =
+        let _: Result<(), Error> = proxy.method_call(
+            "org.xetibo.ReSet",
+            "SetSinkVolume",
+            (index, channels, value as u32),
+        );
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
+}
+
+pub fn toggle_sink_mute(index: u32, muted: bool) -> bool {
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> =
+            proxy.method_call("org.xetibo.ReSet", "SetSinkMute", (index, muted));
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
+}
+
+pub fn set_default_sink(name: Arc<String>) {
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> =
             proxy.method_call("org.xetibo.ReSet", "SetDefaultSink", (name.as_str(),));
-        if res.is_err() {
-            return;
-        }
+        // if res.is_err() {
+        //     return;
+        // }
         // handle change
     });
 }
+
+// TODO propagate error from dbus

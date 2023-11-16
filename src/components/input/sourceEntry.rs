@@ -1,16 +1,15 @@
 use std::sync::Arc;
-use std::thread;
 use std::time::Duration;
 
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{ButtonExt, RangeExt, CheckButtonExt};
+use adw::prelude::{ButtonExt, CheckButtonExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
+use gtk::{gio, CheckButton};
 use ReSet_Lib::audio::audio::Source;
-use gtk::CheckButton;
 
 use super::sourceEntryImpl;
 
@@ -24,7 +23,6 @@ impl SourceEntry {
     pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Source) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO handle events
         {
             let imp = obj.imp();
             imp.resetSourceName.set_text(stream.alias.clone().as_str());
@@ -38,7 +36,6 @@ impl SourceEntry {
             imp.resetVolumeSlider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
-                    println!("{fraction}");
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);
                     let source = imp.stream.borrow();
@@ -69,10 +66,10 @@ impl SourceEntry {
                     let index = stream.index;
                     if muted {
                         imp.resetSourceMute
-                           .set_icon_name("audio-volume-muted-symbolic");
+                           .set_icon_name("microphone-disabled-symbolic");
                     } else {
                         imp.resetSourceMute
-                           .set_icon_name("audio-volume-high-symbolic");
+                           .set_icon_name("audio-input-microphone-symbolic");
                     }
                     toggle_source_mute(index, muted);
                 }));
@@ -82,51 +79,60 @@ impl SourceEntry {
 }
 
 pub fn set_source_volume(value: f64, index: u32, channels: u16) -> bool {
+    gio::spawn_blocking(move || {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(bool,), Error> = proxy.method_call(
+    let _: Result<(), Error> = proxy.method_call(
         "org.xetibo.ReSet",
         "SetSourceVolume",
         (index, channels, value as u32),
     );
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    // if res.is_err() {
+    //     return false;
+    // }
+    // res.unwrap().0
+    });
+    true
 }
 
 pub fn toggle_source_mute(index: u32, muted: bool) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetSourceMute", (index, muted));
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
-}
-
-pub fn set_default_source(name: Arc<String>) {
-    thread::spawn(move || {
+    gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
             "org.xetibo.ReSet",
             "/org/xetibo/ReSet",
             Duration::from_millis(1000),
         );
-        let res: Result<(bool,), Error> =
+        let _: Result<(), Error> =
+            proxy.method_call("org.xetibo.ReSet", "SetSourceMute", (index, muted));
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
+}
+
+pub fn set_default_source(name: Arc<String>) -> bool {
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> =
             proxy.method_call("org.xetibo.ReSet", "SetDefaultSink", (name.as_str(),));
-        if res.is_err() {
-            return;
-        }
+        // if res.is_err() {
+        //     return;
+        // }
         // handle change
     });
+    true
 }
+
+// TODO propagate error from dbus

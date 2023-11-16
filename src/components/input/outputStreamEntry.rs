@@ -8,7 +8,7 @@ use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
-use gtk::StringObject;
+use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::OutputStream;
 
 use super::outputStreamEntryImpl;
@@ -24,8 +24,6 @@ impl OutputStreamEntry {
     pub fn new(source_box: Arc<SourceBox>, stream: OutputStream) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO map mute to callback
-        // TODO map dropdown
         {
             let box_imp = source_box.imp();
             let imp = obj.imp();
@@ -54,17 +52,17 @@ impl OutputStreamEntry {
                 }),
             );
             {
-                let mut list = box_imp.resetModelList.try_borrow();
-                while list.is_err() {
-                    list = box_imp.resetModelList.try_borrow();
-                }
-                let list = list.unwrap();
+                let list = box_imp.resetModelList.read().unwrap();
+                // while list.is_err() {
+                //     list = box_imp.resetModelList.try_borrow();
+                // }
+                // let list = list.unwrap();
                 imp.resetSelectedSource.set_model(Some(&*list));
-                let mut map = box_imp.resetSourceMap.try_borrow();
-                while map.is_err() {
-                    map = box_imp.resetSourceMap.try_borrow();
-                }
-                let map = map.unwrap();
+                let map = box_imp.resetSourceMap.write().unwrap();
+                // while map.is_err() {
+                //     map = box_imp.resetSourceMap.try_borrow();
+                // }
+                // let map = map.unwrap();
                 let mut name = box_imp.resetDefaultSource.try_borrow();
                 while name.is_err() {
                     name = box_imp.resetDefaultSource.try_borrow();
@@ -85,11 +83,7 @@ impl OutputStreamEntry {
                     let selected = selected.unwrap();
                     let selected = selected.downcast_ref::<StringObject>().unwrap();
                     let selected = selected.string().to_string();
-                    let mut source = box_imp.resetSourceMap.try_borrow();
-                    while source.is_err() {
-                        source = box_imp.resetSourceMap.try_borrow();
-                    }
-                    let source = source.unwrap();
+                    let source = box_imp.resetSourceMap.write().unwrap();
                     let source = source.get(&selected);
                     if source.is_none() {
                         return;
@@ -116,10 +110,10 @@ impl OutputStreamEntry {
                     let index = stream.index;
                     if muted {
                         imp.resetSourceMute
-                           .set_icon_name("audio-volume-muted-symbolic");
+                           .set_icon_name("microphone-disabled-symbolic");
                     } else {
                         imp.resetSourceMute
-                           .set_icon_name("audio-volume-high-symbolic");
+                           .set_icon_name("audio-input-microphone-symbolic");
                     }
                     toggle_output_stream_mute(index, muted);
                 }));
@@ -129,52 +123,63 @@ impl OutputStreamEntry {
 }
 
 fn set_outputstream_volume(value: f64, index: u32, channels: u16) -> bool {
+    gio::spawn_blocking(move || {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(bool,), Error> = proxy.method_call(
+    let _: Result<(), Error> = proxy.method_call(
         "org.xetibo.ReSet",
         "SetOutputStreamVolume",
         (index, channels, value as u32),
     );
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    // if res.is_err() {
+    //     return false;
+    // }
+    // res.unwrap().0
+    });
+    true
 }
 
 fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
+    gio::spawn_blocking(move || {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
         "/org/xetibo/ReSet",
         Duration::from_millis(1000),
     );
-    let res: Result<(bool,), Error> =
+    let _: Result<(), Error> =
         proxy.method_call("org.xetibo.ReSet", "SetOutputStreamMute", (index, muted));
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    // if res.is_err() {
+    //     return false;
+    // }
+    // res.unwrap().0
+    });
+    true
 }
 
 fn set_source_of_output_stream(stream: u32, source: u32) -> bool {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(bool,), Error> = proxy.method_call(
-        "org.xetibo.ReSet",
-        "SetSourceOfOutputStream",
-        (stream, source),
-    );
-    if res.is_err() {
-        return false;
-    }
-    res.unwrap().0
+    gio::spawn_blocking(move || {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(bool,), Error> = proxy.method_call(
+            "org.xetibo.ReSet",
+            "SetSourceOfOutputStream",
+            (stream, source),
+        );
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
+    });
+    true
 }
+
+// TODO propagate error from dbus

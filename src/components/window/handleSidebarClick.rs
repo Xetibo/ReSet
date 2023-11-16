@@ -3,10 +3,10 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
 use crate::components::base::settingBox::SettingBox;
-use crate::components::base::utils::Listeners;
+use crate::components::base::utils::{start_event_listener, Listeners};
 use crate::components::bluetooth::bluetoothBox::BluetoothBox;
-use crate::components::input::sourceBox::{SourceBox, populate_outputstreams, populate_sources};
-use crate::components::output::sinkBox::{SinkBox, populate_inputstreams, populate_sinks};
+use crate::components::input::sourceBox::{populate_sources, SourceBox};
+use crate::components::output::sinkBox::{populate_sinks, SinkBox};
 use crate::components::wifi::wifiBox::{scanForWifi, show_stored_connections, WifiBox};
 use gtk::prelude::WidgetExt;
 use gtk::{FlowBox, Frame, Label};
@@ -64,12 +64,15 @@ pub const HANDLE_AUDIO_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.bluetooth_listener.store(false, Ordering::SeqCst);
         listeners.pulse_listener.store(true, Ordering::SeqCst);
         let audioOutput = Arc::new(SinkBox::new());
-        populate_inputstreams(listeners.clone(), audioOutput.clone());
         populate_sinks(audioOutput.clone());
         let audioFrame = wrapInFrame(SettingBox::new(&*audioOutput));
         let audioInput = Arc::new(SourceBox::new());
-        populate_outputstreams(listeners.clone(), audioInput.clone());
         populate_sources(audioInput.clone());
+        start_event_listener(
+            listeners.clone(),
+            Some(audioOutput.clone()),
+            Some(audioInput.clone()),
+        );
         let sourceFrame = wrapInFrame(SettingBox::new(&*audioInput));
         resetMain.remove_all();
         resetMain.insert(&audioFrame, -1);
@@ -83,8 +86,8 @@ pub const HANDLE_VOLUME_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.bluetooth_listener.store(false, Ordering::SeqCst);
         listeners.pulse_listener.store(false, Ordering::SeqCst);
         let audioOutput = Arc::new(SinkBox::new());
-        populate_inputstreams(listeners.clone(), audioOutput.clone());
         populate_sinks(audioOutput.clone());
+        start_event_listener(listeners.clone(), Some(audioOutput.clone()), None);
         let audioFrame = wrapInFrame(SettingBox::new(&*audioOutput));
         resetMain.remove_all();
         resetMain.insert(&audioFrame, -1);
@@ -97,8 +100,8 @@ pub const HANDLE_MICROPHONE_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.bluetooth_listener.store(false, Ordering::SeqCst);
         listeners.pulse_listener.store(false, Ordering::SeqCst);
         let audioInput = Arc::new(SourceBox::new());
-        populate_outputstreams(listeners.clone(), audioInput.clone());
         populate_sources(audioInput.clone());
+        start_event_listener(listeners.clone(), None, Some(audioInput.clone()));
         let sourceFrame = wrapInFrame(SettingBox::new(&*audioInput));
         resetMain.remove_all();
         resetMain.insert(&sourceFrame, -1);
