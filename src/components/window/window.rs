@@ -1,10 +1,13 @@
+use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::BreakpointCondition;
-use glib::Object;
+use glib::{closure_local, Object};
+use gtk::{Application, gio, glib, ListBoxRow, Orientation};
 use gtk::prelude::*;
-use gtk::{gio, glib, Application, ListBoxRow, Orientation};
 
+use crate::components::breadcrumb::breadcrumb;
+use crate::components::breadcrumb::breadcrumb::Breadcrumb;
+use crate::components::wifi::wifiBox::WifiBox;
 use crate::components::window::handleSidebarClick::*;
 use crate::components::window::sidebarEntry::SidebarEntry;
 use crate::components::window::sidebarEntryImpl::Categories;
@@ -29,6 +32,19 @@ impl Window {
     pub fn setupCallback(&self) {
         let selfImp = self.imp();
 
+
+        selfImp.resetPath.connect_closure("max-number-reached", false, closure_local!(move |x : Breadcrumb, y : i32| {
+            print!("askdfj");
+        }));
+
+        let sadf:i32 = 2312;
+        Breadcrumb::new().emit_by_name::<()>("max-number-reached", &[&sadf]);
+
+        let breadcrumb= Breadcrumb::new();
+        breadcrumb.emit_by_name::<()>("max-number-reached", &[&sadf]);
+
+
+
         selfImp
             .resetSearchEntry
             .connect_search_changed(clone!(@ weak self as window => move |_| {
@@ -45,7 +61,7 @@ impl Window {
             clone!(@ weak selfImp as flowbox => move |_, y| {
                 let result = y.downcast_ref::<SidebarEntry>().unwrap();
                 let clickEvent = result.imp().onClickEvent.borrow().onClickEvent;
-                (clickEvent)(flowbox.listeners.clone(), flowbox.resetMain.get());
+                (clickEvent)(flowbox.listeners.clone(), flowbox.resetMain.get(), flowbox.resetPath.get());
             }),
         );
 
@@ -54,11 +70,6 @@ impl Window {
             .connect_clicked(clone!(@ weak self as window => move |_| {
                 window.close();
             }));
-
-        // selfImp.resetMenu.connect_clicked(|_| {
-        //     WifiBox::donotdisturb();
-        //
-        // });
     }
 
     pub fn handleDynamicSidebar(&self) {

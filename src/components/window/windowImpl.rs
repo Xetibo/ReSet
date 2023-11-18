@@ -6,10 +6,12 @@ use adw::subclass::prelude::AdwApplicationWindowImpl;
 use adw::{Breakpoint, OverlaySplitView};
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, SearchEntry};
+use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, SearchEntry};
+use crate::APP_ID;
 
 use crate::components::base::utils::Listeners;
-use crate::components::wifi::wifiBox::WifiBox;
+use crate::components::breadcrumb::breadcrumb;
+use crate::components::breadcrumb::breadcrumb::Breadcrumb;
 use crate::components::window::sidebarEntry::SidebarEntry;
 use crate::components::window::window;
 
@@ -30,7 +32,7 @@ pub struct Window {
     #[template_child]
     pub resetSideBarToggle: TemplateChild<Button>,
     #[template_child]
-    pub resetPath: TemplateChild<Box>,
+    pub resetPath: TemplateChild<Breadcrumb>,
     #[template_child]
     pub resetPopoverMenu: TemplateChild<PopoverMenu>,
     #[template_child]
@@ -55,7 +57,7 @@ impl ObjectSubclass for Window {
     type ParentType = adw::ApplicationWindow;
 
     fn class_init(klass: &mut Self::Class) {
-        WifiBox::ensure_type();
+        Breadcrumb::ensure_type();
         klass.bind_template();
     }
 

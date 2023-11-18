@@ -6,6 +6,8 @@ use gtk::{CompositeTemplate, FlowBox, glib, Image, Label, ListBoxRow};
 use gtk::subclass::prelude::*;
 
 use crate::components::base::utils::Listeners;
+use crate::components::breadcrumb::breadcrumb;
+use crate::components::breadcrumb::breadcrumb::Breadcrumb;
 use crate::components::window::handleSidebarClick::HANDLE_HOME;
 use crate::components::window::sidebarEntry;
 
@@ -34,7 +36,7 @@ pub struct SidebarEntry {
 
 #[allow(non_snake_case)]
 pub struct SidebarAction {
-    pub onClickEvent: fn(Arc<Listeners>,FlowBox),
+    pub onClickEvent: fn(Arc<Listeners>, FlowBox, Breadcrumb),
 }
 
 impl Default for SidebarAction {

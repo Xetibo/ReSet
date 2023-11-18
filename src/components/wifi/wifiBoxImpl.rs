@@ -1,17 +1,27 @@
+use std::cell::{RefCell};
 use std::collections::HashMap;
+use std::rc::Rc;
 use std::sync::{Arc, Mutex};
+use adw::NavigationView;
+use glib::Properties;
+use glib::subclass::Signal;
 use gtk::{CompositeTemplate, glib, ListBox, Switch};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
+use once_cell::sync::Lazy;
 use crate::components::wifi::wifiBox;
 
 use crate::components::wifi::wifiEntry::WifiEntry;
 use crate::components::base::listEntry::ListEntry;
+use crate::components::breadcrumb::breadcrumb;
+use crate::components::breadcrumb::breadcrumb::Breadcrumb;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWiFi.ui")]
 pub struct WifiBox {
+    #[template_child]
+    pub resetWifiNav: TemplateChild<NavigationView>,
     #[template_child]
     pub resetWifiDetails: TemplateChild<ListBox>,
     #[template_child]
@@ -24,8 +34,9 @@ pub struct WifiBox {
     pub resetStoredWifiList: TemplateChild<ListBox>,
     #[template_child]
     pub resetAvailableNetworks: TemplateChild<ListEntry>,
-    pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>,Arc<ListEntry>>>>,
+    pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>, Arc<ListEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
+    pub breadcrumb: RefCell<Option<Rc<Breadcrumb>>>,
 }
 
 unsafe impl Send for WifiBox {}
@@ -51,9 +62,6 @@ impl ObjectSubclass for WifiBox {
 impl ObjectImpl for WifiBox {
     fn constructed(&self) {
         self.parent_constructed();
-
-        let obj = self.obj();
-        obj.setupCallbacks();
     }
 }
 

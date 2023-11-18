@@ -1,34 +1,38 @@
 use std::collections::HashMap;
+use std::rc::Rc;
+use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc::{channel, Receiver, Sender};
-use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
-use crate::components::base::listEntry::ListEntry;
-use crate::components::base::utils::Listeners;
-use adw::glib;
+use adw::{ApplicationWindow, glib};
 use adw::glib::Object;
-use adw::prelude::ListBoxRowExt;
+use adw::prelude::{ListBoxRowExt, ListModelExtManual, NavigationPageExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::{AppendAll, ReadAll, RefArg};
 use dbus::blocking::Connection;
 use dbus::Error;
 use dbus::Path;
-use gtk::gio;
+use glib::{clone, ObjectExt, StaticType};
+use gtk::{Button, gio, ListBoxRow};
+use gtk::gio::ActionEntry;
 use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
+use ReSet_Lib::network::connection::Connection as ResetConnection;
 use ReSet_Lib::network::network::AccessPoint;
-use ReSet_Lib::signals::AccessPointRemoved;
 use ReSet_Lib::signals::{AccessPointAdded, GetVal};
+use ReSet_Lib::signals::AccessPointRemoved;
 use ReSet_Lib::utils::Events;
 
+use crate::components::base::listEntry::ListEntry;
+use crate::components::base::utils::Listeners;
+use crate::components::breadcrumb::breadcrumb;
+use crate::components::breadcrumb::breadcrumb::Breadcrumb;
 use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;
 
 use super::savedWifiEntry::SavedWifiEntry;
-
-use ReSet_Lib::network::connection::Connection as ResetConnection;
 
 glib::wrapper! {
     pub struct WifiBox(ObjectSubclass<wifiBoxImpl::WifiBox>)
@@ -40,8 +44,14 @@ unsafe impl Send for WifiBox {}
 unsafe impl Sync for WifiBox {}
 
 impl WifiBox {
-    pub fn new() -> Self {
-        Object::builder().build()
+    pub fn new(resetPath: Option<Breadcrumb>) -> Self {
+        let object: WifiBox = Object::builder().build();
+        object
+            .imp()
+            .breadcrumb
+            .replace(Some(Rc::new(resetPath.unwrap())));
+        object.setupCallbacks();
+        object
     }
 
     pub fn setupCallbacks(&self) {
@@ -52,6 +62,28 @@ impl WifiBox {
         selfImp
             .resetSavedNetworks
             .set_action_target_value(Some(&Variant::from("saved")));
+
+        let sadf:i32 = 2312;
+        // self.emit_by_name::<()>("max-number-reached", &[&sadf]);
+
+        // let builder1 = Signal::builder("custom").action();
+        // let signal = builder1.build();
+        //
+        // Breadcrumb::new().emit_by_name::<()>("max-number-reached", &[&sadf]);
+
+
+
+        selfImp
+            .resetWifiNav
+            .connect_popped(clone!(@ weak selfImp => move |x, y| {
+                let o = x.visible_page();
+                selfImp.breadcrumb.borrow().clone().unwrap().popBreadcrumb();
+            }));
+
+        selfImp.resetWifiNav.connect_pushed(clone!(@ weak selfImp => move |x| {
+            let o = x.visible_page();
+            selfImp.breadcrumb.borrow().clone().unwrap().pushBreadcrumb(o.unwrap().tag().unwrap().as_str());
+        }));
 
         selfImp
             .resetAvailableNetworks

@@ -4,6 +4,8 @@
     <file compressed="true" preprocess="xml-stripblanks">resetMainWindow.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSidebarEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSettingBox.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetBreadcrumb.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetBreadcrumbItem.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetListBoxRow.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetWiFi.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetWifiEntry.ui</file>

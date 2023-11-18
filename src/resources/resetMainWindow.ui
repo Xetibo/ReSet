@@ -25,16 +25,16 @@
                   <object class="GtkBox">
                     <property name="valign">start</property>
                     <child>
+                      <object class="GtkButton" id="resetSideBarToggle">
+                        <property name="icon-name">sidebar-show-symbolic</property>
+                        <property name="visible">False</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkButton" id="resetBack">
                         <property name="has-frame">False</property>
                         <property name="icon-name">go-previous-symbolic</property>
                         <property name="valign">start</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="resetSideBarToggle">
-                        <property name="icon-name">sidebar-show-symbolic</property>
-                        <property name="visible">False</property>
                       </object>
                     </child>
                     <child>
@@ -45,40 +45,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkBox" id="resetPath">
-                        <property name="halign">start</property>
-                        <property name="hexpand">True</property>
-                        <property name="hexpand-set">True</property>
-                        <property name="valign">center</property>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">Home</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">&gt;</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">WiFi</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">&gt;</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">Advanced</property>
-                          </object>
-                        </child>
-                      </object>
+                      <object class="resetBreadcrumb" id="resetPath"/>
                     </child>
                     <child>
                       <object class="GtkMenuButton">
