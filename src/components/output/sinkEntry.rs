@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
@@ -42,6 +42,13 @@ impl SinkEntry {
                      let sink = imp.stream.borrow();
                      let index = sink.index;
                      let channels = sink.channels;
+                    {
+                        let mut time = imp.volumeTimeStamp.borrow_mut();
+                        if time.is_some() && time.unwrap().elapsed().unwrap() < Duration::from_millis(50) {
+                            return Propagation::Proceed;
+                        }
+                        *time = Some(SystemTime::now());
+                    }
                      set_sink_volume(value, index, channels);
                     Propagation::Proceed
                 }),

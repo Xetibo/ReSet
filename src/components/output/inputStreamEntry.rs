@@ -1,4 +1,3 @@
-use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
@@ -9,8 +8,7 @@ use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
-use gtk::prelude::ScaleExt;
-use gtk::{gio, PositionType, StringObject};
+use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::InputStream;
 
 use super::inputStreamEntryImpl;

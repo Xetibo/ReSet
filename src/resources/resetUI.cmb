@@ -438,7 +438,7 @@
 	(7,9,"GtkScale","value-pos","bottom",None,None,None,None,None,None,None,None,None),
 	(7,9,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
 	(7,9,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
-	(7,10,"GtkAdjustment","page-increment","10000.0",None,None,None,None,None,None,None,None,None),
+	(7,10,"GtkAdjustment","page-increment","2005.4016",None,None,None,None,None,None,None,None,None),
 	(7,10,"GtkAdjustment","step-increment","2005.4016",None,None,None,None,None,None,None,None,None),
 	(7,10,"GtkAdjustment","upper","100270.08",None,None,None,None,None,None,None,None,None),
 	(7,11,"GtkButton","icon-name","audio-volume-high-symbolic",None,None,None,None,None,None,None,None,None),
@@ -800,11 +800,31 @@
 	(3,42,"GtkWidget",1,1,None,None,None,None,None,None),
 	(3,42,"GtkWidget",2,2,None,1,None,None,None,None),
 	(7,9,"GtkScale",1,1,None,None,None,None,None,None),
-	(7,9,"GtkScale",2,2,"100%",1,None,None,None,None)
+	(7,9,"GtkScale",2,2,"100%",1,None,None,None,None),
+	(8,99,"GtkScale",1,1,None,None,None,None,None,None),
+	(8,99,"GtkScale",2,2,"100%",1,None,None,None,None),
+	(12,25,"GtkScale",1,1,None,None,None,None,None,None),
+	(12,25,"GtkScale",2,2,"100%",1,None,None,None,None),
+	(13,17,"GtkScale",1,1,None,None,None,None,None,None),
+	(13,17,"GtkScale",2,2,"100%",1,None,None,None,None),
+	(18,7,"GtkScale",1,1,None,None,None,None,None,None),
+	(18,7,"GtkScale",2,2,"100%",1,None,None,None,None),
+	(19,7,"GtkScale",1,1,None,None,None,None,None,None),
+	(19,7,"GtkScale",2,2,"100%",1,None,None,None,None)
   </object_data>
   <object_data_arg>
 	(7,9,"GtkScale",2,2,"value","65536.0"),
 	(3,42,"GtkWidget",2,2,"name","b"),
-	(7,9,"GtkScale",2,2,"position","bottom")
+	(7,9,"GtkScale",2,2,"position","bottom"),
+	(8,99,"GtkScale",2,2,"position","bottom"),
+	(8,99,"GtkScale",2,2,"value","65536.0"),
+	(12,25,"GtkScale",2,2,"value","65536.0"),
+	(12,25,"GtkScale",2,2,"position","bottom"),
+	(13,17,"GtkScale",2,2,"value","65536.0"),
+	(13,17,"GtkScale",2,2,"position","bottom"),
+	(18,7,"GtkScale",2,2,"position","bottom"),
+	(18,7,"GtkScale",2,2,"value","65536.0"),
+	(19,7,"GtkScale",2,2,"position","bottom"),
+	(19,7,"GtkScale",2,2,"value","65536.0")
   </object_data_arg>
 </cambalache-project>

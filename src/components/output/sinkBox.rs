@@ -1,6 +1,6 @@
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::{
@@ -159,6 +159,15 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                         let sink = imp.resetDefaultSink.borrow();
                         let index = sink.index;
                         let channels = sink.channels;
+                        {
+                            let mut time = imp.volumeTimeStamp.borrow_mut();
+                            if time.is_some()
+                                && time.unwrap().elapsed().unwrap() < Duration::from_millis(50)
+                            {
+                                return Propagation::Proceed;
+                            }
+                            *time = Some(SystemTime::now());
+                        }
                         set_sink_volume(value, index, channels);
                         Propagation::Proceed
                     });

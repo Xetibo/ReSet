@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
+use std::time::SystemTime;
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::output::inputStreamEntry::InputStreamEntry;
@@ -46,6 +47,7 @@ pub struct SinkBox {
     // the full name
     pub resetSinkMap: Arc<RwLock<HashMap<String, (u32, u32, String)>>>,
     // pub : Arc<Mutex<Vec<ListEntry>>>,
+    pub volumeTimeStamp: RefCell<Option<SystemTime>>,
 }
 
 #[glib::object_subclass]

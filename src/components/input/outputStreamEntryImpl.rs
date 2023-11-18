@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::sync::Arc;
+use std::time::SystemTime;
 
 use crate::components::input::outputStreamEntry;
 use gtk::subclass::prelude::*;
@@ -24,6 +25,7 @@ pub struct OutputStreamEntry {
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<OutputStream>>,
     pub associatedSource: Arc<RefCell<(u32, String)>>,
+    pub volumeTimeStamp: RefCell<Option<SystemTime>>,
 }
 
 #[glib::object_subclass]

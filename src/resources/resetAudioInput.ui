@@ -92,6 +92,9 @@
                             <property name="hexpand">True</property>
                             <property name="valign">center</property>
                             <property name="value-pos">bottom</property>
+                            <marks>
+                              <mark position="bottom" value="65536.0">100%</mark>
+                            </marks>
                           </object>
                         </child>
                         <child>

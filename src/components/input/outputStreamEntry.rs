@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
@@ -50,6 +50,15 @@ impl OutputStreamEntry {
                     let stream = stream.unwrap();
                     let index = stream.index;
                     let channels = stream.channels;
+                    {
+                        let mut time = imp.volumeTimeStamp.borrow_mut();
+                        if time.is_some()
+                            && time.unwrap().elapsed().unwrap() < Duration::from_millis(50)
+                        {
+                            return Propagation::Proceed;
+                        }
+                        *time = Some(SystemTime::now());
+                    }
                     set_outputstream_volume(value, index, channels);
                     Propagation::Proceed
                 }),
@@ -127,39 +136,39 @@ impl OutputStreamEntry {
 
 fn set_outputstream_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let _: Result<(), Error> = proxy.method_call(
-        "org.xetibo.ReSet",
-        "SetOutputStreamVolume",
-        (index, channels, value as u32),
-    );
-    // if res.is_err() {
-    //     return false;
-    // }
-    // res.unwrap().0
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> = proxy.method_call(
+            "org.xetibo.ReSet",
+            "SetOutputStreamVolume",
+            (index, channels, value as u32),
+        );
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
     });
     true
 }
 
 fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let _: Result<(), Error> =
-        proxy.method_call("org.xetibo.ReSet", "SetOutputStreamMute", (index, muted));
-    // if res.is_err() {
-    //     return false;
-    // }
-    // res.unwrap().0
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> =
+            proxy.method_call("org.xetibo.ReSet", "SetOutputStreamMute", (index, muted));
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
     });
     true
 }
