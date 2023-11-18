@@ -122,7 +122,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                             sink,
                         ));
                         let sink_clone = sink_entry.clone();
-                        let entry = Arc::new(ListEntry::new(&*sink_entry));
+                        let entry = Arc::new(ListEntry::new(&*sink_entry, ));
                         entry.set_activatable(false);
                         list.insert(index, (entry.clone(), sink_clone, alias));
                         output_box_imp.resetSinks.append(&*entry);
@@ -217,7 +217,7 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
                 for stream in streams {
                     let index = stream.index;
                     let input_stream = Arc::new(InputStreamEntry::new(output_box.clone(), stream));
-                    let entry = Arc::new(ListEntry::new(&*input_stream));
+                    let entry = Arc::new(ListEntry::new(&*input_stream, ));
                     entry.set_activatable(false);
                     list.insert(index, (entry.clone(), input_stream.clone()));
                     output_box_imp.resetInputStreams.append(&*entry);
@@ -359,7 +359,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                     ir.sink,
                 ));
                 let sink_clone = sink_entry.clone();
-                let entry = Arc::new(ListEntry::new(&*sink_entry));
+                let entry = Arc::new(ListEntry::new(&*sink_entry, ));
                 entry.set_activatable(false);
                 list.insert(sink_index, (entry.clone(), sink_clone, alias.clone()));
                 output_box_imp.resetSinks.append(&*entry);
@@ -462,7 +462,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let mut list = output_box_imp.resetInputStreamList.write().unwrap();
                 let index = ir.stream.index;
                 let input_stream = Arc::new(InputStreamEntry::new(output_box.clone(), ir.stream));
-                let entry = Arc::new(ListEntry::new(&*input_stream));
+                let entry = Arc::new(ListEntry::new(&*input_stream, ));
                 entry.set_activatable(false);
                 list.insert(index, (entry.clone(), input_stream.clone()));
                 output_box_imp.resetInputStreams.append(&*entry);

@@ -13,9 +13,10 @@ use gtk::prelude::{ListBoxRowExt, WidgetExt};
 use gtk::{gio, AlertDialog, GestureClick};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
-use crate::components::base::listEntry::ListEntry;
+use crate::components::wifi::{wifiEntryImpl};
 use crate::components::wifi::wifiBox::getConnectionSettings;
-use crate::components::wifi::wifiEntryImpl;
+use crate::components::wifi::wifiBoxImpl::WifiBox;
+use crate::components::wifi::wifiOptions::WifiOptions;
 
 use super::savedWifiEntry::SavedWifiEntry;
 
@@ -29,7 +30,7 @@ unsafe impl Send for WifiEntry {}
 unsafe impl Sync for WifiEntry {}
 
 impl WifiEntry {
-    pub fn new(access_point: AccessPoint) -> Arc<Self> {
+    pub fn new(access_point: AccessPoint, wifiBox: &WifiBox) -> Arc<Self> {
         let entry: Arc<WifiEntry> = Arc::new(Object::builder().build());
         let stored_entry = entry.clone();
         let new_entry = entry.clone();
@@ -77,14 +78,15 @@ impl WifiEntry {
             }
         }));
         entry.add_controller(gesture);
+        entry.setupCallbacks(wifiBox);
         entry
     }
 
-    pub fn setupCallbacks(&self) {
+    pub fn setupCallbacks(&self, wifiBox: &WifiBox) {
         let selfImp = self.imp();
-        selfImp.resetWifiEditButton.connect_clicked(clone!(@ weak selfImp => move |_| {
-            // TODO open navigationpage
+        selfImp.resetWifiEditButton.connect_clicked(clone!(@ weak selfImp, @ weak wifiBox => move |_| {
             let _option = getConnectionSettings(selfImp.accessPoint.borrow().associated_connection.clone());
+            wifiBox.resetWifiNavigation.push(&WifiOptions::new(_option));
         }));
     }
 }

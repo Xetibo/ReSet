@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/Xetibo/ReSet/">
+    <!--Main window-->
     <file compressed="true" preprocess="xml-stripblanks">resetMainWindow.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSidebarEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSettingBox.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetListBoxRow.ui</file>
+    <!--WiFi-->
     <file compressed="true" preprocess="xml-stripblanks">resetWiFi.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetWifiEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSavedWifiEntry.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetWifiOptions.ui</file>
+    <!--Bluetooth-->
     <file compressed="true" preprocess="xml-stripblanks">resetBluetooth.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetBluetoothEntry.ui</file>
+    <!--Output-->
     <file compressed="true" preprocess="xml-stripblanks">resetAudioOutput.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetOutputStreamEntry.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetSinkEntry.ui</file>
+    <!--Input-->
     <file compressed="true" preprocess="xml-stripblanks">resetAudioInput.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetInputStreamEntry.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">resetSinkEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSourceEntry.ui</file>
+    <!--Misc-->
     <file compressed="true" preprocess="xml-stripblanks">resetPopup.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetCardEntry.ui</file>
   </gresource>

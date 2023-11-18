@@ -50,9 +50,6 @@ impl ObjectSubclass for WifiEntry {
 impl ObjectImpl for WifiEntry {
     fn constructed(&self) {
         self.parent_constructed();
-
-        let obj = self.obj();
-        obj.setupCallbacks();
     }
 }
 

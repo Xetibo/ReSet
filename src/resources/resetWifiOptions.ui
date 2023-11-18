@@ -1,0 +1,490 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.4"/>
+  <template class="resetWifiOptions" parent="AdwNavigationPage">
+    <child>
+      <object class="GtkNotebook">
+        <property name="page">0</property>
+        <property name="scrollable">True</property>
+        <property name="show-border">False</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="css-classes">property</property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="subtitle">asdf</property>
+                    <property name="title">WiFi Name</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="css-classes">property</property>
+                    <property name="subtitle">stronk</property>
+                    <property name="title">Signal Strength</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="css-classes">property</property>
+                    <property name="subtitle">AA:BB:CC:DD:EE:FF</property>
+                    <property name="title">MAC-Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwSwitchRow">
+                    <property name="title">Connect automatically</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwSwitchRow">
+                    <property name="title">Metered Connection</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="label">General</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="width-request">500</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwComboRow">
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item>Automatic (DHCP)</item>
+                          <item>Manual</item>
+                          <item>Shared to other computers</item>
+                          <item>Link-Local Only</item>
+                          <item>Disabled</item>
+                        </items>
+                      </object>
+                    </property>
+                    <property name="title">IPv4 Method</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow">
+                    <property name="title">DNS (separate IP by comma)</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="margin-top">10</property>
+                <property name="title">Addresses</property>
+                <child>
+                  <object class="GtkListBoxRow">
+                    <property name="activatable">False</property>
+                    <child>
+                      <object class="GtkBox">
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="max-length">1</property>
+                            <property name="placeholder-text">Address</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Netmask</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Gateway</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="icon-name">edit-delete-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="header-suffix">
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Automatic</property>
+                        <property name="margin-end">5</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="margin-top">10</property>
+                <property name="title">DNS</property>
+                <child>
+                  <object class="GtkListBoxRow">
+                    <property name="activatable">False</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkEntry"/>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <property name="label">seperate ip by comma</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="header-suffix">
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Automatic</property>
+                        <property name="margin-end">5</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="margin-top">10</property>
+                <property name="title">Routes</property>
+                <child>
+                  <object class="GtkListBoxRow">
+                    <property name="activatable">False</property>
+                    <child>
+                      <object class="GtkBox">
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Address</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Netmask</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Gateway</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="max-width-chars">5</property>
+                            <property name="placeholder-text">Metric</property>
+                            <property name="width-request">50</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="icon-name">edit-delete-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="label">IPv4</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="width-request">500</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwComboRow">
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item>Automatic</item>
+                          <item>Automatic (DHCP only)</item>
+                          <item>Manual</item>
+                          <item>Shared to other computers</item>
+                          <item>Link-Local Only</item>
+                          <item>Disabled</item>
+                        </items>
+                      </object>
+                    </property>
+                    <property name="title">IPv6 Method</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="margin-top">10</property>
+                <property name="title">Addresses</property>
+                <child>
+                  <object class="GtkListBoxRow">
+                    <property name="activatable">False</property>
+                    <child>
+                      <object class="GtkBox">
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Address</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Prefix</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Gateway</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="icon-name">edit-delete-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="header-suffix">
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Automatic</property>
+                        <property name="margin-end">5</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="margin-top">10</property>
+                <property name="title">DNS</property>
+                <child>
+                  <object class="GtkListBoxRow">
+                    <property name="activatable">False</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkEntry"/>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <property name="label">seperate ip by comma</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="header-suffix">
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Automatic</property>
+                        <property name="margin-end">5</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="margin-top">10</property>
+                <property name="title">Routes</property>
+                <child>
+                  <object class="GtkListBoxRow">
+                    <property name="activatable">False</property>
+                    <child>
+                      <object class="GtkBox">
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Address</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Prefix</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="hexpand">True</property>
+                            <property name="placeholder-text">Gateway</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkEntry">
+                            <property name="max-width-chars">5</property>
+                            <property name="placeholder-text">Metric</property>
+                            <property name="width-request">50</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="icon-name">edit-delete-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="label">IPv6</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwComboRow">
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item>None</item>
+                          <item>Enhanced Open</item>
+                          <item>WEP 40/128-bit Key (Hex or ASCII)</item>
+                          <item>WEP 128-bit Passphrase</item>
+                          <item>LEAP</item>
+                          <item>Dynamic WEP (802.1X)</item>
+                          <item>WPA &amp; WPA2 Personal</item>
+                          <item>WPA &amp; WPA2 Enterprise</item>
+                          <item>WPA3 Personal</item>
+                        </items>
+                      </object>
+                    </property>
+                    <property name="title">Security</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPasswordEntryRow">
+                    <property name="title">Password</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="label">Security</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

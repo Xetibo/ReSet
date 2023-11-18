@@ -5,3 +5,5 @@ pub mod wifiBox;
 pub mod wifiBoxImpl;
 pub mod wifiEntry;
 pub mod wifiEntryImpl;
+pub mod wifiOptions;
+pub mod wifiOptionsImpl;

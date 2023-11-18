@@ -15,6 +15,7 @@ use dbus::arg::{AppendAll, ReadAll, RefArg};
 use dbus::blocking::Connection;
 use dbus::Error;
 use dbus::Path;
+use glib::ObjectExt;
 use gtk::gio;
 use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
@@ -74,7 +75,7 @@ pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
                 let selfImp = wifibox_ref.imp();
                 for accessPoint in accessPoints {
                     let ssid = accessPoint.ssid.clone();
-                    let entry = Arc::new(ListEntry::new(&*WifiEntry::new(accessPoint)));
+                    let entry = Arc::new(ListEntry::new(&*WifiEntry::new(accessPoint, selfImp)));
                     wifiEntries.insert(ssid, entry.clone());
                     selfImp.resetWifiList.append(&*entry);
                 }
@@ -123,7 +124,7 @@ pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
                                     return;
                                 }
                                 let entry =
-                                    Arc::new(ListEntry::new(&*WifiEntry::new(access_point.0)));
+                                    Arc::new(ListEntry::new(&*WifiEntry::new(access_point.0, wifiBoxImpl.imp())));
                                 wifiEntries.insert(ssid, entry.clone());
                                 wifiBoxImpl.imp().resetWifiList.append(&*entry);
                             });

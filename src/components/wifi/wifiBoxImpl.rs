@@ -4,6 +4,7 @@ use gtk::subclass::prelude::*;
 use gtk::{glib, CompositeTemplate, ListBox, Switch};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use adw::NavigationView;
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::wifi::wifiEntry::WifiEntry;
@@ -12,6 +13,8 @@ use crate::components::wifi::wifiEntry::WifiEntry;
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWiFi.ui")]
 pub struct WifiBox {
+    #[template_child]
+    pub resetWifiNavigation: TemplateChild<NavigationView>,
     #[template_child]
     pub resetWifiDetails: TemplateChild<ListBox>,
     #[template_child]
