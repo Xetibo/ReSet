@@ -20,6 +20,9 @@ glib::wrapper! {
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
+unsafe impl Send for OutputStreamEntry {}
+unsafe impl Sync for OutputStreamEntry {}
+
 impl OutputStreamEntry {
     pub fn new(source_box: Arc<SourceBox>, stream: OutputStream) -> Self {
         let obj: Self = Object::builder().build();

@@ -19,6 +19,9 @@ glib::wrapper! {
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
+unsafe impl Send for SourceEntry {}
+unsafe impl Sync for SourceEntry {}
+
 impl SourceEntry {
     pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Source) -> Self {
         let obj: Self = Object::builder().build();

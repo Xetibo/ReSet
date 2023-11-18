@@ -1,5 +1,6 @@
+use std::cell::RefCell;
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
@@ -8,7 +9,8 @@ use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
-use gtk::{gio, StringObject};
+use gtk::prelude::ScaleExt;
+use gtk::{gio, PositionType, StringObject};
 use ReSet_Lib::audio::audio::InputStream;
 
 use super::inputStreamEntryImpl;
@@ -59,6 +61,13 @@ impl InputStreamEntry {
                     let stream = stream.unwrap();
                     let index = stream.index;
                     let channels = stream.channels;
+                    {
+                        let mut time = imp.volumeTimeStamp.borrow_mut();
+                        if time.is_some() && time.unwrap().elapsed().unwrap() < Duration::from_millis(50) {
+                            return Propagation::Proceed;
+                        }
+                        *time = Some(SystemTime::now());
+                    }
                     set_inputstream_volume(value, index, channels);
                     Propagation::Proceed
                 }),

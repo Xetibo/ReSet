@@ -192,9 +192,10 @@ pub fn populate_outputstreams(input_box: Arc<SourceBox>) {
                 for stream in streams {
                     let index = stream.index;
                     let input_stream = Arc::new(OutputStreamEntry::new(input_box.clone(), stream));
+                    let input_stream_clone = input_stream.clone();
                     let entry = Arc::new(ListEntry::new(&*input_stream));
                     entry.set_activatable(false);
-                    list.insert(index, (entry.clone(), input_stream.clone()));
+                    list.insert(index, (entry.clone(), input_stream_clone));
                     input_box_imp.resetOutputStreams.append(&*entry);
                 }
             });
@@ -352,7 +353,9 @@ pub fn start_input_box_listener(
                 let mut map = output_box_imp.resetSourceMap.write().unwrap();
                 map.remove(&alias.unwrap().2);
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
-                *index -= 1;
+                if *index != 0 {
+                    *index -= 1;
+                }
             });
         });
         true
@@ -406,9 +409,10 @@ pub fn start_input_box_listener(
                 let mut list = output_box_imp.resetOutputStreamList.write().unwrap();
                 let index = ir.stream.index;
                 let output_stream = Arc::new(OutputStreamEntry::new(output_box.clone(), ir.stream));
+                let output_stream_clone = output_stream.clone();
                 let entry = Arc::new(ListEntry::new(&*output_stream));
                 entry.set_activatable(false);
-                list.insert(index, (entry.clone(), output_stream.clone()));
+                list.insert(index, (entry.clone(), output_stream_clone));
                 output_box_imp.resetOutputStreams.append(&*entry);
             });
         });
@@ -486,12 +490,12 @@ pub fn start_input_box_listener(
                     let output_box = source_box.clone();
                     let output_box_imp = output_box.imp();
                     let mut list = output_box_imp.resetOutputStreamList.write().unwrap();
-                    let entry = list.get(&ir.index);
+                    let entry = list.remove(&ir.index);
                     if entry.is_none() {
+                        println!("tried to remove nonexistant?? wat");
                         return;
                     }
                     output_box_imp.resetOutputStreams.remove(&*entry.unwrap().0);
-                    list.remove(&ir.index);
                 });
             });
             true

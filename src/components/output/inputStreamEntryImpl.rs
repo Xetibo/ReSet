@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::sync::Arc;
+use std::time::SystemTime;
 
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, DropDown, Label, ProgressBar, Scale};
@@ -25,6 +26,7 @@ pub struct InputStreamEntry {
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<InputStream>>,
     pub associatedSink: Arc<RefCell<(u32, String)>>,
+    pub volumeTimeStamp: RefCell<Option<SystemTime>>,
 }
 
 #[glib::object_subclass]

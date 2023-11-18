@@ -42,7 +42,7 @@
           <object class="GtkScale" id="resetVolumeSlider">
             <property name="adjustment">
               <object class="GtkAdjustment">
-                <property name="page-increment">2005.4016</property>
+                <property name="page-increment">10000.0</property>
                 <property name="step-increment">2005.4016</property>
                 <property name="upper">100270.08</property>
               </object>
@@ -50,6 +50,9 @@
             <property name="hexpand">True</property>
             <property name="valign">center</property>
             <property name="value-pos">bottom</property>
+            <marks>
+              <mark position="bottom" value="65536.0">100%</mark>
+            </marks>
           </object>
         </child>
         <child>

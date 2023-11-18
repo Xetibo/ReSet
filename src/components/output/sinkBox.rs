@@ -35,7 +35,13 @@ unsafe impl Sync for SinkBox {}
 
 impl SinkBox {
     pub fn new() -> Self {
-        Object::builder().build()
+        let obj: Self = Object::builder().build();
+        {
+            let imp = obj.imp();
+            let mut model_index = imp.resetModelIndex.write().unwrap();
+            *model_index = 0;
+        }
+        obj
     }
 
     pub fn setupCallbacks(&self) {
@@ -50,6 +56,12 @@ impl SinkBox {
         selfImp
             .resetInputStreamButton
             .set_action_name(Some("navigation.pop"));
+    }
+}
+
+impl Default for SinkBox {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -81,7 +93,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     let default_sink = output_box_imp.resetDefaultSink.clone();
                     let sink = default_sink.borrow();
 
-                    let volume = sink.volume.first().unwrap_or_else(|| &(0 as u32));
+                    let volume = sink.volume.first().unwrap_or(&0);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
                     output_box_imp.resetVolumePercentage.set_text(&percentage);
@@ -239,7 +251,11 @@ fn get_default_sink() -> Sink {
     res.unwrap().0
 }
 
-pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, sink_box: Arc<SinkBox>) -> Connection {
+pub fn start_output_box_listener(
+    conn: Connection,
+    listeners: Arc<Listeners>,
+    sink_box: Arc<SinkBox>,
+) -> Connection {
     if listeners.network_listener.load(Ordering::SeqCst) {
         return conn;
     }
@@ -339,7 +355,9 @@ pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, si
                 let mut map = output_box_imp.resetSinkMap.write().unwrap();
                 map.remove(&alias.unwrap().2);
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
-                *index -= 1;
+                if *index != 0 {
+                    *index -= 1;
+                }
             });
         });
         true
