@@ -5,3 +5,5 @@ pub mod listEntryImpl;
 pub mod popup;
 pub mod popupImpl;
 pub mod utils;
+pub mod cardEntry;
+pub mod cardEntryImpl;

@@ -2,6 +2,7 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::{
     InputStreamAdded, InputStreamChanged, InputStreamRemoved, Listeners, SinkAdded, SinkChanged,
@@ -18,7 +19,7 @@ use glib::subclass::prelude::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{InputStream, Sink};
+use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
@@ -52,9 +53,19 @@ impl SinkBox {
         selfImp
             .resetSinksRow
             .set_action_target_value(Some(&Variant::from("outputDevices")));
+        selfImp
+            .resetCardsRow
+            .set_action_name(Some("navigation.push"));
+        selfImp
+            .resetCardsRow
+            .set_action_target_value(Some(&Variant::from("profileConfiguration")));
+        selfImp.resetCardsRow.connect_action_name_notify(|_| {});
 
         selfImp
             .resetInputStreamButton
+            .set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetInputCardsBackButton
             .set_action_name(Some("navigation.pop"));
     }
 }
@@ -84,6 +95,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
             }
         }
         populate_inputstreams(output_box.clone());
+        populate_cards(output_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box_ref_slider = output_box.clone();
@@ -217,6 +229,22 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
     });
 }
 
+pub fn populate_cards(output_box: Arc<SinkBox>) {
+    gio::spawn_blocking(move || {
+        let output_box_ref = output_box.clone();
+        let cards = get_cards();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let imp = output_box_ref.imp();
+                for card in cards {
+                    imp.resetCards
+                        .append(&ListEntry::new(&CardEntry::new(card)));
+                }
+            });
+        });
+    });
+}
+
 fn get_input_streams() -> Vec<InputStream> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
@@ -256,6 +284,20 @@ fn get_default_sink() -> Sink {
     let res: Result<(Sink,), Error> = proxy.method_call("org.xetibo.ReSet", "GetDefaultSink", ());
     if res.is_err() {
         return Sink::default();
+    }
+    res.unwrap().0
+}
+
+fn get_cards() -> Vec<Card> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Vec<Card>,), Error> = proxy.method_call("org.xetibo.ReSet", "ListCards", ());
+    if res.is_err() {
+        return Vec::new();
     }
     res.unwrap().0
 }

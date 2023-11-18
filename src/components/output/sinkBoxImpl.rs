@@ -22,6 +22,8 @@ pub struct SinkBox {
     #[template_child]
     pub resetSinksRow: TemplateChild<ListEntry>,
     #[template_child]
+    pub resetCardsRow: TemplateChild<ListEntry>,
+    #[template_child]
     pub resetSinkDropdown: TemplateChild<DropDown>,
     #[template_child]
     pub resetSinkMute: TemplateChild<Button>,
@@ -37,6 +39,10 @@ pub struct SinkBox {
     pub resetInputStreamButton: TemplateChild<ListEntry>,
     #[template_child]
     pub resetInputStreams: TemplateChild<Box>,
+    #[template_child]
+    pub resetInputCardsBackButton: TemplateChild<ListEntry>,
+    #[template_child]
+    pub resetCards: TemplateChild<Box>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSink: Arc<RefCell<Sink>>,
     pub resetSinkList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, String)>>>,

@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use crate::components::base::listEntry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate};
+use gtk::{glib, CompositeTemplate, DropDown, Label, StringList};
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
