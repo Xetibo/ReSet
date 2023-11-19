@@ -365,6 +365,11 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 output_box_imp.resetSinks.append(&*entry);
                 let mut map = output_box_imp.resetSinkMap.write().unwrap();
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
+                output_box_imp
+                    .resetModelList
+                    .write()
+                    .unwrap()
+                    .append(&alias);
                 map.insert(alias, (sink_index, *index, name));
                 *index += 1;
             });
@@ -393,7 +398,14 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                     return;
                 }
                 let mut map = output_box_imp.resetSinkMap.write().unwrap();
-                map.remove(&alias.unwrap().2);
+                let entry_index = map.remove(&alias.unwrap().2);
+                if entry_index.is_some() {
+                    output_box_imp
+                        .resetModelList
+                        .write()
+                        .unwrap()
+                        .remove(entry_index.unwrap().1);
+                }
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
                 if *index != 0 {
                     *index -= 1;

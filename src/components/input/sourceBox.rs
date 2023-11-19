@@ -361,6 +361,11 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 output_box_imp.resetSources.append(&*entry);
                 let mut map = output_box_imp.resetSourceMap.write().unwrap();
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
+                output_box_imp
+                    .resetModelList
+                    .write()
+                    .unwrap()
+                    .append(&alias);
                 map.insert(alias, (source_index, *index, name));
                 *index += 1;
             });
@@ -391,7 +396,14 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     return;
                 }
                 let mut map = output_box_imp.resetSourceMap.write().unwrap();
-                map.remove(&alias.unwrap().2);
+                let entry_index = map.remove(&alias.unwrap().2);
+                if entry_index.is_some() {
+                    output_box_imp
+                        .resetModelList
+                        .write()
+                        .unwrap()
+                        .remove(entry_index.unwrap().1);
+                }
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
                 if *index != 0 {
                     *index -= 1;
