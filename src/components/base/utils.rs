@@ -1,5 +1,8 @@
 use std::{
-    sync::{atomic::{AtomicBool, Ordering}, Arc},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
     thread,
     time::Duration,
 };
@@ -15,7 +18,10 @@ use ReSet_Lib::{
     signals::GetVal,
 };
 
-use crate::components::{input::sourceBox::{SourceBox, start_input_box_listener}, output::sinkBox::{SinkBox, start_output_box_listener}};
+use crate::components::{
+    input::sourceBox::{start_input_box_listener, SourceBox},
+    output::sinkBox::{start_output_box_listener, SinkBox},
+};
 
 #[derive(Default)]
 pub struct Listeners {
@@ -40,6 +46,14 @@ impl Listeners {
             let _: Result<(bool,), Error> =
                 proxy.method_call("org.xetibo.ReSet", "StopNetworkListener", ());
         });
+    }
+
+    pub fn stop_audio_listener(&self) {
+        self.pulse_listener.store(false, Ordering::SeqCst);
+    }
+
+    pub fn stop_bluetooth_listener(&self) {
+        self.bluetooth_listener.store(false, Ordering::SeqCst);
     }
 }
 
@@ -367,20 +381,29 @@ impl GetVal<(u32,)> for OutputStreamRemoved {
     }
 }
 
-pub fn start_event_listener(listeners: Arc<Listeners>, sink_box: Option<Arc<SinkBox>>,source_box: Option<Arc<SourceBox>>) {
+pub fn start_audio_listener(
+    listeners: Arc<Listeners>,
+    sink_box: Option<Arc<SinkBox>>,
+    source_box: Option<Arc<SourceBox>>,
+) {
     gio::spawn_blocking(move || {
         let mut conn = Connection::new_session().unwrap();
+        if listeners.pulse_listener.load(Ordering::SeqCst) {
+            return;
+        }
 
         if sink_box.is_some() {
-            conn = start_output_box_listener(conn, listeners.clone(), sink_box.unwrap());
+            conn = start_output_box_listener(conn, sink_box.unwrap());
         }
         if source_box.is_some() {
-            conn = start_input_box_listener(conn, listeners.clone(), source_box.unwrap());
+            conn = start_input_box_listener(conn, source_box.unwrap());
         }
 
+        listeners.pulse_listener.store(true, Ordering::SeqCst);
+        println!("starting audio listener");
         loop {
             let _ = conn.process(Duration::from_millis(1000));
-            if !listeners.network_listener.load(Ordering::SeqCst) {
+            if !listeners.pulse_listener.load(Ordering::SeqCst) {
                 println!("stopping audio listener");
                 break;
             }

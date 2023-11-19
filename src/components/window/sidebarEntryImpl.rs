@@ -2,8 +2,8 @@ use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use glib::subclass::InitializingObject;
-use gtk::{CompositeTemplate, FlowBox, glib, Image, Label, ListBoxRow};
 use gtk::subclass::prelude::*;
+use gtk::{glib, CompositeTemplate, FlowBox, Image, Label, ListBoxRow};
 
 use crate::components::base::utils::Listeners;
 use crate::components::window::handleSidebarClick::HANDLE_HOME;
@@ -29,18 +29,18 @@ pub struct SidebarEntry {
     pub category: Cell<Categories>,
     pub isSubcategory: Cell<bool>,
     pub onClickEvent: RefCell<SidebarAction>,
-    pub name : RefCell<String>,
+    pub name: RefCell<String>,
 }
 
 #[allow(non_snake_case)]
 pub struct SidebarAction {
-    pub onClickEvent: fn(Arc<Listeners>,FlowBox),
+    pub onClickEvent: fn(Arc<Listeners>, FlowBox),
 }
 
 impl Default for SidebarAction {
     fn default() -> Self {
         Self {
-            onClickEvent: HANDLE_HOME
+            onClickEvent: HANDLE_HOME,
         }
     }
 }

@@ -17,5 +17,6 @@
     <file compressed="true" preprocess="xml-stripblanks">resetSinkEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSourceEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetPopup.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetCardEntry.ui</file>
   </gresource>
 </gresources>

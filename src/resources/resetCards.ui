@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="resetCards" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="valign">start</property>
+    <child>
+      <object class="GtkListBox" id="resetCardList">
+        <property name="css-classes">boxed-list</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">5</property>
+        <property name="margin-start">5</property>
+        <property name="margin-top">5</property>
+        <property name="show-separators">True</property>
+        <property name="valign">start</property>
+      </object>
+    </child>
+  </template>
+</interface>

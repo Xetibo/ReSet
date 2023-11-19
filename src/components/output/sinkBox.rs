@@ -1,11 +1,10 @@
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
+use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::{
-    InputStreamAdded, InputStreamChanged, InputStreamRemoved, Listeners, SinkAdded, SinkChanged,
-    SinkRemoved,
+    InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
 use crate::components::output::sinkEntry::set_sink_volume;
 use adw::glib::Object;
@@ -18,7 +17,7 @@ use glib::subclass::prelude::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{InputStream, Sink};
+use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
@@ -35,7 +34,13 @@ unsafe impl Sync for SinkBox {}
 
 impl SinkBox {
     pub fn new() -> Self {
-        Object::builder().build()
+        let obj: Self = Object::builder().build();
+        {
+            let imp = obj.imp();
+            let mut model_index = imp.resetModelIndex.write().unwrap();
+            *model_index = 0;
+        }
+        obj
     }
 
     pub fn setupCallbacks(&self) {
@@ -46,10 +51,26 @@ impl SinkBox {
         selfImp
             .resetSinksRow
             .set_action_target_value(Some(&Variant::from("outputDevices")));
+        selfImp
+            .resetCardsRow
+            .set_action_name(Some("navigation.push"));
+        selfImp
+            .resetCardsRow
+            .set_action_target_value(Some(&Variant::from("profileConfiguration")));
+        selfImp.resetCardsRow.connect_action_name_notify(|_| {});
 
         selfImp
             .resetInputStreamButton
             .set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetInputCardsBackButton
+            .set_action_name(Some("navigation.pop"));
+    }
+}
+
+impl Default for SinkBox {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -72,6 +93,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
             }
         }
         populate_inputstreams(output_box.clone());
+        populate_cards(output_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box_ref_slider = output_box.clone();
@@ -81,7 +103,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     let default_sink = output_box_imp.resetDefaultSink.clone();
                     let sink = default_sink.borrow();
 
-                    let volume = sink.volume.first().unwrap_or_else(|| &(0 as u32));
+                    let volume = sink.volume.first().unwrap_or(&0);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
                     output_box_imp.resetVolumePercentage.set_text(&percentage);
@@ -147,6 +169,15 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                         let sink = imp.resetDefaultSink.borrow();
                         let index = sink.index;
                         let channels = sink.channels;
+                        {
+                            let mut time = imp.volumeTimeStamp.borrow_mut();
+                            if time.is_some()
+                                && time.unwrap().elapsed().unwrap() < Duration::from_millis(50)
+                            {
+                                return Propagation::Proceed;
+                            }
+                            *time = Some(SystemTime::now());
+                        }
                         set_sink_volume(value, index, channels);
                         Propagation::Proceed
                     });
@@ -196,6 +227,22 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
     });
 }
 
+pub fn populate_cards(output_box: Arc<SinkBox>) {
+    gio::spawn_blocking(move || {
+        let output_box_ref = output_box.clone();
+        let cards = get_cards();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let imp = output_box_ref.imp();
+                for card in cards {
+                    imp.resetCards
+                        .append(&ListEntry::new(&CardEntry::new(card)));
+                }
+            });
+        });
+    });
+}
+
 fn get_input_streams() -> Vec<InputStream> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
@@ -239,12 +286,21 @@ fn get_default_sink() -> Sink {
     res.unwrap().0
 }
 
-pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, sink_box: Arc<SinkBox>) -> Connection {
-    if listeners.network_listener.load(Ordering::SeqCst) {
-        return conn;
+fn get_cards() -> Vec<Card> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Vec<Card>,), Error> = proxy.method_call("org.xetibo.ReSet", "ListCards", ());
+    if res.is_err() {
+        return Vec::new();
     }
-    listeners.network_listener.store(true, Ordering::SeqCst);
+    res.unwrap().0
+}
 
+pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Connection {
     let sink_added = SinkAdded::match_rule(
         Some(&"org.xetibo.ReSet".into()),
         Some(&Path::from("/org/xetibo/ReSet")),
@@ -309,6 +365,11 @@ pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, si
                 output_box_imp.resetSinks.append(&*entry);
                 let mut map = output_box_imp.resetSinkMap.write().unwrap();
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
+                output_box_imp
+                    .resetModelList
+                    .write()
+                    .unwrap()
+                    .append(&alias);
                 map.insert(alias, (sink_index, *index, name));
                 *index += 1;
             });
@@ -337,9 +398,18 @@ pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, si
                     return;
                 }
                 let mut map = output_box_imp.resetSinkMap.write().unwrap();
-                map.remove(&alias.unwrap().2);
+                let entry_index = map.remove(&alias.unwrap().2);
+                if entry_index.is_some() {
+                    output_box_imp
+                        .resetModelList
+                        .write()
+                        .unwrap()
+                        .remove(entry_index.unwrap().1);
+                }
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
-                *index -= 1;
+                if *index != 0 {
+                    *index -= 1;
+                }
             });
         });
         true
@@ -482,6 +552,5 @@ pub fn start_output_box_listener(conn: Connection, listeners: Arc<Listeners>, si
         return conn;
     }
 
-    listeners.network_listener.store(true, Ordering::SeqCst);
     conn
 }

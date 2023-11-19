@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
+use std::time::SystemTime;
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::input::sourceBox;
@@ -19,6 +20,8 @@ pub struct SourceBox {
     #[template_child]
     pub resetSourceRow: TemplateChild<ListEntry>,
     #[template_child]
+    pub resetCardsRow: TemplateChild<ListEntry>,
+    #[template_child]
     pub resetSourceDropdown: TemplateChild<DropDown>,
     #[template_child]
     pub resetSourceMute: TemplateChild<Button>,
@@ -34,6 +37,10 @@ pub struct SourceBox {
     pub resetOutputStreamButton: TemplateChild<ListEntry>,
     #[template_child]
     pub resetOutputStreams: TemplateChild<gtk::Box>,
+    #[template_child]
+    pub resetInputCardsBackButton: TemplateChild<ListEntry>,
+    #[template_child]
+    pub resetCards: TemplateChild<gtk::Box>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSource: Arc<RefCell<Source>>,
     pub resetSourceList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SourceEntry>, String)>>>,
@@ -43,6 +50,7 @@ pub struct SourceBox {
     // first u32 is the index of the source, the second the index in the model list and the third is
     // the full name
     pub resetSourceMap: Arc<RwLock<HashMap<String, (u32, u32, String)>>>,
+    pub volumeTimeStamp: RefCell<Option<SystemTime>>,
 }
 
 #[glib::object_subclass]

@@ -1,12 +1,12 @@
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
-use gtk::{CompositeTemplate, glib, ListBox, Switch};
+use crate::components::wifi::wifiBox;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use crate::components::wifi::wifiBox;
+use gtk::{glib, CompositeTemplate, ListBox, Switch};
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
-use crate::components::wifi::wifiEntry::WifiEntry;
 use crate::components::base::listEntry::ListEntry;
+use crate::components::wifi::wifiEntry::WifiEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -24,7 +24,7 @@ pub struct WifiBox {
     pub resetStoredWifiList: TemplateChild<ListBox>,
     #[template_child]
     pub resetAvailableNetworks: TemplateChild<ListEntry>,
-    pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>,Arc<ListEntry>>>>,
+    pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>, Arc<ListEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
 }
 

@@ -1,8 +1,9 @@
 use std::cell::RefCell;
 use std::sync::Arc;
+use std::time::SystemTime;
 
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale, CheckButton};
+use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::Source;
 
 use super::sourceEntry;
@@ -24,6 +25,7 @@ pub struct SourceEntry {
     #[template_child]
     pub resetVolumeMeter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<Source>>,
+    pub volumeTimeStamp: RefCell<Option<SystemTime>>,
 }
 
 #[glib::object_subclass]

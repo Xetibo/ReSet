@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
+use std::time::SystemTime;
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::output::inputStreamEntry::InputStreamEntry;
@@ -21,6 +22,8 @@ pub struct SinkBox {
     #[template_child]
     pub resetSinksRow: TemplateChild<ListEntry>,
     #[template_child]
+    pub resetCardsRow: TemplateChild<ListEntry>,
+    #[template_child]
     pub resetSinkDropdown: TemplateChild<DropDown>,
     #[template_child]
     pub resetSinkMute: TemplateChild<Button>,
@@ -36,6 +39,10 @@ pub struct SinkBox {
     pub resetInputStreamButton: TemplateChild<ListEntry>,
     #[template_child]
     pub resetInputStreams: TemplateChild<Box>,
+    #[template_child]
+    pub resetInputCardsBackButton: TemplateChild<ListEntry>,
+    #[template_child]
+    pub resetCards: TemplateChild<Box>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSink: Arc<RefCell<Sink>>,
     pub resetSinkList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, String)>>>,
@@ -46,6 +53,7 @@ pub struct SinkBox {
     // the full name
     pub resetSinkMap: Arc<RwLock<HashMap<String, (u32, u32, String)>>>,
     // pub : Arc<Mutex<Vec<ListEntry>>>,
+    pub volumeTimeStamp: RefCell<Option<SystemTime>>,
 }
 
 #[glib::object_subclass]

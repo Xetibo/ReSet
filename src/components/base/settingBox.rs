@@ -17,3 +17,4 @@ impl SettingBox {
         entry
     }
 }
+

@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
@@ -18,6 +18,9 @@ glib::wrapper! {
     @extends gtk::Box, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
+
+unsafe impl Send for SourceEntry {}
+unsafe impl Sync for SourceEntry {}
 
 impl SourceEntry {
     pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Source) -> Self {
@@ -41,6 +44,15 @@ impl SourceEntry {
                     let source = imp.stream.borrow();
                     let index = source.index;
                     let channels = source.channels;
+                    {
+                        let mut time = imp.volumeTimeStamp.borrow_mut();
+                        if time.is_some()
+                            && time.unwrap().elapsed().unwrap() < Duration::from_millis(50)
+                        {
+                            return Propagation::Proceed;
+                        }
+                        *time = Some(SystemTime::now());
+                    }
                     set_source_volume(value, index, channels);
                     Propagation::Proceed
                 }),
@@ -80,21 +92,21 @@ impl SourceEntry {
 
 pub fn set_source_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let _: Result<(), Error> = proxy.method_call(
-        "org.xetibo.ReSet",
-        "SetSourceVolume",
-        (index, channels, value as u32),
-    );
-    // if res.is_err() {
-    //     return false;
-    // }
-    // res.unwrap().0
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.xetibo.ReSet",
+            "/org/xetibo/ReSet",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(), Error> = proxy.method_call(
+            "org.xetibo.ReSet",
+            "SetSourceVolume",
+            (index, channels, value as u32),
+        );
+        // if res.is_err() {
+        //     return false;
+        // }
+        // res.unwrap().0
     });
     true
 }

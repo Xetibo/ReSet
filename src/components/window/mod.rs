@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
-pub mod window;
-pub mod windowImpl;
+pub mod handleSidebarClick;
 pub mod sidebarEntry;
 pub mod sidebarEntryImpl;
-pub mod handleSidebarClick;
+pub mod window;
+pub mod windowImpl;
