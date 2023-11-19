@@ -31,6 +31,7 @@ pub const HANDLE_WIFI_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.stop_audio_listener();
         listeners.stop_bluetooth_listener();
         let wifiBox = Arc::new(WifiBox::new());
+        show_stored_connections(wifiBox.clone());
         scanForWifi(listeners.clone(), wifiBox.clone());
         let wifiFrame = wrapInFrame(SettingBox::new(&*wifiBox));
         resetMain.remove_all();

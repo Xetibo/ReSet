@@ -3,7 +3,10 @@ use crate::components::wifi::wifiEntry;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Image, Label};
 use std::cell::RefCell;
+use std::sync::Arc;
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
+
+use super::wifiBox::WifiBox;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
