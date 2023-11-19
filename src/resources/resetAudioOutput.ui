@@ -268,7 +268,7 @@
                     <child>
                       <object class="GtkLabel">
                         <property name="halign">start</property>
-                        <property name="label">Output Devices</property>
+                        <property name="label">Devices</property>
                       </object>
                     </child>
                   </object>

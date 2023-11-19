@@ -1,11 +1,14 @@
-use std::cell::RefCell;
-use gtk::{CompositeTemplate, glib, ListBox, Switch};
+use dbus::Path;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
+use gtk::{glib, CompositeTemplate, ListBox, Switch};
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::sync::Arc;
 
+use crate::components::base::listEntry::ListEntry;
 use crate::components::bluetooth::bluetoothBox;
 use crate::components::bluetooth::bluetoothEntry::BluetoothEntry;
-use crate::components::base::listEntry::ListEntry;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -21,8 +24,8 @@ pub struct BluetoothBox {
     pub resetVisibility: TemplateChild<ListEntry>,
     #[template_child]
     pub resetBluetoothMainTab: TemplateChild<ListEntry>,
-    pub availableDevices: RefCell<Vec<ListEntry>>,
-    pub connectedDevices: RefCell<Vec<ListEntry>>,
+    pub availableDevices: RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, Arc<ListEntry>)>>,
+    pub connectedDevices: RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, Arc<ListEntry>)>>,
 }
 
 #[glib::object_subclass]

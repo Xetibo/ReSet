@@ -1,9 +1,8 @@
 use gtk::prelude::FrameExt;
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
 use crate::components::base::settingBox::SettingBox;
-use crate::components::base::utils::{start_event_listener, Listeners};
+use crate::components::base::utils::{start_audio_listener, Listeners};
 use crate::components::bluetooth::bluetoothBox::{start_bluetooth_listener, BluetoothBox};
 use crate::components::input::sourceBox::{populate_sources, SourceBox};
 use crate::components::output::sinkBox::{populate_sinks, SinkBox};
@@ -13,7 +12,7 @@ use gtk::{FlowBox, Frame, Label};
 
 pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_audio_listener();
         let wifiBox = Arc::new(WifiBox::new());
         show_stored_connections(wifiBox.clone());
         scanForWifi(listeners.clone(), wifiBox.clone());
@@ -29,8 +28,8 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox) =
 
 pub const HANDLE_WIFI_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_audio_listener();
+        listeners.stop_bluetooth_listener();
         let wifiBox = Arc::new(WifiBox::new());
         scanForWifi(listeners.clone(), wifiBox.clone());
         let wifiFrame = wrapInFrame(SettingBox::new(&*wifiBox));
@@ -42,7 +41,7 @@ pub const HANDLE_WIFI_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_BLUETOOTH_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_audio_listener();
         let bluetooth_box = Arc::new(BluetoothBox::new());
         start_bluetooth_listener(listeners.clone(), bluetooth_box.clone());
         let bluetoothFrame = wrapInFrame(SettingBox::new(&*bluetooth_box));
@@ -54,8 +53,8 @@ pub const HANDLE_BLUETOOTH_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_VPN_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_bluetooth_listener();
+        listeners.stop_audio_listener();
         let label = Label::new(Some("not implemented yet"));
         resetMain.remove_all();
         resetMain.insert(&label, -1);
@@ -65,14 +64,13 @@ pub const HANDLE_VPN_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_AUDIO_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(true, Ordering::SeqCst);
+        listeners.stop_bluetooth_listener();
         let audioOutput = Arc::new(SinkBox::new());
         populate_sinks(audioOutput.clone());
         let audioFrame = wrapInFrame(SettingBox::new(&*audioOutput));
         let audioInput = Arc::new(SourceBox::new());
         populate_sources(audioInput.clone());
-        start_event_listener(
+        start_audio_listener(
             listeners.clone(),
             Some(audioOutput.clone()),
             Some(audioInput.clone()),
@@ -87,11 +85,10 @@ pub const HANDLE_AUDIO_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_VOLUME_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_bluetooth_listener();
         let audioOutput = Arc::new(SinkBox::new());
         populate_sinks(audioOutput.clone());
-        start_event_listener(listeners.clone(), Some(audioOutput.clone()), None);
+        start_audio_listener(listeners.clone(), Some(audioOutput.clone()), None);
         let audioFrame = wrapInFrame(SettingBox::new(&*audioOutput));
         resetMain.remove_all();
         resetMain.insert(&audioFrame, -1);
@@ -101,11 +98,10 @@ pub const HANDLE_VOLUME_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_MICROPHONE_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_bluetooth_listener();
         let audioInput = Arc::new(SourceBox::new());
         populate_sources(audioInput.clone());
-        start_event_listener(listeners.clone(), None, Some(audioInput.clone()));
+        start_audio_listener(listeners.clone(), None, Some(audioInput.clone()));
         let sourceFrame = wrapInFrame(SettingBox::new(&*audioInput));
         resetMain.remove_all();
         resetMain.insert(&sourceFrame, -1);
@@ -115,8 +111,8 @@ pub const HANDLE_MICROPHONE_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_PERIPHERALS_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_audio_listener();
+        listeners.stop_bluetooth_listener();
         let label = Label::new(Some("not implemented yet"));
         resetMain.remove_all();
         resetMain.insert(&label, -1);
@@ -126,8 +122,8 @@ pub const HANDLE_PERIPHERALS_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_MONITOR_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_audio_listener();
+        listeners.stop_bluetooth_listener();
         let label = Label::new(Some("not implemented yet"));
         resetMain.remove_all();
         resetMain.insert(&label, -1);
@@ -137,8 +133,8 @@ pub const HANDLE_MONITOR_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_MOUSE_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_audio_listener();
+        listeners.stop_bluetooth_listener();
         let label = Label::new(Some("not implemented yet"));
         resetMain.remove_all();
         resetMain.insert(&label, -1);
@@ -148,8 +144,8 @@ pub const HANDLE_MOUSE_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_KEYBOARD_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_audio_listener();
+        listeners.stop_bluetooth_listener();
         let label = Label::new(Some("not implemented yet"));
         resetMain.remove_all();
         resetMain.insert(&label, -1);
@@ -159,9 +155,8 @@ pub const HANDLE_KEYBOARD_CLICK: fn(Arc<Listeners>, FlowBox) =
 pub const HANDLE_HOME: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
-        listeners.network_listener.store(false, Ordering::SeqCst);
-        listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-        listeners.pulse_listener.store(false, Ordering::SeqCst);
+        listeners.stop_audio_listener();
+        listeners.stop_bluetooth_listener();
         resetMain.remove_all();
     };
 

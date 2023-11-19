@@ -302,16 +302,7 @@ fn get_cards() -> Vec<Card> {
     res.unwrap().0
 }
 
-pub fn start_output_box_listener(
-    conn: Connection,
-    listeners: Arc<Listeners>,
-    sink_box: Arc<SinkBox>,
-) -> Connection {
-    if listeners.network_listener.load(Ordering::SeqCst) {
-        return conn;
-    }
-    listeners.network_listener.store(true, Ordering::SeqCst);
-
+pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Connection {
     let sink_added = SinkAdded::match_rule(
         Some(&"org.xetibo.ReSet".into()),
         Some(&Path::from("/org/xetibo/ReSet")),
@@ -551,6 +542,5 @@ pub fn start_output_box_listener(
         return conn;
     }
 
-    listeners.network_listener.store(true, Ordering::SeqCst);
     conn
 }

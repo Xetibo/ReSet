@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use ReSet_Lib::bluetooth::bluetooth::BluetoothDevice;
 use gtk::{Button, CompositeTemplate, glib, Image, Label};
 use gtk::subclass::prelude::*;
 use crate::components::bluetooth::bluetoothEntry;
@@ -21,8 +22,11 @@ pub struct BluetoothEntry {
     #[template_child]
     pub resetBluetoothLabel: TemplateChild<Label>,
     #[template_child]
+    pub resetBluetoothAddress: TemplateChild<Label>,
+    #[template_child]
     pub resetBluetoothButton: TemplateChild<Button>,
     pub deviceName: RefCell<String>,
+    pub device: RefCell<BluetoothDevice>
 }
 
 #[glib::object_subclass]

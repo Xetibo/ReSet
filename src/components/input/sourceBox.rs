@@ -2,6 +2,7 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::{
     Listeners, OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded,
@@ -19,7 +20,7 @@ use glib::subclass::prelude::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{OutputStream, Source};
+use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
 
 use super::outputStreamEntry::OutputStreamEntry;
 use super::sourceEntry::{set_default_source, toggle_source_mute, SourceEntry};
@@ -46,9 +47,17 @@ impl SourceBox {
         selfImp
             .resetSourceRow
             .set_action_target_value(Some(&Variant::from("sources")));
-
+        selfImp
+            .resetCardsRow
+            .set_action_name(Some("navigation.push"));
+        selfImp
+            .resetCardsRow
+            .set_action_target_value(Some(&Variant::from("profileConfiguration")));
         selfImp
             .resetOutputStreamButton
+            .set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetInputCardsBackButton
             .set_action_name(Some("navigation.pop"));
     }
 }
@@ -74,6 +83,7 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
             .replace(get_default_source());
 
         populate_outputstreams(input_box.clone());
+        populate_cards(input_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 // TODO handle events
@@ -212,6 +222,22 @@ pub fn populate_outputstreams(input_box: Arc<SourceBox>) {
     });
 }
 
+pub fn populate_cards(input_box: Arc<SourceBox>) {
+    gio::spawn_blocking(move || {
+        let output_box_ref = input_box.clone();
+        let cards = get_cards();
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                let imp = output_box_ref.imp();
+                for card in cards {
+                    imp.resetCards
+                        .append(&ListEntry::new(&CardEntry::new(card)));
+                }
+            });
+        });
+    });
+}
+
 fn get_output_streams() -> Vec<OutputStream> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
@@ -242,6 +268,20 @@ fn get_sources() -> Vec<Source> {
     res.unwrap().0
 }
 
+fn get_cards() -> Vec<Card> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Vec<Card>,), Error> = proxy.method_call("org.xetibo.ReSet", "ListCards", ());
+    if res.is_err() {
+        return Vec::new();
+    }
+    res.unwrap().0
+}
+
 fn get_default_source() -> Source {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
@@ -257,16 +297,7 @@ fn get_default_source() -> Source {
     res.unwrap().0
 }
 
-pub fn start_input_box_listener(
-    conn: Connection,
-    listeners: Arc<Listeners>,
-    source_box: Arc<SourceBox>,
-) -> Connection {
-    if listeners.network_listener.load(Ordering::SeqCst) {
-        return conn;
-    }
-    listeners.network_listener.store(true, Ordering::SeqCst);
-
+pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) -> Connection {
     let source_added = SourceAdded::match_rule(
         Some(&"org.xetibo.ReSet".into()),
         Some(&Path::from("/org/xetibo/ReSet")),
@@ -344,6 +375,7 @@ pub fn start_input_box_listener(
 
     let res = conn.add_match(source_removed, move |ir: SourceRemoved, _, _| {
         let source_box = source_removed_box.clone();
+        println!("removed {}", ir.index);
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box = source_box.clone();
@@ -515,6 +547,5 @@ pub fn start_input_box_listener(
         return conn;
     }
 
-    listeners.network_listener.store(true, Ordering::SeqCst);
     conn
 }
