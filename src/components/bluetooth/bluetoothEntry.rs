@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use crate::components::bluetooth::bluetoothEntryImpl;
-use crate::components::bluetooth::bluetoothEntryImpl::DeviceTypes;
+// use crate::components::bluetooth::bluetoothEntryImpl::DeviceTypes;
 use adw::glib;
 use adw::glib::Object;
 use adw::subclass::prelude::ObjectSubclassIsExt;
@@ -23,7 +23,10 @@ impl BluetoothEntry {
         let entry: BluetoothEntry = Object::builder().build();
         let entryImp = entry.imp();
         entryImp.resetBluetoothLabel.get().set_text(&device.name);
-        entryImp.resetBluetoothAddress.get().set_text(&device.address);
+        entryImp
+            .resetBluetoothAddress
+            .get()
+            .set_text(&device.address);
         // entryImp
         //     .resetBluetoothDeviceType
         //     .get()

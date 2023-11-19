@@ -4,7 +4,7 @@ use std::time::SystemTime;
 
 use crate::components::output::sinkEntry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale, CheckButton};
+use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::Sink;
 
 #[allow(non_snake_case)]

@@ -1,8 +1,8 @@
+use crate::components::bluetooth::bluetoothEntry;
+use gtk::subclass::prelude::*;
+use gtk::{glib, Button, CompositeTemplate, Image, Label};
 use std::cell::RefCell;
 use ReSet_Lib::bluetooth::bluetooth::BluetoothDevice;
-use gtk::{Button, CompositeTemplate, glib, Image, Label};
-use gtk::subclass::prelude::*;
-use crate::components::bluetooth::bluetoothEntry;
 
 #[derive(Default, Copy, Clone)]
 pub enum DeviceTypes {
@@ -26,7 +26,7 @@ pub struct BluetoothEntry {
     #[template_child]
     pub resetBluetoothButton: TemplateChild<Button>,
     pub deviceName: RefCell<String>,
-    pub device: RefCell<BluetoothDevice>
+    pub device: RefCell<BluetoothDevice>,
 }
 
 #[glib::object_subclass]

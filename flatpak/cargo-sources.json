@@ -15,6 +15,19 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/ReSet-Lib/ReSet-Lib-0.3.5.crate",
+        "sha256": "a0f2428f460a6604b353461d8244b3ce8841adcd964a2165cd2f9b975462b19d",
+        "dest": "cargo/vendor/ReSet-Lib-0.3.5"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"a0f2428f460a6604b353461d8244b3ce8841adcd964a2165cd2f9b975462b19d\", \"files\": {}}",
+        "dest": "cargo/vendor/ReSet-Lib-0.3.5",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/addr2line/addr2line-0.21.0.crate",
         "sha256": "8a30b2e23b9e17a9f90641c7ab1549cd9b44f296d3ccbf309d2863cfe398a0cb",
         "dest": "cargo/vendor/addr2line-0.21.0"

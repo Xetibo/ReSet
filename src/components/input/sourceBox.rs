@@ -1,12 +1,11 @@
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
 use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::{
-    Listeners, OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded,
-    SourceChanged, SourceRemoved,
+    OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
+    SourceRemoved,
 };
 use crate::components::input::sourceBoxImpl;
 use crate::components::input::sourceEntry::set_source_volume;

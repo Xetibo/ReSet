@@ -1,9 +1,8 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use crate::components::base::listEntry::ListEntry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, TemplateChild, Label, DropDown, StringList};
+use gtk::{glib, CompositeTemplate, DropDown, Label, StringList, TemplateChild};
 
 use super::cardEntry;
 
@@ -19,7 +18,7 @@ pub struct CardEntry {
     pub resetCardList: TemplateChild<StringList>,
     // first string is the alias name, the first return string is the index of the adapter and the
     // second the name of the profile
-    pub resetCardMap: RefCell<HashMap<String, (u32, String)>>
+    pub resetCardMap: RefCell<HashMap<String, (u32, String)>>,
 }
 
 #[glib::object_subclass]

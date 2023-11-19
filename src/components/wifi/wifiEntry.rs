@@ -1,5 +1,5 @@
-use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 use std::time::Duration;
 
 use adw::glib;
@@ -8,9 +8,9 @@ use adw::prelude::{ButtonExt, EditableExt, PopoverExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
-use glib::{Cast, clone};
-use gtk::{AlertDialog, GestureClick};
+use glib::{clone, Cast};
 use gtk::prelude::WidgetExt;
+use gtk::{AlertDialog, GestureClick};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
 use crate::components::wifi::wifiBox::getConnectionSettings;
@@ -144,56 +144,58 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
 }
 
 pub fn click_new_network(entry: Arc<WifiEntry>) {
-    let connect_new_network =
-        |result: Arc<AtomicBool>, entry: Arc<WifiEntry>, access_point: AccessPoint, password: String| {
-            let entry_ref = entry.clone();
-            let popup = entry.imp().resetWifiPopup.imp();
-            popup.resetPopupLabel.set_text("Connecting...");
-            popup.resetPopupLabel.set_visible(true);
-            popup.resetPopupEntry.set_sensitive(false);
-            popup.resetPopupButton.set_sensitive(false);
+    let connect_new_network = |result: Arc<AtomicBool>,
+                               entry: Arc<WifiEntry>,
+                               access_point: AccessPoint,
+                               password: String| {
+        let entry_ref = entry.clone();
+        let popup = entry.imp().resetWifiPopup.imp();
+        popup.resetPopupLabel.set_text("Connecting...");
+        popup.resetPopupLabel.set_visible(true);
+        popup.resetPopupEntry.set_sensitive(false);
+        popup.resetPopupButton.set_sensitive(false);
 
-            glib::spawn_future_local(async move {
-                let conn = Connection::new_session().unwrap();
-                let proxy = conn.with_proxy(
-                    "org.xetibo.ReSet",
-                    "/org/xetibo/ReSet",
-                    Duration::from_millis(10000),
-                );
-                let res: Result<(bool,), Error> = proxy.method_call(
-                    "org.xetibo.ReSet",
-                    "ConnectToNewAccessPoint",
-                    (access_point, password),
-                );
-                glib::MainContext::default().spawn_local(async move {
-                    glib::idle_add_once(move || {
-                        if res.is_err() {
-                            entry_ref
-                                .imp()
-                                .resetWifiPopup
-                                .imp()
-                                .resetPopupLabel
-                                .set_text("Could not connect to dbus.");
-                            result.store(false, std::sync::atomic::Ordering::SeqCst);
-                            return;
-                        }
-                        if res.unwrap() == (false,) {
-                            entry_ref
-                                .imp()
-                                .resetWifiPopup
-                                .imp()
-                                .resetPopupLabel
-                                .set_text("Could not connect to access point.");
-                            result.store(false, std::sync::atomic::Ordering::SeqCst);
-                            return;
-                        }
-                        entry_ref.imp().resetWifiPopup.popdown();
-                        result.store(true, std::sync::atomic::Ordering::SeqCst);
-                    });
+        glib::spawn_future_local(async move {
+            let conn = Connection::new_session().unwrap();
+            let proxy = conn.with_proxy(
+                "org.xetibo.ReSet",
+                "/org/xetibo/ReSet",
+                Duration::from_millis(10000),
+            );
+            let res: Result<(bool,), Error> = proxy.method_call(
+                "org.xetibo.ReSet",
+                "ConnectToNewAccessPoint",
+                (access_point, password),
+            );
+            glib::MainContext::default().spawn_local(async move {
+                glib::idle_add_once(move || {
+                    if res.is_err() {
+                        entry_ref
+                            .imp()
+                            .resetWifiPopup
+                            .imp()
+                            .resetPopupLabel
+                            .set_text("Could not connect to dbus.");
+                        result.store(false, std::sync::atomic::Ordering::SeqCst);
+                        return;
+                    }
+                    if res.unwrap() == (false,) {
+                        entry_ref
+                            .imp()
+                            .resetWifiPopup
+                            .imp()
+                            .resetPopupLabel
+                            .set_text("Could not connect to access point.");
+                        result.store(false, std::sync::atomic::Ordering::SeqCst);
+                        return;
+                    }
+                    entry_ref.imp().resetWifiPopup.popdown();
+                    result.store(true, std::sync::atomic::Ordering::SeqCst);
                 });
             });
-            // TODO crate spinner animation and block UI
-        };
+        });
+        // TODO crate spinner animation and block UI
+    };
 
     let result = Arc::new(AtomicBool::new(false));
     let result_ref = result.clone();

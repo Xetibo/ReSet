@@ -3,7 +3,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale, CheckButton};
+use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::Source;
 
 use super::sourceEntry;

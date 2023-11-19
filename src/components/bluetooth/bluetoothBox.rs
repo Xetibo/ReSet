@@ -18,7 +18,7 @@ use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::Listeners;
 use crate::components::bluetooth::bluetoothBoxImpl;
 use crate::components::bluetooth::bluetoothEntry::BluetoothEntry;
-use crate::components::bluetooth::bluetoothEntryImpl::DeviceTypes;
+// use crate::components::bluetooth::bluetoothEntryImpl::DeviceTypes;
 
 glib::wrapper! {
     pub struct BluetoothBox(ObjectSubclass<bluetoothBoxImpl::BluetoothBox>)
@@ -170,7 +170,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
         loop {
             let _ = conn.process(Duration::from_millis(1000));
             if !listeners.bluetooth_listener.load(Ordering::SeqCst)
-               // || time.elapsed().unwrap() > Duration::from_millis(5000)
+            // || time.elapsed().unwrap() > Duration::from_millis(5000)
             {
                 glib::spawn_future(async move {
                     glib::idle_add_once(move || {

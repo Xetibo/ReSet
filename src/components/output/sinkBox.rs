@@ -1,12 +1,10 @@
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
 use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::{
-    InputStreamAdded, InputStreamChanged, InputStreamRemoved, Listeners, SinkAdded, SinkChanged,
-    SinkRemoved,
+    InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
 use crate::components::output::sinkEntry::set_sink_volume;
 use adw::glib::Object;

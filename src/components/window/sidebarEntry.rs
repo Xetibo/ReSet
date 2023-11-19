@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use adw::subclass::prelude::ObjectSubclassIsExt;
-use glib::Object;
-use gtk::{FlowBox, glib};
-use gtk::prelude::*;
 use crate::components::base::utils::Listeners;
 use crate::components::window::sidebarEntryImpl;
 use crate::components::window::sidebarEntryImpl::{Categories, SidebarAction};
+use adw::subclass::prelude::ObjectSubclassIsExt;
+use glib::Object;
+use gtk::prelude::*;
+use gtk::{glib, FlowBox};
 
 glib::wrapper! {
     pub struct SidebarEntry(ObjectSubclass<sidebarEntryImpl::SidebarEntry>)
