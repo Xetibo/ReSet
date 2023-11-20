@@ -7,3 +7,7 @@ pub mod wifiEntry;
 pub mod wifiEntryImpl;
 pub mod wifiOptions;
 pub mod wifiOptionsImpl;
+pub mod wifiAddressEntry;
+pub mod wifiAddressEntryImpl;
+pub mod wifiRouteEntry;
+pub mod wifiRouteEntryImpl;

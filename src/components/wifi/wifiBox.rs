@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::net::Shutdown::Read;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::Arc;
@@ -214,7 +215,7 @@ pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     connections
 }
 
-pub fn getConnectionSettings(path: Path<'static>) -> Option<ResetConnection> {
+pub fn getConnectionSettings(path: Path<'static>) -> ResetConnection {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
@@ -226,14 +227,14 @@ pub fn getConnectionSettings(path: Path<'static>) -> Option<ResetConnection> {
         Error,
     > = proxy.method_call("org.xetibo.ReSet", "GetConnectionSettings", (path,));
     if res.is_err() {
-        return None;
+        ResetConnection::default();
     }
     let (res,) = res.unwrap();
     let res = ResetConnection::convert_from_propmap(res);
     if res.is_err() {
-        return None;
+        ResetConnection::default();
     }
-    Some(res.unwrap())
+    res.unwrap()
 }
 
 // temporary, testing this with lib is pain

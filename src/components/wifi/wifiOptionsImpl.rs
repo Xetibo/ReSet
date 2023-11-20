@@ -1,5 +1,6 @@
 use std::cell::RefCell;
-use adw::NavigationPage;
+use std::rc::Rc;
+use adw::{ActionRow, ComboRow, EntryRow, NavigationPage, PreferencesGroup, SwitchRow};
 use adw::subclass::prelude::NavigationPageImpl;
 use crate::components::wifi::{wifiOptions};
 use gtk::subclass::prelude::*;
@@ -10,7 +11,40 @@ use ReSet_Lib::network::connection::Connection;
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWifiOptions.ui")]
 pub struct WifiOptions {
-    pub options: RefCell<Option<Connection>> // Option<Rc<RefCell<Connection>>>
+    // General
+    #[template_child]
+    pub resetWifiName: TemplateChild<ActionRow>,
+    #[template_child]
+    pub resetWifiMac: TemplateChild<ActionRow>,
+    #[template_child]
+    pub resetWifiAutoConnect: TemplateChild<SwitchRow>,
+    #[template_child]
+    pub resetWifiMetered: TemplateChild<SwitchRow>,
+    // IPv4
+    #[template_child]
+    pub resetIP4Method: TemplateChild<ComboRow>,
+    #[template_child]
+    pub resetIP4DNS: TemplateChild<EntryRow>,
+    #[template_child]
+    pub resetIP4Gateway: TemplateChild<EntryRow>,
+    #[template_child]
+    pub resetIP4AddressGroup: TemplateChild<PreferencesGroup>,
+    #[template_child]
+    pub resetIP4RoutesGroup: TemplateChild<PreferencesGroup>,
+    // IPv6
+    #[template_child]
+    pub resetIP6Method: TemplateChild<ComboRow>,
+    #[template_child]
+    pub resetIP6DNS: TemplateChild<EntryRow>,
+    #[template_child]
+    pub resetIP6Gateway: TemplateChild<EntryRow>,
+    #[template_child]
+    pub resetIP6AddressGroup: TemplateChild<PreferencesGroup>,
+    #[template_child]
+    pub resetIP6RoutesGroup: TemplateChild<PreferencesGroup>,
+    // Security
+    // Misc
+    pub connection: Rc<RefCell<Connection>>
 }
 
 #[glib::object_subclass]

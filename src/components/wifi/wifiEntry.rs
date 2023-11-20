@@ -86,7 +86,7 @@ impl WifiEntry {
         let selfImp = self.imp();
         selfImp.resetWifiEditButton.connect_clicked(clone!(@ weak selfImp, @ weak wifiBox => move |_| {
             let _option = getConnectionSettings(selfImp.accessPoint.borrow().associated_connection.clone());
-            wifiBox.resetWifiNavigation.push(&WifiOptions::new(_option));
+            wifiBox.resetWifiNavigation.push(&*WifiOptions::new(_option));
         }));
     }
 }

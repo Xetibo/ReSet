@@ -11,6 +11,8 @@
     <file compressed="true" preprocess="xml-stripblanks">resetWifiEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSavedWifiEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetWifiOptions.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetWifiAddressEntry.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetWifiRouteEntry.ui</file>
     <!--Bluetooth-->
     <file compressed="true" preprocess="xml-stripblanks">resetBluetooth.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetBluetoothEntry.ui</file>

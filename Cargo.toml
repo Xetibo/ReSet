@@ -6,7 +6,7 @@ description = "A wip universal Linux settings application."
 
 [dependencies]
 reset_daemon = "0.1.9"
-ReSet-Lib = "0.3.5"
+ReSet-Lib = "0.3.8"
 adw = { version = "0.5.3", package = "libadwaita", features = ["v1_4"] }
 dbus = "0.9.7"
 gtk = { version = "0.7.3", package = "gtk4", features = ["v4_12"] }
