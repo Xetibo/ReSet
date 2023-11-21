@@ -5,7 +5,7 @@ use adw::glib::Object;
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::Error;
-use glib::{Cast, clone};
+use glib::{Cast, clone, ObjectExt, ToValue};
 use glib::subclass::types::ObjectSubclassIsExt;
 use gtk::{Align, gio, SignalListItemFactory, StringList, StringObject};
 use gtk::prelude::{GObjectPropertyExpressionExt, ListItemExt, WidgetExt};
@@ -59,6 +59,18 @@ impl CardEntry {
             let factory = &SignalListItemFactory::new();
             factory.connect_setup(|_, item| {
                 let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+
+                let value = item.property_value("selected");
+                let value2 = item.property_value("item");
+
+                let result = value.get::<bool>().unwrap();
+
+                dbg!(result);
+
+                for x in item.list_properties() {
+
+                }
+
                 let label = gtk::Label::new(None);
                 label.set_halign(Align::Start);
                 item.property_expression("item")

@@ -50,34 +50,6 @@
                         <property name="hexpand">True</property>
                         <property name="hexpand-set">True</property>
                         <property name="valign">center</property>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">Home</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">&gt;</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">WiFi</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">&gt;</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">Advanced</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
