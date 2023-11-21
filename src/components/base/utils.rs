@@ -392,6 +392,8 @@ pub fn start_audio_listener(
             return;
         }
 
+        let mut conn = start_dbus_audio_listener(conn);
+
         if sink_box.is_some() {
             conn = start_output_box_listener(conn, sink_box.unwrap());
         }
@@ -405,10 +407,30 @@ pub fn start_audio_listener(
             let _ = conn.process(Duration::from_millis(1000));
             if !listeners.pulse_listener.load(Ordering::SeqCst) {
                 println!("stopping audio listener");
+                stop_dbus_audio_listener(conn);
                 break;
             }
             // thread::sleep(Duration::from_millis(1000));
             // TODO is this really how we should do this?
         }
     });
+}
+
+fn start_dbus_audio_listener(conn: Connection) -> Connection {
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(), Error> = proxy.method_call("org.xetibo.ReSet", "StartAudioListener", ());
+    conn
+}
+
+fn stop_dbus_audio_listener(conn: Connection) {
+    let proxy = conn.with_proxy(
+        "org.xetibo.ReSet",
+        "/org/xetibo/ReSet",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(), Error> = proxy.method_call("org.xetibo.ReSet", "StopAudioListener", ());
 }

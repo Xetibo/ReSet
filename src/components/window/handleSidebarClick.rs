@@ -67,15 +67,15 @@ pub const HANDLE_AUDIO_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.stop_network_listener();
         listeners.stop_bluetooth_listener();
         let audioOutput = Arc::new(SinkBox::new());
-        populate_sinks(audioOutput.clone());
-        let audioFrame = wrapInFrame(SettingBox::new(&*audioOutput));
         let audioInput = Arc::new(SourceBox::new());
-        populate_sources(audioInput.clone());
         start_audio_listener(
             listeners.clone(),
             Some(audioOutput.clone()),
             Some(audioInput.clone()),
         );
+        populate_sinks(audioOutput.clone());
+        let audioFrame = wrapInFrame(SettingBox::new(&*audioOutput));
+        populate_sources(audioInput.clone());
         let sourceFrame = wrapInFrame(SettingBox::new(&*audioInput));
         resetMain.remove_all();
         resetMain.insert(&audioFrame, -1);
