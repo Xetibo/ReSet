@@ -1,6 +1,18 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use adw::glib;
+use adw::glib::Object;
+use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, ListBoxRowExt, PreferencesGroupExt, RangeExt};
+use dbus::{Error, Path};
+use dbus::blocking::Connection;
+use dbus::message::SignalArgs;
+use glib::{Cast, clone, Propagation, Variant};
+use glib::subclass::prelude::ObjectSubclassIsExt;
+use gtk::{Align, gio, SignalListItemFactory, StringObject};
+use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, WidgetExt, ListItemExt};
+use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
+
 use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::{
@@ -9,17 +21,6 @@ use crate::components::base::utils::{
 };
 use crate::components::input::sourceBoxImpl;
 use crate::components::input::sourceEntry::set_source_volume;
-use adw::glib;
-use adw::glib::Object;
-use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt};
-use dbus::blocking::Connection;
-use dbus::message::SignalArgs;
-use dbus::{Error, Path};
-use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::{clone, Cast, Propagation, Variant};
-use gtk::prelude::ActionableExt;
-use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
 
 use super::outputStreamEntry::OutputStreamEntry;
 use super::sourceEntry::{set_default_source, toggle_source_mute, SourceEntry};
@@ -40,12 +41,14 @@ impl SourceBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
+        selfImp.resetSourceRow.set_activatable(true);
         selfImp
             .resetSourceRow
             .set_action_name(Some("navigation.push"));
         selfImp
             .resetSourceRow
             .set_action_target_value(Some(&Variant::from("sources")));
+        selfImp.resetCardsRow.set_activatable(true);
         selfImp
             .resetCardsRow
             .set_action_name(Some("navigation.push"));
@@ -58,6 +61,19 @@ impl SourceBox {
         selfImp
             .resetInputCardsBackButton
             .set_action_name(Some("navigation.pop"));
+
+        let factory = &SignalListItemFactory::new();
+        factory.connect_setup(|_, item| {
+            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+            let label = gtk::Label::new(None);
+            label.set_halign(Align::Start);
+            item.property_expression("item")
+                .chain_property::<StringObject>("string")
+                .bind(&label, "label", gtk::Widget::NONE);
+            item.set_child(Some(&label));
+        });
+
+        selfImp.resetSourceDropdown.set_factory(Some(factory));
     }
 }
 
@@ -230,7 +246,7 @@ pub fn populate_cards(input_box: Arc<SourceBox>) {
                 let imp = output_box_ref.imp();
                 for card in cards {
                     imp.resetCards
-                        .append(&ListEntry::new(&CardEntry::new(card)));
+                        .add(&CardEntry::new(card));
                 }
             });
         });

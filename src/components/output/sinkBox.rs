@@ -1,5 +1,19 @@
+use adw::prelude::PreferencesGroupExt;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
+
+use adw::{glib, prelude::ListBoxRowExt};
+use adw::glib::Object;
+use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, RangeExt};
+use dbus::{Error, Path};
+use dbus::blocking::Connection;
+use dbus::message::SignalArgs;
+use glib::{Cast, clone, Propagation, Variant};
+use glib::subclass::prelude::ObjectSubclassIsExt;
+use gtk::{Align, gio, SignalListItemFactory, StringObject};
+use gtk::prelude::*;
+use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, ListItemExt};
+use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
@@ -7,21 +21,10 @@ use crate::components::base::utils::{
     InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
 use crate::components::output::sinkEntry::set_sink_volume;
-use adw::glib::Object;
-use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, RangeExt};
-use adw::{glib, prelude::ListBoxRowExt};
-use dbus::blocking::Connection;
-use dbus::message::SignalArgs;
-use dbus::{Error, Path};
-use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::{clone, Cast, Propagation, Variant};
-use gtk::prelude::ActionableExt;
-use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
-use super::sinkEntry::{set_default_sink, toggle_sink_mute, SinkEntry};
+use super::sinkEntry::{set_default_sink, SinkEntry, toggle_sink_mute};
 
 glib::wrapper! {
     pub struct SinkBox(ObjectSubclass<sinkBoxImpl::SinkBox>)
@@ -45,12 +48,14 @@ impl SinkBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
+        selfImp.resetSinksRow.set_activatable(true);
         selfImp
             .resetSinksRow
             .set_action_name(Some("navigation.push"));
         selfImp
             .resetSinksRow
             .set_action_target_value(Some(&Variant::from("outputDevices")));
+        selfImp.resetCardsRow.set_activatable(true);
         selfImp
             .resetCardsRow
             .set_action_name(Some("navigation.push"));
@@ -65,6 +70,19 @@ impl SinkBox {
         selfImp
             .resetInputCardsBackButton
             .set_action_name(Some("navigation.pop"));
+
+        let factory = &SignalListItemFactory::new();
+        factory.connect_setup(|_, item| {
+            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+            let label = gtk::Label::new(None);
+            label.set_halign(Align::Start);
+            item.property_expression("item")
+                .chain_property::<StringObject>("string")
+                .bind(&label, "label", gtk::Widget::NONE);
+            item.set_child(Some(&label));
+        });
+
+        selfImp.resetSinkDropdown.set_factory(Some(factory));
     }
 }
 
@@ -236,7 +254,7 @@ pub fn populate_cards(output_box: Arc<SinkBox>) {
                 let imp = output_box_ref.imp();
                 for card in cards {
                     imp.resetCards
-                        .append(&ListEntry::new(&CardEntry::new(card)));
+                        .add(&CardEntry::new(card));
                 }
             });
         });

@@ -2,6 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
+use adw::{ActionRow, ComboRow, PreferencesGroup};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::input::sourceBox;
@@ -18,11 +19,11 @@ use super::sourceEntry::SourceEntry;
 #[template(resource = "/org/Xetibo/ReSet/resetAudioInput.ui")]
 pub struct SourceBox {
     #[template_child]
-    pub resetSourceRow: TemplateChild<ListEntry>,
+    pub resetSourceRow: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetCardsRow: TemplateChild<ListEntry>,
+    pub resetCardsRow: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetSourceDropdown: TemplateChild<DropDown>,
+    pub resetSourceDropdown: TemplateChild<ComboRow>,
     #[template_child]
     pub resetSourceMute: TemplateChild<Button>,
     #[template_child]
@@ -40,7 +41,7 @@ pub struct SourceBox {
     #[template_child]
     pub resetInputCardsBackButton: TemplateChild<ListEntry>,
     #[template_child]
-    pub resetCards: TemplateChild<gtk::Box>,
+    pub resetCards: TemplateChild<PreferencesGroup>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSource: Arc<RefCell<Source>>,
     pub resetSourceList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SourceEntry>, String)>>>,

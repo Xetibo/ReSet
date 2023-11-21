@@ -1,34 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-  <requires lib="gtk" version="4.12"/>
-  <template class="resetCardEntry" parent="GtkBox">
-    <property name="margin-bottom">5</property>
-    <property name="margin-end">5</property>
-    <property name="margin-start">5</property>
-    <property name="margin-top">5</property>
-    <property name="orientation">vertical</property>
-    <child>
-      <object class="GtkBox">
-        <property name="margin-bottom">5</property>
-        <child>
-          <object class="GtkLabel" id="resetCardName">
-            <property name="label">text</property>
-            <property name="margin-start">5</property>
-            <property name="wrap">True</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkDropDown" id="resetCardDropdown">
-            <property name="halign">end</property>
-            <property name="hexpand">True</property>
-            <property name="hexpand-set">True</property>
-            <property name="model">
-              <object class="GtkStringList" id="resetCardList"/>
-            </property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </template>
+  <requires lib="libadwaita" version="1.4"/>
+  <object class="AdwComboRow" id="resetCardEntry">
+    <property name="use-subtitle">True</property>
+  </object>
 </interface>
