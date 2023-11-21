@@ -34,12 +34,12 @@ impl WifiOptions {
         selfImp.resetWifiName.set_subtitle(&*conn.settings.name);
         selfImp.resetWifiAutoConnect.set_active(conn.settings.autoconnect);
         selfImp.resetWifiMetered.set_active(if conn.settings.metered != -1 { true } else { false });
-        // match conn.device.borrow() {
-        //     TypeSettings::WIFI(wifi) => {}
-        //     TypeSettings::ETHERNET(ethernet) => {}
-        //     TypeSettings::VPN(vpn) => {}
-        //     TypeSettings::None => {}
-        // };
+        match &conn.device {
+            TypeSettings::WIFI(wifi) => {}
+            TypeSettings::ETHERNET(ethernet) => {}
+            TypeSettings::VPN(vpn) => {}
+            TypeSettings::None => {}
+        };
         // IPv4
         selfImp.resetIP4Method.set_selected(conn.ipv4.dns_method.to_i32() as u32);
         self.setIP4Visibility(conn.ipv4.dns_method.to_i32() as u32);

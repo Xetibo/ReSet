@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use adw::glib;
 use adw::glib::{Object, PropertySet};
-use adw::prelude::{ButtonExt, EditableExt, PopoverExt};
+use adw::prelude::{ActionRowExt, ButtonExt, EditableExt, PopoverExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
@@ -22,8 +22,8 @@ use super::savedWifiEntry::SavedWifiEntry;
 
 glib::wrapper! {
     pub struct WifiEntry(ObjectSubclass<wifiEntryImpl::WifiEntry>)
-        @extends gtk::Box, gtk::Widget,
-        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget;
+        @extends adw::ActionRow, gtk::Widget,
+        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, gtk::ListBoxRow;
 }
 
 unsafe impl Send for WifiEntry {}
@@ -66,8 +66,9 @@ impl WifiEntry {
             *wifiName = String::from(name);
         }
         entryImp.accessPoint.set(access_point);
-        let gesture = GestureClick::new();
-        gesture.connect_released(clone!(@weak entryImp => move |_, _, _, _| {
+
+        entry.set_activatable(true);
+        entry.connect_activated(clone!(@weak entryImp => move |_| {
             let access_point = entryImp.accessPoint.borrow();
             if access_point.connected {
                 click_disconnect();
@@ -77,7 +78,6 @@ impl WifiEntry {
                 click_new_network(new_entry.clone());
             }
         }));
-        entry.add_controller(gesture);
         entry.setupCallbacks(wifiBox);
         entry
     }

@@ -59,18 +59,6 @@ impl CardEntry {
             let factory = &SignalListItemFactory::new();
             factory.connect_setup(|_, item| {
                 let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-
-                let value = item.property_value("selected");
-                let value2 = item.property_value("item");
-
-                let result = value.get::<bool>().unwrap();
-
-                dbg!(result);
-
-                for x in item.list_properties() {
-
-                }
-
                 let label = gtk::Label::new(None);
                 label.set_halign(Align::Start);
                 item.property_expression("item")
@@ -79,7 +67,6 @@ impl CardEntry {
                 item.set_child(Some(&label));
             });
             entry.set_factory(Some(factory));
-
         }
         entry
     }

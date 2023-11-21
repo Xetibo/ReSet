@@ -10,7 +10,7 @@ use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::Listeners;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::ListBoxRowExt;
+use adw::prelude::{ListBoxRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::{AppendAll, ReadAll, RefArg};
 use dbus::blocking::Connection;
@@ -48,6 +48,7 @@ impl WifiBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
+        selfImp.resetSavedNetworks.set_activatable(true);
         selfImp
             .resetSavedNetworks
             .set_action_name(Some("navigation.push"));
@@ -76,9 +77,9 @@ pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
                 let selfImp = wifibox_ref.imp();
                 for accessPoint in accessPoints {
                     let ssid = accessPoint.ssid.clone();
-                    let entry = Arc::new(ListEntry::new(&*WifiEntry::new(accessPoint, selfImp)));
+                    let entry = WifiEntry::new(accessPoint, selfImp);
                     wifiEntries.insert(ssid, entry.clone());
-                    selfImp.resetWifiList.append(&*entry);
+                    selfImp.resetWifiList.add(&*entry);
                 }
             });
         });
@@ -124,10 +125,9 @@ pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
                                 if wifiEntries.get(&ssid).is_some() {
                                     return;
                                 }
-                                let entry =
-                                    Arc::new(ListEntry::new(&*WifiEntry::new(access_point.0, wifiBoxImpl.imp())));
+                                let entry = WifiEntry::new(access_point.0, wifiBoxImpl.imp());
                                 wifiEntries.insert(ssid, entry.clone());
-                                wifiBoxImpl.imp().resetWifiList.append(&*entry);
+                                wifiBoxImpl.imp().resetWifiList.add(&*entry);
                             });
                         });
                     }
@@ -163,9 +163,8 @@ pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
                     // TODO include button for settings
                     let name =
                         &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
-                    let entry = ListEntry::new(&SavedWifiEntry::new(name, connection.0));
-                    entry.set_activatable(false);
-                    selfImp.resetStoredWifiList.append(&entry);
+                    let entry = SavedWifiEntry::new(name, connection.0);
+                    selfImp.resetStoredWifiList.add(&entry);
                 }
             });
         });

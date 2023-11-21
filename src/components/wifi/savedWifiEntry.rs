@@ -9,16 +9,18 @@ use dbus::{Error, Path};
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, PropertySet};
 use gtk::gio;
+use gtk::prelude::ListBoxRowExt;
 
 glib::wrapper! {
     pub struct SavedWifiEntry(ObjectSubclass<savedWifiEntryImpl::SavedWifiEntry>)
-        @extends gtk::Box, gtk::Widget,
-        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget;
+        @extends adw::ActionRow, gtk::Widget,
+        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, gtk::ListBoxRow;
 }
 
 impl SavedWifiEntry {
     pub fn new(name: &String, path: Path<'static>) -> Self {
         let entry: SavedWifiEntry = Object::builder().build();
+        entry.set_activatable(false);
         let entryImp = entry.imp();
         // TODO handle edit
         entryImp.resetSavedWifiLabel.set_text(name);

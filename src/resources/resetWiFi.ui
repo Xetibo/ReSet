@@ -34,59 +34,26 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">main</property>
+            <property name="title">main</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkListBox" id="resetWifiDetails">
-                    <property name="css-classes">boxed-list</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-end">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="show-separators">True</property>
-                    <property name="valign">start</property>
+                  <object class="AdwPreferencesGroup" id="resetWifiDetails">
                     <child>
-                      <object class="resetListBoxRow">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="height-request">40</property>
-                            <property name="margin-start">5</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">WiFi Device</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkDropDown" id="resetWiFiDevice">
-                                <property name="halign">end</property>
-                                <property name="hexpand">True</property>
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                      <object class="AdwComboRow" id="resetWiFiDevice">
+                        <property name="title">WiFi Device</property>
                       </object>
                     </child>
                     <child>
-                      <object class="resetListBoxRow" id="resetSavedNetworks">
+                      <object class="AdwActionRow" id="resetSavedNetworks">
+                        <property name="title">Saved Networks</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="height-request">40</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Saved Networks</property>
-                                <property name="margin-start">5</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="halign">end</property>
-                                <property name="hexpand">True</property>
-                                <property name="icon-name">go-previous-symbolic-rtl</property>
-                                <property name="margin-end">5</property>
-                              </object>
-                            </child>
+                          <object class="GtkImage">
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="icon-name">go-previous-symbolic-rtl</property>
+                            <property name="margin-end">5</property>
                           </object>
                         </child>
                       </object>
@@ -95,6 +62,7 @@
                 </child>
                 <child>
                   <object class="GtkBox">
+                    <property name="margin-top">10</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel">
@@ -111,15 +79,7 @@
                         <child>
                           <object class="GtkViewport">
                             <child>
-                              <object class="GtkListBox" id="resetWifiList">
-                                <property name="css-classes">boxed-list</property>
-                                <property name="margin-bottom">10</property>
-                                <property name="margin-end">5</property>
-                                <property name="margin-start">5</property>
-                                <property name="margin-top">5</property>
-                                <property name="show-separators">True</property>
-                                <property name="valign">start</property>
-                              </object>
+                              <object class="AdwPreferencesGroup" id="resetWifiList"/>
                             </child>
                           </object>
                         </child>
@@ -134,6 +94,7 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">saved</property>
+            <property name="title">saved</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
@@ -172,21 +133,8 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="halign">start</property>
-                    <property name="label">Saved Networks</property>
-                    <property name="margin-start">5</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkListBox" id="resetStoredWifiList">
-                    <property name="css-classes">boxed-list</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-end">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="show-separators">True</property>
-                    <property name="valign">start</property>
+                  <object class="AdwPreferencesGroup" id="resetStoredWifiList">
+                    <property name="title">Saved Networks</property>
                   </object>
                 </child>
               </object>

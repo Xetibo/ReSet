@@ -19,20 +19,15 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">output</property>
+            <property name="title">output</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwComboRow" id="resetSinkDropdown">
-                        <property name="title">Output Device</property>
-                        <property name="use-subtitle">True</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="AdwActionRow" id="resetSinksRow">
-                        <property name="title">Devices</property>
+                        <property name="title">Output Devices</property>
                         <child>
                           <object class="GtkImage">
                             <property name="icon-name">go-previous-symbolic-rtl</property>
@@ -48,6 +43,12 @@
                             <property name="icon-name">go-previous-symbolic-rtl</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwComboRow" id="resetSinkDropdown">
+                        <property name="title">Default Output Device</property>
+                        <property name="use-subtitle">True</property>
                       </object>
                     </child>
                   </object>
@@ -125,6 +126,7 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">outputDevices</property>
+            <property name="title">outputDevices</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
@@ -186,6 +188,7 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">profileConfiguration</property>
+            <property name="title">profileConfiguration</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>

@@ -32,6 +32,7 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">main</property>
+            <property name="title">main</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
@@ -167,6 +168,7 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">visibility</property>
+            <property name="title">visibility</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
