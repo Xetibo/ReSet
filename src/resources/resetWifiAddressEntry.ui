@@ -7,6 +7,7 @@
     <child>
       <object class="AdwExpanderRow" id="resetAddressRow">
         <property name="hexpand">True</property>
+        <property name="title">Add new Address</property>
         <child>
           <object class="AdwEntryRow" id="resetAddressAddress">
             <property name="title">Address</property>

@@ -7,6 +7,7 @@
     <child>
       <object class="AdwExpanderRow" id="resetRouteRow">
         <property name="hexpand">True</property>
+        <property name="title">Add new Route</property>
         <child>
           <object class="AdwEntryRow" id="resetRouteAddress">
             <property name="title">Address</property>

@@ -7,7 +7,7 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::PropMap;
 use glib::{PropertySet, Cast, ObjectExt, clone};
 use gtk::prelude::{EditableExt, WidgetExt};
-use ReSet_Lib::network::connection::{Connection, Enum};
+use ReSet_Lib::network::connection::{Connection, Enum, TypeSettings};
 
 use crate::components::wifi::wifiAddressEntry::WifiAddressEntry;
 use crate::components::wifi::wifiOptionsImpl;
@@ -34,6 +34,12 @@ impl WifiOptions {
         selfImp.resetWifiName.set_subtitle(&*conn.settings.name);
         selfImp.resetWifiAutoConnect.set_active(conn.settings.autoconnect);
         selfImp.resetWifiMetered.set_active(if conn.settings.metered != -1 { true } else { false });
+        // match conn.device.borrow() {
+        //     TypeSettings::WIFI(wifi) => {}
+        //     TypeSettings::ETHERNET(ethernet) => {}
+        //     TypeSettings::VPN(vpn) => {}
+        //     TypeSettings::None => {}
+        // };
         // IPv4
         selfImp.resetIP4Method.set_selected(conn.ipv4.dns_method.to_i32() as u32);
         self.setIP4Visibility(conn.ipv4.dns_method.to_i32() as u32);
@@ -97,8 +103,6 @@ impl WifiOptions {
         // Security
         dbg!(conn);
     }
-
-
 
     pub fn setIP4Visibility(&self, method: u32) {
         let selfImp = self.imp();

@@ -17,6 +17,16 @@ pub struct WifiOptions {
     #[template_child]
     pub resetWifiMac: TemplateChild<ActionRow>,
     #[template_child]
+    pub resetWifiLinkSpeed: TemplateChild<ActionRow>,
+    #[template_child]
+    pub resetWifiIP4Addr: TemplateChild<ActionRow>,
+    #[template_child]
+    pub resetWifiIP6Addr: TemplateChild<ActionRow>,
+    #[template_child]
+    pub resetWifiGateway: TemplateChild<ActionRow>,
+    #[template_child]
+    pub resetWifiDNS: TemplateChild<ActionRow>,
+    #[template_child]
     pub resetWifiAutoConnect: TemplateChild<SwitchRow>,
     #[template_child]
     pub resetWifiMetered: TemplateChild<SwitchRow>,

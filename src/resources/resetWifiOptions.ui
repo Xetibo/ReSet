@@ -6,7 +6,6 @@
   <template class="resetWifiOptions" parent="AdwNavigationPage">
     <child>
       <object class="GtkNotebook">
-        <property name="page">0</property>
         <property name="scrollable">True</property>
         <property name="show-border">False</property>
         <child>
@@ -17,19 +16,43 @@
                 <child>
                   <object class="AdwActionRow" id="resetWifiName">
                     <property name="css-classes">property</property>
-                    <property name="margin-bottom">5</property>
-                    <property name="margin-end">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="subtitle">asdf</property>
                     <property name="title">WiFi Name</property>
                   </object>
                 </child>
                 <child>
                   <object class="AdwActionRow" id="resetWifiMac">
                     <property name="css-classes">property</property>
-                    <property name="subtitle">AA:BB:CC:DD:EE:FF</property>
                     <property name="title">MAC-Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiLinkSpeed">
+                    <property name="css-classes">property</property>
+                    <property name="title">Link Speed</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiIP4Addr">
+                    <property name="css-classes">property</property>
+                    <property name="title">IPv4 Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiIP6Addr">
+                    <property name="css-classes">property</property>
+                    <property name="title">IPv6 Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiGateway">
+                    <property name="css-classes">property</property>
+                    <property name="title">Gateway</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiDNS">
+                    <property name="css-classes">property</property>
+                    <property name="title">DNS</property>
                   </object>
                 </child>
                 <child>
@@ -54,7 +77,6 @@
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
-            <property name="width-request">500</property>
             <child>
               <object class="AdwPreferencesGroup">
                 <child>
@@ -122,7 +144,6 @@
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
-            <property name="width-request">500</property>
             <child>
               <object class="AdwPreferencesGroup">
                 <child>
@@ -158,33 +179,6 @@
               <object class="AdwPreferencesGroup" id="resetIP6AddressGroup">
                 <property name="margin-top">10</property>
                 <property name="title">Addresses</property>
-                <child>
-                  <object class="GtkBox">
-                    <child>
-                      <object class="AdwExpanderRow">
-                        <property name="hexpand">True</property>
-                        <property name="title">192.168.1.100, 255.255.255.0</property>
-                        <child>
-                          <object class="AdwEntryRow">
-                            <property name="title">Address</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwEntryRow">
-                            <property name="title">Netmask</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="height-request">55</property>
-                        <property name="icon-name">edit-delete-symbolic</property>
-                        <property name="valign">start</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
@@ -206,49 +200,6 @@
                 </property>
                 <property name="margin-top">10</property>
                 <property name="title">Routes</property>
-                <child>
-                  <object class="GtkBox">
-                    <child>
-                      <object class="AdwExpanderRow">
-                        <property name="hexpand">True</property>
-                        <property name="title">192.168.1.100, 255.255.255.0, 192.68.1.1, 1</property>
-                        <child>
-                          <object class="AdwEntryRow">
-                            <property name="title">Address</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwEntryRow">
-                            <property name="title">Netmask</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <child>
-                              <object class="AdwEntryRow">
-                                <property name="hexpand">True</property>
-                                <property name="title">Gateway</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="AdwEntryRow">
-                                <property name="max-width-chars">5</property>
-                                <property name="title">Metric</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="height-request">55</property>
-                        <property name="icon-name">edit-delete-symbolic</property>
-                        <property name="valign">start</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
               </object>
             </child>
           </object>
@@ -291,34 +242,6 @@
                 <child>
                   <object class="AdwPasswordEntryRow">
                     <property name="title">Password</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwComboRow">
-                    <property name="model">
-                      <object class="GtkStringList">
-                        <items>
-                          <item>1  (Default)</item>
-                          <item>2</item>
-                          <item>3</item>
-                          <item>4</item>
-                        </items>
-                      </object>
-                    </property>
-                    <property name="title">WEP Index</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwComboRow">
-                    <property name="model">
-                      <object class="GtkStringList">
-                        <items>
-                          <item>Open System</item>
-                          <item>Shared Key</item>
-                        </items>
-                      </object>
-                    </property>
-                    <property name="title">Authentication</property>
                   </object>
                 </child>
               </object>
