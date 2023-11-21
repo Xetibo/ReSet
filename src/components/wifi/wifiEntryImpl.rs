@@ -3,6 +3,9 @@ use crate::components::wifi::wifiEntry;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Image, Label};
 use std::cell::RefCell;
+use adw::ActionRow;
+use adw::subclass::preferences_row::PreferencesRowImpl;
+use adw::subclass::prelude::ActionRowImpl;
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
 #[allow(non_snake_case)]
@@ -33,7 +36,7 @@ unsafe impl Sync for WifiEntry {}
 impl ObjectSubclass for WifiEntry {
     const NAME: &'static str = "resetWifiEntry";
     type Type = wifiEntry::WifiEntry;
-    type ParentType = gtk::Box;
+    type ParentType = ActionRow;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -47,13 +50,14 @@ impl ObjectSubclass for WifiEntry {
 impl ObjectImpl for WifiEntry {
     fn constructed(&self) {
         self.parent_constructed();
-
-        let obj = self.obj();
-        obj.setupCallbacks();
     }
 }
 
-impl BoxImpl for WifiEntry {}
+impl PreferencesRowImpl for WifiEntry {}
+
+impl ListBoxRowImpl for WifiEntry {}
+
+impl ActionRowImpl for WifiEntry {}
 
 impl WidgetImpl for WifiEntry {}
 

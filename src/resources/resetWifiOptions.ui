@@ -1,0 +1,259 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.4"/>
+  <template class="resetWifiOptions" parent="AdwNavigationPage">
+    <child>
+      <object class="GtkNotebook">
+        <property name="scrollable">True</property>
+        <property name="show-border">False</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwActionRow" id="resetWifiName">
+                    <property name="css-classes">property</property>
+                    <property name="title">WiFi Name</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiMac">
+                    <property name="css-classes">property</property>
+                    <property name="title">MAC-Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiLinkSpeed">
+                    <property name="css-classes">property</property>
+                    <property name="title">Link Speed</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiIP4Addr">
+                    <property name="css-classes">property</property>
+                    <property name="title">IPv4 Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiIP6Addr">
+                    <property name="css-classes">property</property>
+                    <property name="title">IPv6 Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiGateway">
+                    <property name="css-classes">property</property>
+                    <property name="title">Gateway</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="resetWifiDNS">
+                    <property name="css-classes">property</property>
+                    <property name="title">DNS</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwSwitchRow" id="resetWifiAutoConnect">
+                    <property name="title">Connect automatically</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwSwitchRow" id="resetWifiMetered">
+                    <property name="title">Metered Connection</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="label">General</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwComboRow" id="resetIP4Method">
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item>Automatic (DHCP)</item>
+                          <item>Manual</item>
+                          <item>Link-Local Only</item>
+                          <item>Shared to other computers</item>
+                          <item>Disabled</item>
+                        </items>
+                      </object>
+                    </property>
+                    <property name="title">IPv4 Method</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="resetIP4DNS">
+                    <property name="title">DNS (separate IP by comma, empty for automatic)</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="resetIP4Gateway">
+                    <property name="title">Gateway</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup" id="resetIP4AddressGroup">
+                <property name="margin-top">10</property>
+                <property name="title">Addresses</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup" id="resetIP4RoutesGroup">
+                <property name="header-suffix">
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Automatic</property>
+                        <property name="margin-end">5</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="margin-top">10</property>
+                <property name="title">Routes</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="label">IPv4</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwComboRow" id="resetIP6Method">
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item>Automatic</item>
+                          <item>Automatic (DHCP)</item>
+                          <item>Manual</item>
+                          <item>Link-Local Only</item>
+                          <item>Shared to other computers</item>
+                          <item>Disabled</item>
+                        </items>
+                      </object>
+                    </property>
+                    <property name="title">IPv6 Method</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="resetIP6DNS">
+                    <property name="title">DNS (separate IP by comma, empty for automatic)</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="resetIP6Gateway">
+                    <property name="title">Gateway</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup" id="resetIP6AddressGroup">
+                <property name="margin-top">10</property>
+                <property name="title">Addresses</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup" id="resetIP6RoutesGroup">
+                <property name="header-suffix">
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Automatic</property>
+                        <property name="margin-end">5</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="margin-top">10</property>
+                <property name="title">Routes</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="label">IPv6</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwComboRow">
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item>None</item>
+                          <item>Enhanced Open</item>
+                          <item>WEP 40/128-bit Key (Hex or ASCII)</item>
+                          <item>WEP 128-bit Passphrase</item>
+                          <item>LEAP</item>
+                          <item>Dynamic WEP (802.1X)</item>
+                          <item>WPA &amp; WPA2 Personal</item>
+                          <item>WPA &amp; WPA2 Enterprise</item>
+                          <item>WPA3 Personal</item>
+                        </items>
+                      </object>
+                    </property>
+                    <property name="title">Security</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow">
+                    <property name="title">Username</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPasswordEntryRow">
+                    <property name="title">Password</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="label">Security</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

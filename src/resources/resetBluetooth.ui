@@ -32,59 +32,26 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">main</property>
+            <property name="title">main</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkListBox" id="resetBluetoothDetails">
-                    <property name="css-classes">boxed-list</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-end">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="show-separators">True</property>
-                    <property name="valign">start</property>
+                  <object class="AdwPreferencesGroup" id="resetBluetoothDetails">
                     <child>
-                      <object class="resetListBoxRow">
-                        <child>
-                          <object class="GtkBox">
-                            <property name="height-request">40</property>
-                            <property name="margin-start">5</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Bluetooth Device</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkDropDown" id="resetBluetoothDevice">
-                                <property name="halign">end</property>
-                                <property name="hexpand">True</property>
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                      <object class="AdwComboRow" id="resetBluetoothDevice">
+                        <property name="title">Bluetooth Device</property>
                       </object>
                     </child>
                     <child>
-                      <object class="resetListBoxRow" id="resetVisibility">
+                      <object class="AdwActionRow" id="resetVisibility">
+                        <property name="title">Visibility Settings</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="height-request">40</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Visibility Settings</property>
-                                <property name="margin-start">5</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="halign">end</property>
-                                <property name="hexpand">True</property>
-                                <property name="icon-name">go-previous-symbolic-rtl</property>
-                                <property name="margin-end">5</property>
-                              </object>
-                            </child>
+                          <object class="GtkImage">
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="icon-name">go-previous-symbolic-rtl</property>
+                            <property name="margin-end">5</property>
                           </object>
                         </child>
                       </object>
@@ -93,6 +60,7 @@
                 </child>
                 <child>
                   <object class="GtkBox">
+                    <property name="margin-top">10</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel">
@@ -167,6 +135,7 @@
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">visibility</property>
+            <property name="title">visibility</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>

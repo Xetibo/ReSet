@@ -11,7 +11,7 @@ use dbus::message::SignalArgs;
 use dbus::{Error, Path};
 use gtk::gio;
 use gtk::glib::Variant;
-use gtk::prelude::ActionableExt;
+use gtk::prelude::{ActionableExt, ListBoxRowExt};
 use ReSet_Lib::signals::{BluetoothDeviceAdded, BluetoothDeviceRemoved};
 
 use crate::components::base::listEntry::ListEntry;
@@ -36,6 +36,7 @@ impl BluetoothBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
+        selfImp.resetVisibility.set_activatable(true);
         selfImp
             .resetVisibility
             .set_action_name(Some("navigation.push"));

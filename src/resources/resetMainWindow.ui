@@ -25,59 +25,9 @@
                   <object class="GtkBox">
                     <property name="valign">start</property>
                     <child>
-                      <object class="GtkButton" id="resetBack">
-                        <property name="has-frame">False</property>
-                        <property name="icon-name">go-previous-symbolic</property>
-                        <property name="valign">start</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkButton" id="resetSideBarToggle">
                         <property name="icon-name">sidebar-show-symbolic</property>
                         <property name="visible">False</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="resetForward">
-                        <property name="has-frame">False</property>
-                        <property name="icon-name">go-previous-symbolic-rtl</property>
-                        <property name="valign">start</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="resetPath">
-                        <property name="halign">start</property>
-                        <property name="hexpand">True</property>
-                        <property name="hexpand-set">True</property>
-                        <property name="valign">center</property>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">Home</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">&gt;</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">WiFi</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">&gt;</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="has-frame">False</property>
-                            <property name="label">Advanced</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -85,6 +35,7 @@
                         <property name="can-shrink">True</property>
                         <property name="halign">end</property>
                         <property name="has-frame">False</property>
+                        <property name="hexpand">True</property>
                         <property name="hexpand-set">True</property>
                         <property name="icon-name">open-menu-symbolic</property>
                         <property name="popover">

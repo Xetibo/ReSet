@@ -1,4 +1,7 @@
 use std::cell::RefCell;
+use adw::ActionRow;
+use adw::subclass::preferences_row::PreferencesRowImpl;
+use adw::subclass::prelude::ActionRowImpl;
 
 use dbus::Path;
 use gtk::subclass::prelude::*;
@@ -26,7 +29,7 @@ unsafe impl Sync for SavedWifiEntry {}
 impl ObjectSubclass for SavedWifiEntry {
     const NAME: &'static str = "resetSavedWifiEntry";
     type Type = savedWifiEntry::SavedWifiEntry;
-    type ParentType = gtk::Box;
+    type ParentType = ActionRow;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -43,7 +46,11 @@ impl ObjectImpl for SavedWifiEntry {
     }
 }
 
-impl BoxImpl for SavedWifiEntry {}
+impl PreferencesRowImpl for SavedWifiEntry {}
+
+impl ListBoxRowImpl for SavedWifiEntry {}
+
+impl ActionRowImpl for SavedWifiEntry {}
 
 impl WidgetImpl for SavedWifiEntry {}
 

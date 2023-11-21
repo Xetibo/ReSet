@@ -1,5 +1,19 @@
+use adw::prelude::PreferencesGroupExt;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
+
+use adw::{glib, prelude::ListBoxRowExt};
+use adw::glib::Object;
+use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, RangeExt};
+use dbus::{Error, Path};
+use dbus::blocking::Connection;
+use dbus::message::SignalArgs;
+use glib::{Cast, clone, Propagation, Variant};
+use glib::subclass::prelude::ObjectSubclassIsExt;
+use gtk::{Align, gio, SignalListItemFactory, StringObject};
+use gtk::prelude::*;
+use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, ListItemExt};
+use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
@@ -7,21 +21,10 @@ use crate::components::base::utils::{
     InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
 use crate::components::output::sinkEntry::set_sink_volume;
-use adw::glib::Object;
-use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, RangeExt};
-use adw::{glib, prelude::ListBoxRowExt};
-use dbus::blocking::Connection;
-use dbus::message::SignalArgs;
-use dbus::{Error, Path};
-use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::{clone, Cast, Propagation, Variant};
-use gtk::prelude::ActionableExt;
-use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
-use super::sinkEntry::{set_default_sink, toggle_sink_mute, SinkEntry};
+use super::sinkEntry::{set_default_sink, SinkEntry, toggle_sink_mute};
 
 glib::wrapper! {
     pub struct SinkBox(ObjectSubclass<sinkBoxImpl::SinkBox>)
@@ -45,12 +48,14 @@ impl SinkBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
+        selfImp.resetSinksRow.set_activatable(true);
         selfImp
             .resetSinksRow
             .set_action_name(Some("navigation.push"));
         selfImp
             .resetSinksRow
             .set_action_target_value(Some(&Variant::from("outputDevices")));
+        selfImp.resetCardsRow.set_activatable(true);
         selfImp
             .resetCardsRow
             .set_action_name(Some("navigation.push"));
@@ -65,6 +70,19 @@ impl SinkBox {
         selfImp
             .resetInputCardsBackButton
             .set_action_name(Some("navigation.pop"));
+
+        let factory = &SignalListItemFactory::new();
+        factory.connect_setup(|_, item| {
+            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+            let label = gtk::Label::new(None);
+            label.set_halign(Align::Start);
+            item.property_expression("item")
+                .chain_property::<StringObject>("string")
+                .bind(&label, "label", gtk::Widget::NONE);
+            item.set_child(Some(&label));
+        });
+
+        selfImp.resetSinkDropdown.set_factory(Some(factory));
     }
 }
 
@@ -122,7 +140,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                             sink,
                         ));
                         let sink_clone = sink_entry.clone();
-                        let entry = Arc::new(ListEntry::new(&*sink_entry));
+                        let entry = Arc::new(ListEntry::new(&*sink_entry, ));
                         entry.set_activatable(false);
                         list.insert(index, (entry.clone(), sink_clone, alias));
                         output_box_imp.resetSinks.append(&*entry);
@@ -217,7 +235,7 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
                 for stream in streams {
                     let index = stream.index;
                     let input_stream = Arc::new(InputStreamEntry::new(output_box.clone(), stream));
-                    let entry = Arc::new(ListEntry::new(&*input_stream));
+                    let entry = Arc::new(ListEntry::new(&*input_stream, ));
                     entry.set_activatable(false);
                     list.insert(index, (entry.clone(), input_stream.clone()));
                     output_box_imp.resetInputStreams.append(&*entry);
@@ -236,7 +254,7 @@ pub fn populate_cards(output_box: Arc<SinkBox>) {
                 let imp = output_box_ref.imp();
                 for card in cards {
                     imp.resetCards
-                        .append(&ListEntry::new(&CardEntry::new(card)));
+                        .add(&CardEntry::new(card));
                 }
             });
         });
@@ -359,7 +377,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                     ir.sink,
                 ));
                 let sink_clone = sink_entry.clone();
-                let entry = Arc::new(ListEntry::new(&*sink_entry));
+                let entry = Arc::new(ListEntry::new(&*sink_entry, ));
                 entry.set_activatable(false);
                 list.insert(sink_index, (entry.clone(), sink_clone, alias.clone()));
                 output_box_imp.resetSinks.append(&*entry);
@@ -426,24 +444,27 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
             glib::idle_add_once(move || {
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
+                let is_default = ir.sink.name == default_sink.name;
+                let volume = ir.sink.volume.first().unwrap_or_else(|| &(0 as u32));
+                let fraction = (*volume as f64 / 655.36).round();
+                let percentage = (fraction).to_string() + "%";
+
                 let list = output_box_imp.resetSinkList.read().unwrap();
                 let entry = list.get(&ir.sink.index);
                 if entry.is_none() {
                     return;
                 }
                 let imp = entry.unwrap().1.imp();
-                let is_default = ir.sink.name == default_sink.name;
-                imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
-                let volume = ir.sink.volume.first().unwrap_or_else(|| &(0 as u32));
-                let fraction = (*volume as f64 / 655.36).round();
-                let percentage = (fraction).to_string() + "%";
-                imp.resetVolumePercentage.set_text(&percentage);
-                imp.resetVolumeSlider.set_value(*volume as f64);
                 if is_default {
+                    output_box_imp.resetVolumePercentage.set_text(&percentage);
+                    output_box_imp.resetVolumeSlider.set_value(*volume as f64);
                     imp.resetSelectedSink.set_active(true);
                 } else {
                     imp.resetSelectedSink.set_active(false);
                 }
+                imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
+                imp.resetVolumePercentage.set_text(&percentage);
+                imp.resetVolumeSlider.set_value(*volume as f64);
             });
         });
         true
@@ -462,7 +483,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let mut list = output_box_imp.resetInputStreamList.write().unwrap();
                 let index = ir.stream.index;
                 let input_stream = Arc::new(InputStreamEntry::new(output_box.clone(), ir.stream));
-                let entry = Arc::new(ListEntry::new(&*input_stream));
+                let entry = Arc::new(ListEntry::new(&*input_stream, ));
                 entry.set_activatable(false);
                 list.insert(index, (entry.clone(), input_stream.clone()));
                 output_box_imp.resetInputStreams.append(&*entry);

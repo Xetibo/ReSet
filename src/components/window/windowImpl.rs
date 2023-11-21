@@ -30,8 +30,6 @@ pub struct Window {
     #[template_child]
     pub resetSideBarToggle: TemplateChild<Button>,
     #[template_child]
-    pub resetPath: TemplateChild<Box>,
-    #[template_child]
     pub resetPopoverMenu: TemplateChild<PopoverMenu>,
     #[template_child]
     pub resetClose: TemplateChild<Button>,

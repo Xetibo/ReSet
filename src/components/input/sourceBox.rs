@@ -1,6 +1,18 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use adw::glib;
+use adw::glib::Object;
+use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, ListBoxRowExt, PreferencesGroupExt, RangeExt};
+use dbus::{Error, Path};
+use dbus::blocking::Connection;
+use dbus::message::SignalArgs;
+use glib::{Cast, clone, Propagation, Variant};
+use glib::subclass::prelude::ObjectSubclassIsExt;
+use gtk::{Align, gio, SignalListItemFactory, StringObject};
+use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, ListItemExt, WidgetExt};
+use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
+
 use crate::components::base::cardEntry::CardEntry;
 use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::{
@@ -9,20 +21,9 @@ use crate::components::base::utils::{
 };
 use crate::components::input::sourceBoxImpl;
 use crate::components::input::sourceEntry::set_source_volume;
-use adw::glib;
-use adw::glib::Object;
-use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt};
-use dbus::blocking::Connection;
-use dbus::message::SignalArgs;
-use dbus::{Error, Path};
-use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::{clone, Cast, Propagation, Variant};
-use gtk::prelude::ActionableExt;
-use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
 
 use super::outputStreamEntry::OutputStreamEntry;
-use super::sourceEntry::{set_default_source, toggle_source_mute, SourceEntry};
+use super::sourceEntry::{set_default_source, SourceEntry, toggle_source_mute};
 
 glib::wrapper! {
     pub struct SourceBox(ObjectSubclass<sourceBoxImpl::SourceBox>)
@@ -40,12 +41,14 @@ impl SourceBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
+        selfImp.resetSourceRow.set_activatable(true);
         selfImp
             .resetSourceRow
             .set_action_name(Some("navigation.push"));
         selfImp
             .resetSourceRow
             .set_action_target_value(Some(&Variant::from("sources")));
+        selfImp.resetCardsRow.set_activatable(true);
         selfImp
             .resetCardsRow
             .set_action_name(Some("navigation.push"));
@@ -58,6 +61,19 @@ impl SourceBox {
         selfImp
             .resetInputCardsBackButton
             .set_action_name(Some("navigation.pop"));
+
+        let factory = &SignalListItemFactory::new();
+        factory.connect_setup(|_, item| {
+            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+            let label = gtk::Label::new(None);
+            label.set_halign(Align::Start);
+            item.property_expression("item")
+                .chain_property::<StringObject>("string")
+                .bind(&label, "label", gtk::Widget::NONE);
+            item.set_child(Some(&label));
+        });
+
+        selfImp.resetSourceDropdown.set_factory(Some(factory));
     }
 }
 
@@ -230,7 +246,7 @@ pub fn populate_cards(input_box: Arc<SourceBox>) {
                 let imp = output_box_ref.imp();
                 for card in cards {
                     imp.resetCards
-                        .append(&ListEntry::new(&CardEntry::new(card)));
+                        .add(&CardEntry::new(card));
                 }
             });
         });
@@ -424,25 +440,27 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
             glib::idle_add_once(move || {
                 let output_box = source_box.clone();
                 let output_box_imp = output_box.imp();
+                let is_default = ir.source.name == default_source.name;
+                let volume = ir.source.volume.first().unwrap_or_else(|| &(0 as u32));
+                let fraction = (*volume as f64 / 655.36).round();
+                let percentage = (fraction).to_string() + "%";
                 let list = output_box_imp.resetSourceList.read().unwrap();
                 let entry = list.get(&ir.source.index);
                 if entry.is_none() {
                     return;
                 }
                 let imp = entry.unwrap().1.imp();
-                let is_default = ir.source.name == default_source.name;
-                imp.resetSourceName
-                    .set_text(ir.source.alias.clone().as_str());
-                let volume = ir.source.volume.first().unwrap_or_else(|| &(0 as u32));
-                let fraction = (*volume as f64 / 655.36).round();
-                let percentage = (fraction).to_string() + "%";
-                imp.resetVolumePercentage.set_text(&percentage);
-                imp.resetVolumeSlider.set_value(*volume as f64);
                 if is_default {
+                    output_box_imp.resetVolumePercentage.set_text(&percentage);
+                    output_box_imp.resetVolumeSlider.set_value(*volume as f64);
                     imp.resetSelectedSource.set_active(true);
                 } else {
                     imp.resetSelectedSource.set_active(false);
                 }
+                imp.resetSourceName.set_text(ir.source.alias.clone().as_str());
+                imp.resetVolumePercentage.set_text(&percentage);
+                imp.resetVolumeSlider.set_value(*volume as f64);
+
             });
         });
         true

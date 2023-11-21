@@ -2,6 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
+use adw::{ActionRow, ComboRow, PreferencesGroup};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::output::inputStreamEntry::InputStreamEntry;
@@ -20,11 +21,11 @@ use super::sinkEntry::SinkEntry;
 #[template(resource = "/org/Xetibo/ReSet/resetAudioOutput.ui")]
 pub struct SinkBox {
     #[template_child]
-    pub resetSinksRow: TemplateChild<ListEntry>,
+    pub resetSinksRow: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetCardsRow: TemplateChild<ListEntry>,
+    pub resetCardsRow: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetSinkDropdown: TemplateChild<DropDown>,
+    pub resetSinkDropdown: TemplateChild<ComboRow>,
     #[template_child]
     pub resetSinkMute: TemplateChild<Button>,
     #[template_child]
@@ -42,7 +43,7 @@ pub struct SinkBox {
     #[template_child]
     pub resetInputCardsBackButton: TemplateChild<ListEntry>,
     #[template_child]
-    pub resetCards: TemplateChild<Box>,
+    pub resetCards: TemplateChild<PreferencesGroup>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSink: Arc<RefCell<Sink>>,
     pub resetSinkList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, String)>>>,

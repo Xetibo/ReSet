@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::net::Shutdown::Read;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::Arc;
@@ -9,12 +10,13 @@ use crate::components::base::listEntry::ListEntry;
 use crate::components::base::utils::Listeners;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::ListBoxRowExt;
+use adw::prelude::{ListBoxRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::{AppendAll, ReadAll, RefArg};
 use dbus::blocking::Connection;
 use dbus::Error;
 use dbus::Path;
+use glib::ObjectExt;
 use gtk::gio;
 use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
@@ -46,6 +48,7 @@ impl WifiBox {
 
     pub fn setupCallbacks(&self) {
         let selfImp = self.imp();
+        selfImp.resetSavedNetworks.set_activatable(true);
         selfImp
             .resetSavedNetworks
             .set_action_name(Some("navigation.push"));
@@ -74,9 +77,9 @@ pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
                 let selfImp = wifibox_ref.imp();
                 for accessPoint in accessPoints {
                     let ssid = accessPoint.ssid.clone();
-                    let entry = Arc::new(ListEntry::new(&*WifiEntry::new(accessPoint)));
+                    let entry = WifiEntry::new(accessPoint, selfImp);
                     wifiEntries.insert(ssid, entry.clone());
-                    selfImp.resetWifiList.append(&*entry);
+                    selfImp.resetWifiList.add(&*entry);
                 }
             });
         });
@@ -122,10 +125,9 @@ pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
                                 if wifiEntries.get(&ssid).is_some() {
                                     return;
                                 }
-                                let entry =
-                                    Arc::new(ListEntry::new(&*WifiEntry::new(access_point.0)));
+                                let entry = WifiEntry::new(access_point.0, wifiBoxImpl.imp());
                                 wifiEntries.insert(ssid, entry.clone());
-                                wifiBoxImpl.imp().resetWifiList.append(&*entry);
+                                wifiBoxImpl.imp().resetWifiList.add(&*entry);
                             });
                         });
                     }
@@ -161,9 +163,8 @@ pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
                     // TODO include button for settings
                     let name =
                         &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
-                    let entry = ListEntry::new(&SavedWifiEntry::new(name, connection.0));
-                    entry.set_activatable(false);
-                    selfImp.resetStoredWifiList.append(&entry);
+                    let entry = SavedWifiEntry::new(name, connection.0);
+                    selfImp.resetStoredWifiList.add(&entry);
                 }
             });
         });
@@ -213,7 +214,7 @@ pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     connections
 }
 
-pub fn getConnectionSettings(path: Path<'static>) -> Option<ResetConnection> {
+pub fn getConnectionSettings(path: Path<'static>) -> ResetConnection {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
         "org.xetibo.ReSet",
@@ -225,14 +226,14 @@ pub fn getConnectionSettings(path: Path<'static>) -> Option<ResetConnection> {
         Error,
     > = proxy.method_call("org.xetibo.ReSet", "GetConnectionSettings", (path,));
     if res.is_err() {
-        return None;
+        ResetConnection::default();
     }
     let (res,) = res.unwrap();
     let res = ResetConnection::convert_from_propmap(res);
     if res.is_err() {
-        return None;
+        ResetConnection::default();
     }
-    Some(res.unwrap())
+    res.unwrap()
 }
 
 // temporary, testing this with lib is pain

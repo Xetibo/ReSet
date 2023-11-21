@@ -4,6 +4,7 @@ use gtk::subclass::prelude::*;
 use gtk::{glib, CompositeTemplate, ListBox, Switch};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use adw::{ActionRow, ComboRow, NavigationView, PreferencesGroup};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::wifi::wifiEntry::WifiEntry;
@@ -13,18 +14,22 @@ use crate::components::wifi::wifiEntry::WifiEntry;
 #[template(resource = "/org/Xetibo/ReSet/resetWiFi.ui")]
 pub struct WifiBox {
     #[template_child]
-    pub resetWifiDetails: TemplateChild<ListBox>,
+    pub resetWifiNavigation: TemplateChild<NavigationView>,
     #[template_child]
-    pub resetSavedNetworks: TemplateChild<ListEntry>,
+    pub resetWifiDetails: TemplateChild<PreferencesGroup>,
+    #[template_child]
+    pub resetWiFiDevice: TemplateChild<ComboRow>,
+    #[template_child]
+    pub resetSavedNetworks: TemplateChild<ActionRow>,
     #[template_child]
     pub resetWifiSwitch: TemplateChild<Switch>,
     #[template_child]
-    pub resetWifiList: TemplateChild<ListBox>,
+    pub resetWifiList: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetStoredWifiList: TemplateChild<ListBox>,
+    pub resetStoredWifiList: TemplateChild<PreferencesGroup>,
     #[template_child]
     pub resetAvailableNetworks: TemplateChild<ListEntry>,
-    pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>, Arc<ListEntry>>>>,
+    pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
 }
 
