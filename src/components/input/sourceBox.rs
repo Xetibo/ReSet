@@ -10,7 +10,7 @@ use dbus::message::SignalArgs;
 use glib::{Cast, clone, Propagation, Variant};
 use glib::subclass::prelude::ObjectSubclassIsExt;
 use gtk::{Align, gio, SignalListItemFactory, StringObject};
-use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, WidgetExt, ListItemExt};
+use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, ListItemExt, WidgetExt};
 use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
 
 use crate::components::base::cardEntry::CardEntry;
@@ -23,7 +23,7 @@ use crate::components::input::sourceBoxImpl;
 use crate::components::input::sourceEntry::set_source_volume;
 
 use super::outputStreamEntry::OutputStreamEntry;
-use super::sourceEntry::{set_default_source, toggle_source_mute, SourceEntry};
+use super::sourceEntry::{set_default_source, SourceEntry, toggle_source_mute};
 
 glib::wrapper! {
     pub struct SourceBox(ObjectSubclass<sourceBoxImpl::SourceBox>)
@@ -440,25 +440,27 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
             glib::idle_add_once(move || {
                 let output_box = source_box.clone();
                 let output_box_imp = output_box.imp();
+                let is_default = ir.source.name == default_source.name;
+                let volume = ir.source.volume.first().unwrap_or_else(|| &(0 as u32));
+                let fraction = (*volume as f64 / 655.36).round();
+                let percentage = (fraction).to_string() + "%";
                 let list = output_box_imp.resetSourceList.read().unwrap();
                 let entry = list.get(&ir.source.index);
                 if entry.is_none() {
                     return;
                 }
                 let imp = entry.unwrap().1.imp();
-                let is_default = ir.source.name == default_source.name;
-                imp.resetSourceName
-                    .set_text(ir.source.alias.clone().as_str());
-                let volume = ir.source.volume.first().unwrap_or_else(|| &(0 as u32));
-                let fraction = (*volume as f64 / 655.36).round();
-                let percentage = (fraction).to_string() + "%";
-                imp.resetVolumePercentage.set_text(&percentage);
-                imp.resetVolumeSlider.set_value(*volume as f64);
                 if is_default {
+                    output_box_imp.resetVolumePercentage.set_text(&percentage);
+                    output_box_imp.resetVolumeSlider.set_value(*volume as f64);
                     imp.resetSelectedSource.set_active(true);
                 } else {
                     imp.resetSelectedSource.set_active(false);
                 }
+                imp.resetSourceName.set_text(ir.source.alias.clone().as_str());
+                imp.resetVolumePercentage.set_text(&percentage);
+                imp.resetVolumeSlider.set_value(*volume as f64);
+
             });
         });
         true

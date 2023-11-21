@@ -434,3 +434,4 @@ fn stop_dbus_audio_listener(conn: Connection) {
     );
     let _: Result<(), Error> = proxy.method_call("org.xetibo.ReSet", "StopAudioListener", ());
 }
+

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-  <requires lib="gtk" version="4.6"/>
+  <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetWifi" parent="GtkBox">
     <property name="hexpand">True</property>
@@ -83,6 +83,179 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <child>
+                      <object class="AdwComboRow">
+                        <property name="activatable-widget">
+                          <object class="GtkLabel"/>
+                        </property>
+                        <property name="model">
+                          <object class="GtkStringList">
+                            <items>
+                              <item>asdf</item>
+                              <item>dsfds</item>
+                            </items>
+                          </object>
+                        </property>
+                        <property name="title">asadf</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkBox">
+                                <property name="hexpand">True</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkBox" id="resetOutputStreamEntry">
+                                    <property name="margin-bottom">5</property>
+                                    <property name="margin-end">5</property>
+                                    <property name="margin-start">5</property>
+                                    <property name="margin-top">5</property>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="margin-bottom">5</property>
+                                        <property name="margin-top">5</property>
+                                        <child>
+                                          <object class="GtkButton" id="resetSourceMute">
+                                            <property name="icon-name">audio-input-microphone-symbolic</property>
+                                            <property name="margin-end">5</property>
+                                            <property name="valign">center</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkScale" id="resetVolumeSlider">
+                                            <property name="adjustment">
+                                              <object class="GtkAdjustment">
+                                                <property name="page-increment">2005.4016</property>
+                                                <property name="step-increment">2005.4016</property>
+                                                <property name="upper">100270.08</property>
+                                              </object>
+                                            </property>
+                                            <property name="hexpand">True</property>
+                                            <property name="valign">center</property>
+                                            <property name="value-pos">bottom</property>
+                                            <marks>
+                                              <mark position="bottom" value="65536.0">100%</mark>
+                                            </marks>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="resetVolumePercentage">
+                                            <property name="label">100%</property>
+                                            <property name="lines">1</property>
+                                            <property name="width-request">40</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkProgressBar" id="resetVolumeMeter">
+                                        <property name="margin-top">5</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSeparator"/>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <child>
+                      <object class="AdwComboRow">
+                        <property name="activatable-widget">
+                          <object class="GtkLabel"/>
+                        </property>
+                        <property name="model">
+                          <object class="GtkStringList">
+                            <items>
+                              <item>asdf</item>
+                              <item>dsfds</item>
+                            </items>
+                          </object>
+                        </property>
+                        <property name="title">asadf</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkBox">
+                                <property name="hexpand">True</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkBox" id="resetOutputStreamEn2try">
+                                    <property name="margin-bottom">5</property>
+                                    <property name="margin-end">5</property>
+                                    <property name="margin-start">5</property>
+                                    <property name="margin-top">5</property>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="margin-bottom">5</property>
+                                        <property name="margin-top">5</property>
+                                        <child>
+                                          <object class="GtkButton" id="resetSou2rceMute">
+                                            <property name="icon-name">audio-input-microphone-symbolic</property>
+                                            <property name="margin-end">5</property>
+                                            <property name="valign">center</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkScale" id="resetVolum2eSlider">
+                                            <property name="adjustment">
+                                              <object class="GtkAdjustment">
+                                                <property name="page-increment">2005.4016</property>
+                                                <property name="step-increment">2005.4016</property>
+                                                <property name="upper">100270.08</property>
+                                              </object>
+                                            </property>
+                                            <property name="hexpand">True</property>
+                                            <property name="valign">center</property>
+                                            <property name="value-pos">bottom</property>
+                                            <marks>
+                                              <mark position="bottom" value="65536.0">100%</mark>
+                                            </marks>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="resetVolum2ePercentage">
+                                            <property name="label">100%</property>
+                                            <property name="lines">1</property>
+                                            <property name="width-request">40</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkProgressBar" id="resetVolu2meMeter">
+                                        <property name="margin-top">5</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
                       </object>
                     </child>
                   </object>

@@ -444,24 +444,27 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
             glib::idle_add_once(move || {
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
+                let is_default = ir.sink.name == default_sink.name;
+                let volume = ir.sink.volume.first().unwrap_or_else(|| &(0 as u32));
+                let fraction = (*volume as f64 / 655.36).round();
+                let percentage = (fraction).to_string() + "%";
+
                 let list = output_box_imp.resetSinkList.read().unwrap();
                 let entry = list.get(&ir.sink.index);
                 if entry.is_none() {
                     return;
                 }
                 let imp = entry.unwrap().1.imp();
-                let is_default = ir.sink.name == default_sink.name;
-                imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
-                let volume = ir.sink.volume.first().unwrap_or_else(|| &(0 as u32));
-                let fraction = (*volume as f64 / 655.36).round();
-                let percentage = (fraction).to_string() + "%";
-                imp.resetVolumePercentage.set_text(&percentage);
-                imp.resetVolumeSlider.set_value(*volume as f64);
                 if is_default {
+                    output_box_imp.resetVolumePercentage.set_text(&percentage);
+                    output_box_imp.resetVolumeSlider.set_value(*volume as f64);
                     imp.resetSelectedSink.set_active(true);
                 } else {
                     imp.resetSelectedSink.set_active(false);
                 }
+                imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
+                imp.resetVolumePercentage.set_text(&percentage);
+                imp.resetVolumeSlider.set_value(*volume as f64);
             });
         });
         true

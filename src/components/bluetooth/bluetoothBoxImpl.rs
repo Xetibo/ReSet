@@ -5,6 +5,7 @@ use gtk::{glib, CompositeTemplate, ListBox, Switch};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
+use adw::ActionRow;
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::bluetooth::bluetoothBox;
@@ -21,7 +22,7 @@ pub struct BluetoothBox {
     #[template_child]
     pub resetBluetoothConnectedDevices: TemplateChild<ListBox>,
     #[template_child]
-    pub resetVisibility: TemplateChild<ListEntry>,
+    pub resetVisibility: TemplateChild<ActionRow>,
     #[template_child]
     pub resetBluetoothMainTab: TemplateChild<ListEntry>,
     pub availableDevices: RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, Arc<ListEntry>)>>,

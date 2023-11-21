@@ -1,5 +1,6 @@
 use gtk::prelude::FrameExt;
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 
 use crate::components::base::settingBox::SettingBox;
 use crate::components::base::utils::{start_audio_listener, Listeners};
@@ -89,6 +90,7 @@ pub const HANDLE_VOLUME_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.stop_bluetooth_listener();
         let audioOutput = Arc::new(SinkBox::new());
         start_audio_listener(listeners.clone(), Some(audioOutput.clone()), None);
+        while !listeners.pulse_listener.load(Ordering::SeqCst) {}
         populate_sinks(audioOutput.clone());
         let audioFrame = wrapInFrame(SettingBox::new(&*audioOutput));
         resetMain.remove_all();
