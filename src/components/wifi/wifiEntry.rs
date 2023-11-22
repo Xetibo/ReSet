@@ -13,9 +13,9 @@ use gtk::prelude::{ListBoxRowExt, WidgetExt};
 use gtk::{gio, AlertDialog, GestureClick};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
-use crate::components::wifi::{wifiEntryImpl};
 use crate::components::wifi::wifiBox::getConnectionSettings;
 use crate::components::wifi::wifiBoxImpl::WifiBox;
+use crate::components::wifi::wifiEntryImpl;
 use crate::components::wifi::wifiOptions::WifiOptions;
 
 use super::savedWifiEntry::SavedWifiEntry;
@@ -71,7 +71,7 @@ impl WifiEntry {
         entry.connect_activated(clone!(@weak entryImp => move |_| {
             let access_point = entryImp.accessPoint.borrow();
             if access_point.connected {
-                click_disconnect();
+                click_disconnect(stored_entry.clone());
             } else if access_point.stored {
                 click_stored_network(stored_entry.clone());
             } else {
@@ -91,8 +91,9 @@ impl WifiEntry {
     }
 }
 
-pub fn click_disconnect() {
+pub fn click_disconnect(entry: Arc<WifiEntry>) {
     println!("called disconnect");
+    let entry_ref = entry.clone();
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
@@ -106,7 +107,10 @@ pub fn click_disconnect() {
             println!("res of disconnect was error bro");
             return;
         }
-            println!("disconnect worked");
+        let imp = entry_ref.imp();
+        imp.resetWifiConnected.get().set_from_icon_name(None);
+        imp.accessPoint.borrow_mut().connected = false;
+        println!("disconnect worked");
     });
 }
 pub fn click_stored_network(entry: Arc<WifiEntry>) {
@@ -114,11 +118,6 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
     let entryImp = entry.imp();
     let access_point = entryImp.accessPoint.borrow().clone();
     let entry_ref = entry.clone();
-    let popup = entry.imp().resetWifiPopup.imp();
-    popup.resetPopupLabel.set_text("Connecting...");
-    popup.resetPopupLabel.set_visible(true);
-    popup.resetPopupEntry.set_sensitive(false);
-    popup.resetPopupButton.set_sensitive(false);
 
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
@@ -135,20 +134,22 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let imp = entry_ref.imp();
-                let popup = imp.resetWifiPopup.imp();
                 if res.is_err() {
-                    popup.resetPopupLabel.set_text("Could not connect to dbus.");
+                    println!("wat bro?");
                     result.store(false, std::sync::atomic::Ordering::SeqCst);
                     return;
                 }
                 if res.unwrap() == (false,) {
-                    popup
-                        .resetPopupLabel
-                        .set_text("Could not connect to access point.");
+                    println!("error bro?");
                     result.store(false, std::sync::atomic::Ordering::SeqCst);
                     return;
                 }
-                entry_ref.imp().resetWifiPopup.popdown();
+                let imp = entry_ref.imp();
+                println!("wateroni");
+                imp.resetWifiConnected
+                    .get()
+                    .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                imp.accessPoint.borrow_mut().connected = true;
                 result.store(true, std::sync::atomic::Ordering::SeqCst);
             });
         });
@@ -205,7 +206,12 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
                         return;
                     }
                     println!("worked?");
-                    entry_ref.imp().resetWifiPopup.popdown();
+                    let imp = entry_ref.imp();
+                    imp.resetWifiPopup.popdown();
+                    imp.resetWifiEditButton.set_sensitive(true);
+                    imp.resetWifiConnected
+                        .get()
+                        .set_from_icon_name(Some("network-wireless-connected-symbolic"));
                     result.store(true, std::sync::atomic::Ordering::SeqCst);
                 });
             });

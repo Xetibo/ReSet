@@ -402,6 +402,7 @@ pub fn start_audio_listener(
         }
 
         listeners.pulse_listener.store(true, Ordering::SeqCst);
+
         println!("starting audio listener");
         loop {
             let _ = conn.process(Duration::from_millis(1000));

@@ -1,13 +1,15 @@
 use gtk::prelude::FrameExt;
-use std::sync::Arc;
 use std::sync::atomic::Ordering;
+use std::sync::Arc;
 
 use crate::components::base::settingBox::SettingBox;
 use crate::components::base::utils::{start_audio_listener, Listeners};
 use crate::components::bluetooth::bluetoothBox::{start_bluetooth_listener, BluetoothBox};
 use crate::components::input::sourceBox::{populate_sources, SourceBox};
 use crate::components::output::sinkBox::{populate_sinks, SinkBox};
-use crate::components::wifi::wifiBox::{scanForWifi, show_stored_connections, WifiBox};
+use crate::components::wifi::wifiBox::{
+    scanForWifi, show_stored_connections, start_event_listener, WifiBox,
+};
 use gtk::prelude::WidgetExt;
 use gtk::{FlowBox, Frame, Label};
 
@@ -15,6 +17,7 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_audio_listener();
         let wifiBox = Arc::new(WifiBox::new());
+        start_event_listener(listeners.clone(), wifiBox.clone());
         show_stored_connections(wifiBox.clone());
         scanForWifi(listeners.clone(), wifiBox.clone());
         let wifiFrame = wrapInFrame(SettingBox::new(&*wifiBox));
@@ -32,6 +35,7 @@ pub const HANDLE_WIFI_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.stop_audio_listener();
         listeners.stop_bluetooth_listener();
         let wifiBox = Arc::new(WifiBox::new());
+        start_event_listener(listeners.clone(), wifiBox.clone());
         show_stored_connections(wifiBox.clone());
         scanForWifi(listeners.clone(), wifiBox.clone());
         let wifiFrame = wrapInFrame(SettingBox::new(&*wifiBox));

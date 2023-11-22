@@ -1,10 +1,11 @@
 use crate::components::wifi::wifiBox;
+use adw::{ActionRow, ComboRow, NavigationView, PreferencesGroup};
+use dbus::Path;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{glib, CompositeTemplate, ListBox, Switch};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use adw::{ActionRow, ComboRow, NavigationView, PreferencesGroup};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::wifi::wifiEntry::WifiEntry;
@@ -30,6 +31,7 @@ pub struct WifiBox {
     #[template_child]
     pub resetAvailableNetworks: TemplateChild<ListEntry>,
     pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
+    pub wifiEntriesPath: Arc<Mutex<HashMap<Path<'static>, Arc<WifiEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
 }
 
