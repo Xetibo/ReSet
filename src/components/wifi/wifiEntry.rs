@@ -7,18 +7,16 @@ use adw::glib::{Object, PropertySet};
 use adw::prelude::{ActionRowExt, ButtonExt, EditableExt, PopoverExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
-use dbus::{Error};
-use glib::{clone};
+use dbus::Error;
+use glib::clone;
+use gtk::gio;
 use gtk::prelude::{ListBoxRowExt, WidgetExt};
-use gtk::{gio};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
 use crate::components::wifi::wifiBox::getConnectionSettings;
 use crate::components::wifi::wifiBoxImpl::WifiBox;
 use crate::components::wifi::wifiEntryImpl;
 use crate::components::wifi::wifiOptions::WifiOptions;
-
-
 
 glib::wrapper! {
     pub struct WifiEntry(ObjectSubclass<wifiEntryImpl::WifiEntry>)

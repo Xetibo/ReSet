@@ -8,7 +8,6 @@ use adw::subclass::preferences_row::PreferencesRowImpl;
 use adw::subclass::prelude::ActionRowImpl;
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWifiEntry.ui")]
 pub struct WifiEntry {
