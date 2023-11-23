@@ -1,18 +1,18 @@
 use std::collections::HashMap;
-use std::net::Shutdown::Read;
+
 use std::sync::atomic::Ordering;
-use std::sync::mpsc::{channel, Receiver, Sender};
+
 use std::sync::Arc;
-use std::thread;
+
 use std::time::Duration;
 
-use crate::components::base::listEntry::ListEntry;
+
 use crate::components::base::utils::Listeners;
 use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ListBoxRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use dbus::arg::{AppendAll, ReadAll, RefArg};
+use dbus::arg::{RefArg};
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::Error;
@@ -22,9 +22,9 @@ use gtk::gio;
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, WidgetExt};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
-use ReSet_Lib::signals::{AccessPointAdded, GetVal};
+use ReSet_Lib::signals::{AccessPointAdded};
 use ReSet_Lib::signals::{AccessPointChanged, AccessPointRemoved};
-use ReSet_Lib::utils::Events;
+
 
 use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;
@@ -63,9 +63,9 @@ impl WifiBox {
     }
 }
 
-pub fn scanForWifi(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
+pub fn scanForWifi(_listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
     let wifibox_ref = wifiBox.clone();
-    let wifibox_ref_listener = wifiBox.clone();
+    let _wifibox_ref_listener = wifiBox.clone();
     let wifiEntries = wifiBox.imp().wifiEntries.clone();
     let wifiEntriesPath = wifiBox.imp().wifiEntriesPath.clone();
 

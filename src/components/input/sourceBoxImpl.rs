@@ -7,7 +7,7 @@ use adw::{ActionRow, ComboRow, PreferencesGroup};
 use crate::components::base::listEntry::ListEntry;
 use crate::components::input::sourceBox;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CheckButton, CompositeTemplate, DropDown, StringList, TemplateChild};
+use gtk::{glib, CheckButton, CompositeTemplate, StringList, TemplateChild};
 use gtk::{prelude::*, Button, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::Source;
 

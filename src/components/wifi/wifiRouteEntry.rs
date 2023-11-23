@@ -26,11 +26,11 @@ impl WifiRouteEntry {
             let gateway =  getValueFromKey(&map, "gateway");
             let metric =  getValueFromKey(&map, "metric");
 
-            entryImp.resetRouteAddress.set_text(&*addr);
-            entryImp.resetRouteNetmask.set_text(&*prefix);
-            entryImp.resetRouteGateway.set_text(&*gateway);
-            entryImp.resetRouteMetric.set_text(&*metric);
-            entryImp.resetRouteRow.set_title(&*format!("{}, {}, {}, {}", addr, prefix, gateway, metric));
+            entryImp.resetRouteAddress.set_text(&addr);
+            entryImp.resetRouteNetmask.set_text(&prefix);
+            entryImp.resetRouteGateway.set_text(&gateway);
+            entryImp.resetRouteMetric.set_text(&metric);
+            entryImp.resetRouteRow.set_title(&format!("{}, {}, {}, {}", addr, prefix, gateway, metric));
         }
         entry
     }

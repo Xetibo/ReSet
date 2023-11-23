@@ -110,7 +110,7 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     let default_sink = output_box_imp.resetDefaultSource.clone();
                     let source = default_sink.borrow();
 
-                    let volume = source.volume.first().unwrap_or_else(|| &(0 as u32));
+                    let volume = source.volume.first().unwrap_or(&0_u32);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
                     output_box_imp.resetVolumePercentage.set_text(&percentage);
@@ -441,7 +441,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 let output_box = source_box.clone();
                 let output_box_imp = output_box.imp();
                 let is_default = ir.source.name == default_source.name;
-                let volume = ir.source.volume.first().unwrap_or_else(|| &(0 as u32));
+                let volume = ir.source.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
                 let list = output_box_imp.resetSourceList.read().unwrap();
@@ -531,7 +531,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     }
                     let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
                     imp.resetSourceName.set_text(name.as_str());
-                    let volume = ir.stream.volume.first().unwrap_or_else(|| &(0 as u32));
+                    let volume = ir.stream.volume.first().unwrap_or(&0_u32);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
                     imp.resetVolumePercentage.set_text(&percentage);

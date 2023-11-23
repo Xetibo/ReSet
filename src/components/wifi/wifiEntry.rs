@@ -7,10 +7,10 @@ use adw::glib::{Object, PropertySet};
 use adw::prelude::{ActionRowExt, ButtonExt, EditableExt, PopoverExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
-use dbus::{Error, Path};
-use glib::{clone, Cast};
+use dbus::{Error};
+use glib::{clone};
 use gtk::prelude::{ListBoxRowExt, WidgetExt};
-use gtk::{gio, AlertDialog, GestureClick};
+use gtk::{gio};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
 use crate::components::wifi::wifiBox::getConnectionSettings;
@@ -18,7 +18,7 @@ use crate::components::wifi::wifiBoxImpl::WifiBox;
 use crate::components::wifi::wifiEntryImpl;
 use crate::components::wifi::wifiOptions::WifiOptions;
 
-use super::savedWifiEntry::SavedWifiEntry;
+
 
 glib::wrapper! {
     pub struct WifiEntry(ObjectSubclass<wifiEntryImpl::WifiEntry>)
@@ -133,7 +133,7 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
         );
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let imp = entry_ref.imp();
+                let _imp = entry_ref.imp();
                 if res.is_err() {
                     println!("wat bro?");
                     result.store(false, std::sync::atomic::Ordering::SeqCst);

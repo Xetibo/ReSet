@@ -5,7 +5,7 @@ use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::PropMap;
-use glib::{PropertySet, Cast, ObjectExt, clone};
+use glib::{PropertySet, ObjectExt};
 use gtk::prelude::{EditableExt, WidgetExt};
 use ReSet_Lib::network::connection::{Connection, Enum, TypeSettings};
 
@@ -31,13 +31,13 @@ impl WifiOptions {
         let selfImp = self.imp();
         let conn = selfImp.connection.borrow();
         // General
-        selfImp.resetWifiName.set_subtitle(&*conn.settings.name);
+        selfImp.resetWifiName.set_subtitle(&conn.settings.name);
         selfImp.resetWifiAutoConnect.set_active(conn.settings.autoconnect);
-        selfImp.resetWifiMetered.set_active(if conn.settings.metered != -1 { true } else { false });
+        selfImp.resetWifiMetered.set_active(conn.settings.metered != -1);
         match &conn.device {
-            TypeSettings::WIFI(wifi) => {}
-            TypeSettings::ETHERNET(ethernet) => {}
-            TypeSettings::VPN(vpn) => {}
+            TypeSettings::WIFI(_wifi) => {}
+            TypeSettings::ETHERNET(_ethernet) => {}
+            TypeSettings::VPN(_vpn) => {}
             TypeSettings::None => {}
         };
         // IPv4
@@ -52,8 +52,8 @@ impl WifiOptions {
                     .join(".")
             })
             .collect();
-        selfImp.resetIP4DNS.set_text(&*ipv4Dns.join(", "));
-        selfImp.resetIP4Gateway.set_text(&*conn.ipv4.gateway);
+        selfImp.resetIP4DNS.set_text(&ipv4Dns.join(", "));
+        selfImp.resetIP4Gateway.set_text(&conn.ipv4.gateway);
 
         if conn.ipv4.address_data.is_empty() {
             selfImp.resetIP4AddressGroup.add(&WifiAddressEntry::new(None))
@@ -82,8 +82,8 @@ impl WifiOptions {
                     .join(":")
             })
             .collect();
-        selfImp.resetIP6DNS.set_text(&*ipv6Dns.join(", "));
-        selfImp.resetIP6Gateway.set_text(&*conn.ipv6.gateway);
+        selfImp.resetIP6DNS.set_text(&ipv6Dns.join(", "));
+        selfImp.resetIP6Gateway.set_text(&conn.ipv6.gateway);
 
         if conn.ipv6.address_data.is_empty() {
             selfImp.resetIP6AddressGroup.add(&WifiAddressEntry::new(None))

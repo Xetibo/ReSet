@@ -137,7 +137,7 @@ impl dbus::message::SignalArgs for SinkRemoved {
 
 impl GetVal<(u32,)> for SinkRemoved {
     fn get_value(&self) -> (u32,) {
-        (self.index.clone(),)
+        (self.index,)
     }
 }
 
@@ -215,7 +215,7 @@ impl dbus::message::SignalArgs for InputStreamRemoved {
 
 impl GetVal<(u32,)> for InputStreamRemoved {
     fn get_value(&self) -> (u32,) {
-        (self.index.clone(),)
+        (self.index,)
     }
 }
 
@@ -299,7 +299,7 @@ impl dbus::message::SignalArgs for SourceRemoved {
 
 impl GetVal<(u32,)> for SourceRemoved {
     fn get_value(&self) -> (u32,) {
-        (self.index.clone(),)
+        (self.index,)
     }
 }
 
@@ -377,7 +377,7 @@ impl dbus::message::SignalArgs for OutputStreamRemoved {
 
 impl GetVal<(u32,)> for OutputStreamRemoved {
     fn get_value(&self) -> (u32,) {
-        (self.index.clone(),)
+        (self.index,)
     }
 }
 
@@ -387,7 +387,7 @@ pub fn start_audio_listener(
     source_box: Option<Arc<SourceBox>>,
 ) {
     gio::spawn_blocking(move || {
-        let mut conn = Connection::new_session().unwrap();
+        let conn = Connection::new_session().unwrap();
         if listeners.pulse_listener.load(Ordering::SeqCst) {
             return;
         }

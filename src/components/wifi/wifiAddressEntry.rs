@@ -25,9 +25,9 @@ impl WifiAddressEntry {
             let addr = getValueFromKey(&map, "address");
             let prefix = getValueFromKey(&map, "prefix-length");
 
-            entryImp.resetAddressAddress.set_text(&*addr);
-            entryImp.resetAddressNetmask.set_text(&*prefix);
-            entryImp.resetAddressRow.set_title(&*format!("{}, {}", addr, prefix));
+            entryImp.resetAddressAddress.set_text(&addr);
+            entryImp.resetAddressNetmask.set_text(&prefix);
+            entryImp.resetAddressRow.set_title(&format!("{}, {}", addr, prefix));
         }
         entry
     }

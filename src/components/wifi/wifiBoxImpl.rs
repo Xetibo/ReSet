@@ -3,7 +3,7 @@ use adw::{ActionRow, ComboRow, NavigationView, PreferencesGroup};
 use dbus::Path;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, ListBox, Switch};
+use gtk::{glib, CompositeTemplate, Switch};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
