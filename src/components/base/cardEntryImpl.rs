@@ -21,6 +21,7 @@ pub struct CardEntry {
 
 #[glib::object_subclass]
 impl ObjectSubclass for CardEntry {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetCardEntry";
     type Type = cardEntry::CardEntry;
     type ParentType = ComboRow;

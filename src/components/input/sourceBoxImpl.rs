@@ -56,6 +56,7 @@ pub struct SourceBox {
 
 #[glib::object_subclass]
 impl ObjectSubclass for SourceBox {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetAudioInput";
     type Type = sourceBox::SourceBox;
     type ParentType = gtk::Box;

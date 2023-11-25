@@ -48,6 +48,7 @@ unsafe impl Sync for Window {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for Window {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetUI";
     type Type = window::Window;
     type ParentType = adw::ApplicationWindow;

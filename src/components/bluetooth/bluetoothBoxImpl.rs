@@ -31,6 +31,7 @@ pub struct BluetoothBox {
 
 #[glib::object_subclass]
 impl ObjectSubclass for BluetoothBox {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetBluetooth";
     type Type = bluetoothBox::BluetoothBox;
     type ParentType = gtk::Box;

@@ -23,6 +23,7 @@ pub struct WifiRouteEntryImpl {
 
 #[glib::object_subclass]
 impl ObjectSubclass for WifiRouteEntryImpl {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetWifiRouteEntry";
     type Type = wifiRouteEntry::WifiRouteEntry;
     type ParentType = gtk::Box;

@@ -59,6 +59,7 @@ pub struct SinkBox {
 
 #[glib::object_subclass]
 impl ObjectSubclass for SinkBox {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetAudioOutput";
     type Type = sinkBox::SinkBox;
     type ParentType = gtk::Box;

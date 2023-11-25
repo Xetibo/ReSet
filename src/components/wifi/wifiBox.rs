@@ -204,7 +204,6 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
         .static_clone();
         let res = conn.add_match(access_point_added, move |ir: AccessPointAdded, _, _| {
             println!("received added event");
-            // TODO handle add
             let wifi_box = added_ref.clone();
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
@@ -230,7 +229,6 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
         }
         let res = conn.add_match(access_point_removed, move |ir: AccessPointRemoved, _, _| {
             println!("received removed event");
-            // TODO handle remove
             let wifi_box = removed_ref.clone();
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {

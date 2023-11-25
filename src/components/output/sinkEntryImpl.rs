@@ -29,6 +29,7 @@ pub struct SinkEntry {
 
 #[glib::object_subclass]
 impl ObjectSubclass for SinkEntry {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetSinkEntry";
     type Type = sinkEntry::SinkEntry;
     type ParentType = gtk::Box;

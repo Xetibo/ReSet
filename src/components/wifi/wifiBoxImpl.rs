@@ -40,6 +40,7 @@ unsafe impl Sync for WifiBox {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for WifiBox {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetWifi";
     type Type = wifiBox::WifiBox;
     type ParentType = gtk::Box;

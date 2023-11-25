@@ -19,6 +19,7 @@ pub struct WifiAddressEntryImpl {
 
 #[glib::object_subclass]
 impl ObjectSubclass for WifiAddressEntryImpl {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetWifiAddressEntry";
     type Type = wifiAddressEntry::WifiAddressEntry;
     type ParentType = gtk::Box;
