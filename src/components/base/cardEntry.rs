@@ -5,7 +5,7 @@ use adw::glib::Object;
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::Error;
-use glib::{Cast, clone, ObjectExt, ToValue};
+use glib::{Cast, clone, ObjectExt};
 use glib::subclass::types::ObjectSubclassIsExt;
 use gtk::{Align, gio, SignalListItemFactory, StringList, StringObject};
 use gtk::prelude::{GObjectPropertyExpressionExt, ListItemExt, WidgetExt};

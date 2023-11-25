@@ -30,6 +30,7 @@ pub struct OutputStreamEntry {
 
 #[glib::object_subclass]
 impl ObjectSubclass for OutputStreamEntry {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetOutputStreamEntry";
     type Type = outputStreamEntry::OutputStreamEntry;
     type ParentType = gtk::Box;

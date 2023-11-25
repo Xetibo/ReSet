@@ -30,7 +30,7 @@ impl SourceEntry {
             let imp = obj.imp();
             imp.resetSourceName.set_text(stream.alias.clone().as_str());
             let name = Arc::new(stream.name.clone());
-            let volume = stream.volume.first().unwrap_or_else(|| &(0 as u32));
+            let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
             imp.resetVolumePercentage.set_text(&percentage);

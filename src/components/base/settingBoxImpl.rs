@@ -9,6 +9,7 @@ pub struct SettingBox {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for SettingBox {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetSettingBox";
     type Type = settingBox::SettingBox;
     type ParentType = gtk::Box;

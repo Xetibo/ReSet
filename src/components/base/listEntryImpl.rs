@@ -9,6 +9,7 @@ pub struct ListEntry {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for ListEntry {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetListBoxRow";
     type Type = listEntry::ListEntry;
     type ParentType = gtk::ListBoxRow;

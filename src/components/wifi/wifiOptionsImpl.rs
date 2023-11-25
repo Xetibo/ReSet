@@ -59,6 +59,7 @@ pub struct WifiOptions {
 
 #[glib::object_subclass]
 impl ObjectSubclass for WifiOptions {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetWifiOptions";
     type Type = wifiOptions::WifiOptions;
     type ParentType = NavigationPage;

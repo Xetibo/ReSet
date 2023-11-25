@@ -8,7 +8,7 @@ use crate::components::base::listEntry::ListEntry;
 use crate::components::output::inputStreamEntry::InputStreamEntry;
 use gtk::subclass::prelude::*;
 use gtk::{
-    glib, Box, Button, CheckButton, CompositeTemplate, DropDown, Label, StringList, TemplateChild,
+    glib, Box, Button, CheckButton, CompositeTemplate, Label, StringList, TemplateChild,
 };
 use gtk::{prelude::*, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::Sink;
@@ -59,6 +59,7 @@ pub struct SinkBox {
 
 #[glib::object_subclass]
 impl ObjectSubclass for SinkBox {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetAudioOutput";
     type Type = sinkBox::SinkBox;
     type ParentType = gtk::Box;

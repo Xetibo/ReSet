@@ -27,6 +27,7 @@ unsafe impl Sync for SavedWifiEntry {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for SavedWifiEntry {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetSavedWifiEntry";
     type Type = savedWifiEntry::SavedWifiEntry;
     type ParentType = ActionRow;

@@ -47,6 +47,7 @@ impl Default for SidebarAction {
 
 #[glib::object_subclass]
 impl ObjectSubclass for SidebarEntry {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetSidebarEntry";
     type Type = sidebarEntry::SidebarEntry;
     type ParentType = ListBoxRow;

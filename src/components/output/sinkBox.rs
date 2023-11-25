@@ -445,7 +445,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
                 let is_default = ir.sink.name == default_sink.name;
-                let volume = ir.sink.volume.first().unwrap_or_else(|| &(0 as u32));
+                let volume = ir.sink.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
 
@@ -532,7 +532,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 }
                 let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
                 imp.resetSinkName.set_text(name.as_str());
-                let volume = ir.stream.volume.first().unwrap_or_else(|| &(0 as u32));
+                let volume = ir.stream.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
                 imp.resetVolumePercentage.set_text(&percentage);

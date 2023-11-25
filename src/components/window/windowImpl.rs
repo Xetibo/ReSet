@@ -6,7 +6,7 @@ use adw::subclass::prelude::AdwApplicationWindowImpl;
 use adw::{Breakpoint, OverlaySplitView};
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Box, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, SearchEntry};
+use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, SearchEntry};
 
 use crate::components::base::utils::Listeners;
 use crate::components::wifi::wifiBox::WifiBox;
@@ -48,6 +48,7 @@ unsafe impl Sync for Window {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for Window {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetUI";
     type Type = window::Window;
     type ParentType = adw::ApplicationWindow;

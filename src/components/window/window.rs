@@ -81,7 +81,7 @@ impl Window {
     pub fn filterList(&self) {
         let text = self.imp().resetSearchEntry.text().to_string();
         for (mainEntry, subEntries) in self.imp().sidebarEntries.borrow().iter() {
-            if text == "" {
+            if text.is_empty() {
                 mainEntry.set_visible(true);
                 for subEntry in subEntries {
                     subEntry.set_visible(true);

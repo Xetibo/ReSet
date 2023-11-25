@@ -32,7 +32,7 @@ impl OutputStreamEntry {
             let imp = obj.imp();
             let name = stream.application_name.clone() + ": " + stream.name.as_str();
             imp.resetSourceName.set_text(name.as_str());
-            let volume = stream.volume.first().unwrap_or_else(|| &(0 as u32));
+            let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
             imp.resetVolumePercentage.set_text(&percentage);

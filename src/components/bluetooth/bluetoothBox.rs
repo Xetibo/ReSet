@@ -166,7 +166,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
         }
 
         listeners.bluetooth_listener.store(true, Ordering::SeqCst);
-        let time = SystemTime::now();
+        let _time = SystemTime::now();
 
         loop {
             let _ = conn.process(Duration::from_millis(1000));

@@ -24,6 +24,7 @@ unsafe impl Sync for Popup {}
 
 #[glib::object_subclass]
 impl ObjectSubclass for Popup {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetPopup";
     type Type = popup::Popup;
     type ParentType = Popover;

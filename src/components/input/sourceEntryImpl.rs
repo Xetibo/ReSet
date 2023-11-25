@@ -30,6 +30,7 @@ pub struct SourceEntry {
 
 #[glib::object_subclass]
 impl ObjectSubclass for SourceEntry {
+    const ABSTRACT: bool = false;
     const NAME: &'static str = "resetSourceEntry";
     type Type = sourceEntry::SourceEntry;
     type ParentType = gtk::Box;
