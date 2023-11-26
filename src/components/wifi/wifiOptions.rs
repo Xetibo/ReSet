@@ -5,8 +5,9 @@ use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::PropMap;
-use glib::{PropertySet, ObjectExt};
+use glib::{clone, ObjectExt, PropertySet};
 use gtk::prelude::{EditableExt, WidgetExt};
+use regex::Regex;
 use ReSet_Lib::network::connection::{Connection, Enum, TypeSettings};
 
 use crate::components::wifi::wifiAddressEntry::WifiAddressEntry;
@@ -24,7 +25,8 @@ impl WifiOptions {
         let wifiOption: Arc<WifiOptions> = Arc::new(Object::builder().build());
         wifiOption.imp().connection.set(connection);
         wifiOption.initializeUI();
-        setupCallbacks(wifiOption)
+        setupCallbacks(&wifiOption);
+        wifiOption
     }
 
     pub fn initializeUI(&self) {
@@ -35,8 +37,25 @@ impl WifiOptions {
         selfImp.resetWifiAutoConnect.set_active(conn.settings.autoconnect);
         selfImp.resetWifiMetered.set_active(conn.settings.metered != -1);
         match &conn.device {
-            TypeSettings::WIFI(_wifi) => {}
-            TypeSettings::ETHERNET(_ethernet) => {}
+            TypeSettings::WIFI(wifi) => {
+                selfImp.resetWifiLinkSpeed.set_visible(false);
+                selfImp.resetWifiIP4Addr.set_visible(false);
+                selfImp.resetWifiIP6Addr.set_visible(false);
+                selfImp.resetWifiDNS.set_visible(false);
+                selfImp.resetWifiGateway.set_visible(false);
+                selfImp.resetWifiLastUsed.set_visible(true);
+                selfImp.resetWifiMac.set_subtitle(&*wifi.cloned_mac_address);
+            }
+            TypeSettings::ETHERNET(ethernet) => {
+                selfImp.resetWifiLinkSpeed.set_visible(true);
+                selfImp.resetWifiIP4Addr.set_visible(true);
+                selfImp.resetWifiIP6Addr.set_visible(true);
+                selfImp.resetWifiDNS.set_visible(true);
+                selfImp.resetWifiGateway.set_visible(true);
+                selfImp.resetWifiLastUsed.set_visible(false);
+                selfImp.resetWifiMac.set_subtitle(&*ethernet.cloned_mac_address);
+                selfImp.resetWifiLinkSpeed.set_subtitle(&*ethernet.speed.to_string());
+            }
             TypeSettings::VPN(_vpn) => {}
             TypeSettings::None => {}
         };
@@ -147,20 +166,48 @@ impl WifiOptions {
     }
 }
 
-fn setupCallbacks(wifiOptions: Arc<WifiOptions>) -> Arc<WifiOptions> {
+fn setupCallbacks(wifiOptions: &Arc<WifiOptions>) {
     let imp = wifiOptions.imp();
-    let wifiOptionsRef = wifiOptions.clone();
-    let wifiOptionsRef2 = wifiOptions.clone();
 
-    imp.resetIP4Method.connect_selected_notify(move |dropdown| {
+    // General
+    imp.resetWifiAutoConnect.connect_active_notify(clone!(@weak imp => move |x| {
+        imp.connection.borrow_mut().settings.autoconnect = x.is_active();
+    }));
+    imp.resetWifiMetered.connect_active_notify(clone!(@weak imp => move |x| {
+        imp.connection.borrow_mut().settings.metered = if x.is_active() { 1 } else { 2 };
+    }));
+    // IPv4
+    let wifiOptionsIP4 = wifiOptions.clone();
+    imp.resetIP4Method.connect_selected_notify(clone!(@weak imp => move |dropdown| {
         let selected = dropdown.selected();
-        wifiOptionsRef.setIP4Visibility(selected);
-    });
-    imp.resetIP6Method.connect_selected_notify(move |dropdown| {
+        wifiOptionsIP4.setIP4Visibility(selected);
+    }));
+
+    // TODO not finished
+    let dnsRegex = Regex::new(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$").unwrap();
+    imp.resetIP4DNS.connect_changed(clone!(@weak imp => move |entry| {
+        let dnsInput = entry.text();
+        let mut conn = imp.connection.borrow_mut();
+        conn.ipv4.dns.clear();
+        for dnsEntry in dnsInput.as_str().split(',').collect::<Vec<&str>>() {
+            if dnsRegex.is_match(dnsEntry) {
+                imp.resetIP4DNS.remove_css_class("error");
+                let dnsParts = dnsEntry.split('.')
+                    .map(|s| s.parse::<u8>().unwrap())
+                    .collect::<Vec<u8>>();
+                conn.ipv4.dns.push(dnsParts);
+            } else {
+                imp.resetIP4DNS.add_css_class("error");
+            }
+        }
+    }));
+    // IPv6
+    let wifiOptionsIP6 = wifiOptions.clone();
+    imp.resetIP6Method.connect_selected_notify(clone!(@weak imp => move |dropdown| {
         let selected = dropdown.selected();
-        wifiOptionsRef2.setIP6Visibility(selected);
-    });
-    wifiOptions
+        wifiOptionsIP6.setIP6Visibility(selected);
+    }));
+    // Security
 }
 
 pub fn getValueFromKey(map: &PropMap, key: &str) -> String {
