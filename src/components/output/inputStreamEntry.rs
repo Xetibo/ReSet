@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{ButtonExt, RangeExt};
+use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
@@ -16,7 +16,7 @@ use super::sinkBox::SinkBox;
 
 glib::wrapper! {
     pub struct InputStreamEntry(ObjectSubclass<inputStreamEntryImpl::InputStreamEntry>)
-    @extends gtk::Box, gtk::Widget,
+    @extends adw::PreferencesGroup, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
@@ -36,7 +36,7 @@ impl InputStreamEntry {
                     .set_icon_name("audio-volume-high-symbolic");
             }
             let name = stream.application_name.clone() + ": " + stream.name.as_str();
-            imp.resetSinkName.set_text(name.as_str());
+            imp.resetSinkSelection.set_title(name.as_str());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
@@ -76,7 +76,7 @@ impl InputStreamEntry {
                 //     list = box_imp.resetModelList.try_borrow();
                 // }
                 // let list = list.unwrap();
-                imp.resetSelectedSink.set_model(Some(&*list));
+                imp.resetSinkSelection.set_model(Some(&*list));
                 let map = box_imp.resetSinkMap.read().unwrap();
                 let sink_list = box_imp.resetSinkList.read().unwrap();
                 let name = sink_list.get(&index);
@@ -84,7 +84,7 @@ impl InputStreamEntry {
                     let name = &name.unwrap().2;
                     let index = map.get(name);
                     if index.is_some() {
-                        imp.resetSelectedSink.set_selected(index.unwrap().1);
+                        imp.resetSinkSelection.set_selected(index.unwrap().1);
                     }
                 } else {
                     let mut name = box_imp.resetDefaultSink.try_borrow();
@@ -94,11 +94,11 @@ impl InputStreamEntry {
                     let name = &name.unwrap().alias;
                     let index = map.get(name);
                     if index.is_some() {
-                        imp.resetSelectedSink.set_selected(index.unwrap().1);
+                        imp.resetSinkSelection.set_selected(index.unwrap().1);
                     }
                 }
             }
-            imp.resetSelectedSink.connect_selected_notify(
+            imp.resetSinkSelection.connect_selected_notify(
                 clone!(@weak imp, @weak box_imp => move |dropdown| {
                     let selected = dropdown.selected_item();
                     if selected.is_none() {

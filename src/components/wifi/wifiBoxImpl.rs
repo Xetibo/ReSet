@@ -29,7 +29,7 @@ pub struct WifiBox {
     #[template_child]
     pub resetStoredWifiList: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetAvailableNetworks: TemplateChild<ListEntry>,
+    pub resetAvailableNetworks: TemplateChild<ActionRow>,
     pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
     pub wifiEntriesPath: Arc<Mutex<HashMap<Path<'static>, Arc<WifiEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,

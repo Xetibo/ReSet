@@ -37,11 +37,11 @@ pub struct SinkBox {
     #[template_child]
     pub resetSinks: TemplateChild<Box>,
     #[template_child]
-    pub resetInputStreamButton: TemplateChild<ListEntry>,
+    pub resetInputStreamButton: TemplateChild<ActionRow>,
     #[template_child]
     pub resetInputStreams: TemplateChild<Box>,
     #[template_child]
-    pub resetInputCardsBackButton: TemplateChild<ListEntry>,
+    pub resetInputCardsBackButton: TemplateChild<ActionRow>,
     #[template_child]
     pub resetCards: TemplateChild<PreferencesGroup>,
     pub resetDefaultCheckButton: Arc<CheckButton>,

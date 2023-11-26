@@ -1,6 +1,8 @@
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
+use adw::{ActionRow, PreferencesGroup};
+use adw::subclass::prelude::PreferencesGroupImpl;
 
 use crate::components::output::sinkEntry;
 use gtk::subclass::prelude::*;
@@ -12,7 +14,7 @@ use ReSet_Lib::audio::audio::Sink;
 #[template(resource = "/org/Xetibo/ReSet/resetSinkEntry.ui")]
 pub struct SinkEntry {
     #[template_child]
-    pub resetSinkName: TemplateChild<Label>,
+    pub resetSinkName: TemplateChild<ActionRow>,
     #[template_child]
     pub resetSelectedSink: TemplateChild<CheckButton>,
     #[template_child]
@@ -32,7 +34,7 @@ impl ObjectSubclass for SinkEntry {
     const ABSTRACT: bool = false;
     const NAME: &'static str = "resetSinkEntry";
     type Type = sinkEntry::SinkEntry;
-    type ParentType = gtk::Box;
+    type ParentType = PreferencesGroup;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -43,7 +45,7 @@ impl ObjectSubclass for SinkEntry {
     }
 }
 
-impl BoxImpl for SinkEntry {}
+impl PreferencesGroupImpl for SinkEntry {}
 
 impl ObjectImpl for SinkEntry {}
 

@@ -131,33 +131,16 @@
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkListBox">
-                    <property name="css-classes">boxed-list</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-end">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="show-separators">True</property>
-                    <property name="valign">start</property>
+                  <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="resetListBoxRow" id="resetInputStreamButton">
+                      <object class="AdwActionRow" id="resetInputStreamButton">
+                        <property name="title">Output Streams</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="height-request">40</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Output Streams</property>
-                                <property name="margin-start">5</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="halign">end</property>
-                                <property name="hexpand">True</property>
-                                <property name="icon-name">go-previous-symbolic</property>
-                                <property name="margin-end">5</property>
-                              </object>
-                            </child>
+                          <object class="GtkImage">
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="icon-name">go-previous-symbolic</property>
+                            <property name="margin-end">5</property>
                           </object>
                         </child>
                       </object>
@@ -193,33 +176,16 @@
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkListBox">
-                    <property name="css-classes">boxed-list</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-end">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="show-separators">True</property>
-                    <property name="valign">start</property>
+                  <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="resetListBoxRow" id="resetInputCardsBackButton">
+                      <object class="AdwActionRow" id="resetInputCardsBackButton">
+                        <property name="title">Output Streams</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="height-request">40</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Output Streams</property>
-                                <property name="margin-start">5</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="halign">end</property>
-                                <property name="hexpand">True</property>
-                                <property name="icon-name">go-previous-symbolic</property>
-                                <property name="margin-end">5</property>
-                              </object>
-                            </child>
+                          <object class="GtkImage">
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="icon-name">go-previous-symbolic</property>
+                            <property name="margin-end">5</property>
                           </object>
                         </child>
                       </object>
@@ -229,11 +195,11 @@
                 <child>
                   <object class="GtkLabel"/>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="AdwPreferencesGroup" id="resetCards">
-                <property name="title">Devices</property>
+                <child>
+                  <object class="AdwPreferencesGroup" id="resetCards">
+                    <property name="title">Devices</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

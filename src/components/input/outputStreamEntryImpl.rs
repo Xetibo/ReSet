@@ -1,6 +1,8 @@
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
+use adw::{ComboRow, PreferencesGroup};
+use adw::subclass::prelude::PreferencesGroupImpl;
 
 use crate::components::input::outputStreamEntry;
 use gtk::subclass::prelude::*;
@@ -12,9 +14,7 @@ use ReSet_Lib::audio::audio::OutputStream;
 #[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]
 pub struct OutputStreamEntry {
     #[template_child]
-    pub resetSourceName: TemplateChild<Label>,
-    #[template_child]
-    pub resetSelectedSource: TemplateChild<DropDown>,
+    pub resetSourceSelection: TemplateChild<ComboRow>,
     #[template_child]
     pub resetSourceMute: TemplateChild<Button>,
     #[template_child]
@@ -33,7 +33,7 @@ impl ObjectSubclass for OutputStreamEntry {
     const ABSTRACT: bool = false;
     const NAME: &'static str = "resetOutputStreamEntry";
     type Type = outputStreamEntry::OutputStreamEntry;
-    type ParentType = gtk::Box;
+    type ParentType = PreferencesGroup;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -44,7 +44,7 @@ impl ObjectSubclass for OutputStreamEntry {
     }
 }
 
-impl BoxImpl for OutputStreamEntry {}
+impl PreferencesGroupImpl for OutputStreamEntry {}
 
 impl ObjectImpl for OutputStreamEntry {}
 

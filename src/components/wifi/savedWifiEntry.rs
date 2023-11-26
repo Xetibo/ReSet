@@ -10,6 +10,7 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, PropertySet};
 use gtk::gio;
 use gtk::prelude::ListBoxRowExt;
+use crate::components::wifi::wifiBoxImpl::WifiBox;
 
 glib::wrapper! {
     pub struct SavedWifiEntry(ObjectSubclass<savedWifiEntryImpl::SavedWifiEntry>)
@@ -18,11 +19,17 @@ glib::wrapper! {
 }
 
 impl SavedWifiEntry {
-    pub fn new(name: &String, path: Path<'static>) -> Self {
+    pub fn new(name: &String, path: Path<'static>, wifiBox: &WifiBox) -> Self {
         let entry: SavedWifiEntry = Object::builder().build();
         entry.set_activatable(false);
         let entryImp = entry.imp();
-        // TODO handle edit
+
+        entryImp.resetEditSavedWifiButton.connect_clicked(clone!(@ weak entryImp, @ weak wifiBox => move |_| {
+            // TODO accesspoint has to be saved somewhere i guess
+            // let _option = getConnectionSettings(entryImp.accessPoint.borrow().associated_connection.clone());
+            // wifiBox.resetWifiNavigation.push(&*WifiOptions::new(_option));
+        }));
+
         entryImp.resetSavedWifiLabel.set_text(name);
         entryImp.resetConnectionPath.set(path);
         entryImp.resetDeleteSavedWifiButton.connect_clicked(

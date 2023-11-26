@@ -20,3 +20,7 @@ label.resetSettingLabel {
     font-size: 32px;
     font-weight: bold;
 }
+
+row.audioRow  {
+    border-color: transparent;
+}

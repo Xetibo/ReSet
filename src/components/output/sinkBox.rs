@@ -1,3 +1,4 @@
+use adw::prelude::PreferencesRowExt;
 use adw::prelude::PreferencesGroupExt;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
@@ -64,12 +65,11 @@ impl SinkBox {
             .set_action_target_value(Some(&Variant::from("profileConfiguration")));
         selfImp.resetCardsRow.connect_action_name_notify(|_| {});
 
-        selfImp
-            .resetInputStreamButton
-            .set_action_name(Some("navigation.pop"));
-        selfImp
-            .resetInputCardsBackButton
-            .set_action_name(Some("navigation.pop"));
+        selfImp.resetInputStreamButton.set_activatable(true);
+        selfImp.resetInputStreamButton.set_action_name(Some("navigation.pop"));
+
+        selfImp.resetInputCardsBackButton.set_activatable(true);
+        selfImp.resetInputCardsBackButton.set_action_name(Some("navigation.pop"));
 
         let factory = &SignalListItemFactory::new();
         factory.connect_setup(|_, item| {
@@ -462,7 +462,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 } else {
                     imp.resetSelectedSink.set_active(false);
                 }
-                imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
+                imp.resetSinkName.set_title(ir.sink.alias.clone().as_str());
                 imp.resetVolumePercentage.set_text(&percentage);
                 imp.resetVolumeSlider.set_value(*volume as f64);
             });
@@ -531,7 +531,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                         .set_icon_name("audio-volume-high-symbolic");
                 }
                 let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
-                imp.resetSinkName.set_text(name.as_str());
+                imp.resetSinkSelection.set_title(name.as_str());
                 let volume = ir.stream.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
@@ -540,7 +540,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let map = output_box_imp.resetSinkMap.read().unwrap();
                 let index = map.get(&alias);
                 if index.is_some() {
-                    imp.resetSelectedSink.set_selected(index.unwrap().1);
+                    imp.resetSinkSelection.set_selected(index.unwrap().1);
                 }
             });
         });

@@ -11,3 +11,4 @@ pub mod wifiAddressEntry;
 pub mod wifiAddressEntryImpl;
 pub mod wifiRouteEntry;
 pub mod wifiRouteEntryImpl;
+pub mod utils;
