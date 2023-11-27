@@ -10,8 +10,8 @@ use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use glib::{Cast, clone, Propagation, Variant};
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use gtk::{Align, gio, SignalListItemFactory, StringObject};
-use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, ListItemExt, WidgetExt};
+use gtk::{gio, StringObject};
+use gtk::prelude::{ActionableExt};
 use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
 
 use crate::components::base::cardEntry::CardEntry;
@@ -22,6 +22,7 @@ use crate::components::base::utils::{
 };
 use crate::components::input::sourceBoxImpl;
 use crate::components::input::sourceEntry::set_source_volume;
+use crate::components::utils::createDropdownLabelFactory;
 
 use super::outputStreamEntry::OutputStreamEntry;
 use super::sourceEntry::{set_default_source, SourceEntry, toggle_source_mute};
@@ -63,18 +64,7 @@ impl SourceBox {
         selfImp.resetInputCardsBackButton.set_activatable(true);
         selfImp.resetInputCardsBackButton.set_action_name(Some("navigation.pop"));
 
-        let factory = &SignalListItemFactory::new();
-        factory.connect_setup(|_, item| {
-            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-            let label = gtk::Label::new(None);
-            label.set_halign(Align::Start);
-            item.property_expression("item")
-                .chain_property::<StringObject>("string")
-                .bind(&label, "label", gtk::Widget::NONE);
-            item.set_child(Some(&label));
-        });
-
-        selfImp.resetSourceDropdown.set_factory(Some(factory));
+        selfImp.resetSourceDropdown.set_factory(Some(&createDropdownLabelFactory()));
     }
 }
 

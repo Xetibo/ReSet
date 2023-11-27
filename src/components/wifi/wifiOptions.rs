@@ -5,7 +5,7 @@ use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::PropMap;
-use glib::{clone, ObjectExt, PropertySet};
+use glib::{clone, PropertySet};
 use gtk::prelude::{EditableExt, WidgetExt};
 use regex::Regex;
 use ReSet_Lib::network::connection::{Connection, Enum, TypeSettings};
@@ -183,12 +183,15 @@ fn setupCallbacks(wifiOptions: &Arc<WifiOptions>) {
         wifiOptionsIP4.setIP4Visibility(selected);
     }));
 
-    // TODO not finished
     let dnsRegex = Regex::new(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$").unwrap();
     imp.resetIP4DNS.connect_changed(clone!(@weak imp => move |entry| {
         let dnsInput = entry.text();
         let mut conn = imp.connection.borrow_mut();
         conn.ipv4.dns.clear();
+        if dnsInput.as_str().is_empty() {
+            imp.resetIP4DNS.remove_css_class("error");
+            return;
+        }
         for dnsEntry in dnsInput.as_str().split(',').collect::<Vec<&str>>() {
             if dnsRegex.is_match(dnsEntry) {
                 imp.resetIP4DNS.remove_css_class("error");

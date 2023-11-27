@@ -5,11 +5,14 @@ use adw::glib::Object;
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::Error;
-use glib::{Cast, clone, ObjectExt};
+use glib::{Cast, clone};
 use glib::subclass::types::ObjectSubclassIsExt;
-use gtk::{Align, gio, SignalListItemFactory, StringList, StringObject};
-use gtk::prelude::{GObjectPropertyExpressionExt, ListItemExt, WidgetExt};
+use gtk::{gio, StringList, StringObject};
 use ReSet_Lib::audio::audio::Card;
+
+use components::utils::createDropdownLabelFactory;
+
+use crate::components;
 
 use super::cardEntryImpl;
 
@@ -55,18 +58,7 @@ impl CardEntry {
                     let (device_index, profile_name) = map.get(&selected).unwrap();
                     set_card_profile_of_device(*device_index, profile_name.clone());
                 }));
-
-            let factory = &SignalListItemFactory::new();
-            factory.connect_setup(|_, item| {
-                let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-                let label = gtk::Label::new(None);
-                label.set_halign(Align::Start);
-                item.property_expression("item")
-                    .chain_property::<StringObject>("string")
-                    .bind(&label, "label", gtk::Widget::NONE);
-                item.set_child(Some(&label));
-            });
-            entry.set_factory(Some(factory));
+            entry.set_factory(Some(&createDropdownLabelFactory()));
         }
         entry
     }

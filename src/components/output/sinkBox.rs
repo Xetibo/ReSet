@@ -11,9 +11,8 @@ use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use glib::{Cast, clone, Propagation, Variant};
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use gtk::{Align, gio, SignalListItemFactory, StringObject};
-use gtk::prelude::*;
-use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, ListItemExt};
+use gtk::{gio, StringObject};
+use gtk::prelude::ActionableExt;
 use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use crate::components::base::cardEntry::CardEntry;
@@ -22,6 +21,7 @@ use crate::components::base::utils::{
     InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
 use crate::components::output::sinkEntry::set_sink_volume;
+use crate::components::utils::createDropdownLabelFactory;
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
@@ -71,18 +71,7 @@ impl SinkBox {
         selfImp.resetInputCardsBackButton.set_activatable(true);
         selfImp.resetInputCardsBackButton.set_action_name(Some("navigation.pop"));
 
-        let factory = &SignalListItemFactory::new();
-        factory.connect_setup(|_, item| {
-            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-            let label = gtk::Label::new(None);
-            label.set_halign(Align::Start);
-            item.property_expression("item")
-                .chain_property::<StringObject>("string")
-                .bind(&label, "label", gtk::Widget::NONE);
-            item.set_child(Some(&label));
-        });
-
-        selfImp.resetSinkDropdown.set_factory(Some(factory));
+        selfImp.resetSinkDropdown.set_factory(Some(&createDropdownLabelFactory()));
     }
 }
 
