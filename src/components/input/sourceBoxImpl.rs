@@ -35,11 +35,11 @@ pub struct SourceBox {
     #[template_child]
     pub resetSources: TemplateChild<gtk::Box>,
     #[template_child]
-    pub resetOutputStreamButton: TemplateChild<ListEntry>,
+    pub resetOutputStreamButton: TemplateChild<ActionRow>,
     #[template_child]
     pub resetOutputStreams: TemplateChild<gtk::Box>,
     #[template_child]
-    pub resetInputCardsBackButton: TemplateChild<ListEntry>,
+    pub resetInputCardsBackButton: TemplateChild<ActionRow>,
     #[template_child]
     pub resetCards: TemplateChild<PreferencesGroup>,
     pub resetDefaultCheckButton: Arc<CheckButton>,

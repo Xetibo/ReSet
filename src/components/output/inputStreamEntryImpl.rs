@@ -1,9 +1,11 @@
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
+use adw::{ComboRow, PreferencesGroup};
+use adw::subclass::prelude::PreferencesGroupImpl;
 
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, DropDown, Label, ProgressBar, Scale};
+use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::InputStream;
 
 use super::inputStreamEntry;
@@ -13,9 +15,7 @@ use super::inputStreamEntry;
 #[template(resource = "/org/Xetibo/ReSet/resetInputStreamEntry.ui")]
 pub struct InputStreamEntry {
     #[template_child]
-    pub resetSinkName: TemplateChild<Label>,
-    #[template_child]
-    pub resetSelectedSink: TemplateChild<DropDown>,
+    pub resetSinkSelection: TemplateChild<ComboRow>,
     #[template_child]
     pub resetSinkMute: TemplateChild<Button>,
     #[template_child]
@@ -34,7 +34,7 @@ impl ObjectSubclass for InputStreamEntry {
     const ABSTRACT: bool = false;
     const NAME: &'static str = "resetInputStreamEntry";
     type Type = inputStreamEntry::InputStreamEntry;
-    type ParentType = gtk::Box;
+    type ParentType = PreferencesGroup;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -45,7 +45,7 @@ impl ObjectSubclass for InputStreamEntry {
     }
 }
 
-impl BoxImpl for InputStreamEntry {}
+impl PreferencesGroupImpl for InputStreamEntry {}
 
 impl ObjectImpl for InputStreamEntry {}
 

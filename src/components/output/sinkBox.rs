@@ -1,3 +1,4 @@
+use adw::prelude::PreferencesRowExt;
 use adw::prelude::PreferencesGroupExt;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
@@ -10,9 +11,8 @@ use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use glib::{Cast, clone, Propagation, Variant};
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use gtk::{Align, gio, SignalListItemFactory, StringObject};
-use gtk::prelude::*;
-use gtk::prelude::{ActionableExt, GObjectPropertyExpressionExt, ListItemExt};
+use gtk::{gio, StringObject};
+use gtk::prelude::ActionableExt;
 use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use crate::components::base::cardEntry::CardEntry;
@@ -21,6 +21,7 @@ use crate::components::base::utils::{
     InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
 use crate::components::output::sinkEntry::set_sink_volume;
+use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
@@ -64,25 +65,14 @@ impl SinkBox {
             .set_action_target_value(Some(&Variant::from("profileConfiguration")));
         selfImp.resetCardsRow.connect_action_name_notify(|_| {});
 
-        selfImp
-            .resetInputStreamButton
-            .set_action_name(Some("navigation.pop"));
-        selfImp
-            .resetInputCardsBackButton
-            .set_action_name(Some("navigation.pop"));
+        selfImp.resetInputStreamButton.set_activatable(true);
+        selfImp.resetInputStreamButton.set_action_name(Some("navigation.pop"));
 
-        let factory = &SignalListItemFactory::new();
-        factory.connect_setup(|_, item| {
-            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-            let label = gtk::Label::new(None);
-            label.set_halign(Align::Start);
-            item.property_expression("item")
-                .chain_property::<StringObject>("string")
-                .bind(&label, "label", gtk::Widget::NONE);
-            item.set_child(Some(&label));
-        });
+        selfImp.resetInputCardsBackButton.set_activatable(true);
+        selfImp.resetInputCardsBackButton.set_action_name(Some("navigation.pop"));
 
-        selfImp.resetSinkDropdown.set_factory(Some(factory));
+        selfImp.resetSinkDropdown.set_factory(Some(&createDropdownLabelFactory()));
+        setComboRowEllipsis(selfImp.resetSinkDropdown.get());
     }
 }
 
@@ -462,7 +452,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 } else {
                     imp.resetSelectedSink.set_active(false);
                 }
-                imp.resetSinkName.set_text(ir.sink.alias.clone().as_str());
+                imp.resetSinkName.set_title(ir.sink.alias.clone().as_str());
                 imp.resetVolumePercentage.set_text(&percentage);
                 imp.resetVolumeSlider.set_value(*volume as f64);
             });
@@ -531,7 +521,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                         .set_icon_name("audio-volume-high-symbolic");
                 }
                 let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
-                imp.resetSinkName.set_text(name.as_str());
+                imp.resetSinkSelection.set_title(name.as_str());
                 let volume = ir.stream.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
@@ -540,7 +530,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let map = output_box_imp.resetSinkMap.read().unwrap();
                 let index = map.get(&alias);
                 if index.is_some() {
-                    imp.resetSelectedSink.set_selected(index.unwrap().1);
+                    imp.resetSinkSelection.set_selected(index.unwrap().1);
                 }
             });
         });

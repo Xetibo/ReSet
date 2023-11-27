@@ -6,6 +6,7 @@ use adw::subclass::prelude::ActionRowImpl;
 use dbus::Path;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Label};
+use ReSet_Lib::network::network::AccessPoint;
 
 use super::savedWifiEntry;
 
@@ -20,6 +21,7 @@ pub struct SavedWifiEntry {
     #[template_child]
     pub resetSavedWifiLabel: TemplateChild<Label>,
     pub resetConnectionPath: RefCell<Path<'static>>,
+    pub accessPoint: RefCell<AccessPoint>,
 }
 
 unsafe impl Send for SavedWifiEntry {}

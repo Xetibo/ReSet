@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use std::sync::atomic::Ordering;
 
 use std::sync::Arc;
@@ -24,6 +22,7 @@ use gtk::prelude::{ActionableExt, WidgetExt};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 use ReSet_Lib::signals::{AccessPointAdded};
 use ReSet_Lib::signals::{AccessPointChanged, AccessPointRemoved};
+use crate::components::utils::setComboRowEllipsis;
 
 
 use crate::components::wifi::wifiBoxImpl;
@@ -31,7 +30,6 @@ use crate::components::wifi::wifiEntry::WifiEntry;
 
 use super::savedWifiEntry::SavedWifiEntry;
 
-use ReSet_Lib::network::connection::Connection as ResetConnection;
 
 glib::wrapper! {
     pub struct WifiBox(ObjectSubclass<wifiBoxImpl::WifiBox>)
@@ -57,9 +55,9 @@ impl WifiBox {
             .resetSavedNetworks
             .set_action_target_value(Some(&Variant::from("saved")));
 
-        selfImp
-            .resetAvailableNetworks
-            .set_action_name(Some("navigation.pop"));
+        selfImp.resetAvailableNetworks.set_activatable(true);
+        selfImp.resetAvailableNetworks.set_action_name(Some("navigation.pop"));
+        setComboRowEllipsis(selfImp.resetWiFiDevice.get());
     }
 }
 
@@ -103,7 +101,7 @@ pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
                     // TODO include button for settings
                     let name =
                         &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
-                    let entry = SavedWifiEntry::new(name, connection.0);
+                    let entry = SavedWifiEntry::new(name, connection.0, selfImp);
                     selfImp.resetStoredWifiList.add(&entry);
                 }
             });
@@ -152,28 +150,6 @@ pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     }
     let (connections,) = res.unwrap();
     connections
-}
-
-pub fn getConnectionSettings(path: Path<'static>) -> ResetConnection {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
-        Duration::from_millis(1000),
-    );
-    let res: Result<
-        (HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>>,),
-        Error,
-    > = proxy.method_call("org.xetibo.ReSet", "GetConnectionSettings", (path,));
-    if res.is_err() {
-        ResetConnection::default();
-    }
-    let (res,) = res.unwrap();
-    let res = ResetConnection::convert_from_propmap(res);
-    if res.is_err() {
-        ResetConnection::default();
-    }
-    res.unwrap()
 }
 
 pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {

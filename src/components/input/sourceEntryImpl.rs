@@ -1,6 +1,8 @@
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
+use adw::{ActionRow, PreferencesGroup};
+use adw::subclass::prelude::PreferencesGroupImpl;
 
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
@@ -13,7 +15,7 @@ use super::sourceEntry;
 #[template(resource = "/org/Xetibo/ReSet/resetSourceEntry.ui")]
 pub struct SourceEntry {
     #[template_child]
-    pub resetSourceName: TemplateChild<Label>,
+    pub resetSourceName: TemplateChild<ActionRow>,
     #[template_child]
     pub resetSelectedSource: TemplateChild<CheckButton>,
     #[template_child]
@@ -33,7 +35,7 @@ impl ObjectSubclass for SourceEntry {
     const ABSTRACT: bool = false;
     const NAME: &'static str = "resetSourceEntry";
     type Type = sourceEntry::SourceEntry;
-    type ParentType = gtk::Box;
+    type ParentType = PreferencesGroup;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -44,7 +46,7 @@ impl ObjectSubclass for SourceEntry {
     }
 }
 
-impl BoxImpl for SourceEntry {}
+impl PreferencesGroupImpl for SourceEntry {}
 
 impl ObjectImpl for SourceEntry {}
 

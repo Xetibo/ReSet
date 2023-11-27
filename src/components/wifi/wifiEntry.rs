@@ -12,8 +12,8 @@ use glib::clone;
 use gtk::gio;
 use gtk::prelude::{ListBoxRowExt, WidgetExt};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
+use crate::components::wifi::utils::getConnectionSettings;
 
-use crate::components::wifi::wifiBox::getConnectionSettings;
 use crate::components::wifi::wifiBoxImpl::WifiBox;
 use crate::components::wifi::wifiEntryImpl;
 use crate::components::wifi::wifiOptions::WifiOptions;

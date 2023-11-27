@@ -4,7 +4,7 @@ use adw::{ActionRow, ComboRow, EntryRow, NavigationPage, PreferencesGroup, Switc
 use adw::subclass::prelude::NavigationPageImpl;
 use crate::components::wifi::{wifiOptions};
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate};
+use gtk::{glib, CompositeTemplate, Button};
 use ReSet_Lib::network::connection::Connection;
 
 #[allow(non_snake_case)]
@@ -26,6 +26,8 @@ pub struct WifiOptions {
     pub resetWifiGateway: TemplateChild<ActionRow>,
     #[template_child]
     pub resetWifiDNS: TemplateChild<ActionRow>,
+    #[template_child]
+    pub resetWifiLastUsed: TemplateChild<ActionRow>,
     #[template_child]
     pub resetWifiAutoConnect: TemplateChild<SwitchRow>,
     #[template_child]
@@ -54,6 +56,8 @@ pub struct WifiOptions {
     pub resetIP6RoutesGroup: TemplateChild<PreferencesGroup>,
     // Security
     // Misc
+    #[template_child]
+    pub wifiOptionsApplyButton: TemplateChild<Button>,
     pub connection: Rc<RefCell<Connection>>
 }
 

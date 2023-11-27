@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{ButtonExt, CheckButtonExt, RangeExt};
+use adw::prelude::{ButtonExt, CheckButtonExt, PreferencesRowExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
@@ -15,7 +15,7 @@ use super::sinkEntryImpl;
 
 glib::wrapper! {
     pub struct SinkEntry(ObjectSubclass<sinkEntryImpl::SinkEntry>)
-    @extends gtk::Box, gtk::Widget,
+    @extends adw::PreferencesGroup, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
@@ -26,7 +26,7 @@ impl SinkEntry {
         // TODO handle events
         {
             let imp = obj.imp();
-            imp.resetSinkName.set_text(stream.alias.clone().as_str());
+            imp.resetSinkName.set_title(stream.alias.clone().as_str());
             let name = Arc::new(stream.name.clone());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
