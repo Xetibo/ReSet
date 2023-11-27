@@ -10,7 +10,7 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
 use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::OutputStream;
-use crate::components::utils::createDropdownLabelFactory;
+use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 
 use super::outputStreamEntryImpl;
 use super::sourceBox::SourceBox;
@@ -34,6 +34,7 @@ impl OutputStreamEntry {
             let name = stream.application_name.clone() + ": " + stream.name.as_str();
             imp.resetSourceSelection.set_title(name.as_str());
             imp.resetSourceSelection.set_factory(Some(&createDropdownLabelFactory()));
+            setComboRowEllipsis(imp.resetSourceSelection.get());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";

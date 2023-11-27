@@ -21,7 +21,7 @@ use crate::components::base::utils::{
     InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
 use crate::components::output::sinkEntry::set_sink_volume;
-use crate::components::utils::createDropdownLabelFactory;
+use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
@@ -72,6 +72,7 @@ impl SinkBox {
         selfImp.resetInputCardsBackButton.set_action_name(Some("navigation.pop"));
 
         selfImp.resetSinkDropdown.set_factory(Some(&createDropdownLabelFactory()));
+        setComboRowEllipsis(selfImp.resetSinkDropdown.get());
     }
 }
 

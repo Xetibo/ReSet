@@ -22,6 +22,7 @@ use gtk::prelude::{ActionableExt, WidgetExt};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 use ReSet_Lib::signals::{AccessPointAdded};
 use ReSet_Lib::signals::{AccessPointChanged, AccessPointRemoved};
+use crate::components::utils::setComboRowEllipsis;
 
 
 use crate::components::wifi::wifiBoxImpl;
@@ -56,6 +57,7 @@ impl WifiBox {
 
         selfImp.resetAvailableNetworks.set_activatable(true);
         selfImp.resetAvailableNetworks.set_action_name(Some("navigation.pop"));
+        setComboRowEllipsis(selfImp.resetWiFiDevice.get());
     }
 }
 

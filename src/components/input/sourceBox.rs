@@ -22,7 +22,7 @@ use crate::components::base::utils::{
 };
 use crate::components::input::sourceBoxImpl;
 use crate::components::input::sourceEntry::set_source_volume;
-use crate::components::utils::createDropdownLabelFactory;
+use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 
 use super::outputStreamEntry::OutputStreamEntry;
 use super::sourceEntry::{set_default_source, SourceEntry, toggle_source_mute};
@@ -65,6 +65,7 @@ impl SourceBox {
         selfImp.resetInputCardsBackButton.set_action_name(Some("navigation.pop"));
 
         selfImp.resetSourceDropdown.set_factory(Some(&createDropdownLabelFactory()));
+        setComboRowEllipsis(selfImp.resetSourceDropdown.get());
     }
 }
 
