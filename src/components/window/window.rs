@@ -1,9 +1,9 @@
+use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::BreakpointCondition;
 use glib::Object;
+use gtk::{Application, gio, glib, ListBoxRow, Orientation};
 use gtk::prelude::*;
-use gtk::{gio, glib, Application, ListBoxRow, Orientation};
 
 use crate::components::window::handleSidebarClick::*;
 use crate::components::window::sidebarEntry::SidebarEntry;
@@ -18,6 +18,7 @@ glib::wrapper! {
 }
 
 unsafe impl Send for Window {}
+
 unsafe impl Sync for Window {}
 
 #[allow(non_snake_case)]
@@ -29,15 +30,11 @@ impl Window {
     pub fn setupCallback(&self) {
         let selfImp = self.imp();
 
-        selfImp
-            .resetSearchEntry
-            .connect_search_changed(clone!(@ weak self as window => move |_| {
+        selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
                 window.filterList();
             }));
 
-        selfImp
-            .resetSideBarToggle
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggleSidebar();
             }));
 
@@ -49,9 +46,7 @@ impl Window {
             }),
         );
 
-        selfImp
-            .resetClose
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetClose.connect_clicked(clone!(@ weak self as window => move |_| {
                 window.close();
             }));
 
@@ -63,9 +58,7 @@ impl Window {
 
     pub fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp
-            .resetSidebarBreakpoint
-            .set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
+        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
             "collapsed",
@@ -88,25 +81,13 @@ impl Window {
                 }
                 continue;
             }
-            if mainEntry
-                .imp()
-                .name
-                .borrow()
-                .to_lowercase()
-                .contains(&text.to_lowercase())
-            {
+            if mainEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
                 mainEntry.set_visible(true);
             } else {
                 mainEntry.set_visible(false);
             }
             for subEntry in subEntries {
-                if subEntry
-                    .imp()
-                    .name
-                    .borrow()
-                    .to_lowercase()
-                    .contains(&text.to_lowercase())
-                {
+                if subEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
                     subEntry.set_visible(true);
                     mainEntry.set_visible(true);
                 } else {
@@ -226,6 +207,10 @@ impl Window {
             peripheralsList,
         ));
 
+        selfImp.resetSidebarList.connect_row_activated(clone!(@ weak selfImp => move |_, _| {
+            selfImp.resetSearchEntry.set_text("");
+        }));
+
         for (mainEntry, subEntries) in sidebarEntries.iter() {
             selfImp.resetSidebarList.append(mainEntry);
             for subEntry in subEntries {
@@ -241,9 +226,7 @@ impl Window {
 
     pub fn setupPopoverButtons(&self) {
         let selfImp = self.imp();
-        selfImp
-            .resetAboutButton
-            .connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp.resetAboutButton.connect_clicked(clone!(@ weak self as window => move |_| {
                     let dialog = adw::AboutWindow::builder()
                         .application_name("ReSet")
                         .application_icon("ReSet")
@@ -262,16 +245,12 @@ impl Window {
                 window.imp().resetPopoverMenu.popdown();
                 dialog.present();
             }));
-        selfImp
-            .resetPreferenceButton
-            .connect_clicked(clone!(@weak self as window => move |_| {
+        selfImp.resetPreferenceButton.connect_clicked(clone!(@weak self as window => move |_| {
                 let preferences = adw::PreferencesWindow::builder().build();
                 window.imp().resetPopoverMenu.popdown();
                 preferences.present();
             }));
-        selfImp
-            .resetShortcutsButton
-            .connect_clicked(clone!(@weak self as window => move |_| {
+        selfImp.resetShortcutsButton.connect_clicked(clone!(@weak self as window => move |_| {
                 let shortcuts = gtk::ShortcutsWindow::builder().build();
                 window.imp().resetPopoverMenu.popdown();
                 shortcuts.present();
