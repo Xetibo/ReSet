@@ -44,7 +44,7 @@
     <child>
       <object class="GtkButton" id="resetBluetoothButton">
         <property name="has-frame">False</property>
-        <property name="icon-name">emblem-system-symbolic</property>
+        <property name="icon-name">user-trash-symbolic</property>
       </object>
     </child>
   </template>

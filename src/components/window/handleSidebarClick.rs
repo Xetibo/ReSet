@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use crate::components::base::settingBox::SettingBox;
 use crate::components::base::utils::{start_audio_listener, Listeners};
-use crate::components::bluetooth::bluetoothBox::{start_bluetooth_listener, BluetoothBox};
+use crate::components::bluetooth::bluetoothBox::{start_bluetooth_listener, BluetoothBox, populate_conntected_bluetooth_devices};
 use crate::components::input::sourceBox::{populate_sources, SourceBox};
 use crate::components::output::sinkBox::{populate_sinks, SinkBox};
 use crate::components::wifi::wifiBox::{
@@ -22,6 +22,7 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox) =
         scanForWifi(listeners.clone(), wifiBox.clone());
         let wifiFrame = wrapInFrame(SettingBox::new(&*wifiBox));
         let bluetooth_box = Arc::new(BluetoothBox::new());
+        populate_conntected_bluetooth_devices(bluetooth_box.clone());
         start_bluetooth_listener(listeners.clone(), bluetooth_box.clone());
         let bluetoothFrame = wrapInFrame(SettingBox::new(&*bluetooth_box));
         resetMain.remove_all();
@@ -50,6 +51,7 @@ pub const HANDLE_BLUETOOTH_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.stop_audio_listener();
         let bluetooth_box = Arc::new(BluetoothBox::new());
         start_bluetooth_listener(listeners.clone(), bluetooth_box.clone());
+        populate_conntected_bluetooth_devices(bluetooth_box.clone());
         let bluetoothFrame = wrapInFrame(SettingBox::new(&*bluetooth_box));
         resetMain.remove_all();
         resetMain.insert(&bluetoothFrame, -1);

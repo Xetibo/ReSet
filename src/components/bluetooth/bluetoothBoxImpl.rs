@@ -52,8 +52,6 @@ impl ObjectImpl for BluetoothBox {
         self.parent_constructed();
         let obj = self.obj();
         obj.setupCallbacks();
-        obj.scanForDevices();
-        obj.addConnectedDevices();
     }
 }
 
