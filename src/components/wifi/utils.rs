@@ -9,14 +9,14 @@ use ReSet_Lib::network::connection::Connection as ResetConnection;
 pub fn getConnectionSettings(path: Path<'static>) -> ResetConnection {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
     let res: Result<
         (HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>>,),
         Error,
-    > = proxy.method_call("org.xetibo.ReSet", "GetConnectionSettings", (path,));
+    > = proxy.method_call("org.xetibo.ReSetWireless", "GetConnectionSettings", (path,));
     if res.is_err() {
         ResetConnection::default();
     }

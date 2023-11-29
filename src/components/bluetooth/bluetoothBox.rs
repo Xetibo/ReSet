@@ -102,20 +102,25 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
 
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
-        let _: Result<(), Error> =
-            proxy.method_call("org.xetibo.ReSet", "StartBluetoothSearch", (10000,));
+        let _: Result<(), Error> = proxy.method_call(
+            "org.Xetibo.ReSetBluetooth",
+            "StartBluetoothListener",
+            #[allow(clippy::unnecessary_cast)]
+            (10000 as u32,),
+            // leave me alone clippy, I am dealing with C code
+        );
         let device_added = BluetoothDeviceAdded::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
+            Some(&"org.Xetibo.ReSetDaemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
         )
         .static_clone();
         let device_removed = BluetoothDeviceRemoved::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
+            Some(&"org.Xetibo.ReSetDaemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
         )
         .static_clone();
         let device_added_box = bluetooth_box.clone();

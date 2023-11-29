@@ -112,22 +112,22 @@ pub fn show_stored_connections(wifiBox: Arc<WifiBox>) {
 pub fn dbus_start_network_events() {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
-    let _: Result<(), Error> = proxy.method_call("org.xetibo.ReSet", "StartNetworkListener", ());
+    let _: Result<(), Error> = proxy.method_call("org.Xetibo.ReSetWireless", "StartNetworkListener", ());
 }
 
 pub fn get_access_points() -> Vec<AccessPoint> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<AccessPoint>,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "ListAccessPoints", ());
+        proxy.method_call("org.Xetibo.ReSetWireless", "ListAccessPoints", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -138,12 +138,12 @@ pub fn get_access_points() -> Vec<AccessPoint> {
 pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<(Path<'static>, Vec<u8>)>,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "ListStoredConnections", ());
+        proxy.method_call("org.Xetibo.ReSetWireless", "ListStoredConnections", ());
     if res.is_err() {
         println!("we got error...");
         return Vec::new();
@@ -164,18 +164,18 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
         let removed_ref = wifi_box.clone();
         let changed_ref = wifi_box.clone(); // TODO implement changed
         let access_point_added = AccessPointAdded::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
+            Some(&"org.Xetibo.ReSetDaemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
         )
         .static_clone();
         let access_point_removed = AccessPointRemoved::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
+            Some(&"org.Xetibo.ReSetDaemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
         )
         .static_clone();
         let access_point_changed = AccessPointChanged::match_rule(
-            Some(&"org.xetibo.ReSet".into()),
-            Some(&Path::from("/org/xetibo/ReSet")),
+            Some(&"org.Xetibo.ReSetDaemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
         )
         .static_clone();
         let res = conn.add_match(access_point_added, move |ir: AccessPointAdded, _, _| {

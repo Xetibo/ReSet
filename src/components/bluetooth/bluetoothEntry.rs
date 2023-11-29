@@ -60,12 +60,12 @@ fn connect_to_device(path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(bool,), Error> =
-            proxy.method_call("org.xetibo.ReSet", "ConnectToBluetoothDevice", (path,));
+            proxy.method_call("org.Xetibo.ReSetBluetooth", "ConnectToBluetoothDevice", (path,));
     });
 }
 
@@ -73,12 +73,12 @@ fn pair_with_device(path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(bool,), Error> =
-            proxy.method_call("org.xetibo.ReSet", "PairWithBluetoothDevice", (path,));
+            proxy.method_call("org.Xetibo.ReSetBluetooth", "PairWithBluetoothDevice", (path,));
     });
 }
 
@@ -86,11 +86,11 @@ fn disconnect_from_device(path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(bool,), Error> =
-            proxy.method_call("org.xetibo.ReSet", "DisconnectFromBluetoothDevice", (path,));
+            proxy.method_call("org.Xetibo.ReSetBluetooth", "DisconnectFromBluetoothDevice", (path,));
     });
 }

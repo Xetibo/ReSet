@@ -157,12 +157,12 @@ fn set_inputstream_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.xetibo.ReSet",
+            "org.Xetibo.ReSetAudio",
             "SetInputStreamVolume",
             (index, channels, value as u32),
         );
@@ -178,12 +178,12 @@ fn toggle_input_stream_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> =
-            proxy.method_call("org.xetibo.ReSet", "SetInputStreamMute", (index, muted));
+            proxy.method_call("org.Xetibo.ReSetAudio", "SetInputStreamMute", (index, muted));
         // if res.is_err() {
         //     return false;
         // }
@@ -196,12 +196,12 @@ fn set_sink_of_input_stream(stream: u32, sink: u32) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> =
-            proxy.method_call("org.xetibo.ReSet", "SetSinkOfInputStream", (stream, sink));
+            proxy.method_call("org.Xetibo.ReSetAudio", "SetSinkOfInputStream", (stream, sink));
         // if res.is_err() {
         //     return false;
         // }

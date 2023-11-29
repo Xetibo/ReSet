@@ -248,12 +248,12 @@ pub fn populate_cards(input_box: Arc<SourceBox>) {
 fn get_output_streams() -> Vec<OutputStream> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<OutputStream>,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "ListOutputStreams", ());
+        proxy.method_call("org.Xetibo.ReSetAudio", "ListOutputStreams", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -263,12 +263,12 @@ fn get_output_streams() -> Vec<OutputStream> {
 fn get_sources() -> Vec<Source> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<Source>,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "ListSources", ());
+        proxy.method_call("org.Xetibo.ReSetAudio", "ListSources", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -278,11 +278,11 @@ fn get_sources() -> Vec<Source> {
 fn get_cards() -> Vec<Card> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
-    let res: Result<(Vec<Card>,), Error> = proxy.method_call("org.xetibo.ReSet", "ListCards", ());
+    let res: Result<(Vec<Card>,), Error> = proxy.method_call("org.Xetibo.ReSetAudio", "ListCards", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -292,12 +292,12 @@ fn get_cards() -> Vec<Card> {
 fn get_default_source() -> Source {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.xetibo.ReSet",
-        "/org/xetibo/ReSet",
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
     let res: Result<(Source,), Error> =
-        proxy.method_call("org.xetibo.ReSet", "GetDefaultSource", ());
+        proxy.method_call("org.Xetibo.ReSetAudio", "GetDefaultSource", ());
     if res.is_err() {
         return Source::default();
     }
@@ -306,33 +306,33 @@ fn get_default_source() -> Source {
 
 pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) -> Connection {
     let source_added = SourceAdded::match_rule(
-        Some(&"org.xetibo.ReSet".into()),
-        Some(&Path::from("/org/xetibo/ReSet")),
+        Some(&"org.Xetibo.ReSetDaemon".into()),
+        Some(&Path::from("/org/Xetibo/ReSetDaemon")),
     )
     .static_clone();
     let source_removed = SourceRemoved::match_rule(
-        Some(&"org.xetibo.ReSet".into()),
-        Some(&Path::from("/org/xetibo/ReSet")),
+        Some(&"org.Xetibo.ReSetDaemon".into()),
+        Some(&Path::from("/org/Xetibo/ReSetDaemon")),
     )
     .static_clone();
     let source_changed = SourceChanged::match_rule(
-        Some(&"org.xetibo.ReSet".into()),
-        Some(&Path::from("/org/xetibo/ReSet")),
+        Some(&"org.Xetibo.ReSetDaemon".into()),
+        Some(&Path::from("/org/Xetibo/ReSetDaemon")),
     )
     .static_clone();
     let output_stream_added = OutputStreamAdded::match_rule(
-        Some(&"org.xetibo.ReSet".into()),
-        Some(&Path::from("/org/xetibo/ReSet")),
+        Some(&"org.Xetibo.ReSetDaemon".into()),
+        Some(&Path::from("/org/Xetibo/ReSetDaemon")),
     )
     .static_clone();
     let output_stream_removed = OutputStreamRemoved::match_rule(
-        Some(&"org.xetibo.ReSet".into()),
-        Some(&Path::from("/org/xetibo/ReSet")),
+        Some(&"org.Xetibo.ReSetDaemon".into()),
+        Some(&Path::from("/org/Xetibo/ReSetDaemon")),
     )
     .static_clone();
     let output_stream_changed = OutputStreamChanged::match_rule(
-        Some(&"org.xetibo.ReSet".into()),
-        Some(&Path::from("/org/xetibo/ReSet")),
+        Some(&"org.Xetibo.ReSetDaemon".into()),
+        Some(&Path::from("/org/Xetibo/ReSetDaemon")),
     )
     .static_clone();
 

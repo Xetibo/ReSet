@@ -89,12 +89,12 @@ pub fn set_sink_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.xetibo.ReSet",
+            "org.Xetibo.ReSetAudio",
             "SetSinkVolume",
             (index, channels, value as u32),
         );
@@ -110,12 +110,12 @@ pub fn toggle_sink_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> =
-            proxy.method_call("org.xetibo.ReSet", "SetSinkMute", (index, muted));
+            proxy.method_call("org.Xetibo.ReSetAudio", "SetSinkMute", (index, muted));
         // if res.is_err() {
         //     return false;
         // }
@@ -128,12 +128,12 @@ pub fn set_default_sink(name: Arc<String>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> =
-            proxy.method_call("org.xetibo.ReSet", "SetDefaultSink", (name.as_str(),));
+            proxy.method_call("org.Xetibo.ReSetAudio", "SetDefaultSink", (name.as_str(),));
         // if res.is_err() {
         //     return;
         // }
