@@ -95,12 +95,12 @@ pub fn click_disconnect(entry: Arc<WifiEntry>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(10000),
         );
         let res: Result<(bool,), Error> =
-            proxy.method_call("org.xetibo.ReSet", "DisconnectFromCurrentAccessPoint", ());
+            proxy.method_call("org.Xetibo.ReSetWireless", "DisconnectFromCurrentAccessPoint", ());
         if res.is_err() {
             println!("res of disconnect was error bro");
             return;
@@ -120,12 +120,12 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(10000),
         );
         let res: Result<(bool,), Error> = proxy.method_call(
-            "org.xetibo.ReSet",
+            "org.Xetibo.ReSetWireless",
             "ConnectToKnownAccessPoint",
             (access_point,),
         );
@@ -170,12 +170,12 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
         gio::spawn_blocking(move || {
             let conn = Connection::new_session().unwrap();
             let proxy = conn.with_proxy(
-                "org.xetibo.ReSet",
-                "/org/xetibo/ReSet",
+                "org.Xetibo.ReSetDaemon",
+                "/org/Xetibo/ReSetDaemon",
                 Duration::from_millis(10000),
             );
             let res: Result<(bool,), Error> = proxy.method_call(
-                "org.xetibo.ReSet",
+                "org.Xetibo.ReSetWireless",
                 "ConnectToNewAccessPoint",
                 (access_point, password),
             );

@@ -68,12 +68,12 @@ fn set_card_profile_of_device(device_index: u32, profile_name: String) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.xetibo.ReSet",
+            "org.Xetibo.ReSetAudio",
             "SetCardProfileOfDevice",
             (device_index, profile_name),
         );

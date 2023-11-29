@@ -34,6 +34,7 @@ async fn main() {
     });
 
     app.connect_activate(buildUI);
+    app.connect_shutdown(shutdown);
     app.run();
 }
 
@@ -54,15 +55,28 @@ fn buildUI(app: &Application) {
     window.present();
 }
 
+fn shutdown(_: &Application) {
+    thread::spawn(|| {
+        let conn = Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
+            Duration::from_millis(100),
+        );
+        let res: Result<(), Error> = proxy.method_call("org.Xetibo.ReSetDaemon", "UnregisterClient", ("ReSet",));
+        res
+    });
+}
+
 async fn daemon_check() {
     let handle = thread::spawn(|| {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.xetibo.ReSet",
-            "/org/xetibo/ReSet",
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(100),
         );
-        let res: Result<(), Error> = proxy.method_call("org.xetibo.ReSet", "Check", ());
+        let res: Result<(), Error> = proxy.method_call("org.Xetibo.ReSetDaemon", "RegisterClient", ("ReSet",));
         res
     });
     let res = handle.join();

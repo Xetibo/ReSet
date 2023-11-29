@@ -1,9 +1,12 @@
-use adw::ComboRow;
+use std::time::Duration;
+
 use adw::gdk::pango::EllipsizeMode;
 use adw::prelude::ListModelExtManual;
+use adw::ComboRow;
+use dbus::blocking::{Connection, Proxy};
 use glib::{Cast, Object};
-use gtk::{Align, SignalListItemFactory, StringObject};
 use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, WidgetExt};
+use gtk::{Align, SignalListItemFactory, StringObject};
 
 pub fn createDropdownLabelFactory() -> SignalListItemFactory {
     let factory = SignalListItemFactory::new();
@@ -20,7 +23,13 @@ pub fn createDropdownLabelFactory() -> SignalListItemFactory {
 }
 
 pub fn setComboRowEllipsis(element: ComboRow) {
-    for (i, child) in element.child().unwrap().observe_children().iter::<Object>().enumerate() {
+    for (i, child) in element
+        .child()
+        .unwrap()
+        .observe_children()
+        .iter::<Object>()
+        .enumerate()
+    {
         if i == 2 {
             if let Ok(object) = child {
                 if let Some(item) = object.downcast_ref::<gtk::Box>() {
