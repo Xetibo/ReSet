@@ -1,3 +1,4 @@
+use adw::ActionRow;
 use dbus::Path;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -5,11 +6,14 @@ use gtk::{glib, CompositeTemplate, ListBox, Switch};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
-use adw::ActionRow;
+use ReSet_Lib::bluetooth::bluetooth::BluetoothDevice;
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::bluetooth::bluetoothBox;
 use crate::components::bluetooth::bluetoothEntry::BluetoothEntry;
+
+type BluetoothMap =
+    RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, Arc<ListEntry>, BluetoothDevice)>>;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -25,8 +29,8 @@ pub struct BluetoothBox {
     pub resetVisibility: TemplateChild<ActionRow>,
     #[template_child]
     pub resetBluetoothMainTab: TemplateChild<ListEntry>,
-    pub availableDevices: RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, Arc<ListEntry>)>>,
-    pub connectedDevices: RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, Arc<ListEntry>)>>,
+    pub availableDevices: BluetoothMap,
+    pub connectedDevices: BluetoothMap,
 }
 
 #[glib::object_subclass]
