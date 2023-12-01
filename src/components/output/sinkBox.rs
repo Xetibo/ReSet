@@ -1,18 +1,18 @@
-use adw::prelude::PreferencesRowExt;
 use adw::prelude::PreferencesGroupExt;
+use adw::prelude::PreferencesRowExt;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use adw::{glib, prelude::ListBoxRowExt};
 use adw::glib::Object;
 use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, RangeExt};
-use dbus::{Error, Path};
+use adw::{glib, prelude::ListBoxRowExt};
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
-use glib::{Cast, clone, Propagation, Variant};
+use dbus::{Error, Path};
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use gtk::{gio, StringObject};
+use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
+use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use crate::components::base::cardEntry::CardEntry;
@@ -25,7 +25,7 @@ use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 
 use super::inputStreamEntry::InputStreamEntry;
 use super::sinkBoxImpl;
-use super::sinkEntry::{set_default_sink, SinkEntry, toggle_sink_mute};
+use super::sinkEntry::{set_default_sink, toggle_sink_mute, SinkEntry};
 
 glib::wrapper! {
     pub struct SinkBox(ObjectSubclass<sinkBoxImpl::SinkBox>)
@@ -66,12 +66,18 @@ impl SinkBox {
         selfImp.resetCardsRow.connect_action_name_notify(|_| {});
 
         selfImp.resetInputStreamButton.set_activatable(true);
-        selfImp.resetInputStreamButton.set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetInputStreamButton
+            .set_action_name(Some("navigation.pop"));
 
         selfImp.resetInputCardsBackButton.set_activatable(true);
-        selfImp.resetInputCardsBackButton.set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetInputCardsBackButton
+            .set_action_name(Some("navigation.pop"));
 
-        selfImp.resetSinkDropdown.set_factory(Some(&createDropdownLabelFactory()));
+        selfImp
+            .resetSinkDropdown
+            .set_factory(Some(&createDropdownLabelFactory()));
         setComboRowEllipsis(selfImp.resetSinkDropdown.get());
     }
 }
@@ -92,11 +98,9 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
             let list = output_box_imp.resetModelList.write().unwrap();
             let mut model_index = output_box_imp.resetModelIndex.write().unwrap();
             output_box_imp.resetDefaultSink.replace(get_default_sink());
-            let mut i: u32 = 0;
-            for sink in sinks.iter() {
+            for (i, sink) in (0_u32..).zip(sinks.iter()) {
                 list.append(&sink.alias);
                 map.insert(sink.alias.clone(), (sink.index, i, sink.name.clone()));
-                i += 1;
                 *model_index += 1;
             }
         }
@@ -130,7 +134,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                             sink,
                         ));
                         let sink_clone = sink_entry.clone();
-                        let entry = Arc::new(ListEntry::new(&*sink_entry, ));
+                        let entry = Arc::new(ListEntry::new(&*sink_entry));
                         entry.set_activatable(false);
                         list.insert(index, (entry.clone(), sink_clone, alias));
                         output_box_imp.resetSinks.append(&*entry);
@@ -141,10 +145,8 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     let name = output_box_imp.resetDefaultSink.borrow();
                     let name = &name.alias;
                     let index = map.get(name);
-                    if index.is_some() {
-                        output_box_imp
-                            .resetSinkDropdown
-                            .set_selected(index.unwrap().1);
+                    if let Some(index) = index {
+                        output_box_imp.resetSinkDropdown.set_selected(index.1);
                     }
                     output_box_imp.resetSinkDropdown.connect_selected_notify(
                         clone!(@weak output_box_imp => move |dropdown| {
@@ -225,7 +227,7 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
                 for stream in streams {
                     let index = stream.index;
                     let input_stream = Arc::new(InputStreamEntry::new(output_box.clone(), stream));
-                    let entry = Arc::new(ListEntry::new(&*input_stream, ));
+                    let entry = Arc::new(ListEntry::new(&*input_stream));
                     entry.set_activatable(false);
                     list.insert(index, (entry.clone(), input_stream.clone()));
                     output_box_imp.resetInputStreams.append(&*entry);
@@ -243,8 +245,7 @@ pub fn populate_cards(output_box: Arc<SinkBox>) {
             glib::idle_add_once(move || {
                 let imp = output_box_ref.imp();
                 for card in cards {
-                    imp.resetCards
-                        .add(&CardEntry::new(card));
+                    imp.resetCards.add(&CardEntry::new(card));
                 }
             });
         });
@@ -273,7 +274,8 @@ fn get_sinks() -> Vec<Sink> {
         "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
-    let res: Result<(Vec<Sink>,), Error> = proxy.method_call("org.Xetibo.ReSetAudio", "ListSinks", ());
+    let res: Result<(Vec<Sink>,), Error> =
+        proxy.method_call("org.Xetibo.ReSetAudio", "ListSinks", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -287,7 +289,8 @@ fn get_default_sink() -> Sink {
         "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
-    let res: Result<(Sink,), Error> = proxy.method_call("org.Xetibo.ReSetAudio", "GetDefaultSink", ());
+    let res: Result<(Sink,), Error> =
+        proxy.method_call("org.Xetibo.ReSetAudio", "GetDefaultSink", ());
     if res.is_err() {
         return Sink::default();
     }
@@ -301,7 +304,8 @@ fn get_cards() -> Vec<Card> {
         "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
-    let res: Result<(Vec<Card>,), Error> = proxy.method_call("org.Xetibo.ReSetAudio", "ListCards", ());
+    let res: Result<(Vec<Card>,), Error> =
+        proxy.method_call("org.Xetibo.ReSetAudio", "ListCards", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -367,7 +371,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                     ir.sink,
                 ));
                 let sink_clone = sink_entry.clone();
-                let entry = Arc::new(ListEntry::new(&*sink_entry, ));
+                let entry = Arc::new(ListEntry::new(&*sink_entry));
                 entry.set_activatable(false);
                 list.insert(sink_index, (entry.clone(), sink_clone, alias.clone()));
                 output_box_imp.resetSinks.append(&*entry);
@@ -407,12 +411,12 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 }
                 let mut map = output_box_imp.resetSinkMap.write().unwrap();
                 let entry_index = map.remove(&alias.unwrap().2);
-                if entry_index.is_some() {
+                if let Some(entry_index) = entry_index {
                     output_box_imp
                         .resetModelList
                         .write()
                         .unwrap()
-                        .remove(entry_index.unwrap().1);
+                        .remove(entry_index.1);
                 }
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
                 if *index != 0 {
@@ -473,7 +477,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let mut list = output_box_imp.resetInputStreamList.write().unwrap();
                 let index = ir.stream.index;
                 let input_stream = Arc::new(InputStreamEntry::new(output_box.clone(), ir.stream));
-                let entry = Arc::new(ListEntry::new(&*input_stream, ));
+                let entry = Arc::new(ListEntry::new(&*input_stream));
                 entry.set_activatable(false);
                 list.insert(index, (entry.clone(), input_stream.clone()));
                 output_box_imp.resetInputStreams.append(&*entry);
@@ -492,8 +496,8 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
         {
             let sink_list = imp.resetSinkList.read().unwrap();
             let alias_opt = sink_list.get(&ir.stream.sink_index);
-            if alias_opt.is_some() {
-                alias = alias_opt.unwrap().2.clone();
+            if let Some(alias_opt) = alias_opt {
+                alias = alias_opt.2.clone();
             } else {
                 alias = String::from("");
             }
@@ -529,8 +533,8 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 imp.resetVolumeSlider.set_value(*volume as f64);
                 let map = output_box_imp.resetSinkMap.read().unwrap();
                 let index = map.get(&alias);
-                if index.is_some() {
-                    imp.resetSinkSelection.set_selected(index.unwrap().1);
+                if let Some(index) = index {
+                    imp.resetSinkSelection.set_selected(index.1);
                 }
             });
         });

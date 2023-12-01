@@ -1,12 +1,12 @@
+use adw::subclass::prelude::PreferencesGroupImpl;
+use adw::{ComboRow, PreferencesGroup};
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
-use adw::{ComboRow, PreferencesGroup};
-use adw::subclass::prelude::PreferencesGroupImpl;
 
 use crate::components::input::outputStreamEntry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, DropDown, Label, ProgressBar, Scale};
+use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::OutputStream;
 
 #[allow(non_snake_case)]

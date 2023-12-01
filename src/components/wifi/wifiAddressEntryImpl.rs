@@ -1,7 +1,7 @@
+use crate::components::wifi::wifiAddressEntry;
 use adw::{EntryRow, ExpanderRow};
-use crate::components::wifi::{wifiAddressEntry};
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, Button};
+use gtk::{glib, Button, CompositeTemplate};
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]

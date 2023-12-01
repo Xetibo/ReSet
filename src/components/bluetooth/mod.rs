@@ -3,4 +3,3 @@ pub mod bluetoothBox;
 pub mod bluetoothBoxImpl;
 pub mod bluetoothEntry;
 pub mod bluetoothEntryImpl;
-

@@ -122,13 +122,12 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
         let device_changed_box = bluetooth_box.clone();
         let loop_box = bluetooth_box.clone();
 
-        // TODO handle device changed
         let res = conn.add_match(device_added, move |ir: BluetoothDeviceAdded, _, _| {
             let bluetooth_box = device_added_box.clone();
             println!("added");
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
-                    println!("{}",ir.bluetooth_device.icon);
+                    println!("{}", ir.bluetooth_device.icon);
                     let imp = bluetooth_box.imp();
                     let path = ir.bluetooth_device.path.clone();
                     let connected = ir.bluetooth_device.connected;

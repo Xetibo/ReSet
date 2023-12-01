@@ -27,7 +27,9 @@ impl WifiAddressEntry {
 
             entryImp.resetAddressAddress.set_text(&addr);
             entryImp.resetAddressNetmask.set_text(&prefix);
-            entryImp.resetAddressRow.set_title(&format!("{}, {}", addr, prefix));
+            entryImp
+                .resetAddressRow
+                .set_title(&format!("{}, {}", addr, prefix));
         }
         entry
     }

@@ -1,9 +1,9 @@
-use std::cell::RefCell;
-use std::collections::HashMap;
-use adw::ComboRow;
 use adw::subclass::action_row::ActionRowImpl;
 use adw::subclass::preferences_row::PreferencesRowImpl;
 use adw::subclass::prelude::ComboRowImpl;
+use adw::ComboRow;
+use std::cell::RefCell;
+use std::collections::HashMap;
 
 use gtk::subclass::prelude::*;
 use gtk::{glib, CompositeTemplate};

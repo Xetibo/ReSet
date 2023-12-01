@@ -1,8 +1,8 @@
+use adw::subclass::prelude::PreferencesGroupImpl;
+use adw::{ActionRow, PreferencesGroup};
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
-use adw::{ActionRow, PreferencesGroup};
-use adw::subclass::prelude::PreferencesGroupImpl;
 
 use crate::components::output::sinkEntry;
 use gtk::subclass::prelude::*;

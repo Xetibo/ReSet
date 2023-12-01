@@ -18,8 +18,6 @@ const APP_ID: &str = "org.Xetibo.ReSet";
 
 #[tokio::main]
 async fn main() {
-    // TODO is this the best way to handle this??
-
     tokio::task::spawn(daemon_check());
     gio::resources_register_include!("src.templates.gresource")
         .expect("Failed to register resources.");

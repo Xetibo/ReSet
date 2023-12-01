@@ -17,13 +17,19 @@ glib::wrapper! {
         @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget;
 }
 
+unsafe impl Send for BluetoothEntry {}
+unsafe impl Sync for BluetoothEntry {}
+
 impl BluetoothEntry {
     pub fn new(device: &BluetoothDevice) -> Self {
         let entry: BluetoothEntry = Object::builder().build();
         let entryImp = entry.imp();
         entryImp.resetBluetoothLabel.get().set_text(&device.alias);
-        entryImp.resetBluetoothAddress.get().set_text(&device.address);
-        if device.icon == "" {
+        entryImp
+            .resetBluetoothAddress
+            .get()
+            .set_text(&device.address);
+        if device.icon.is_empty() {
             entryImp
                 .resetBluetoothDeviceType
                 .set_icon_name(Some("dialog-question-symbolic"));

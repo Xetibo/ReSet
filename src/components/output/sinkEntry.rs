@@ -19,11 +19,13 @@ glib::wrapper! {
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
 
+unsafe impl Send for SinkEntry {}
+unsafe impl Sync for SinkEntry {}
+
 impl SinkEntry {
     pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Sink) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
-        // TODO handle events
         {
             let imp = obj.imp();
             imp.resetSinkName.set_title(stream.alias.clone().as_str());

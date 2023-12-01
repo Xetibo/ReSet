@@ -4,38 +4,36 @@ use std::sync::Arc;
 
 use std::time::Duration;
 
-
 use crate::components::base::utils::Listeners;
+use crate::components::utils::setComboRowEllipsis;
 use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ListBoxRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use dbus::arg::{RefArg};
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::Error;
 use dbus::Path;
-use glib::{ObjectExt, PropertySet};
+use glib::PropertySet;
 use gtk::gio;
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, WidgetExt};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
-use ReSet_Lib::signals::{AccessPointAdded};
+use ReSet_Lib::signals::AccessPointAdded;
 use ReSet_Lib::signals::{AccessPointChanged, AccessPointRemoved};
-use crate::components::utils::setComboRowEllipsis;
-
 
 use crate::components::wifi::wifiBoxImpl;
 use crate::components::wifi::wifiEntry::WifiEntry;
 
 use super::savedWifiEntry::SavedWifiEntry;
 
-
 glib::wrapper! {
     pub struct WifiBox(ObjectSubclass<wifiBoxImpl::WifiBox>)
     @extends gtk::Box, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
+
+type ResultMap = Result<(Vec<(Path<'static>, Vec<u8>)>,), Error>;
 
 unsafe impl Send for WifiBox {}
 unsafe impl Sync for WifiBox {}
@@ -56,8 +54,16 @@ impl WifiBox {
             .set_action_target_value(Some(&Variant::from("saved")));
 
         selfImp.resetAvailableNetworks.set_activatable(true);
-        selfImp.resetAvailableNetworks.set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetAvailableNetworks
+            .set_action_name(Some("navigation.pop"));
         setComboRowEllipsis(selfImp.resetWiFiDevice.get());
+    }
+}
+
+impl Default for WifiBox {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -116,7 +122,8 @@ pub fn dbus_start_network_events() {
         "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
-    let _: Result<(), Error> = proxy.method_call("org.Xetibo.ReSetWireless", "StartNetworkListener", ());
+    let _: Result<(), Error> =
+        proxy.method_call("org.Xetibo.ReSetWireless", "StartNetworkListener", ());
 }
 
 pub fn get_access_points() -> Vec<AccessPoint> {
@@ -142,8 +149,7 @@ pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
         "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
-    let res: Result<(Vec<(Path<'static>, Vec<u8>)>,), Error> =
-        proxy.method_call("org.Xetibo.ReSetWireless", "ListStoredConnections", ());
+    let res: ResultMap = proxy.method_call("org.Xetibo.ReSetWireless", "ListStoredConnections", ());
     if res.is_err() {
         println!("we got error...");
         return Vec::new();
@@ -162,7 +168,7 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
         let conn = Connection::new_session().unwrap();
         let added_ref = wifi_box.clone();
         let removed_ref = wifi_box.clone();
-        let changed_ref = wifi_box.clone(); // TODO implement changed
+        let changed_ref = wifi_box.clone();
         let access_point_added = AccessPointAdded::match_rule(
             Some(&"org.Xetibo.ReSetDaemon".into()),
             Some(&Path::from("/org/Xetibo/ReSetDaemon")),
