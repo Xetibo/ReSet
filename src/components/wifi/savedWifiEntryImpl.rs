@@ -1,7 +1,7 @@
-use std::cell::RefCell;
-use adw::ActionRow;
 use adw::subclass::preferences_row::PreferencesRowImpl;
 use adw::subclass::prelude::ActionRowImpl;
+use adw::ActionRow;
+use std::cell::RefCell;
 
 use dbus::Path;
 use gtk::subclass::prelude::*;

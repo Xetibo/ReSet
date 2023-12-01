@@ -1,11 +1,11 @@
 use crate::components::base::popup::Popup;
 use crate::components::wifi::wifiEntry;
+use adw::subclass::preferences_row::PreferencesRowImpl;
+use adw::subclass::prelude::ActionRowImpl;
+use adw::ActionRow;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Image, Label};
 use std::cell::RefCell;
-use adw::ActionRow;
-use adw::subclass::preferences_row::PreferencesRowImpl;
-use adw::subclass::prelude::ActionRowImpl;
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
 #[allow(non_snake_case)]

@@ -2,6 +2,7 @@ use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::components::wifi::utils::getConnectionSettings;
 use adw::glib;
 use adw::glib::{Object, PropertySet};
 use adw::prelude::{ActionRowExt, ButtonExt, EditableExt, PopoverExt};
@@ -12,7 +13,6 @@ use glib::clone;
 use gtk::gio;
 use gtk::prelude::{ListBoxRowExt, WidgetExt};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
-use crate::components::wifi::utils::getConnectionSettings;
 
 use crate::components::wifi::wifiBoxImpl::WifiBox;
 use crate::components::wifi::wifiEntryImpl;
@@ -99,8 +99,11 @@ pub fn click_disconnect(entry: Arc<WifiEntry>) {
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(10000),
         );
-        let res: Result<(bool,), Error> =
-            proxy.method_call("org.Xetibo.ReSetWireless", "DisconnectFromCurrentAccessPoint", ());
+        let res: Result<(bool,), Error> = proxy.method_call(
+            "org.Xetibo.ReSetWireless",
+            "DisconnectFromCurrentAccessPoint",
+            (),
+        );
         if res.is_err() {
             println!("res of disconnect was error bro");
             return;
