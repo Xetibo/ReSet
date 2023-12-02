@@ -16,10 +16,10 @@ use gtk::{FlowBox, Frame, Label};
 pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_audio_listener();
-        let wifiBox = Arc::new(WifiBox::new());
+        let wifiBox = WifiBox::new(listeners.clone());
         start_event_listener(listeners.clone(), wifiBox.clone());
         show_stored_connections(wifiBox.clone());
-        scanForWifi(listeners.clone(), wifiBox.clone());
+        scanForWifi(wifiBox.clone());
         let wifiFrame = wrapInFrame(SettingBox::new(&*wifiBox));
         let bluetooth_box = Arc::new(BluetoothBox::new());
         populate_conntected_bluetooth_devices(bluetooth_box.clone());
@@ -35,10 +35,10 @@ pub const HANDLE_WIFI_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_audio_listener();
         listeners.stop_bluetooth_listener();
-        let wifiBox = Arc::new(WifiBox::new());
+        let wifiBox = WifiBox::new(listeners.clone());
         start_event_listener(listeners.clone(), wifiBox.clone());
         show_stored_connections(wifiBox.clone());
-        scanForWifi(listeners.clone(), wifiBox.clone());
+        scanForWifi(wifiBox.clone());
         let wifiFrame = wrapInFrame(SettingBox::new(&*wifiBox));
         resetMain.remove_all();
         resetMain.insert(&wifiFrame, -1);

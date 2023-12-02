@@ -14,7 +14,7 @@ use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::Error;
 use dbus::Path;
-use glib::PropertySet;
+use glib::{clone, PropertySet};
 use gtk::gio;
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, WidgetExt};
@@ -39,35 +39,50 @@ unsafe impl Send for WifiBox {}
 unsafe impl Sync for WifiBox {}
 
 impl WifiBox {
-    pub fn new() -> Self {
-        Object::builder().build()
+    pub fn new(listeners: Arc<Listeners>) -> Arc<Self> {
+        let obj: Arc<WifiBox> = Arc::new(Object::builder().build());
+        setupCallbacks(listeners, obj)
     }
 
-    pub fn setupCallbacks(&self) {
-        let selfImp = self.imp();
-        selfImp.resetSavedNetworks.set_activatable(true);
-        selfImp
-            .resetSavedNetworks
-            .set_action_name(Some("navigation.push"));
-        selfImp
-            .resetSavedNetworks
-            .set_action_target_value(Some(&Variant::from("saved")));
-
-        selfImp.resetAvailableNetworks.set_activatable(true);
-        selfImp
-            .resetAvailableNetworks
-            .set_action_name(Some("navigation.pop"));
-        setComboRowEllipsis(selfImp.resetWiFiDevice.get());
-    }
+    pub fn setupCallbacks(&self) {}
 }
 
-impl Default for WifiBox {
-    fn default() -> Self {
-        Self::new()
-    }
+fn setupCallbacks(listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) -> Arc<WifiBox> {
+    let imp = wifiBox.imp();
+    let wifibox_ref = wifiBox.clone();
+    imp.resetSavedNetworks.set_activatable(true);
+    imp.resetSavedNetworks
+        .set_action_name(Some("navigation.push"));
+    imp.resetSavedNetworks
+        .set_action_target_value(Some(&Variant::from("saved")));
+
+    imp.resetAvailableNetworks.set_activatable(true);
+    imp.resetAvailableNetworks
+        .set_action_name(Some("navigation.pop"));
+    setComboRowEllipsis(imp.resetWiFiDevice.get());
+    imp.resetWifiSwitch.connect_state_set(
+        clone!(@weak imp => @default-return glib::Propagation::Proceed, move |_, value| {
+            set_wifi_enabled(value);
+            if !value {
+                let mut map = imp.wifiEntries.lock().unwrap();
+                for entry in map.iter() {
+                    imp.resetWifiList.remove(&*(*entry.1));
+                }
+                map.clear();
+                imp.wifiEntriesPath.lock().unwrap().clear();
+                listeners.network_listener.store(false, Ordering::SeqCst);
+            } else {
+                start_event_listener(listeners.clone(), wifibox_ref.clone());
+                show_stored_connections(wifibox_ref.clone());
+                scanForWifi(wifibox_ref.clone());
+            }
+            glib::Propagation::Proceed
+        }),
+    );
+    wifiBox
 }
 
-pub fn scanForWifi(_listeners: Arc<Listeners>, wifiBox: Arc<WifiBox>) {
+pub fn scanForWifi(wifiBox: Arc<WifiBox>) {
     let wifibox_ref = wifiBox.clone();
     let _wifibox_ref_listener = wifiBox.clone();
     let wifiEntries = wifiBox.imp().wifiEntries.clone();
@@ -156,6 +171,17 @@ pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     }
     let (connections,) = res.unwrap();
     connections
+}
+
+pub fn set_wifi_enabled(enabled: bool) {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(bool,), Error> =
+        proxy.method_call("org.Xetibo.ReSetWireless", "SetWifiEnabled", (enabled,));
 }
 
 pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
