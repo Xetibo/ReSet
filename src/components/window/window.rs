@@ -124,13 +124,13 @@ impl Window {
                 true,
                 HANDLE_BLUETOOTH_CLICK,
             ),
-            SidebarEntry::new(
-                "VPN",
-                "network-vpn-symbolic",
-                Categories::Connectivity,
-                true,
-                HANDLE_VPN_CLICK,
-            ),
+            // SidebarEntry::new(
+            //     "VPN",
+            //     "network-vpn-symbolic",
+            //     Categories::Connectivity,
+            //     true,
+            //     HANDLE_VPN_CLICK,
+            // ),
         ];
 
         sidebarEntries.push((
@@ -172,40 +172,40 @@ impl Window {
             audioList,
         ));
 
-        let peripheralsList = vec![
-            SidebarEntry::new(
-                "Displays",
-                "video-display-symbolic",
-                Categories::Peripherals,
-                true,
-                HANDLE_MONITOR_CLICK,
-            ),
-            SidebarEntry::new(
-                "Mouse",
-                "input-mouse-symbolic",
-                Categories::Peripherals,
-                true,
-                HANDLE_MOUSE_CLICK,
-            ),
-            SidebarEntry::new(
-                "Keyboard",
-                "input-keyboard-symbolic",
-                Categories::Peripherals,
-                true,
-                HANDLE_KEYBOARD_CLICK,
-            ),
-        ];
+        // let peripheralsList = vec![
+        //     SidebarEntry::new(
+        //         "Displays",
+        //         "video-display-symbolic",
+        //         Categories::Peripherals,
+        //         true,
+        //         HANDLE_MONITOR_CLICK,
+        //     ),
+        //     SidebarEntry::new(
+        //         "Mouse",
+        //         "input-mouse-symbolic",
+        //         Categories::Peripherals,
+        //         true,
+        //         HANDLE_MOUSE_CLICK,
+        //     ),
+        //     SidebarEntry::new(
+        //         "Keyboard",
+        //         "input-keyboard-symbolic",
+        //         Categories::Peripherals,
+        //         true,
+        //         HANDLE_KEYBOARD_CLICK,
+        //     ),
+        // ];
 
-        sidebarEntries.push((
-            SidebarEntry::new(
-                "Peripherals",
-                "preferences-system-devices-symbolic",
-                Categories::Peripherals,
-                false,
-                HANDLE_PERIPHERALS_CLICK,
-            ),
-            peripheralsList,
-        ));
+        // sidebarEntries.push((
+        //     SidebarEntry::new(
+        //         "Peripherals",
+        //         "preferences-system-devices-symbolic",
+        //         Categories::Peripherals,
+        //         false,
+        //         HANDLE_PERIPHERALS_CLICK,
+        //     ),
+        //     peripheralsList,
+        // ));
 
         selfImp.resetSidebarList.connect_row_activated(clone!(@ weak selfImp => move |_, _| {
             selfImp.resetSearchEntry.set_text("");
