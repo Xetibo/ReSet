@@ -11,13 +11,19 @@
         <property name="hexpand">True</property>
         <property name="title">Add new Address</property>
         <child>
-          <object class="AdwEntryRow" id="resetAddressAddress">
-            <property name="title">Address</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwEntryRow" id="resetAddressPrefix">
-            <property name="title">Prefix</property>
+          <object class="GtkBox">
+            <child>
+              <object class="AdwEntryRow" id="resetAddressAddress">
+                <property name="hexpand">True</property>
+                <property name="title">Address</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwEntryRow" id="resetAddressPrefix">
+                <property name="max-width-chars">5</property>
+                <property name="title">Prefix</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
