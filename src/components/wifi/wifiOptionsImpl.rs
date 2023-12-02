@@ -45,6 +45,8 @@ pub struct WifiOptions {
     pub resetIP4AddressAddButton: TemplateChild<Button>,
     #[template_child]
     pub resetIP4RoutesGroup: TemplateChild<PreferencesGroup>,
+    #[template_child]
+    pub resetIP4RouteAddButton: TemplateChild<Button>,
     // IPv6
     #[template_child]
     pub resetIP6Method: TemplateChild<ComboRow>,
@@ -55,7 +57,11 @@ pub struct WifiOptions {
     #[template_child]
     pub resetIP6AddressGroup: TemplateChild<PreferencesGroup>,
     #[template_child]
+    pub resetIP6AddressAddButton: TemplateChild<Button>,
+    #[template_child]
     pub resetIP6RoutesGroup: TemplateChild<PreferencesGroup>,
+    #[template_child]
+    pub resetIP6RouteAddButton: TemplateChild<Button>,
     // Security
     // Misc
     #[template_child]

@@ -142,6 +142,12 @@
                             <property name="valign">center</property>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkButton" id="resetIP4RouteAddButton">
+                            <property name="icon-name">list-add-symbolic</property>
+                            <property name="margin-start">10</property>
+                          </object>
+                        </child>
                       </object>
                     </property>
                     <property name="margin-top">10</property>
@@ -191,6 +197,11 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup" id="resetIP6AddressGroup">
+                    <property name="header-suffix">
+                      <object class="GtkButton" id="resetIP6AddressAddButton">
+                        <property name="icon-name">list-add-symbolic</property>
+                      </object>
+                    </property>
                     <property name="margin-top">10</property>
                     <property name="title">Addresses</property>
                   </object>
@@ -208,6 +219,12 @@
                         <child>
                           <object class="GtkSwitch">
                             <property name="valign">center</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="resetIP6RouteAddButton">
+                            <property name="icon-name">list-add-symbolic</property>
+                            <property name="margin-start">10</property>
                           </object>
                         </child>
                       </object>

@@ -9,13 +9,19 @@
         <property name="hexpand">True</property>
         <property name="title">Add new Route</property>
         <child>
-          <object class="AdwEntryRow" id="resetRouteAddress">
-            <property name="title">Address</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwEntryRow" id="resetRouteNetmask">
-            <property name="title">Netmask</property>
+          <object class="GtkBox">
+            <child>
+              <object class="AdwEntryRow" id="resetRouteAddress">
+                <property name="hexpand">True</property>
+                <property name="title">Address</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwEntryRow" id="resetRoutePrefix">
+                <property name="max-width-chars">5</property>
+                <property name="title">Prefix</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

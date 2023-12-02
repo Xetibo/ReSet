@@ -6,11 +6,10 @@ use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use dbus::arg::PropMap;
-use glib::{clone, closure_local, ObjectExt, PropertySet};
+use glib::{clone, PropertySet};
 use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
-use gtk::Widget;
 use ReSet_Lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, TypeSettings};
+use IpProtocol::{IPv4, IPv6};
 
 use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifiAddressEntry::WifiAddressEntry;
@@ -96,34 +95,33 @@ impl WifiOptions {
         }
         // IPv4
         for i in 0..ip4AddressLength {
-            let address = &WifiAddressEntry::new(Some(i), selfImp.connection.clone(), IpProtocol::IPv4);
+            let address = &WifiAddressEntry::new(Some(i), selfImp.connection.clone(), IPv4);
             selfImp.resetIP4AddressGroup.add(address);
         }
-        let address = &WifiAddressEntry::new(None, selfImp.connection.clone(), IpProtocol::IPv4);
+        let address = &WifiAddressEntry::new(None, selfImp.connection.clone(), IPv4);
         selfImp.resetIP4AddressGroup.add(address);
 
-        if ip4RouteLength == 0 {
-            selfImp.resetIP4RoutesGroup.add(&WifiRouteEntry::new(None, selfImp.connection.clone(), IpProtocol::IPv4))
-        } else {
-            for address in 0..ip4RouteLength {
-                selfImp.resetIP4RoutesGroup.add(&WifiRouteEntry::new(Some(address), selfImp.connection.clone(), IpProtocol::IPv4))
-            }
+        for i in 0..ip4RouteLength {
+            let route = &WifiRouteEntry::new(Some(i), selfImp.connection.clone(), IPv4);
+            selfImp.resetIP4RoutesGroup.add(route)
         }
+        let route = &WifiRouteEntry::new(None, selfImp.connection.clone(), IPv4);
+        selfImp.resetIP4RoutesGroup.add(route);
+
         // IPv6
-        for address in 0..ip6AddressLength {
-            let address = &WifiAddressEntry::new(Some(address), selfImp.connection.clone(), IpProtocol::IPv6);
+        for i in 0..ip6AddressLength {
+            let address = &WifiAddressEntry::new(Some(i), selfImp.connection.clone(), IPv6);
             selfImp.resetIP6AddressGroup.add(address);
         }
-        let address = &WifiAddressEntry::new(None, selfImp.connection.clone(), IpProtocol::IPv6);
+        let address = &WifiAddressEntry::new(None, selfImp.connection.clone(), IPv6);
         selfImp.resetIP6AddressGroup.add(address);
 
-        if ip6RouteLength == 0 {
-            selfImp.resetIP6RoutesGroup.add(&WifiRouteEntry::new(None, selfImp.connection.clone(), IpProtocol::IPv6))
-        } else {
-            for address in 0..ip6RouteLength {
-                selfImp.resetIP6RoutesGroup.add(&WifiRouteEntry::new(Some(address), selfImp.connection.clone(), IpProtocol::IPv6))
-            }
+        for i in 0..ip6RouteLength {
+            let route = &WifiRouteEntry::new(Some(i), selfImp.connection.clone(), IPv6);
+            selfImp.resetIP6RoutesGroup.add(route)
         }
+        let route = &WifiRouteEntry::new(None, selfImp.connection.clone(), IPv6);
+        selfImp.resetIP6RoutesGroup.add(route)
         // Security
     }
 
@@ -182,6 +180,7 @@ fn setupCallbacks(wifiOptions: &Arc<WifiOptions>) {
     }));
     imp.wifiOptionsApplyButton.connect_clicked(clone!(@weak imp => move |_| {
         let prop = imp.connection.borrow().convert_to_propmap();
+        // todo send to daemon somehow
     }));
     // IPv4
     let wifiOptionsIP4 = wifiOptions.clone();
@@ -255,6 +254,11 @@ fn setupCallbacks(wifiOptions: &Arc<WifiOptions>) {
             }
         }
     }));
+    imp.resetIP6AddressAddButton.connect_clicked(clone!(@weak imp => move |_|  {
+        let address = &WifiAddressEntry::new(None, imp.connection.clone(), IpProtocol::IPv4);
+        imp.resetIP6AddressGroup.add(address);
+    }));
+
     imp.resetIP6Gateway.connect_changed(clone!(@weak imp => move |entry| {
         let gatewayInput = entry.text();
         let mut conn = imp.connection.borrow_mut();
