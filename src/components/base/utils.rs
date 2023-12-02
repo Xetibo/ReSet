@@ -394,11 +394,11 @@ pub fn start_audio_listener(
 
         let mut conn = start_dbus_audio_listener(conn);
 
-        if sink_box.is_some() {
-            conn = start_output_box_listener(conn, sink_box.unwrap());
+        if let Some(sink_box) = sink_box {
+            conn = start_output_box_listener(conn, sink_box);
         }
-        if source_box.is_some() {
-            conn = start_input_box_listener(conn, source_box.unwrap());
+        if let Some(source_box) = source_box {
+            conn = start_input_box_listener(conn, source_box);
         }
 
         listeners.pulse_listener.store(true, Ordering::SeqCst);
@@ -435,4 +435,3 @@ fn stop_dbus_audio_listener(conn: Connection) {
     );
     let _: Result<(), Error> = proxy.method_call("org.Xetibo.ReSetAudio", "StopAudioListener", ());
 }
-

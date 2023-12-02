@@ -5,8 +5,8 @@ use adw::glib::Object;
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::Error;
-use glib::{Cast, clone};
 use glib::subclass::types::ObjectSubclassIsExt;
+use glib::{clone, Cast};
 use gtk::{gio, StringList, StringObject};
 use ReSet_Lib::audio::audio::Card;
 
@@ -29,10 +29,9 @@ impl CardEntry {
             let imp = entry.imp();
             let mut map = imp.resetCardMap.borrow_mut();
             entry.set_title(&card.name);
-            let mut i: u32 = 0;
             let mut index: u32 = 0;
             let list = StringList::new(&[]);
-            for profile in card.profiles.iter() {
+            for (i, profile) in (0_u32..).zip(card.profiles.iter()) {
                 if profile.name == card.active_profile {
                     index = i;
                 }
@@ -41,23 +40,22 @@ impl CardEntry {
                     profile.description.clone(),
                     (card.index, profile.name.clone()),
                 );
-                i += 1;
             }
             entry.set_model(Some(&list));
             entry.set_selected(index);
             entry.set_use_subtitle(true);
             entry.connect_selected_notify(clone!(@weak imp => move |dropdown| {
-                    let selected = dropdown.selected_item();
-                    if selected.is_none() {
-                        return;
-                    }
-                    let selected = selected.unwrap();
-                    let selected = selected.downcast_ref::<StringObject>().unwrap();
-                    let selected = selected.string().to_string();
-                    let map = imp.resetCardMap.borrow();
-                    let (device_index, profile_name) = map.get(&selected).unwrap();
-                    set_card_profile_of_device(*device_index, profile_name.clone());
-                }));
+                let selected = dropdown.selected_item();
+                if selected.is_none() {
+                    return;
+                }
+                let selected = selected.unwrap();
+                let selected = selected.downcast_ref::<StringObject>().unwrap();
+                let selected = selected.string().to_string();
+                let map = imp.resetCardMap.borrow();
+                let (device_index, profile_name) = map.get(&selected).unwrap();
+                set_card_profile_of_device(*device_index, profile_name.clone());
+            }));
             entry.set_factory(Some(&createDropdownLabelFactory()));
         }
         entry

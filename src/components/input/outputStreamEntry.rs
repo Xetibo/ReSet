@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
@@ -10,7 +11,6 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
 use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::OutputStream;
-use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 
 use super::outputStreamEntryImpl;
 use super::sourceBox::SourceBox;
@@ -33,7 +33,8 @@ impl OutputStreamEntry {
             let imp = obj.imp();
             let name = stream.application_name.clone() + ": " + stream.name.as_str();
             imp.resetSourceSelection.set_title(name.as_str());
-            imp.resetSourceSelection.set_factory(Some(&createDropdownLabelFactory()));
+            imp.resetSourceSelection
+                .set_factory(Some(&createDropdownLabelFactory()));
             setComboRowEllipsis(imp.resetSourceSelection.get());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
@@ -68,16 +69,8 @@ impl OutputStreamEntry {
             );
             {
                 let list = box_imp.resetModelList.read().unwrap();
-                // while list.is_err() {
-                //     list = box_imp.resetModelList.try_borrow();
-                // }
-                // let list = list.unwrap();
                 imp.resetSourceSelection.set_model(Some(&*list));
                 let map = box_imp.resetSourceMap.write().unwrap();
-                // while map.is_err() {
-                //     map = box_imp.resetSourceMap.try_borrow();
-                // }
-                // let map = map.unwrap();
                 let mut name = box_imp.resetDefaultSource.try_borrow();
                 while name.is_err() {
                     name = box_imp.resetDefaultSource.try_borrow();
@@ -85,8 +78,8 @@ impl OutputStreamEntry {
                 let name = name.unwrap();
                 let name = &name.alias;
                 let index = map.get(name);
-                if index.is_some() {
-                    imp.resetSourceSelection.set_selected(index.unwrap().1);
+                if let Some(index) = index {
+                    imp.resetSourceSelection.set_selected(index.1);
                 }
             }
             imp.resetSourceSelection.connect_selected_notify(
@@ -166,8 +159,11 @@ fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
-        let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetAudio", "SetOutputStreamMute", (index, muted));
+        let _: Result<(), Error> = proxy.method_call(
+            "org.Xetibo.ReSetAudio",
+            "SetOutputStreamMute",
+            (index, muted),
+        );
         // if res.is_err() {
         //     return false;
         // }

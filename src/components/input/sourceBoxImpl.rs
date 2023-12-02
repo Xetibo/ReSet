@@ -1,8 +1,8 @@
+use adw::{ActionRow, ComboRow, PreferencesGroup};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
-use adw::{ActionRow, ComboRow, PreferencesGroup};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::input::sourceBox;
@@ -13,6 +13,10 @@ use ReSet_Lib::audio::audio::Source;
 
 use super::outputStreamEntry::OutputStreamEntry;
 use super::sourceEntry::SourceEntry;
+
+type SourceEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SourceEntry>, String)>>>;
+type OutputStreamEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<OutputStreamEntry>)>>>;
+type SourceMap = Arc<RwLock<HashMap<String, (u32, u32, String)>>>;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -44,13 +48,13 @@ pub struct SourceBox {
     pub resetCards: TemplateChild<PreferencesGroup>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSource: Arc<RefCell<Source>>,
-    pub resetSourceList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SourceEntry>, String)>>>,
-    pub resetOutputStreamList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<OutputStreamEntry>)>>>,
+    pub resetSourceList: SourceEntryMap,
+    pub resetOutputStreamList: OutputStreamEntryMap,
     pub resetModelList: Arc<RwLock<StringList>>,
     pub resetModelIndex: Arc<RwLock<u32>>,
     // first u32 is the index of the source, the second the index in the model list and the third is
     // the full name
-    pub resetSourceMap: Arc<RwLock<HashMap<String, (u32, u32, String)>>>,
+    pub resetSourceMap: SourceMap,
     pub volumeTimeStamp: RefCell<Option<SystemTime>>,
 }
 

@@ -4,14 +4,16 @@ use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, ListBoxRowExt, PreferencesGroupExt, RangeExt};
-use dbus::{Error, Path};
+use adw::prelude::{
+    BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, ListBoxRowExt, PreferencesGroupExt, RangeExt,
+};
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
-use glib::{Cast, clone, Propagation, Variant};
+use dbus::{Error, Path};
 use glib::subclass::prelude::ObjectSubclassIsExt;
+use glib::{clone, Cast, Propagation, Variant};
+use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
-use gtk::prelude::{ActionableExt};
 use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
 
 use crate::components::base::cardEntry::CardEntry;
@@ -25,7 +27,7 @@ use crate::components::input::sourceEntry::set_source_volume;
 use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 
 use super::outputStreamEntry::OutputStreamEntry;
-use super::sourceEntry::{set_default_source, SourceEntry, toggle_source_mute};
+use super::sourceEntry::{set_default_source, toggle_source_mute, SourceEntry};
 
 glib::wrapper! {
     pub struct SourceBox(ObjectSubclass<sourceBoxImpl::SourceBox>)
@@ -59,13 +61,25 @@ impl SourceBox {
             .set_action_target_value(Some(&Variant::from("profileConfiguration")));
 
         selfImp.resetOutputStreamButton.set_activatable(true);
-        selfImp.resetOutputStreamButton.set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetOutputStreamButton
+            .set_action_name(Some("navigation.pop"));
 
         selfImp.resetInputCardsBackButton.set_activatable(true);
-        selfImp.resetInputCardsBackButton.set_action_name(Some("navigation.pop"));
+        selfImp
+            .resetInputCardsBackButton
+            .set_action_name(Some("navigation.pop"));
 
-        selfImp.resetSourceDropdown.set_factory(Some(&createDropdownLabelFactory()));
+        selfImp
+            .resetSourceDropdown
+            .set_factory(Some(&createDropdownLabelFactory()));
         setComboRowEllipsis(selfImp.resetSourceDropdown.get());
+    }
+}
+
+impl Default for SourceBox {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -77,11 +91,9 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
             let list = output_box_imp.resetModelList.write().unwrap();
             let mut map = output_box_imp.resetSourceMap.write().unwrap();
             let mut model_index = output_box_imp.resetModelIndex.write().unwrap();
-            let mut i: u32 = 0;
-            for source in sources.iter() {
+            for (i, source) in (0_u32..).zip(sources.iter()) {
                 list.append(&source.alias);
                 map.insert(source.alias.clone(), (source.index, i, source.name.clone()));
-                i += 1;
                 *model_index += 1;
             }
         }
@@ -93,7 +105,6 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
         populate_cards(input_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                // TODO handle events
                 let output_box_ref_slider = input_box.clone();
                 let output_box_ref_mute = input_box.clone();
                 let output_box_ref = input_box.clone();
@@ -130,12 +141,8 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     output_box_imp.resetSourceDropdown.set_model(Some(&*list));
                     let map = output_box_imp.resetSourceMap.read().unwrap();
                     let name = output_box_imp.resetDefaultSource.borrow();
-                    let name = &name.alias;
-                    let index = map.get(name);
-                    if index.is_some() {
-                        output_box_imp
-                            .resetSourceDropdown
-                            .set_selected(index.unwrap().1);
+                    if let Some(index) = map.get(&name.alias) {
+                        output_box_imp.resetSourceDropdown.set_selected(index.1);
                     }
                     output_box_imp.resetSourceDropdown.connect_selected_notify(
                         clone!(@weak output_box_imp => move |dropdown| {
@@ -206,7 +213,6 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
 }
 
 pub fn populate_outputstreams(input_box: Arc<SourceBox>) {
-    // TODO add listener
     let input_box_ref = input_box.clone();
 
     gio::spawn_blocking(move || {
@@ -237,8 +243,7 @@ pub fn populate_cards(input_box: Arc<SourceBox>) {
             glib::idle_add_once(move || {
                 let imp = output_box_ref.imp();
                 for card in cards {
-                    imp.resetCards
-                        .add(&CardEntry::new(card));
+                    imp.resetCards.add(&CardEntry::new(card));
                 }
             });
         });
@@ -282,7 +287,8 @@ fn get_cards() -> Vec<Card> {
         "/org/Xetibo/ReSetDaemon",
         Duration::from_millis(1000),
     );
-    let res: Result<(Vec<Card>,), Error> = proxy.method_call("org.Xetibo.ReSetAudio", "ListCards", ());
+    let res: Result<(Vec<Card>,), Error> =
+        proxy.method_call("org.Xetibo.ReSetAudio", "ListCards", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -405,12 +411,12 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 }
                 let mut map = output_box_imp.resetSourceMap.write().unwrap();
                 let entry_index = map.remove(&alias.unwrap().2);
-                if entry_index.is_some() {
+                if let Some(entry_index) = entry_index {
                     output_box_imp
                         .resetModelList
                         .write()
                         .unwrap()
-                        .remove(entry_index.unwrap().1);
+                        .remove(entry_index.1);
                 }
                 let mut index = output_box_imp.resetModelIndex.write().unwrap();
                 if *index != 0 {
@@ -449,10 +455,10 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 } else {
                     imp.resetSelectedSource.set_active(false);
                 }
-                imp.resetSourceName.set_title(ir.source.alias.clone().as_str());
+                imp.resetSourceName
+                    .set_title(ir.source.alias.clone().as_str());
                 imp.resetVolumePercentage.set_text(&percentage);
                 imp.resetVolumeSlider.set_value(*volume as f64);
-
             });
         });
         true
@@ -492,9 +498,8 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
             let alias: String;
             {
                 let source_list = imp.resetSourceList.read().unwrap();
-                let alias_opt = source_list.get(&ir.stream.source_index);
-                if alias_opt.is_some() {
-                    alias = alias_opt.unwrap().2.clone();
+                if let Some(alias_opt) = source_list.get(&ir.stream.source_index) {
+                    alias = alias_opt.2.clone();
                 } else {
                     alias = String::from("");
                 }
@@ -529,9 +534,8 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     imp.resetVolumePercentage.set_text(&percentage);
                     imp.resetVolumeSlider.set_value(*volume as f64);
                     let map = output_box_imp.resetSourceMap.read().unwrap();
-                    let index = map.get(&alias);
-                    if index.is_some() {
-                        imp.resetSourceSelection.set_selected(index.unwrap().1);
+                    if let Some(index) = map.get(&alias) {
+                        imp.resetSourceSelection.set_selected(index.1);
                     }
                 });
             });
@@ -554,7 +558,6 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     let mut list = output_box_imp.resetOutputStreamList.write().unwrap();
                     let entry = list.remove(&ir.index);
                     if entry.is_none() {
-                        println!("tried to remove nonexistant?? wat");
                         return;
                     }
                     output_box_imp.resetOutputStreams.remove(&*entry.unwrap().0);

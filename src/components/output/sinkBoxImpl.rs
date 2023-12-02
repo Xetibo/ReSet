@@ -1,20 +1,22 @@
+use adw::{ActionRow, ComboRow, PreferencesGroup};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
-use adw::{ActionRow, ComboRow, PreferencesGroup};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::output::inputStreamEntry::InputStreamEntry;
 use gtk::subclass::prelude::*;
-use gtk::{
-    glib, Box, Button, CheckButton, CompositeTemplate, Label, StringList, TemplateChild,
-};
+use gtk::{glib, Box, Button, CheckButton, CompositeTemplate, Label, StringList, TemplateChild};
 use gtk::{prelude::*, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::Sink;
 
 use super::sinkBox;
 use super::sinkEntry::SinkEntry;
+
+type SinkEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, String)>>>;
+type InputStreamEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<InputStreamEntry>)>>>;
+type SinkMap = Arc<RwLock<HashMap<String, (u32, u32, String)>>>;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -46,14 +48,13 @@ pub struct SinkBox {
     pub resetCards: TemplateChild<PreferencesGroup>,
     pub resetDefaultCheckButton: Arc<CheckButton>,
     pub resetDefaultSink: Arc<RefCell<Sink>>,
-    pub resetSinkList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, String)>>>,
-    pub resetInputStreamList: Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<InputStreamEntry>)>>>,
+    pub resetSinkList: SinkEntryMap,
+    pub resetInputStreamList: InputStreamEntryMap,
     pub resetModelList: Arc<RwLock<StringList>>,
     pub resetModelIndex: Arc<RwLock<u32>>,
     // first u32 is the index of the sink, the second the index in the model list and the third is
     // the full name
-    pub resetSinkMap: Arc<RwLock<HashMap<String, (u32, u32, String)>>>,
-    // pub : Arc<Mutex<Vec<ListEntry>>>,
+    pub resetSinkMap: SinkMap,
     pub volumeTimeStamp: RefCell<Option<SystemTime>>,
 }
 

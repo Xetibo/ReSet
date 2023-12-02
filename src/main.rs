@@ -18,8 +18,6 @@ const APP_ID: &str = "org.Xetibo.ReSet";
 
 #[tokio::main]
 async fn main() {
-    // TODO is this the best way to handle this??
-
     tokio::task::spawn(daemon_check());
     gio::resources_register_include!("src.templates.gresource")
         .expect("Failed to register resources.");
@@ -63,7 +61,8 @@ fn shutdown(_: &Application) {
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(100),
         );
-        let res: Result<(), Error> = proxy.method_call("org.Xetibo.ReSetDaemon", "UnregisterClient", ("ReSet",));
+        let res: Result<(), Error> =
+            proxy.method_call("org.Xetibo.ReSetDaemon", "UnregisterClient", ("ReSet",));
         res
     });
 }
@@ -76,7 +75,8 @@ async fn daemon_check() {
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(100),
         );
-        let res: Result<(), Error> = proxy.method_call("org.Xetibo.ReSetDaemon", "RegisterClient", ("ReSet",));
+        let res: Result<(), Error> =
+            proxy.method_call("org.Xetibo.ReSetDaemon", "RegisterClient", ("ReSet",));
         res
     });
     let res = handle.join();

@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
@@ -10,7 +11,6 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
 use gtk::{gio, StringObject};
 use ReSet_Lib::audio::audio::InputStream;
-use crate::components::utils::{createDropdownLabelFactory, setComboRowEllipsis};
 
 use super::inputStreamEntryImpl;
 use super::sinkBox::SinkBox;
@@ -20,6 +20,9 @@ glib::wrapper! {
     @extends adw::PreferencesGroup, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }
+
+unsafe impl Send for InputStreamEntry {}
+unsafe impl Sync for InputStreamEntry {}
 
 impl InputStreamEntry {
     pub fn new(sink_box: Arc<SinkBox>, stream: InputStream) -> Self {
@@ -38,7 +41,8 @@ impl InputStreamEntry {
             }
             let name = stream.application_name.clone() + ": " + stream.name.as_str();
             imp.resetSinkSelection.set_title(name.as_str());
-            imp.resetSinkSelection.set_factory(Some(&createDropdownLabelFactory()));
+            imp.resetSinkSelection
+                .set_factory(Some(&createDropdownLabelFactory()));
             setComboRowEllipsis(imp.resetSinkSelection.get());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
@@ -83,11 +87,11 @@ impl InputStreamEntry {
                 let map = box_imp.resetSinkMap.read().unwrap();
                 let sink_list = box_imp.resetSinkList.read().unwrap();
                 let name = sink_list.get(&index);
-                if name.is_some() {
-                    let name = &name.unwrap().2;
+                if let Some(name) = name {
+                    let name = &name.2;
                     let index = map.get(name);
-                    if index.is_some() {
-                        imp.resetSinkSelection.set_selected(index.unwrap().1);
+                    if let Some(index) = index {
+                        imp.resetSinkSelection.set_selected(index.1);
                     }
                 } else {
                     let mut name = box_imp.resetDefaultSink.try_borrow();
@@ -96,8 +100,8 @@ impl InputStreamEntry {
                     }
                     let name = &name.unwrap().alias;
                     let index = map.get(name);
-                    if index.is_some() {
-                        imp.resetSinkSelection.set_selected(index.unwrap().1);
+                    if let Some(index) = index {
+                        imp.resetSinkSelection.set_selected(index.1);
                     }
                 }
             }
@@ -182,8 +186,11 @@ fn toggle_input_stream_mute(index: u32, muted: bool) -> bool {
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
-        let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetAudio", "SetInputStreamMute", (index, muted));
+        let _: Result<(), Error> = proxy.method_call(
+            "org.Xetibo.ReSetAudio",
+            "SetInputStreamMute",
+            (index, muted),
+        );
         // if res.is_err() {
         //     return false;
         // }
@@ -200,8 +207,11 @@ fn set_sink_of_input_stream(stream: u32, sink: u32) -> bool {
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
-        let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetAudio", "SetSinkOfInputStream", (stream, sink));
+        let _: Result<(), Error> = proxy.method_call(
+            "org.Xetibo.ReSetAudio",
+            "SetSinkOfInputStream",
+            (stream, sink),
+        );
         // if res.is_err() {
         //     return false;
         // }

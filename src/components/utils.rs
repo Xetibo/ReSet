@@ -1,9 +1,6 @@
-use std::time::Duration;
-
 use adw::gdk::pango::EllipsizeMode;
 use adw::prelude::ListModelExtManual;
 use adw::ComboRow;
-use dbus::blocking::{Connection, Proxy};
 use glib::{Cast, Object};
 use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, WidgetExt};
 use gtk::{Align, SignalListItemFactory, StringObject};

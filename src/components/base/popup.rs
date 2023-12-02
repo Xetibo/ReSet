@@ -13,7 +13,12 @@ glib::wrapper! {
 impl Popup {
     pub fn new() -> Self {
         let popup: Popup = Object::builder().build();
-        // popup.set_child(child);
         popup
+    }
+}
+
+impl Default for Popup {
+    fn default() -> Self {
+        Self::new()
     }
 }

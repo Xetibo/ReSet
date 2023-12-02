@@ -1,8 +1,8 @@
+use adw::subclass::prelude::PreferencesGroupImpl;
+use adw::{ComboRow, PreferencesGroup};
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
-use adw::{ComboRow, PreferencesGroup};
-use adw::subclass::prelude::PreferencesGroupImpl;
 
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale};

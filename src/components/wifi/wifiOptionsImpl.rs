@@ -1,10 +1,10 @@
+use crate::components::wifi::wifiOptions;
+use adw::subclass::prelude::NavigationPageImpl;
+use adw::{ActionRow, ComboRow, EntryRow, NavigationPage, PreferencesGroup, SwitchRow};
+use gtk::subclass::prelude::*;
+use gtk::{glib, Button, CompositeTemplate};
 use std::cell::RefCell;
 use std::rc::Rc;
-use adw::{ActionRow, ComboRow, EntryRow, NavigationPage, PreferencesGroup, SwitchRow};
-use adw::subclass::prelude::NavigationPageImpl;
-use crate::components::wifi::{wifiOptions};
-use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, Button};
 use ReSet_Lib::network::connection::Connection;
 
 #[allow(non_snake_case)]
@@ -58,7 +58,7 @@ pub struct WifiOptions {
     // Misc
     #[template_child]
     pub wifiOptionsApplyButton: TemplateChild<Button>,
-    pub connection: Rc<RefCell<Connection>>
+    pub connection: Rc<RefCell<Connection>>,
 }
 
 #[glib::object_subclass]
