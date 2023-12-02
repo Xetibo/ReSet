@@ -30,30 +30,38 @@ unsafe impl Send for BluetoothBox {}
 unsafe impl Sync for BluetoothBox {}
 
 impl BluetoothBox {
-    pub fn new() -> Self {
-        Object::builder().build()
+    pub fn new(listeners: Arc<Listeners>) -> Arc<Self> {
+        let obj: Arc<Self> = Arc::new(Object::builder().build());
+        setupCallbacks(listeners, obj)
     }
 
-    pub fn setupCallbacks(&self) {
-        let selfImp = self.imp();
-        selfImp.resetVisibility.set_activatable(true);
-        selfImp
-            .resetVisibility
-            .set_action_name(Some("navigation.push"));
-        selfImp
-            .resetVisibility
-            .set_action_target_value(Some(&Variant::from("visibility")));
-
-        selfImp
-            .resetBluetoothMainTab
-            .set_action_name(Some("navigation.pop"));
-    }
+    pub fn setupCallbacks(&self) {}
 }
 
-impl Default for BluetoothBox {
-    fn default() -> Self {
-        Self::new()
-    }
+fn setupCallbacks(
+    listeners: Arc<Listeners>,
+    bluetooth_box: Arc<BluetoothBox>,
+) -> Arc<BluetoothBox> {
+    let imp = bluetooth_box.imp();
+    // let bluetooth_box_ref = bluetooth_box.clone();
+    imp.resetVisibility.set_activatable(true);
+    imp.resetVisibility.set_action_name(Some("navigation.push"));
+    imp.resetVisibility
+        .set_action_target_value(Some(&Variant::from("visibility")));
+
+    imp.resetBluetoothMainTab
+        .set_action_name(Some("navigation.pop"));
+    // TODO add a manual search button here
+    imp.resetBluetoothSwitch.connect_state_set(move |_, state| {
+        // TODO restart bluetooth search here.
+        if !state {
+            listeners.bluetooth_listener.store(false, Ordering::SeqCst);
+        } else {
+            listeners.bluetooth_listener.store(true, Ordering::SeqCst);
+        }
+        glib::Propagation::Proceed
+    });
+    bluetooth_box
 }
 
 pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {

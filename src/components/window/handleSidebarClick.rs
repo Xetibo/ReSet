@@ -23,7 +23,7 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox) =
         show_stored_connections(wifiBox.clone());
         scanForWifi(wifiBox.clone());
         let wifiFrame = wrapInFrame(SettingBox::new(&*wifiBox));
-        let bluetooth_box = Arc::new(BluetoothBox::new());
+        let bluetooth_box = BluetoothBox::new(listeners.clone());
         populate_conntected_bluetooth_devices(bluetooth_box.clone());
         start_bluetooth_listener(listeners.clone(), bluetooth_box.clone());
         let bluetoothFrame = wrapInFrame(SettingBox::new(&*bluetooth_box));
@@ -51,7 +51,7 @@ pub const HANDLE_BLUETOOTH_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
         listeners.stop_audio_listener();
-        let bluetooth_box = Arc::new(BluetoothBox::new());
+        let bluetooth_box = BluetoothBox::new(listeners.clone());
         start_bluetooth_listener(listeners.clone(), bluetooth_box.clone());
         populate_conntected_bluetooth_devices(bluetooth_box.clone());
         let bluetoothFrame = wrapInFrame(SettingBox::new(&*bluetooth_box));
