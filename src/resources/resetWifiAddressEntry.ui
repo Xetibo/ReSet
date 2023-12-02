@@ -4,6 +4,8 @@
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.2"/>
   <template class="resetWifiAddressEntry" parent="GtkBox">
+    <property name="margin-bottom">2</property>
+    <property name="margin-top">2</property>
     <child>
       <object class="AdwExpanderRow" id="resetAddressRow">
         <property name="hexpand">True</property>
@@ -14,8 +16,8 @@
           </object>
         </child>
         <child>
-          <object class="AdwEntryRow" id="resetAddressNetmask">
-            <property name="title">Netmask</property>
+          <object class="AdwEntryRow" id="resetAddressPrefix">
+            <property name="title">Prefix</property>
           </object>
         </child>
       </object>
