@@ -24,7 +24,7 @@ pub fn getConnectionSettings(path: Path<'static>) -> ResetConnection {
         Duration::from_millis(1000),
     );
     let res: ResultType =
-        proxy.method_call("org.xetibo.ReSetWireless", "GetConnectionSettings", (path,));
+        proxy.method_call("org.Xetibo.ReSetWireless", "GetConnectionSettings", (path,));
     if res.is_err() {
         ResetConnection::default();
     }
