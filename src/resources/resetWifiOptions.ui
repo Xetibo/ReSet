@@ -118,6 +118,11 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup" id="resetIP4AddressGroup">
+                    <property name="header-suffix">
+                      <object class="GtkButton" id="resetIP4AddressAddButton">
+                        <property name="icon-name">list-add-symbolic</property>
+                      </object>
+                    </property>
                     <property name="margin-top">10</property>
                     <property name="title">Addresses</property>
                   </object>

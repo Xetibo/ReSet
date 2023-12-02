@@ -42,6 +42,8 @@ pub struct WifiOptions {
     #[template_child]
     pub resetIP4AddressGroup: TemplateChild<PreferencesGroup>,
     #[template_child]
+    pub resetIP4AddressAddButton: TemplateChild<Button>,
+    #[template_child]
     pub resetIP4RoutesGroup: TemplateChild<PreferencesGroup>,
     // IPv6
     #[template_child]

@@ -1,7 +1,12 @@
-use crate::components::wifi::wifiAddressEntry;
+use std::cell::{Cell, RefCell};
 use adw::{EntryRow, ExpanderRow};
+use glib::once_cell::sync::Lazy;
+use glib::StaticType;
+use glib::subclass::Signal;
+use crate::components::wifi::{wifiAddressEntry};
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate};
+use gtk::{glib, CompositeTemplate, Button};
+use crate::components::wifi::utils::IpProtocol;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -12,9 +17,12 @@ pub struct WifiAddressEntryImpl {
     #[template_child]
     pub resetAddressAddress: TemplateChild<EntryRow>,
     #[template_child]
-    pub resetAddressNetmask: TemplateChild<EntryRow>,
+    pub resetAddressPrefix: TemplateChild<EntryRow>,
     #[template_child]
     pub resetAddressRemove: TemplateChild<Button>,
+    pub address: RefCell<(bool, String)>,
+    pub prefix: Cell<(bool, u32)>,
+    pub protocol: Cell<IpProtocol>,
 }
 
 #[glib::object_subclass]

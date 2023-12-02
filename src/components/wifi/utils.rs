@@ -6,8 +6,15 @@ use std::collections::HashMap;
 use std::time::Duration;
 use ReSet_Lib::network::connection::Connection as ResetConnection;
 
+#[derive(Default, Copy, Clone)]
+pub enum IpProtocol {
+    #[default]
+    IPv4,
+    IPv6,
+}
+
 type ResultType =
-    Result<(HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>>,), Error>;
+Result<(HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>>,), Error>;
 
 pub fn getConnectionSettings(path: Path<'static>) -> ResetConnection {
     let conn = Connection::new_session().unwrap();
@@ -17,7 +24,7 @@ pub fn getConnectionSettings(path: Path<'static>) -> ResetConnection {
         Duration::from_millis(1000),
     );
     let res: ResultType =
-        proxy.method_call("org.xetibo.ReSetWireless", "GetConnectionSettings", (path,));
+        proxy.method_call("org.Xetibo.ReSetWireless", "GetConnectionSettings", (path,));
     if res.is_err() {
         ResetConnection::default();
     }
