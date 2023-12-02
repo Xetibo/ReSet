@@ -22,7 +22,11 @@ glib::wrapper! {
 }
 
 impl WifiAddressEntry {
-    pub fn new(address: Option<usize>, conn: Rc<RefCell<Connection>>, protocol: IpProtocol) -> Self {
+    pub fn new(
+        address: Option<usize>,
+        conn: Rc<RefCell<Connection>>,
+        protocol: IpProtocol,
+    ) -> Self {
         let entry: WifiAddressEntry = Object::builder().build();
         let entryImp = entry.imp();
 
@@ -30,9 +34,13 @@ impl WifiAddressEntry {
             let conn = conn.borrow();
             let address = unsafe { conn.ipv4.address_data.get_unchecked(address) };
 
-            entryImp.resetAddressAddress.set_text(&*address.address);
-            entryImp.resetAddressPrefix.set_text(&*address.prefix_length.to_string());
-            entryImp.resetAddressRow.set_title(&format!("{}/{}", &*address.address, address.prefix_length));
+            entryImp.resetAddressAddress.set_text(&address.address);
+            entryImp
+                .resetAddressPrefix
+                .set_text(&address.prefix_length.to_string());
+            entryImp
+                .resetAddressRow
+                .set_title(&format!("{}/{}", &*address.address, address.prefix_length));
         }
         entryImp.protocol.set(protocol);
         entry.setupCallbacks(conn);
@@ -53,8 +61,8 @@ impl WifiAddressEntry {
                 return;
             }
             let result = match selfImp.protocol.get() {
-                IpProtocol::IPv4 => Ipv4Addr::from_str(addressInput.as_str()).map(|a| IpAddr::V4(a)),
-                IpProtocol::IPv6 => Ipv6Addr::from_str(addressInput.as_str()).map(|a| IpAddr::V6(a)),
+                IpProtocol::IPv4 => Ipv4Addr::from_str(addressInput.as_str()).map(IpAddr::V4),
+                IpProtocol::IPv6 => Ipv6Addr::from_str(addressInput.as_str()).map(IpAddr::V6),
             };
             match result {
                 Ok(ipAddr) => {
@@ -88,10 +96,9 @@ impl WifiAddressEntry {
                 }
                 selfImp.prefix.set((false, 0));
                 setRowName(&selfImp);
-                return;
             };
 
-            if prefixInput.is_empty() || !prefix.is_ok() {
+            if prefixInput.is_empty() || prefix.is_err() {
                 handleError();
                 return;
             }
@@ -124,24 +131,31 @@ impl WifiAddressEntry {
         }));
 
         let conn = connection.clone();
-        selfImp.resetAddressRemove.connect_clicked(clone!(@weak selfImp, @weak self as what => move |_| {
-            let address = selfImp.resetAddressAddress.text();
-            let mut conn = conn.borrow_mut();
-            conn.ipv4.address_data.retain(|addr| addr.address != address.to_string());
-            what.unparent();
-        }));
+        selfImp.resetAddressRemove.connect_clicked(
+            clone!(@weak selfImp, @weak self as what => move |_| {
+                let address = selfImp.resetAddressAddress.text();
+                let mut conn = conn.borrow_mut();
+                conn.ipv4.address_data.retain(|addr| addr.address != address);
+                what.unparent();
+            }),
+        );
     }
 }
 
 fn setRowName(selfImp: &WifiAddressEntryImpl) {
-    if selfImp.resetAddressAddress.text().is_empty() { return; }
+    if selfImp.resetAddressAddress.text().is_empty() {
+        return;
+    }
     let address = selfImp.address.borrow();
     let prefix = selfImp.prefix.get();
     let title = match (address.0, prefix.0) {
-        (true, true) => { format!("{}/{}", address.1, prefix.1) },
+        (true, true) => {
+            format!("{}/{}", address.1, prefix.1)
+        }
         (true, false) => "Prefix wrong".to_string(),
         (false, true) => "Address wrong".to_string(),
         (false, false) => "Address and Prefix wrong".to_string(),
     };
-    selfImp.resetAddressRow.set_title(&*title);
+    selfImp.resetAddressRow.set_title(&title);
 }
+

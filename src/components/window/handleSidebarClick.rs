@@ -4,14 +4,16 @@ use std::sync::Arc;
 
 use crate::components::base::settingBox::SettingBox;
 use crate::components::base::utils::{start_audio_listener, Listeners};
-use crate::components::bluetooth::bluetoothBox::{start_bluetooth_listener, BluetoothBox, populate_conntected_bluetooth_devices};
+use crate::components::bluetooth::bluetoothBox::{
+    populate_conntected_bluetooth_devices, start_bluetooth_listener, BluetoothBox,
+};
 use crate::components::input::sourceBox::{populate_sources, SourceBox};
 use crate::components::output::sinkBox::{populate_sinks, SinkBox};
 use crate::components::wifi::wifiBox::{
     scanForWifi, show_stored_connections, start_event_listener, WifiBox,
 };
 use gtk::prelude::WidgetExt;
-use gtk::{FlowBox, Frame, Label};
+use gtk::{FlowBox, Frame};
 
 pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
@@ -58,17 +60,6 @@ pub const HANDLE_BLUETOOTH_CLICK: fn(Arc<Listeners>, FlowBox) =
         resetMain.set_max_children_per_line(1);
     };
 
-pub const HANDLE_VPN_CLICK: fn(Arc<Listeners>, FlowBox) =
-    |listeners: Arc<Listeners>, resetMain: FlowBox| {
-        listeners.stop_network_listener();
-        listeners.stop_bluetooth_listener();
-        listeners.stop_audio_listener();
-        let label = Label::new(Some("not implemented yet"));
-        resetMain.remove_all();
-        resetMain.insert(&label, -1);
-        resetMain.set_max_children_per_line(1);
-    };
-
 pub const HANDLE_AUDIO_CLICK: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
@@ -96,7 +87,9 @@ pub const HANDLE_VOLUME_CLICK: fn(Arc<Listeners>, FlowBox) =
         listeners.stop_bluetooth_listener();
         let audioOutput = Arc::new(SinkBox::new());
         start_audio_listener(listeners.clone(), Some(audioOutput.clone()), None);
-        while !listeners.pulse_listener.load(Ordering::SeqCst) { std::hint::spin_loop() }
+        while !listeners.pulse_listener.load(Ordering::SeqCst) {
+            std::hint::spin_loop()
+        }
         populate_sinks(audioOutput.clone());
         let audioFrame = wrapInFrame(SettingBox::new(&*audioOutput));
         resetMain.remove_all();
@@ -117,50 +110,6 @@ pub const HANDLE_MICROPHONE_CLICK: fn(Arc<Listeners>, FlowBox) =
         resetMain.set_max_children_per_line(1);
     };
 
-pub const HANDLE_PERIPHERALS_CLICK: fn(Arc<Listeners>, FlowBox) =
-    |listeners: Arc<Listeners>, resetMain: FlowBox| {
-        listeners.stop_network_listener();
-        listeners.stop_audio_listener();
-        listeners.stop_bluetooth_listener();
-        let label = Label::new(Some("not implemented yet"));
-        resetMain.remove_all();
-        resetMain.insert(&label, -1);
-        resetMain.set_max_children_per_line(1);
-    };
-
-pub const HANDLE_MONITOR_CLICK: fn(Arc<Listeners>, FlowBox) =
-    |listeners: Arc<Listeners>, resetMain: FlowBox| {
-        listeners.stop_network_listener();
-        listeners.stop_audio_listener();
-        listeners.stop_bluetooth_listener();
-        let label = Label::new(Some("not implemented yet"));
-        resetMain.remove_all();
-        resetMain.insert(&label, -1);
-        resetMain.set_max_children_per_line(1);
-    };
-
-pub const HANDLE_MOUSE_CLICK: fn(Arc<Listeners>, FlowBox) =
-    |listeners: Arc<Listeners>, resetMain: FlowBox| {
-        listeners.stop_network_listener();
-        listeners.stop_audio_listener();
-        listeners.stop_bluetooth_listener();
-        let label = Label::new(Some("not implemented yet"));
-        resetMain.remove_all();
-        resetMain.insert(&label, -1);
-        resetMain.set_max_children_per_line(1);
-    };
-
-pub const HANDLE_KEYBOARD_CLICK: fn(Arc<Listeners>, FlowBox) =
-    |listeners: Arc<Listeners>, resetMain: FlowBox| {
-        listeners.stop_network_listener();
-        listeners.stop_audio_listener();
-        listeners.stop_bluetooth_listener();
-        let label = Label::new(Some("not implemented yet"));
-        resetMain.remove_all();
-        resetMain.insert(&label, -1);
-        resetMain.set_max_children_per_line(1);
-    };
-
 pub const HANDLE_HOME: fn(Arc<Listeners>, FlowBox) =
     |listeners: Arc<Listeners>, resetMain: FlowBox| {
         listeners.stop_network_listener();
@@ -175,3 +124,60 @@ fn wrapInFrame(widget: SettingBox) -> Frame {
     frame.add_css_class("resetSettingFrame");
     frame
 }
+
+// for future implementations
+// pub const HANDLE_VPN_CLICK: fn(Arc<Listeners>, FlowBox) =
+//     |listeners: Arc<Listeners>, resetMain: FlowBox| {
+//         listeners.stop_network_listener();
+//         listeners.stop_bluetooth_listener();
+//         listeners.stop_audio_listener();
+//         let label = Label::new(Some("not implemented yet"));
+//         resetMain.remove_all();
+//         resetMain.insert(&label, -1);
+//         resetMain.set_max_children_per_line(1);
+//     };
+//
+// pub const HANDLE_PERIPHERALS_CLICK: fn(Arc<Listeners>, FlowBox) =
+//     |listeners: Arc<Listeners>, resetMain: FlowBox| {
+//         listeners.stop_network_listener();
+//         listeners.stop_audio_listener();
+//         listeners.stop_bluetooth_listener();
+//         let label = Label::new(Some("not implemented yet"));
+//         resetMain.remove_all();
+//         resetMain.insert(&label, -1);
+//         resetMain.set_max_children_per_line(1);
+//     };
+//
+// pub const HANDLE_MONITOR_CLICK: fn(Arc<Listeners>, FlowBox) =
+//     |listeners: Arc<Listeners>, resetMain: FlowBox| {
+//         listeners.stop_network_listener();
+//         listeners.stop_audio_listener();
+//         listeners.stop_bluetooth_listener();
+//         let label = Label::new(Some("not implemented yet"));
+//         resetMain.remove_all();
+//         resetMain.insert(&label, -1);
+//         resetMain.set_max_children_per_line(1);
+//     };
+//
+// pub const HANDLE_MOUSE_CLICK: fn(Arc<Listeners>, FlowBox) =
+//     |listeners: Arc<Listeners>, resetMain: FlowBox| {
+//         listeners.stop_network_listener();
+//         listeners.stop_audio_listener();
+//         listeners.stop_bluetooth_listener();
+//         let label = Label::new(Some("not implemented yet"));
+//         resetMain.remove_all();
+//         resetMain.insert(&label, -1);
+//         resetMain.set_max_children_per_line(1);
+//     };
+//
+// pub const HANDLE_KEYBOARD_CLICK: fn(Arc<Listeners>, FlowBox) =
+//     |listeners: Arc<Listeners>, resetMain: FlowBox| {
+//         listeners.stop_network_listener();
+//         listeners.stop_audio_listener();
+//         listeners.stop_bluetooth_listener();
+//         let label = Label::new(Some("not implemented yet"));
+//         resetMain.remove_all();
+//         resetMain.insert(&label, -1);
+//         resetMain.set_max_children_per_line(1);
+//     };
+//

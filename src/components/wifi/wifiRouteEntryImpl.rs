@@ -1,9 +1,9 @@
-use std::cell::{Cell, RefCell};
+use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifiRouteEntry;
 use adw::{EntryRow, ExpanderRow};
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate};
-use crate::components::wifi::utils::IpProtocol;
+use std::cell::{Cell, RefCell};
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
