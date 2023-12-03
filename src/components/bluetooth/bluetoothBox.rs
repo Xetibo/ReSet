@@ -44,6 +44,7 @@ fn setupCallbacks(
     listeners: Arc<Listeners>,
     bluetooth_box: Arc<BluetoothBox>,
 ) -> Arc<BluetoothBox> {
+    let bluetooth_box_ref = bluetooth_box.clone();
     let imp = bluetooth_box.imp();
     // let bluetooth_box_ref = bluetooth_box.clone();
     imp.resetVisibility.set_activatable(true);
@@ -55,11 +56,18 @@ fn setupCallbacks(
         .set_action_name(Some("navigation.pop"));
     // TODO add a manual search button here
     imp.resetBluetoothSwitch.connect_state_set(move |_, state| {
-        // TODO restart bluetooth search here.
         if !state {
+            let imp = bluetooth_box_ref.imp();
+            imp.resetBluetoothConnectedDevices.remove_all();
             listeners.bluetooth_listener.store(false, Ordering::SeqCst);
+            set_adapter_enabled(
+                imp.resetCurrentBluetoothAdapter.borrow().path.clone(),
+                false,
+            );
         } else {
-            listeners.bluetooth_listener.store(true, Ordering::SeqCst);
+            let imp = bluetooth_box_ref.imp();
+            set_adapter_enabled(imp.resetCurrentBluetoothAdapter.borrow().path.clone(), true);
+            start_bluetooth_listener(listeners.clone(), bluetooth_box_ref.clone());
         }
         glib::Propagation::Proceed
     });
@@ -319,4 +327,18 @@ fn set_bluetooth_adapter(path: Path<'static>) {
     );
     let _: Result<(Vec<BluetoothAdapter>,), Error> =
         proxy.method_call("org.Xetibo.ReSetBluetooth", "SetBluetoothAdapter", (path,));
+}
+
+fn set_adapter_enabled(path: Path<'static>, enabled: bool) {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(Vec<BluetoothAdapter>,), Error> = proxy.method_call(
+        "org.Xetibo.ReSetBluetooth",
+        "SetBluetoothAdapterEnabled",
+        (path, enabled),
+    );
 }
