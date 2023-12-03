@@ -158,4 +158,3 @@ fn setRowName(selfImp: &WifiAddressEntryImpl) {
     };
     selfImp.resetAddressRow.set_title(&title);
 }
-

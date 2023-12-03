@@ -5,7 +5,7 @@ use adw::subclass::prelude::ActionRowImpl;
 use adw::ActionRow;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Image, Label};
-use std::cell::{RefCell, Cell};
+use std::cell::RefCell;
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
 #[allow(non_snake_case)]
