@@ -5,7 +5,7 @@ use adw::subclass::prelude::ActionRowImpl;
 use adw::ActionRow;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Image, Label};
-use std::cell::RefCell;
+use std::cell::{RefCell, Cell};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
 #[allow(non_snake_case)]
@@ -27,6 +27,7 @@ pub struct WifiEntry {
     pub wifiName: RefCell<String>,
     pub wifiStrength: RefCell<WifiStrength>,
     pub accessPoint: RefCell<AccessPoint>,
+    pub connected: RefCell<bool>,
 }
 
 unsafe impl Send for WifiEntry {}

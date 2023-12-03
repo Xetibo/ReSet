@@ -28,7 +28,7 @@ unsafe impl Send for WifiEntry {}
 unsafe impl Sync for WifiEntry {}
 
 impl WifiEntry {
-    pub fn new(access_point: AccessPoint, wifiBox: &WifiBox) -> Arc<Self> {
+    pub fn new(connected: bool, access_point: AccessPoint, wifiBox: &WifiBox) -> Arc<Self> {
         let entry: Arc<WifiEntry> = Arc::new(Object::builder().build());
         let stored_entry = entry.clone();
         let new_entry = entry.clone();
@@ -40,6 +40,7 @@ impl WifiEntry {
         entryImp.wifiStrength.set(strength);
         entryImp.resetWifiLabel.get().set_text(name);
         entryImp.resetWifiEncrypted.set_visible(false);
+        entryImp.connected.set(connected);
         // TODO handle encryption thing
         entryImp
             .resetWifiStrength
@@ -53,7 +54,7 @@ impl WifiEntry {
         if !access_point.stored {
             entryImp.resetWifiEditButton.set_sensitive(false);
         }
-        if access_point.connected {
+        if connected {
             entryImp
                 .resetWifiConnected
                 .get()
@@ -68,7 +69,7 @@ impl WifiEntry {
         entry.set_activatable(true);
         entry.connect_activated(clone!(@weak entryImp => move |_| {
             let access_point = entryImp.accessPoint.borrow();
-            if access_point.connected {
+            if *entryImp.connected.borrow() {
                 click_disconnect(stored_entry.clone());
             } else if access_point.stored {
                 click_stored_network(stored_entry.clone());
@@ -92,7 +93,9 @@ impl WifiEntry {
 pub fn click_disconnect(entry: Arc<WifiEntry>) {
     println!("called disconnect");
     let entry_ref = entry.clone();
+    entry.set_activatable(false);
     gio::spawn_blocking(move || {
+        let imp = entry_ref.imp();
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
             "org.Xetibo.ReSetDaemon",
@@ -105,21 +108,24 @@ pub fn click_disconnect(entry: Arc<WifiEntry>) {
             (),
         );
         if res.is_err() {
-            println!("res of disconnect was error bro");
+            imp.connected.replace(false);
             return;
         }
-        let imp = entry_ref.imp();
         imp.resetWifiConnected.get().set_from_icon_name(None);
-        imp.accessPoint.borrow_mut().connected = false;
-        println!("disconnect worked");
+        imp.connected.replace(false);
+        glib::spawn_future(async move {
+            glib::idle_add_once(move || {
+                entry.set_activatable(true);
+            });
+        });
     });
 }
+
 pub fn click_stored_network(entry: Arc<WifiEntry>) {
-    let result = Arc::new(AtomicBool::new(false));
     let entryImp = entry.imp();
     let access_point = entryImp.accessPoint.borrow().clone();
     let entry_ref = entry.clone();
-
+    entry.set_activatable(false);
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
@@ -134,24 +140,23 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
         );
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let _imp = entry_ref.imp();
+                entry.set_activatable(true);
+                let imp = entry_ref.imp();
                 if res.is_err() {
-                    println!("wat bro?");
-                    result.store(false, std::sync::atomic::Ordering::SeqCst);
+                    println!("wtf?");
+                    imp.connected.replace(false);
                     return;
                 }
                 if res.unwrap() == (false,) {
-                    println!("error bro?");
-                    result.store(false, std::sync::atomic::Ordering::SeqCst);
+                    println!("false on connecting");
+                    imp.connected.replace(false);
                     return;
                 }
                 let imp = entry_ref.imp();
-                println!("wateroni");
                 imp.resetWifiConnected
                     .get()
                     .set_from_icon_name(Some("network-wireless-connected-symbolic"));
-                imp.accessPoint.borrow_mut().connected = true;
-                result.store(true, std::sync::atomic::Ordering::SeqCst);
+                imp.connected.replace(true);
             });
         });
     });
@@ -159,81 +164,72 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
 }
 
 pub fn click_new_network(entry: Arc<WifiEntry>) {
-    let connect_new_network = |result: Arc<AtomicBool>,
-                               entry: Arc<WifiEntry>,
-                               access_point: AccessPoint,
-                               password: String| {
-        let entry_ref = entry.clone();
-        let popup = entry.imp().resetWifiPopup.imp();
-        popup.resetPopupLabel.set_text("Connecting...");
-        popup.resetPopupLabel.set_visible(true);
-        popup.resetPopupEntry.set_sensitive(false);
-        popup.resetPopupButton.set_sensitive(false);
+    let connect_new_network =
+        |entry: Arc<WifiEntry>, access_point: AccessPoint, password: String| {
+            let entry_ref = entry.clone();
+            let popup = entry.imp().resetWifiPopup.imp();
+            popup.resetPopupLabel.set_text("Connecting...");
+            popup.resetPopupLabel.set_visible(true);
+            popup.resetPopupEntry.set_sensitive(false);
+            popup.resetPopupButton.set_sensitive(false);
 
-        gio::spawn_blocking(move || {
-            let conn = Connection::new_session().unwrap();
-            let proxy = conn.with_proxy(
-                "org.Xetibo.ReSetDaemon",
-                "/org/Xetibo/ReSetDaemon",
-                Duration::from_millis(10000),
-            );
-            let res: Result<(bool,), Error> = proxy.method_call(
-                "org.Xetibo.ReSetWireless",
-                "ConnectToNewAccessPoint",
-                (access_point, password),
-            );
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    if res.is_err() {
-                        println!("error bro");
-                        entry_ref
-                            .imp()
-                            .resetWifiPopup
-                            .imp()
-                            .resetPopupLabel
-                            .set_text("Could not connect to dbus.");
-                        result.store(false, std::sync::atomic::Ordering::SeqCst);
-                        return;
-                    }
-                    if res.unwrap() == (false,) {
-                        println!("wrong pw");
-                        entry_ref
-                            .imp()
-                            .resetWifiPopup
-                            .imp()
-                            .resetPopupLabel
-                            .set_text("Could not connect to access point.");
-                        result.store(false, std::sync::atomic::Ordering::SeqCst);
-                        return;
-                    }
-                    println!("worked?");
-                    let imp = entry_ref.imp();
-                    imp.resetWifiPopup.popdown();
-                    imp.resetWifiEditButton.set_sensitive(true);
-                    imp.resetWifiConnected
-                        .get()
-                        .set_from_icon_name(Some("network-wireless-connected-symbolic"));
-                    result.store(true, std::sync::atomic::Ordering::SeqCst);
+            gio::spawn_blocking(move || {
+                let conn = Connection::new_session().unwrap();
+                let proxy = conn.with_proxy(
+                    "org.Xetibo.ReSetDaemon",
+                    "/org/Xetibo/ReSetDaemon",
+                    Duration::from_millis(10000),
+                );
+                let res: Result<(bool,), Error> = proxy.method_call(
+                    "org.Xetibo.ReSetWireless",
+                    "ConnectToNewAccessPoint",
+                    (access_point, password),
+                );
+                glib::spawn_future(async move {
+                    glib::idle_add_once(move || {
+                        if res.is_err() {
+                            let imp = entry_ref.imp();
+                            imp.resetWifiPopup
+                                .imp()
+                                .resetPopupLabel
+                                .set_text("Could not connect to dbus.");
+                            imp.connected.replace(false);
+                            return;
+                        }
+                        if res.unwrap() == (false,) {
+                            let imp = entry_ref.imp();
+                            imp.resetWifiPopup
+                                .imp()
+                                .resetPopupLabel
+                                .set_text("Could not connect to access point.");
+                            imp.connected.replace(false);
+                            return;
+                        }
+                        println!("worked?");
+                        let imp = entry_ref.imp();
+                        imp.resetWifiPopup.popdown();
+                        imp.resetWifiEditButton.set_sensitive(true);
+                        imp.resetWifiConnected
+                            .get()
+                            .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                        imp.connected.replace(true);
+                    });
                 });
             });
-        });
-        // TODO crate spinner animation and block UI
-    };
+            // TODO crate spinner animation and block UI
+        };
 
-    let result = Arc::new(AtomicBool::new(false));
-    let result_ref = result.clone();
-    let result_ref_button = result.clone();
     let entryImp = entry.imp();
     let popupImp = entryImp.resetWifiPopup.imp();
     popupImp
         .resetPopupEntry
         .connect_activate(clone!(@weak entry as origEntry, @weak entryImp => move |entry| {
-                connect_new_network(result_ref.clone(), origEntry, entryImp.accessPoint.clone().take(), entry.text().to_string());
+                connect_new_network(origEntry, entryImp.accessPoint.clone().take(), entry.text().to_string());
         }));
     popupImp.resetPopupButton.connect_clicked(
         clone!(@weak entry as origEntry,@weak entryImp, @weak popupImp => move |_| {
             let entry = entryImp.resetWifiPopup.imp().resetPopupEntry.text().to_string();
-                connect_new_network(result_ref_button.clone(), origEntry, entryImp.accessPoint.clone().take(), entry);
+                connect_new_network(origEntry, entryImp.accessPoint.clone().take(), entry);
         }),
     );
     entryImp.resetWifiPopup.popup();

@@ -5,14 +5,16 @@ use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
+use adw::prelude::ComboRowExt;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::{Error, Path};
-use gtk::gio;
+use glib::{clone, Cast};
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, ListBoxRowExt, WidgetExt};
-use ReSet_Lib::bluetooth::bluetooth::BluetoothDevice;
+use gtk::{gio, StringObject};
+use ReSet_Lib::bluetooth::bluetooth::{BluetoothAdapter, BluetoothDevice};
 use ReSet_Lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
 
 use crate::components::base::listEntry::ListEntry;
@@ -68,10 +70,50 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
     gio::spawn_blocking(move || {
         let ref_box = bluetooth_box.clone();
         let devices = get_connected_devices();
-
+        let adapters = get_bluetooth_adapters();
+        {
+            let imp = bluetooth_box.imp();
+            let list = imp.resetModelList.write().unwrap();
+            let mut model_index = imp.resetModelIndex.write().unwrap();
+            let mut map = imp.resetBluetoothAdapters.write().unwrap();
+            imp.resetCurrentBluetoothAdapter
+                .replace(adapters.last().unwrap().clone());
+            for (index, adapter) in adapters.into_iter().enumerate() {
+                list.append(&adapter.alias);
+                map.insert(adapter.alias.clone(), (adapter, index as u32));
+                *model_index += 1;
+            }
+        }
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let imp = ref_box.imp();
+
+                let list = imp.resetModelList.read().unwrap();
+                imp.resetBluetoothAdapter.set_model(Some(&*list));
+                let map = imp.resetBluetoothAdapters.read().unwrap();
+                let device = imp.resetCurrentBluetoothAdapter.borrow();
+                if let Some(index) = map.get(&device.alias) {
+                    imp.resetBluetoothAdapter.set_selected(index.1);
+                }
+                imp.resetBluetoothAdapter.connect_selected_notify(
+                    clone!(@weak imp => move |dropdown| {
+                        let selected = dropdown.selected_item();
+                        if selected.is_none() {
+                            return;
+                        }
+                        let selected = selected.unwrap();
+                        let selected = selected.downcast_ref::<StringObject>().unwrap();
+                        let selected = selected.string().to_string();
+
+                        let device = imp.resetBluetoothAdapters.read().unwrap();
+                        let device = device.get(&selected);
+                        if device.is_none() {
+                            return;
+                        }
+                        set_bluetooth_adapter(device.unwrap().0.path.clone());
+                    }),
+                );
+
                 for device in devices {
                     let path = device.path.clone();
                     let connected = device.connected;
@@ -251,4 +293,30 @@ fn get_connected_devices() -> Vec<BluetoothDevice> {
         return Vec::new();
     }
     res.unwrap().0
+}
+
+fn get_bluetooth_adapters() -> Vec<BluetoothAdapter> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Vec<BluetoothAdapter>,), Error> =
+        proxy.method_call("org.Xetibo.ReSetBluetooth", "GetBluetoothAdapters", ());
+    if res.is_err() {
+        return Vec::new();
+    }
+    res.unwrap().0
+}
+
+fn set_bluetooth_adapter(path: Path<'static>) {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(Vec<BluetoothAdapter>,), Error> =
+        proxy.method_call("org.Xetibo.ReSetBluetooth", "SetBluetoothAdapter", (path,));
 }

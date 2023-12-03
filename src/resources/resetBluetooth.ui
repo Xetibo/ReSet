@@ -39,7 +39,7 @@
                 <child>
                   <object class="AdwPreferencesGroup" id="resetBluetoothDetails">
                     <child>
-                      <object class="AdwComboRow" id="resetBluetoothDevice">
+                      <object class="AdwComboRow" id="resetBluetoothAdapter">
                         <property name="title">Bluetooth Device</property>
                       </object>
                     </child>
