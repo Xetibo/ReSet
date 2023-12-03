@@ -54,10 +54,7 @@ impl WifiEntry {
             entryImp.resetWifiEditButton.set_sensitive(false);
         }
         if access_point.connected {
-            entryImp
-                .resetWifiConnected
-                .get()
-                .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+            entryImp.resetWifiConnected.set_text("Connected");
         }
         {
             let mut wifiName = entryImp.wifiName.borrow_mut();
@@ -109,7 +106,7 @@ pub fn click_disconnect(entry: Arc<WifiEntry>) {
             return;
         }
         let imp = entry_ref.imp();
-        imp.resetWifiConnected.get().set_from_icon_name(None);
+        imp.resetWifiConnected.set_text("");
         imp.accessPoint.borrow_mut().connected = false;
         println!("disconnect worked");
     });
@@ -147,9 +144,7 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
                 }
                 let imp = entry_ref.imp();
                 println!("wateroni");
-                imp.resetWifiConnected
-                    .get()
-                    .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                imp.resetWifiConnected.set_text("Connected");
                 imp.accessPoint.borrow_mut().connected = true;
                 result.store(true, std::sync::atomic::Ordering::SeqCst);
             });
@@ -210,9 +205,7 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
                     let imp = entry_ref.imp();
                     imp.resetWifiPopup.popdown();
                     imp.resetWifiEditButton.set_sensitive(true);
-                    imp.resetWifiConnected
-                        .get()
-                        .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                    imp.resetWifiConnected.set_text("Connected");
                     result.store(true, std::sync::atomic::Ordering::SeqCst);
                 });
             });

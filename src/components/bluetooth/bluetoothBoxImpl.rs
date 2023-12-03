@@ -2,7 +2,7 @@ use adw::ActionRow;
 use dbus::Path;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, ListBox, Switch};
+use gtk::{glib, CompositeTemplate, ListBox, Switch, Button};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -22,9 +22,11 @@ pub struct BluetoothBox {
     #[template_child]
     pub resetBluetoothSwitch: TemplateChild<Switch>,
     #[template_child]
-    pub resetBluetoothAvailableDevices: TemplateChild<ListBox>,
+    pub resetBluetoothAvailableDevices: TemplateChild<gtk::Box>,
     #[template_child]
-    pub resetBluetoothConnectedDevices: TemplateChild<ListBox>,
+    pub resetBluetoothRefreshButton: TemplateChild<Button>,
+    #[template_child]
+    pub resetBluetoothConnectedDevices: TemplateChild<gtk::Box>,
     #[template_child]
     pub resetVisibility: TemplateChild<ActionRow>,
     #[template_child]

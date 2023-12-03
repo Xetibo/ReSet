@@ -5,13 +5,15 @@ use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
+use adw::prelude::ListModelExtManual;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::{Error, Path};
-use gtk::gio;
+use glib::Cast;
+use gtk::{gio, Widget};
 use gtk::glib::Variant;
-use gtk::prelude::{ActionableExt, ListBoxRowExt, WidgetExt};
+use gtk::prelude::{ActionableExt, BoxExt, ListBoxRowExt, WidgetExt};
 use ReSet_Lib::bluetooth::bluetooth::BluetoothDevice;
 use ReSet_Lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
 
@@ -216,7 +218,13 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                 glib::spawn_future(async move {
                     glib::idle_add_once(move || {
                         let imp = loop_box.imp();
-                        imp.resetBluetoothAvailableDevices.remove_all();
+                        for x in imp.resetBluetoothAvailableDevices.observe_children().iter::<Object>() {
+                            if let Ok(entry) = x { // todo test this
+                                if let Some(item) = entry.downcast_ref::<Widget>() {
+                                    imp.resetBluetoothAvailableDevices.remove(item);
+                                }
+                            }
+                        };
                     });
                 });
                 println!("stopping bluetooth listener");

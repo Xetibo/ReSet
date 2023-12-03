@@ -17,7 +17,7 @@ use dbus::Path;
 use glib::PropertySet;
 use gtk::gio;
 use gtk::glib::Variant;
-use gtk::prelude::{ActionableExt, WidgetExt};
+use gtk::prelude::{ActionableExt, BoxExt, WidgetExt};
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 use ReSet_Lib::signals::AccessPointAdded;
 use ReSet_Lib::signals::{AccessPointChanged, AccessPointRemoved};
@@ -270,12 +270,9 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                         entryImp.resetWifiEditButton.set_sensitive(false);
                     }
                     if ir.access_point.connected {
-                        entryImp
-                            .resetWifiConnected
-                            .get()
-                            .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                        entryImp.resetWifiConnected.set_text("Connected")
                     } else {
-                        entryImp.resetWifiConnected.get().set_from_icon_name(None);
+                        entryImp.resetWifiConnected.set_text("");
                     }
                     {
                         let mut wifiName = entryImp.wifiName.borrow_mut();

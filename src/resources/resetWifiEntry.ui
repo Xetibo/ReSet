@@ -38,16 +38,21 @@
           </object>
         </child>
         <child>
+          <object class="GtkLabel" id="resetWifiConnected">
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="justify">right</property>
+            <property name="label">Connected</property>
+            <property name="margin-end">10</property>
+            <property name="single-line-mode">True</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkButton" id="resetWifiEditButton">
             <property name="halign">start</property>
             <property name="has-frame">False</property>
             <property name="icon-name">document-edit-symbolic</property>
-            <property name="valign">center</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkImage" id="resetWifiConnected">
-            <property name="halign">end</property>
             <property name="valign">center</property>
           </object>
         </child>
