@@ -61,30 +61,9 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox">
+                  <object class="AdwPreferencesGroup" id="resetWifiList">
                     <property name="margin-top">10</property>
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="halign">start</property>
-                        <property name="justify">right</property>
-                        <property name="label">Available networks</property>
-                        <property name="margin-start">5</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkScrolledWindow">
-                        <property name="min-content-height">100</property>
-                        <property name="propagate-natural-height">True</property>
-                        <child>
-                          <object class="GtkViewport">
-                            <child>
-                              <object class="AdwPreferencesGroup" id="resetWifiList"/>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
+                    <property name="title">Available networks</property>
                   </object>
                 </child>
               </object>

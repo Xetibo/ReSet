@@ -16,7 +16,7 @@ use dbus::Error;
 use dbus::Path;
 use glib::{clone, Cast, PropertySet};
 use gtk::glib::Variant;
-use gtk::prelude::{ActionableExt, WidgetExt};
+use gtk::prelude::{ActionableExt, WidgetExt, BoxExt};
 use gtk::{gio, StringObject};
 use ReSet_Lib::network::network::{AccessPoint, WifiDevice, WifiStrength};
 use ReSet_Lib::signals::{AccessPointAdded, WifiDeviceChanged};
@@ -373,12 +373,9 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                     if ir.access_point.dbus_path
                         == imp.resetCurrentWifiDevice.borrow().active_access_point
                     {
-                        entryImp
-                            .resetWifiConnected
-                            .get()
-                            .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                        entryImp.resetWifiConnected.set_text("Connected");
                     } else {
-                        entryImp.resetWifiConnected.get().set_from_icon_name(None);
+                        entryImp.resetWifiConnected.set_text("");
                     }
                     {
                         let mut wifiName = entryImp.wifiName.borrow_mut();

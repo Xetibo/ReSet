@@ -55,9 +55,7 @@ impl WifiEntry {
         }
         if connected {
             entryImp
-                .resetWifiConnected
-                .get()
-                .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                .resetWifiConnected.set_text("Connected");
         }
         {
             let mut wifiName = entryImp.wifiName.borrow_mut();
@@ -110,7 +108,7 @@ pub fn click_disconnect(entry: Arc<WifiEntry>) {
             imp.connected.replace(false);
             return;
         }
-        imp.resetWifiConnected.get().set_from_icon_name(None);
+        imp.resetWifiConnected.set_text("");
         imp.connected.replace(false);
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
@@ -152,9 +150,7 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
                     return;
                 }
                 let imp = entry_ref.imp();
-                imp.resetWifiConnected
-                    .get()
-                    .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                imp.resetWifiConnected.set_text("Connected");
                 imp.connected.replace(true);
             });
         });

@@ -12,7 +12,7 @@ use dbus::message::SignalArgs;
 use dbus::{Error, Path};
 use glib::{clone, Cast};
 use gtk::glib::Variant;
-use gtk::prelude::{ActionableExt, ListBoxRowExt, WidgetExt};
+use gtk::prelude::{ActionableExt, BoxExt, ListBoxRowExt, WidgetExt};
 use gtk::{gio, StringObject};
 use ReSet_Lib::bluetooth::bluetooth::{BluetoothAdapter, BluetoothDevice};
 use ReSet_Lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
@@ -217,7 +217,6 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     let imp = bluetooth_box.imp();
                     let map = imp.availableDevices.borrow_mut();
                     if let Some(list_entry) = map.get(&ir.bluetooth_device) {
-                        imp.resetBluetoothAvailableDevices.remove(&*list_entry.1);
                         imp.resetBluetoothConnectedDevices.remove(&*list_entry.1);
                     }
                 });
@@ -274,7 +273,13 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                 glib::spawn_future(async move {
                     glib::idle_add_once(move || {
                         let imp = loop_box.imp();
-                        imp.resetBluetoothAvailableDevices.remove_all();
+                        for x in imp.resetBluetoothAvailableDevices.observe_children().iter::<Object>() {
+                            if let Ok(entry) = x { // todo test this
+                                if let Some(item) = entry.downcast_ref::<Widget>() {
+                                    imp.resetBluetoothAvailableDevices.remove(item);
+                                }
+                            }
+                        };
                     });
                 });
                 println!("stopping bluetooth listener");

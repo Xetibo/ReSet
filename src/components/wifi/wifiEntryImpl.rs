@@ -21,7 +21,7 @@ pub struct WifiEntry {
     #[template_child]
     pub resetWifiEditButton: TemplateChild<Button>,
     #[template_child]
-    pub resetWifiConnected: TemplateChild<Image>,
+    pub resetWifiConnected: TemplateChild<Label>,
     #[template_child]
     pub resetWifiPopup: TemplateChild<Popup>,
     pub wifiName: RefCell<String>,
