@@ -1,11 +1,12 @@
 use crate::components::wifi::wifiOptions;
 use adw::subclass::prelude::NavigationPageImpl;
-use adw::{ActionRow, ComboRow, EntryRow, NavigationPage, PreferencesGroup, SwitchRow};
+use adw::{ActionRow, ComboRow, EntryRow, NavigationPage, PasswordEntryRow, PreferencesGroup, SwitchRow};
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate};
 use std::cell::RefCell;
 use std::rc::Rc;
 use ReSet_Lib::network::connection::Connection;
+use ReSet_Lib::network::network::AccessPoint;
 
 #[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
@@ -45,6 +46,8 @@ pub struct WifiOptions {
     pub resetIP4AddressAddButton: TemplateChild<Button>,
     #[template_child]
     pub resetIP4RoutesGroup: TemplateChild<PreferencesGroup>,
+    #[template_child]
+    pub resetIP4RouteAddButton: TemplateChild<Button>,
     // IPv6
     #[template_child]
     pub resetIP6Method: TemplateChild<ComboRow>,
@@ -55,8 +58,16 @@ pub struct WifiOptions {
     #[template_child]
     pub resetIP6AddressGroup: TemplateChild<PreferencesGroup>,
     #[template_child]
+    pub resetIP6AddressAddButton: TemplateChild<Button>,
+    #[template_child]
     pub resetIP6RoutesGroup: TemplateChild<PreferencesGroup>,
+    #[template_child]
+    pub resetIP6RouteAddButton: TemplateChild<Button>,
     // Security
+    #[template_child]
+    pub resetWifiSecurityDropdown: TemplateChild<ComboRow>,
+    #[template_child]
+    pub resetWifiPassword: TemplateChild<PasswordEntryRow>,
     // Misc
     #[template_child]
     pub wifiOptionsApplyButton: TemplateChild<Button>,

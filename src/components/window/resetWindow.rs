@@ -1,28 +1,28 @@
-use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use adw::BreakpointCondition;
 use glib::Object;
-use gtk::{Application, gio, glib, ListBoxRow, Orientation};
 use gtk::prelude::*;
+use gtk::{gio, glib, Application, ListBoxRow, Orientation};
 
 use crate::components::window::handleSidebarClick::*;
+use crate::components::window::resetWindowImpl;
 use crate::components::window::sidebarEntry::SidebarEntry;
 use crate::components::window::sidebarEntryImpl::Categories;
-use crate::components::window::windowImpl;
 
 glib::wrapper! {
-    pub struct Window(ObjectSubclass<windowImpl::Window>)
+    pub struct ReSetWindow(ObjectSubclass<resetWindowImpl::ReSetWindow>)
         @extends gtk::ApplicationWindow, gtk::Window, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap, gtk::Accessible, gtk::Buildable,
                     gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager;
 }
 
-unsafe impl Send for Window {}
+unsafe impl Send for ReSetWindow {}
 
-unsafe impl Sync for Window {}
+unsafe impl Sync for ReSetWindow {}
 
 #[allow(non_snake_case)]
-impl Window {
+impl ReSetWindow {
     pub fn new(app: &Application) -> Self {
         Object::builder().property("application", app).build()
     }
@@ -30,11 +30,15 @@ impl Window {
     pub fn setupCallback(&self) {
         let selfImp = self.imp();
 
-        selfImp.resetSearchEntry.connect_search_changed(clone!(@ weak self as window => move |_| {
+        selfImp
+            .resetSearchEntry
+            .connect_search_changed(clone!(@ weak self as window => move |_| {
                 window.filterList();
             }));
 
-        selfImp.resetSideBarToggle.connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp
+            .resetSideBarToggle
+            .connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggleSidebar();
             }));
 
@@ -46,7 +50,9 @@ impl Window {
             }),
         );
 
-        selfImp.resetClose.connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp
+            .resetClose
+            .connect_clicked(clone!(@ weak self as window => move |_| {
                 window.close();
             }));
 
@@ -58,7 +64,9 @@ impl Window {
 
     pub fn handleDynamicSidebar(&self) {
         let selfImp = self.imp();
-        selfImp.resetSidebarBreakpoint.set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
+        selfImp
+            .resetSidebarBreakpoint
+            .set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
         selfImp.resetSidebarBreakpoint.add_setter(
             &Object::from(selfImp.resetOverlaySplitView.get()),
             "collapsed",
@@ -81,13 +89,25 @@ impl Window {
                 }
                 continue;
             }
-            if mainEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
+            if mainEntry
+                .imp()
+                .name
+                .borrow()
+                .to_lowercase()
+                .contains(&text.to_lowercase())
+            {
                 mainEntry.set_visible(true);
             } else {
                 mainEntry.set_visible(false);
             }
             for subEntry in subEntries {
-                if subEntry.imp().name.borrow().to_lowercase().contains(&text.to_lowercase()) {
+                if subEntry
+                    .imp()
+                    .name
+                    .borrow()
+                    .to_lowercase()
+                    .contains(&text.to_lowercase())
+                {
                     subEntry.set_visible(true);
                     mainEntry.set_visible(true);
                 } else {
@@ -124,13 +144,13 @@ impl Window {
                 true,
                 HANDLE_BLUETOOTH_CLICK,
             ),
-            SidebarEntry::new(
-                "VPN",
-                "network-vpn-symbolic",
-                Categories::Connectivity,
-                true,
-                HANDLE_VPN_CLICK,
-            ),
+            // SidebarEntry::new(
+            //     "VPN",
+            //     "network-vpn-symbolic",
+            //     Categories::Connectivity,
+            //     true,
+            //     HANDLE_VPN_CLICK,
+            // ),
         ];
 
         sidebarEntries.push((
@@ -172,44 +192,46 @@ impl Window {
             audioList,
         ));
 
-        let peripheralsList = vec![
-            SidebarEntry::new(
-                "Displays",
-                "video-display-symbolic",
-                Categories::Peripherals,
-                true,
-                HANDLE_MONITOR_CLICK,
-            ),
-            SidebarEntry::new(
-                "Mouse",
-                "input-mouse-symbolic",
-                Categories::Peripherals,
-                true,
-                HANDLE_MOUSE_CLICK,
-            ),
-            SidebarEntry::new(
-                "Keyboard",
-                "input-keyboard-symbolic",
-                Categories::Peripherals,
-                true,
-                HANDLE_KEYBOARD_CLICK,
-            ),
-        ];
+        // let peripheralsList = vec![
+        //     SidebarEntry::new(
+        //         "Displays",
+        //         "video-display-symbolic",
+        //         Categories::Peripherals,
+        //         true,
+        //         HANDLE_MONITOR_CLICK,
+        //     ),
+        //     SidebarEntry::new(
+        //         "Mouse",
+        //         "input-mouse-symbolic",
+        //         Categories::Peripherals,
+        //         true,
+        //         HANDLE_MOUSE_CLICK,
+        //     ),
+        //     SidebarEntry::new(
+        //         "Keyboard",
+        //         "input-keyboard-symbolic",
+        //         Categories::Peripherals,
+        //         true,
+        //         HANDLE_KEYBOARD_CLICK,
+        //     ),
+        // ];
 
-        sidebarEntries.push((
-            SidebarEntry::new(
-                "Peripherals",
-                "preferences-system-devices-symbolic",
-                Categories::Peripherals,
-                false,
-                HANDLE_PERIPHERALS_CLICK,
-            ),
-            peripheralsList,
-        ));
+        // sidebarEntries.push((
+        //     SidebarEntry::new(
+        //         "Peripherals",
+        //         "preferences-system-devices-symbolic",
+        //         Categories::Peripherals,
+        //         false,
+        //         HANDLE_PERIPHERALS_CLICK,
+        //     ),
+        //     peripheralsList,
+        // ));
 
-        selfImp.resetSidebarList.connect_row_activated(clone!(@ weak selfImp => move |_, _| {
-            selfImp.resetSearchEntry.set_text("");
-        }));
+        selfImp
+            .resetSidebarList
+            .connect_row_activated(clone!(@ weak selfImp => move |_, _| {
+                selfImp.resetSearchEntry.set_text("");
+            }));
 
         for (mainEntry, subEntries) in sidebarEntries.iter() {
             selfImp.resetSidebarList.append(mainEntry);
@@ -226,7 +248,9 @@ impl Window {
 
     pub fn setupPopoverButtons(&self) {
         let selfImp = self.imp();
-        selfImp.resetAboutButton.connect_clicked(clone!(@ weak self as window => move |_| {
+        selfImp
+            .resetAboutButton
+            .connect_clicked(clone!(@ weak self as window => move |_| {
                     let dialog = adw::AboutWindow::builder()
                         .application_name("ReSet")
                         .application_icon("ReSet")
@@ -245,12 +269,16 @@ impl Window {
                 window.imp().resetPopoverMenu.popdown();
                 dialog.present();
             }));
-        selfImp.resetPreferenceButton.connect_clicked(clone!(@weak self as window => move |_| {
+        selfImp
+            .resetPreferenceButton
+            .connect_clicked(clone!(@weak self as window => move |_| {
                 let preferences = adw::PreferencesWindow::builder().build();
                 window.imp().resetPopoverMenu.popdown();
                 preferences.present();
             }));
-        selfImp.resetShortcutsButton.connect_clicked(clone!(@weak self as window => move |_| {
+        selfImp
+            .resetShortcutsButton
+            .connect_clicked(clone!(@weak self as window => move |_| {
                 let shortcuts = gtk::ShortcutsWindow::builder().build();
                 window.imp().resetPopoverMenu.popdown();
                 shortcuts.present();

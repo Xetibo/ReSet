@@ -1,16 +1,18 @@
 use std::net::{Ipv4Addr, Ipv6Addr};
 use std::str::FromStr;
 use std::sync::Arc;
+use std::time::Duration;
 
-use adw::glib;
+use adw::{gio, glib};
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use dbus::{Error, Path};
 use dbus::arg::PropMap;
-use glib::{clone, closure_local, ObjectExt, PropertySet};
+use glib::{clone, PropertySet};
 use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
-use gtk::Widget;
 use ReSet_Lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, TypeSettings};
+use IpProtocol::{IPv4, IPv6};
 
 use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifiAddressEntry::WifiAddressEntry;
@@ -23,21 +25,24 @@ glib::wrapper! {
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
+unsafe impl Send for WifiOptions {}
+unsafe impl Sync for WifiOptions {}
+
 impl WifiOptions {
-    pub fn new(connection: Connection) -> Arc<Self> {
+    pub fn new(connection: Connection, accessPoint: Path<'static>) -> Arc<Self> {
         let wifiOption: Arc<WifiOptions> = Arc::new(Object::builder().build());
         wifiOption.imp().connection.set(connection);
         wifiOption.initializeUI();
-        setupCallbacks(&wifiOption);
+        setupCallbacks(&wifiOption, accessPoint);
         wifiOption
     }
 
     pub fn initializeUI(&self) {
         let selfImp = self.imp();
-        let mut ip4AddressLength = 0;
-        let mut ip4RouteLength = 0;
-        let mut ip6AddressLength = 0;
-        let mut ip6RouteLength = 0;
+        let ip4AddressLength;
+        let ip4RouteLength;
+        let ip6AddressLength;
+        let ip6RouteLength;
         {
             let conn = selfImp.connection.borrow();
             ip4AddressLength = conn.ipv4.address_data.len();
@@ -46,7 +51,6 @@ impl WifiOptions {
             ip6RouteLength = conn.ipv4.route_data.len();
 
             // General
-
             selfImp.resetWifiAutoConnect.set_active(conn.settings.autoconnect);
             selfImp.resetWifiMetered.set_active(conn.settings.metered != -1);
             match &conn.device {
@@ -92,38 +96,53 @@ impl WifiOptions {
             }).collect();
             selfImp.resetIP6DNS.set_text(&ipv6Dns.join(", "));
             selfImp.resetIP6Gateway.set_text(&conn.ipv6.gateway);
-            dbg!(conn);
+
+            // Security
+            if let TypeSettings::WIFI(wifi) = &conn.device {
+                match wifi.security_settings.key_management.as_str() {
+                    "none" => {
+                        selfImp.resetWifiSecurityDropdown.set_selected(0);
+                        selfImp.resetWifiPassword.set_visible(false);
+                        selfImp.resetWifiPassword.set_text("");
+                    }
+                    "wpa-psk" => {
+                        selfImp.resetWifiSecurityDropdown.set_selected(1);
+                        selfImp.resetWifiPassword.set_visible(true);
+                        selfImp.resetWifiPassword.set_text(&wifi.security_settings.psk);
+                    }
+                    _ => {}
+                }
+            }
         }
         // IPv4
         for i in 0..ip4AddressLength {
-            let address = &WifiAddressEntry::new(Some(i), selfImp.connection.clone(), IpProtocol::IPv4);
+            let address = &WifiAddressEntry::new(Some(i), selfImp.connection.clone(), IPv4);
             selfImp.resetIP4AddressGroup.add(address);
         }
-        let address = &WifiAddressEntry::new(None, selfImp.connection.clone(), IpProtocol::IPv4);
+        let address = &WifiAddressEntry::new(None, selfImp.connection.clone(), IPv4);
         selfImp.resetIP4AddressGroup.add(address);
 
-        if ip4RouteLength == 0 {
-            selfImp.resetIP4RoutesGroup.add(&WifiRouteEntry::new(None, selfImp.connection.clone(), IpProtocol::IPv4))
-        } else {
-            for address in 0..ip4RouteLength {
-                selfImp.resetIP4RoutesGroup.add(&WifiRouteEntry::new(Some(address), selfImp.connection.clone(), IpProtocol::IPv4))
-            }
+        for i in 0..ip4RouteLength {
+            let route = &WifiRouteEntry::new(Some(i), selfImp.connection.clone(), IPv4);
+            selfImp.resetIP4RoutesGroup.add(route)
         }
+        let route = &WifiRouteEntry::new(None, selfImp.connection.clone(), IPv4);
+        selfImp.resetIP4RoutesGroup.add(route);
+
         // IPv6
-        for address in 0..ip6AddressLength {
-            let address = &WifiAddressEntry::new(Some(address), selfImp.connection.clone(), IpProtocol::IPv6);
+        for i in 0..ip6AddressLength {
+            let address = &WifiAddressEntry::new(Some(i), selfImp.connection.clone(), IPv6);
             selfImp.resetIP6AddressGroup.add(address);
         }
-        let address = &WifiAddressEntry::new(None, selfImp.connection.clone(), IpProtocol::IPv6);
+        let address = &WifiAddressEntry::new(None, selfImp.connection.clone(), IPv6);
         selfImp.resetIP6AddressGroup.add(address);
 
-        if ip6RouteLength == 0 {
-            selfImp.resetIP6RoutesGroup.add(&WifiRouteEntry::new(None, selfImp.connection.clone(), IpProtocol::IPv6))
-        } else {
-            for address in 0..ip6RouteLength {
-                selfImp.resetIP6RoutesGroup.add(&WifiRouteEntry::new(Some(address), selfImp.connection.clone(), IpProtocol::IPv6))
-            }
+        for i in 0..ip6RouteLength {
+            let route = &WifiRouteEntry::new(Some(i), selfImp.connection.clone(), IPv6);
+            selfImp.resetIP6RoutesGroup.add(route);
         }
+        let route = &WifiRouteEntry::new(None, selfImp.connection.clone(), IPv6);
+        selfImp.resetIP6RoutesGroup.add(route);
         // Security
     }
 
@@ -170,7 +189,7 @@ impl WifiOptions {
     }
 }
 
-fn setupCallbacks(wifiOptions: &Arc<WifiOptions>) {
+fn setupCallbacks(wifiOptions: &Arc<WifiOptions>, path: Path<'static>) {
     let imp = wifiOptions.imp();
 
     // General
@@ -182,6 +201,7 @@ fn setupCallbacks(wifiOptions: &Arc<WifiOptions>) {
     }));
     imp.wifiOptionsApplyButton.connect_clicked(clone!(@weak imp => move |_| {
         let prop = imp.connection.borrow().convert_to_propmap();
+        setConnectionSettings(path.clone(), prop);
     }));
     // IPv4
     let wifiOptionsIP4 = wifiOptions.clone();
@@ -255,6 +275,11 @@ fn setupCallbacks(wifiOptions: &Arc<WifiOptions>) {
             }
         }
     }));
+    imp.resetIP6AddressAddButton.connect_clicked(clone!(@weak imp => move |_|  {
+        let address = &WifiAddressEntry::new(None, imp.connection.clone(), IpProtocol::IPv4);
+        imp.resetIP6AddressGroup.add(address);
+    }));
+
     imp.resetIP6Gateway.connect_changed(clone!(@weak imp => move |entry| {
         let gatewayInput = entry.text();
         let mut conn = imp.connection.borrow_mut();
@@ -270,5 +295,48 @@ fn setupCallbacks(wifiOptions: &Arc<WifiOptions>) {
             imp.resetIP6Gateway.add_css_class("error");
         }
     }));
+
     // Security
+    imp.resetWifiSecurityDropdown.connect_selected_notify(clone!(@weak imp => move |dropdown| {
+        let selected = dropdown.selected();
+        let mut conn = imp.connection.borrow_mut();
+
+        match (selected, &mut conn.device) {
+            (0 , TypeSettings::WIFI(wifi)) => { // None
+                imp.resetWifiPassword.set_visible(false);
+                wifi.security_settings.key_management = String::from("none");
+                wifi.security_settings.authentication_algorithm = String::from("open");
+            },
+            (1 , TypeSettings::WIFI(wifi)) => { // WPA/WPA2 Personal
+                imp.resetWifiPassword.set_visible(true);
+                wifi.security_settings.key_management = String::from("wpa-psk");
+                wifi.security_settings.authentication_algorithm = String::from("");
+            },
+            (_, _) => {}
+        }
+    }));
+
+    imp.resetWifiPassword.connect_changed(clone!(@weak imp => move |entry| {
+        let passwordInput = entry.text();
+        let mut conn = imp.connection.borrow_mut();
+        if let TypeSettings::WIFI(wifi) = &mut conn.device {
+            wifi.security_settings.psk = passwordInput.to_string();
+        }
+    }));
+}
+
+fn setConnectionSettings(path: Path<'static>, prop: PropMap) {
+    gio::spawn_blocking(move || {
+        let conn = dbus::blocking::Connection::new_session().unwrap();
+        let proxy = conn.with_proxy(
+            "org.Xetibo.ReSetDaemon",
+            "/org/Xetibo/ReSetDaemon",
+            Duration::from_millis(1000),
+        );
+        let _: Result<(bool,), Error> = proxy.method_call(
+            "org.Xetibo.ReSetWireless",
+            "SetConnectionSettings",
+            (path, prop),
+        );
+    });
 }

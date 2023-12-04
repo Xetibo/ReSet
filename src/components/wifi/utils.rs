@@ -14,7 +14,7 @@ pub enum IpProtocol {
 }
 
 type ResultType =
-Result<(HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>>,), Error>;
+    Result<(HashMap<String, HashMap<String, dbus::arg::Variant<Box<dyn RefArg>>>>,), Error>;
 
 pub fn getConnectionSettings(path: Path<'static>) -> ResetConnection {
     let conn = Connection::new_session().unwrap();

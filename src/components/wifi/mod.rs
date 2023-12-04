@@ -12,4 +12,3 @@ pub mod wifiOptions;
 pub mod wifiOptionsImpl;
 pub mod wifiRouteEntry;
 pub mod wifiRouteEntryImpl;
-

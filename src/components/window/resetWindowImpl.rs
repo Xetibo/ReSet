@@ -10,13 +10,13 @@ use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, Search
 
 use crate::components::base::utils::Listeners;
 use crate::components::wifi::wifiBox::WifiBox;
+use crate::components::window::resetWindow;
 use crate::components::window::sidebarEntry::SidebarEntry;
-use crate::components::window::window;
 
 #[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/org/Xetibo/ReSet/resetMainWindow.ui")]
-pub struct Window {
+pub struct ReSetWindow {
     #[template_child]
     pub resetMain: TemplateChild<FlowBox>,
     #[template_child]
@@ -43,14 +43,14 @@ pub struct Window {
     pub listeners: Arc<Listeners>,
 }
 
-unsafe impl Send for Window {}
-unsafe impl Sync for Window {}
+unsafe impl Send for ReSetWindow {}
+unsafe impl Sync for ReSetWindow {}
 
 #[glib::object_subclass]
-impl ObjectSubclass for Window {
+impl ObjectSubclass for ReSetWindow {
     const ABSTRACT: bool = false;
     const NAME: &'static str = "resetUI";
-    type Type = window::Window;
+    type Type = resetWindow::ReSetWindow;
     type ParentType = adw::ApplicationWindow;
 
     fn class_init(klass: &mut Self::Class) {
@@ -63,7 +63,7 @@ impl ObjectSubclass for Window {
     }
 }
 
-impl ObjectImpl for Window {
+impl ObjectImpl for ReSetWindow {
     fn constructed(&self) {
         self.parent_constructed();
 
@@ -75,10 +75,10 @@ impl ObjectImpl for Window {
     }
 }
 
-impl WidgetImpl for Window {}
+impl WidgetImpl for ReSetWindow {}
 
-impl WindowImpl for Window {}
+impl WindowImpl for ReSetWindow {}
 
-impl ApplicationWindowImpl for Window {}
+impl ApplicationWindowImpl for ReSetWindow {}
 
-impl AdwApplicationWindowImpl for Window {}
+impl AdwApplicationWindowImpl for ReSetWindow {}

@@ -1,12 +1,12 @@
-use adw::ActionRow;
+use adw::{ActionRow, ComboRow};
 use dbus::Path;
-use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, ListBox, Switch};
+use gtk::{glib, CompositeTemplate, ListBox, Switch, Button};
+use gtk::{prelude::*, StringList};
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::Arc;
-use ReSet_Lib::bluetooth::bluetooth::BluetoothDevice;
+use std::sync::{Arc, RwLock};
+use ReSet_Lib::bluetooth::bluetooth::{BluetoothAdapter, BluetoothDevice};
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::bluetooth::bluetoothBox;
@@ -22,15 +22,23 @@ pub struct BluetoothBox {
     #[template_child]
     pub resetBluetoothSwitch: TemplateChild<Switch>,
     #[template_child]
-    pub resetBluetoothAvailableDevices: TemplateChild<ListBox>,
+    pub resetBluetoothAvailableDevices: TemplateChild<gtk::Box>,
     #[template_child]
-    pub resetBluetoothConnectedDevices: TemplateChild<ListBox>,
+    pub resetBluetoothRefreshButton: TemplateChild<Button>,
+    #[template_child]
+    pub resetBluetoothAdapter: TemplateChild<ComboRow>,
+    #[template_child]
+    pub resetBluetoothConnectedDevices: TemplateChild<gtk::Box>,
     #[template_child]
     pub resetVisibility: TemplateChild<ActionRow>,
     #[template_child]
     pub resetBluetoothMainTab: TemplateChild<ListEntry>,
     pub availableDevices: BluetoothMap,
     pub connectedDevices: BluetoothMap,
+    pub resetBluetoothAdapters: Arc<RwLock<HashMap<String, (BluetoothAdapter, u32)>>>,
+    pub resetCurrentBluetoothAdapter: Arc<RefCell<BluetoothAdapter>>,
+    pub resetModelList: Arc<RwLock<StringList>>,
+    pub resetModelIndex: Arc<RwLock<u32>>,
 }
 
 #[glib::object_subclass]

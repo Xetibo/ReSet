@@ -49,15 +49,16 @@ impl BluetoothEntry {
         });
         let gesture = GestureClick::new();
         let connected = device.connected;
-        let paired = device.paired;
+        // let paired = device.paired;
+        // paired is not what we think
+        // TODO implement paired
         let path = device.path.clone();
         gesture.connect_released(move |_, _, _, _| {
+            connect_to_device(path.clone());
             if connected {
                 disconnect_from_device(path.clone());
-            } else if paired {
-                connect_to_device(path.clone());
             } else {
-                pair_with_device(path.clone());
+                connect_to_device(path.clone());
             }
         });
         entry.add_controller(gesture);
@@ -81,21 +82,21 @@ fn connect_to_device(path: Path<'static>) {
     });
 }
 
-fn pair_with_device(path: Path<'static>) {
-    gio::spawn_blocking(move || {
-        let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
-            Duration::from_millis(1000),
-        );
-        let _: Result<(bool,), Error> = proxy.method_call(
-            "org.Xetibo.ReSetBluetooth",
-            "PairWithBluetoothDevice",
-            (path,),
-        );
-    });
-}
+// fn pair_with_device(path: Path<'static>) {
+//     gio::spawn_blocking(move || {
+//         let conn = Connection::new_session().unwrap();
+//         let proxy = conn.with_proxy(
+//             "org.Xetibo.ReSetDaemon",
+//             "/org/Xetibo/ReSetDaemon",
+//             Duration::from_millis(1000),
+//         );
+//         let _: Result<(bool,), Error> = proxy.method_call(
+//             "org.Xetibo.ReSetBluetooth",
+//             "PairWithBluetoothDevice",
+//             (path,),
+//         );
+//     });
+// }
 
 fn disconnect_from_device(path: Path<'static>) {
     gio::spawn_blocking(move || {

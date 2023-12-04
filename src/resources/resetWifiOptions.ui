@@ -13,6 +13,7 @@
             <property name="show-border">False</property>
             <child>
               <object class="GtkBox">
+                <property name="margin-top">5</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
@@ -85,6 +86,7 @@
             </child>
             <child>
               <object class="GtkBox">
+                <property name="margin-top">5</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
@@ -142,6 +144,12 @@
                             <property name="valign">center</property>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkButton" id="resetIP4RouteAddButton">
+                            <property name="icon-name">list-add-symbolic</property>
+                            <property name="margin-start">10</property>
+                          </object>
+                        </child>
                       </object>
                     </property>
                     <property name="margin-top">10</property>
@@ -157,6 +165,7 @@
             </child>
             <child>
               <object class="GtkBox">
+                <property name="margin-top">5</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
@@ -191,6 +200,11 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup" id="resetIP6AddressGroup">
+                    <property name="header-suffix">
+                      <object class="GtkButton" id="resetIP6AddressAddButton">
+                        <property name="icon-name">list-add-symbolic</property>
+                      </object>
+                    </property>
                     <property name="margin-top">10</property>
                     <property name="title">Addresses</property>
                   </object>
@@ -210,6 +224,12 @@
                             <property name="valign">center</property>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkButton" id="resetIP6RouteAddButton">
+                            <property name="icon-name">list-add-symbolic</property>
+                            <property name="margin-start">10</property>
+                          </object>
+                        </child>
                       </object>
                     </property>
                     <property name="margin-top">10</property>
@@ -225,23 +245,17 @@
             </child>
             <child>
               <object class="GtkBox">
+                <property name="margin-top">5</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwComboRow">
+                      <object class="AdwComboRow" id="resetWifiSecurityDropdown">
                         <property name="model">
                           <object class="GtkStringList">
                             <items>
                               <item>None</item>
-                              <item>Enhanced Open</item>
-                              <item>WEP 40/128-bit Key (Hex or ASCII)</item>
-                              <item>WEP 128-bit Passphrase</item>
-                              <item>LEAP</item>
-                              <item>Dynamic WEP (802.1X)</item>
                               <item>WPA &amp; WPA2 Personal</item>
-                              <item>WPA &amp; WPA2 Enterprise</item>
-                              <item>WPA3 Personal</item>
                             </items>
                           </object>
                         </property>
@@ -249,12 +263,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwEntryRow">
-                        <property name="title">Username</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwPasswordEntryRow">
+                      <object class="AdwPasswordEntryRow" id="resetWifiPassword">
                         <property name="title">Password</property>
                       </object>
                     </child>

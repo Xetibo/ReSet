@@ -5,14 +5,16 @@ use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
+use adw::prelude::{ComboRowExt, ListModelExtManual};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::{Error, Path};
-use gtk::gio;
+use glib::{clone, Cast};
 use gtk::glib::Variant;
-use gtk::prelude::{ActionableExt, ListBoxRowExt, WidgetExt};
-use ReSet_Lib::bluetooth::bluetooth::BluetoothDevice;
+use gtk::prelude::{ActionableExt, BoxExt, ListBoxRowExt, WidgetExt};
+use gtk::{gio, StringObject, Widget};
+use ReSet_Lib::bluetooth::bluetooth::{BluetoothAdapter, BluetoothDevice};
 use ReSet_Lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
 
 use crate::components::base::listEntry::ListEntry;
@@ -30,40 +32,102 @@ unsafe impl Send for BluetoothBox {}
 unsafe impl Sync for BluetoothBox {}
 
 impl BluetoothBox {
-    pub fn new() -> Self {
-        Object::builder().build()
+    pub fn new(listeners: Arc<Listeners>) -> Arc<Self> {
+        let obj: Arc<Self> = Arc::new(Object::builder().build());
+        setupCallbacks(listeners, obj)
     }
 
-    pub fn setupCallbacks(&self) {
-        let selfImp = self.imp();
-        selfImp.resetVisibility.set_activatable(true);
-        selfImp
-            .resetVisibility
-            .set_action_name(Some("navigation.push"));
-        selfImp
-            .resetVisibility
-            .set_action_target_value(Some(&Variant::from("visibility")));
-
-        selfImp
-            .resetBluetoothMainTab
-            .set_action_name(Some("navigation.pop"));
-    }
+    pub fn setupCallbacks(&self) {}
 }
 
-impl Default for BluetoothBox {
-    fn default() -> Self {
-        Self::new()
-    }
+fn setupCallbacks(
+    listeners: Arc<Listeners>,
+    bluetooth_box: Arc<BluetoothBox>,
+) -> Arc<BluetoothBox> {
+    let bluetooth_box_ref = bluetooth_box.clone();
+    let imp = bluetooth_box.imp();
+    // let bluetooth_box_ref = bluetooth_box.clone();
+    imp.resetVisibility.set_activatable(true);
+    imp.resetVisibility.set_action_name(Some("navigation.push"));
+    imp.resetVisibility
+        .set_action_target_value(Some(&Variant::from("visibility")));
+
+    imp.resetBluetoothMainTab
+        .set_action_name(Some("navigation.pop"));
+    // TODO add a manual search button here
+    imp.resetBluetoothSwitch.connect_state_set(move |_, state| {
+        if !state {
+            let imp = bluetooth_box_ref.imp();
+            for x in imp.resetBluetoothConnectedDevices.observe_children().iter::<Object>() {
+                if let Ok(entry) = x { // todo test this
+                    if let Some(item) = entry.downcast_ref::<Widget>() {
+                        imp.resetBluetoothAvailableDevices.remove(item);
+                    }
+                }
+            };
+            listeners.bluetooth_listener.store(false, Ordering::SeqCst);
+            set_adapter_enabled(
+                imp.resetCurrentBluetoothAdapter.borrow().path.clone(),
+                false,
+            );
+        } else {
+            let imp = bluetooth_box_ref.imp();
+            set_adapter_enabled(imp.resetCurrentBluetoothAdapter.borrow().path.clone(), true);
+            start_bluetooth_listener(listeners.clone(), bluetooth_box_ref.clone());
+        }
+        glib::Propagation::Proceed
+    });
+    bluetooth_box
 }
 
 pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
     gio::spawn_blocking(move || {
         let ref_box = bluetooth_box.clone();
         let devices = get_connected_devices();
-
+        let adapters = get_bluetooth_adapters();
+        {
+            let imp = bluetooth_box.imp();
+            let list = imp.resetModelList.write().unwrap();
+            let mut model_index = imp.resetModelIndex.write().unwrap();
+            let mut map = imp.resetBluetoothAdapters.write().unwrap();
+            imp.resetCurrentBluetoothAdapter
+                .replace(adapters.last().unwrap().clone());
+            for (index, adapter) in adapters.into_iter().enumerate() {
+                list.append(&adapter.alias);
+                map.insert(adapter.alias.clone(), (adapter, index as u32));
+                *model_index += 1;
+            }
+        }
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let imp = ref_box.imp();
+
+                let list = imp.resetModelList.read().unwrap();
+                imp.resetBluetoothAdapter.set_model(Some(&*list));
+                let map = imp.resetBluetoothAdapters.read().unwrap();
+                let device = imp.resetCurrentBluetoothAdapter.borrow();
+                if let Some(index) = map.get(&device.alias) {
+                    imp.resetBluetoothAdapter.set_selected(index.1);
+                }
+                imp.resetBluetoothAdapter.connect_selected_notify(
+                    clone!(@weak imp => move |dropdown| {
+                        let selected = dropdown.selected_item();
+                        if selected.is_none() {
+                            return;
+                        }
+                        let selected = selected.unwrap();
+                        let selected = selected.downcast_ref::<StringObject>().unwrap();
+                        let selected = selected.string().to_string();
+
+                        let device = imp.resetBluetoothAdapters.read().unwrap();
+                        let device = device.get(&selected);
+                        if device.is_none() {
+                            return;
+                        }
+                        set_bluetooth_adapter(device.unwrap().0.path.clone());
+                    }),
+                );
+
                 for device in devices {
                     let path = device.path.clone();
                     let connected = device.connected;
@@ -159,7 +223,6 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     let imp = bluetooth_box.imp();
                     let map = imp.availableDevices.borrow_mut();
                     if let Some(list_entry) = map.get(&ir.bluetooth_device) {
-                        imp.resetBluetoothAvailableDevices.remove(&*list_entry.1);
                         imp.resetBluetoothConnectedDevices.remove(&*list_entry.1);
                     }
                 });
@@ -216,7 +279,13 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                 glib::spawn_future(async move {
                     glib::idle_add_once(move || {
                         let imp = loop_box.imp();
-                        imp.resetBluetoothAvailableDevices.remove_all();
+                        for x in imp.resetBluetoothAvailableDevices.observe_children().iter::<Object>() {
+                            if let Ok(entry) = x { // todo test this
+                                if let Some(item) = entry.downcast_ref::<Widget>() {
+                                    imp.resetBluetoothAvailableDevices.remove(item);
+                                }
+                            }
+                        };
                     });
                 });
                 println!("stopping bluetooth listener");
@@ -243,4 +312,44 @@ fn get_connected_devices() -> Vec<BluetoothDevice> {
         return Vec::new();
     }
     res.unwrap().0
+}
+
+fn get_bluetooth_adapters() -> Vec<BluetoothAdapter> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Vec<BluetoothAdapter>,), Error> =
+        proxy.method_call("org.Xetibo.ReSetBluetooth", "GetBluetoothAdapters", ());
+    if res.is_err() {
+        return Vec::new();
+    }
+    res.unwrap().0
+}
+
+fn set_bluetooth_adapter(path: Path<'static>) {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(Vec<BluetoothAdapter>,), Error> =
+        proxy.method_call("org.Xetibo.ReSetBluetooth", "SetBluetoothAdapter", (path,));
+}
+
+fn set_adapter_enabled(path: Path<'static>, enabled: bool) {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(Vec<BluetoothAdapter>,), Error> = proxy.method_call(
+        "org.Xetibo.ReSetBluetooth",
+        "SetBluetoothAdapterEnabled",
+        (path, enabled),
+    );
 }

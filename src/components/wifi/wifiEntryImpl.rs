@@ -21,12 +21,13 @@ pub struct WifiEntry {
     #[template_child]
     pub resetWifiEditButton: TemplateChild<Button>,
     #[template_child]
-    pub resetWifiConnected: TemplateChild<Image>,
+    pub resetWifiConnected: TemplateChild<Label>,
     #[template_child]
     pub resetWifiPopup: TemplateChild<Popup>,
     pub wifiName: RefCell<String>,
     pub wifiStrength: RefCell<WifiStrength>,
     pub accessPoint: RefCell<AccessPoint>,
+    pub connected: RefCell<bool>,
 }
 
 unsafe impl Send for WifiEntry {}

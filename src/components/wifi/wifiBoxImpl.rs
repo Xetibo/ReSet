@@ -1,11 +1,13 @@
 use crate::components::wifi::wifiBox;
 use adw::{ActionRow, ComboRow, NavigationView, PreferencesGroup};
 use dbus::Path;
-use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{glib, CompositeTemplate, Switch};
+use gtk::{prelude::*, StringList};
+use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, RwLock};
+use ReSet_Lib::network::network::WifiDevice;
 
 use crate::components::base::listEntry::ListEntry;
 use crate::components::wifi::wifiEntry::WifiEntry;
@@ -33,6 +35,10 @@ pub struct WifiBox {
     pub wifiEntries: Arc<Mutex<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
     pub wifiEntriesPath: Arc<Mutex<HashMap<Path<'static>, Arc<WifiEntry>>>>,
     pub savedWifiEntries: Arc<Mutex<Vec<ListEntry>>>,
+    pub resetWifiDevices: Arc<RwLock<HashMap<String, (WifiDevice, u32)>>>,
+    pub resetCurrentWifiDevice: Arc<RefCell<WifiDevice>>,
+    pub resetModelList: Arc<RwLock<StringList>>,
+    pub resetModelIndex: Arc<RwLock<u32>>,
 }
 
 unsafe impl Send for WifiBox {}

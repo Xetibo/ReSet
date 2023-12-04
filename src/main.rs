@@ -3,14 +3,13 @@
 use std::thread;
 use std::time::Duration;
 
+use components::window::resetWindow::ReSetWindow;
 use dbus::blocking::Connection;
 use dbus::Error;
 use gtk::gdk::Display;
 use gtk::prelude::*;
 use gtk::{gio, Application, CssProvider};
 use reset_daemon::run_daemon;
-
-use crate::components::window::window::Window;
 
 mod components;
 
@@ -49,7 +48,7 @@ fn loadCss() {
 
 #[allow(non_snake_case)]
 fn buildUI(app: &Application) {
-    let window = Window::new(app);
+    let window = ReSetWindow::new(app);
     window.present();
 }
 
