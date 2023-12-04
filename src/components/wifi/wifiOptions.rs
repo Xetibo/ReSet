@@ -12,9 +12,7 @@ use dbus::arg::PropMap;
 use glib::{clone, PropertySet};
 use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
 use ReSet_Lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, TypeSettings};
-use ReSet_Lib::network::network::AccessPoint;
 use IpProtocol::{IPv4, IPv6};
-use ReSet_Lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, TypeSettings};
 
 use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifiAddressEntry::WifiAddressEntry;

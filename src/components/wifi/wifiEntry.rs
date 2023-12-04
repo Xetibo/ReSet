@@ -204,9 +204,7 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
                         let imp = entry_ref.imp();
                         imp.resetWifiPopup.popdown();
                         imp.resetWifiEditButton.set_sensitive(true);
-                        imp.resetWifiConnected
-                            .get()
-                            .set_from_icon_name(Some("network-wireless-connected-symbolic"));
+                        imp.resetWifiConnected.set_text("Connected");
                         imp.connected.replace(true);
                     });
                 });

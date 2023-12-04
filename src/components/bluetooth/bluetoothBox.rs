@@ -5,7 +5,7 @@ use std::time::{Duration, SystemTime};
 
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::ComboRowExt;
+use adw::prelude::{ComboRowExt, ListModelExtManual};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
@@ -13,7 +13,7 @@ use dbus::{Error, Path};
 use glib::{clone, Cast};
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, BoxExt, ListBoxRowExt, WidgetExt};
-use gtk::{gio, StringObject};
+use gtk::{gio, StringObject, Widget};
 use ReSet_Lib::bluetooth::bluetooth::{BluetoothAdapter, BluetoothDevice};
 use ReSet_Lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
 
@@ -58,7 +58,13 @@ fn setupCallbacks(
     imp.resetBluetoothSwitch.connect_state_set(move |_, state| {
         if !state {
             let imp = bluetooth_box_ref.imp();
-            imp.resetBluetoothConnectedDevices.remove_all();
+            for x in imp.resetBluetoothConnectedDevices.observe_children().iter::<Object>() {
+                if let Ok(entry) = x { // todo test this
+                    if let Some(item) = entry.downcast_ref::<Widget>() {
+                        imp.resetBluetoothAvailableDevices.remove(item);
+                    }
+                }
+            };
             listeners.bluetooth_listener.store(false, Ordering::SeqCst);
             set_adapter_enabled(
                 imp.resetCurrentBluetoothAdapter.borrow().path.clone(),
