@@ -2,10 +2,10 @@ use adw::glib;
 use adw::glib::Object;
 use gtk::{gdk, Editable, Popover};
 
-use super::popupImpl;
+use super::popup_impl;
 
 glib::wrapper! {
-    pub struct Popup(ObjectSubclass<popupImpl::Popup>)
+    pub struct Popup(ObjectSubclass<popup_impl::Popup>)
     @extends Popover, gtk::Widget,
     @implements Editable,gdk::Popup, gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
 }

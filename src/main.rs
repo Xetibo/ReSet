@@ -1,9 +1,7 @@
-#![allow(non_snake_case)]
-
 use std::thread;
 use std::time::Duration;
 
-use components::window::resetWindow::ReSetWindow;
+use components::window::reset_window::ReSetWindow;
 use dbus::blocking::Connection;
 use dbus::Error;
 use gtk::gdk::Display;
@@ -27,15 +25,15 @@ async fn main() {
 
     app.connect_startup(move |_| {
         adw::init().unwrap();
-        loadCss();
+        load_css();
     });
 
-    app.connect_activate(buildUI);
+    app.connect_activate(build_ui);
     app.connect_shutdown(shutdown);
     app.run();
 }
 
-fn loadCss() {
+fn load_css() {
     let provider = CssProvider::new();
     provider.load_from_resource("/org/Xetibo/ReSet/style/style.css");
 
@@ -46,8 +44,7 @@ fn loadCss() {
     );
 }
 
-#[allow(non_snake_case)]
-fn buildUI(app: &Application) {
+fn build_ui(app: &Application) {
     let window = ReSetWindow::new(app);
     window.present();
 }

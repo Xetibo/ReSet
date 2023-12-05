@@ -19,8 +19,8 @@ use ReSet_Lib::{
 };
 
 use crate::components::{
-    input::sourceBox::{start_input_box_listener, SourceBox},
-    output::sinkBox::{start_output_box_listener, SinkBox},
+    input::source_box::{start_input_box_listener, SourceBox},
+    output::sink_box::{start_output_box_listener, SinkBox},
 };
 
 #[derive(Default)]
