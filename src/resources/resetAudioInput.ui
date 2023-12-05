@@ -26,7 +26,7 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwActionRow" id="resetSourceRow">
+                      <object class="AdwActionRow" id="reset_source_row">
                         <property name="title">Input Devices</property>
                         <child>
                           <object class="GtkImage">
@@ -36,7 +36,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetCardsRow">
+                      <object class="AdwActionRow" id="reset_cards_row">
                         <property name="title">Profile Settings</property>
                         <child>
                           <object class="GtkImage">
@@ -46,7 +46,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwComboRow" id="resetSourceDropdown">
+                      <object class="AdwComboRow" id="reset_source_dropdown">
                         <property name="title">Default Input Device</property>
                         <property name="use-subtitle">True</property>
                       </object>
@@ -65,14 +65,14 @@
                         <property name="margin-bottom">5</property>
                         <property name="margin-top">5</property>
                         <child>
-                          <object class="GtkButton" id="resetSourceMute">
+                          <object class="GtkButton" id="reset_source_mute">
                             <property name="icon-name">audio-input-microphone-symbolic</property>
                             <property name="margin-end">5</property>
                             <property name="valign">center</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkScale" id="resetVolumeSlider">
+                          <object class="GtkScale" id="reset_volume_slider">
                             <property name="adjustment">
                               <object class="GtkAdjustment">
                                 <property name="page-increment">2005.4016</property>
@@ -89,7 +89,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="resetVolumePercentage">
+                          <object class="GtkLabel" id="reset_volume_percentage">
                             <property name="label">100%</property>
                             <property name="lines">1</property>
                             <property name="width-request">40</property>
@@ -98,7 +98,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkProgressBar" id="resetVolumeMeter">
+                      <object class="GtkProgressBar" id="reset_volume_meter">
                         <property name="margin-top">5</property>
                       </object>
                     </child>
@@ -108,7 +108,7 @@
                   <object class="GtkSeparator"/>
                 </child>
                 <child>
-                  <object class="GtkBox" id="resetOutputStreams">
+                  <object class="GtkBox" id="reset_output_streams">
                     <property name="margin-top">10</property>
                     <property name="orientation">vertical</property>
                     <child>
@@ -133,7 +133,7 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwActionRow" id="resetOutputStreamButton">
+                      <object class="AdwActionRow" id="reset_output_stream_button">
                         <property name="title">Input Streams</property>
                         <child>
                           <object class="GtkImage">
@@ -148,7 +148,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox" id="resetSources">
+                  <object class="GtkBox" id="reset_sources">
                     <property name="margin-end">5</property>
                     <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
@@ -175,7 +175,7 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwActionRow" id="resetInputCardsBackButton">
+                      <object class="AdwActionRow" id="reset_input_cards_back_button">
                         <property name="title">Input Streams</property>
                         <child>
                           <object class="GtkImage">
@@ -193,7 +193,7 @@
                   <object class="GtkLabel"/>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetCards">
+                  <object class="AdwPreferencesGroup" id="reset_cards">
                     <property name="title">Devices</property>
                   </object>
                 </child>

@@ -17,7 +17,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkSwitch" id="resetBluetoothSwitch">
+          <object class="GtkSwitch" id="reset_bluetooth_switch">
             <property name="active">True</property>
             <property name="halign">end</property>
             <property name="hexpand">True</property>
@@ -37,14 +37,14 @@
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetBluetoothDetails">
+                  <object class="AdwPreferencesGroup" id="reset_bluetooth_details">
                     <child>
-                      <object class="AdwComboRow" id="resetBluetoothAdapter">
+                      <object class="AdwComboRow" id="reset_bluetooth_adapter">
                         <property name="title">Bluetooth Adapter</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetVisibility">
+                      <object class="AdwActionRow" id="reset_visibility">
                         <property name="title">Visibility Settings</property>
                         <child>
                           <object class="GtkImage">
@@ -61,7 +61,7 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <property name="header-suffix">
-                      <object class="GtkButton" id="resetBluetoothRefreshButton">
+                      <object class="GtkButton" id="reset_bluetooth_refresh_button">
                         <property name="icon-name">view-refresh-symbolic</property>
                       </object>
                     </property>
@@ -74,7 +74,7 @@
                         <child>
                           <object class="GtkViewport">
                             <child>
-                              <object class="GtkBox" id="resetBluetoothAvailableDevices">
+                              <object class="GtkBox" id="reset_bluetooth_available_devices">
                                 <property name="orientation">vertical</property>
                               </object>
                             </child>
@@ -94,7 +94,7 @@
                         <child>
                           <object class="GtkViewport">
                             <child>
-                              <object class="GtkBox" id="resetBluetoothConnectedDevices">
+                              <object class="GtkBox" id="reset_bluetooth_connected_devices">
                                 <property name="orientation">vertical</property>
                               </object>
                             </child>
@@ -125,7 +125,7 @@
                     <property name="show-separators">True</property>
                     <property name="valign">start</property>
                     <child>
-                      <object class="resetListBoxRow" id="resetBluetoothMainTab">
+                      <object class="resetListBoxRow" id="reset_bluetooth_main_tab">
                         <child>
                           <object class="GtkBox">
                             <property name="height-request">40</property>

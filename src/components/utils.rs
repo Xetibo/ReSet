@@ -5,7 +5,7 @@ use glib::{Cast, Object};
 use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, WidgetExt};
 use gtk::{Align, SignalListItemFactory, StringObject};
 
-pub fn createDropdownLabelFactory() -> SignalListItemFactory {
+pub fn create_dropdown_label_factory() -> SignalListItemFactory {
     let factory = SignalListItemFactory::new();
     factory.connect_setup(|_, item| {
         let item = item.downcast_ref::<gtk::ListItem>().unwrap();
@@ -19,7 +19,7 @@ pub fn createDropdownLabelFactory() -> SignalListItemFactory {
     factory
 }
 
-pub fn setComboRowEllipsis(element: ComboRow) {
+pub fn set_combo_row_ellipsis(element: ComboRow) {
     for (i, child) in element
         .child()
         .unwrap()

@@ -12,7 +12,7 @@
       <object class="GtkWindowHandle"/>
     </child>
     <child>
-      <object class="AdwOverlaySplitView" id="resetOverlaySplitView">
+      <object class="AdwOverlaySplitView" id="reset_overlay_split_view">
         <property name="content">
           <object class="GtkBox">
             <property name="margin-end">5</property>
@@ -25,7 +25,7 @@
                   <object class="GtkBox">
                     <property name="valign">start</property>
                     <child>
-                      <object class="GtkButton" id="resetSideBarToggle">
+                      <object class="GtkButton" id="reset_sidebar_toggle">
                         <property name="icon-name">sidebar-show-symbolic</property>
                         <property name="visible">False</property>
                       </object>
@@ -39,24 +39,24 @@
                         <property name="hexpand-set">True</property>
                         <property name="icon-name">open-menu-symbolic</property>
                         <property name="popover">
-                          <object class="GtkPopoverMenu" id="resetPopoverMenu">
+                          <object class="GtkPopoverMenu" id="reset_popover_menu">
                             <property name="child">
                               <object class="GtkBox">
                                 <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkButton" id="resetShortcutsButton">
+                                  <object class="GtkButton" id="reset_shortcuts_button">
                                     <property name="has-frame">False</property>
                                     <property name="label">Shortcuts</property>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="resetPreferenceButton">
+                                  <object class="GtkButton" id="reset_preference_button">
                                     <property name="has-frame">False</property>
                                     <property name="label">Preferences</property>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="resetAboutButton">
+                                  <object class="GtkButton" id="reset_about_button">
                                     <property name="has-frame">False</property>
                                     <property name="label">About</property>
                                   </object>
@@ -70,7 +70,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkButton" id="resetClose">
+                      <object class="GtkButton" id="reset_close">
                         <property name="css-classes">resetClose</property>
                         <property name="halign">start</property>
                         <property name="has-frame">False</property>
@@ -88,7 +88,7 @@
                 <child>
                   <object class="GtkViewport">
                     <child>
-                      <object class="GtkFlowBox" id="resetMain">
+                      <object class="GtkFlowBox" id="reset_main">
                         <property name="column-spacing">25</property>
                         <property name="halign">center</property>
                         <property name="hexpand">True</property>
@@ -117,7 +117,7 @@
               <object class="GtkWindowHandle">
                 <property name="valign">start</property>
                 <child>
-                  <object class="GtkSearchEntry" id="resetSearchEntry">
+                  <object class="GtkSearchEntry" id="reset_search_entry">
                     <property name="placeholder-text">Search</property>
                     <property name="valign">start</property>
                   </object>
@@ -131,7 +131,7 @@
                 <child>
                   <object class="GtkViewport">
                     <child>
-                      <object class="GtkListBox" id="resetSidebarList">
+                      <object class="GtkListBox" id="reset_sidebar_list">
                         <property name="css-name">resetList</property>
                         <property name="width-request">150</property>
                         <style>
@@ -150,7 +150,7 @@
     </child>
     <!-- Custom fragments -->
     <child>
-      <object id="resetSidebarBreakpoint" class="AdwBreakpoint">
+      <object id="reset_sidebar_breakpoint" class="AdwBreakpoint">
     </object>
     </child>
   </template>

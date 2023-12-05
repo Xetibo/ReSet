@@ -8,14 +8,14 @@
         <property name="homogeneous">True</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkLabel" id="resetPopupLabel">
+          <object class="GtkLabel" id="reset_popup_label">
             <property name="visible">False</property>
           </object>
         </child>
         <child>
           <object class="GtkBox">
             <child>
-              <object class="GtkPasswordEntry" id="resetPopupEntry">
+              <object class="GtkPasswordEntry" id="reset_popup_entry">
                 <property name="activates-default">True</property>
                 <property name="margin-bottom">5</property>
                 <property name="margin-end">5</property>
@@ -26,7 +26,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="resetPopupButton">
+              <object class="GtkButton" id="reset_popup_button">
                 <property name="label">connect</property>
                 <property name="margin-bottom">5</property>
                 <property name="margin-end">5</property>

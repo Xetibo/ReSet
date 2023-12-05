@@ -18,60 +18,60 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwActionRow" id="resetWifiName">
+                      <object class="AdwActionRow" id="reset_wifi_name">
                         <property name="css-classes">property</property>
                         <property name="title">WiFi Name</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetWifiMac">
+                      <object class="AdwActionRow" id="reset_wifi_mac">
                         <property name="css-classes">property</property>
                         <property name="title">MAC-Address</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetWifiLinkSpeed">
+                      <object class="AdwActionRow" id="reset_wifi_link_speed">
                         <property name="css-classes">property</property>
                         <property name="title">Link Speed</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetWifiIP4Addr">
+                      <object class="AdwActionRow" id="reset_wifi_ip4_addr">
                         <property name="css-classes">property</property>
                         <property name="title">IPv4 Address</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetWifiIP6Addr">
+                      <object class="AdwActionRow" id="reset_wifi_ip6_addr">
                         <property name="css-classes">property</property>
                         <property name="title">IPv6 Address</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetWifiGateway">
+                      <object class="AdwActionRow" id="reset_wifi_gateway">
                         <property name="css-classes">property</property>
                         <property name="title">Gateway</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetWifiDNS">
+                      <object class="AdwActionRow" id="reset_wifi_dns">
                         <property name="css-classes">property</property>
                         <property name="title">DNS</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetWifiLastUsed">
+                      <object class="AdwActionRow" id="reset_wifi_last_used">
                         <property name="css-classes">property</property>
                         <property name="title">Last Used</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwSwitchRow" id="resetWifiAutoConnect">
+                      <object class="AdwSwitchRow" id="reset_wifi_auto_connect">
                         <property name="title">Connect automatically</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwSwitchRow" id="resetWifiMetered">
+                      <object class="AdwSwitchRow" id="reset_wifi_metered">
                         <property name="title">Metered Connection</property>
                       </object>
                     </child>
@@ -91,7 +91,7 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwComboRow" id="resetIP4Method">
+                      <object class="AdwComboRow" id="reset_ip4_method">
                         <property name="model">
                           <object class="GtkStringList">
                             <items>
@@ -107,21 +107,21 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwEntryRow" id="resetIP4DNS">
+                      <object class="AdwEntryRow" id="reset_ip4_dns">
                         <property name="title">DNS (separate IP by comma, empty for automatic)</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwEntryRow" id="resetIP4Gateway">
+                      <object class="AdwEntryRow" id="reset_ip4_gateway">
                         <property name="title">Gateway</property>
                       </object>
                     </child>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetIP4AddressGroup">
+                  <object class="AdwPreferencesGroup" id="reset_ip4_address_group">
                     <property name="header-suffix">
-                      <object class="GtkButton" id="resetIP4AddressAddButton">
+                      <object class="GtkButton" id="reset_ip4_address_add_button">
                         <property name="icon-name">list-add-symbolic</property>
                       </object>
                     </property>
@@ -130,7 +130,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetIP4RoutesGroup">
+                  <object class="AdwPreferencesGroup" id="reset_ip4_routes_group">
                     <property name="header-suffix">
                       <object class="GtkBox">
                         <child>
@@ -145,7 +145,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="resetIP4RouteAddButton">
+                          <object class="GtkButton" id="reset_ip4_route_add_button">
                             <property name="icon-name">list-add-symbolic</property>
                             <property name="margin-start">10</property>
                           </object>
@@ -170,7 +170,7 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwComboRow" id="resetIP6Method">
+                      <object class="AdwComboRow" id="reset_ip6_method">
                         <property name="model">
                           <object class="GtkStringList">
                             <items>
@@ -187,21 +187,21 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwEntryRow" id="resetIP6DNS">
+                      <object class="AdwEntryRow" id="reset_ip6_dns">
                         <property name="title">DNS (separate IP by comma, empty for automatic)</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwEntryRow" id="resetIP6Gateway">
+                      <object class="AdwEntryRow" id="reset_ip6_gateway">
                         <property name="title">Gateway</property>
                       </object>
                     </child>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetIP6AddressGroup">
+                  <object class="AdwPreferencesGroup" id="reset_ip6_address_group">
                     <property name="header-suffix">
-                      <object class="GtkButton" id="resetIP6AddressAddButton">
+                      <object class="GtkButton" id="reset_ip6_address_add_button">
                         <property name="icon-name">list-add-symbolic</property>
                       </object>
                     </property>
@@ -210,7 +210,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetIP6RoutesGroup">
+                  <object class="AdwPreferencesGroup" id="reset_ip6_routes_group">
                     <property name="header-suffix">
                       <object class="GtkBox">
                         <child>
@@ -225,7 +225,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="resetIP6RouteAddButton">
+                          <object class="GtkButton" id="reset_ip6_route_add_button">
                             <property name="icon-name">list-add-symbolic</property>
                             <property name="margin-start">10</property>
                           </object>
@@ -250,7 +250,7 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwComboRow" id="resetWifiSecurityDropdown">
+                      <object class="AdwComboRow" id="reset_wifi_security_dropdown">
                         <property name="model">
                           <object class="GtkStringList">
                             <items>
@@ -263,7 +263,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwPasswordEntryRow" id="resetWifiPassword">
+                      <object class="AdwPasswordEntryRow" id="reset_wifi_password">
                         <property name="title">Password</property>
                       </object>
                     </child>
@@ -279,7 +279,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="wifiOptionsApplyButton">
+          <object class="GtkButton" id="wifi_options_apply_button">
             <property name="halign">end</property>
             <property name="label">Apply</property>
             <property name="margin-top">10</property>

@@ -1,7 +1,6 @@
-#![allow(non_snake_case)]
-pub mod inputStreamEntry;
-pub mod inputStreamEntryImpl;
-pub mod sinkBox;
-pub mod sinkBoxImpl;
-pub mod sinkEntry;
-pub mod sinkEntryImpl;
+pub mod input_stream_entry;
+pub mod input_stream_entry_impl;
+pub mod sink_box;
+pub mod sink_box_impl;
+pub mod sink_entry;
+pub mod sink_entry_impl;

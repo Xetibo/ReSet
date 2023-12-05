@@ -5,19 +5,19 @@
   <requires lib="libadwaita" version="1.2"/>
   <template class="resetWifiRouteEntry" parent="GtkBox">
     <child>
-      <object class="AdwExpanderRow" id="resetRouteRow">
+      <object class="AdwExpanderRow" id="reset_route_row">
         <property name="hexpand">True</property>
         <property name="title">Add new Route</property>
         <child>
           <object class="GtkBox">
             <child>
-              <object class="AdwEntryRow" id="resetRouteAddress">
+              <object class="AdwEntryRow" id="reset_route_address">
                 <property name="hexpand">True</property>
                 <property name="title">Address</property>
               </object>
             </child>
             <child>
-              <object class="AdwEntryRow" id="resetRoutePrefix">
+              <object class="AdwEntryRow" id="reset_route_prefix">
                 <property name="max-width-chars">5</property>
                 <property name="title">Prefix</property>
               </object>
@@ -27,13 +27,13 @@
         <child>
           <object class="GtkBox">
             <child>
-              <object class="AdwEntryRow" id="resetRouteGateway">
+              <object class="AdwEntryRow" id="reset_route_gateway">
                 <property name="hexpand">True</property>
                 <property name="title">Gateway</property>
               </object>
             </child>
             <child>
-              <object class="AdwEntryRow" id="resetRouteMetric">
+              <object class="AdwEntryRow" id="reset_route_metric">
                 <property name="max-width-chars">5</property>
                 <property name="title">Metric</property>
               </object>
@@ -43,7 +43,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="resetRouteRemove">
+      <object class="GtkButton" id="reset_route_remove">
         <property name="height-request">55</property>
         <property name="icon-name">edit-delete-symbolic</property>
         <property name="valign">start</property>

@@ -1,14 +1,13 @@
-#![allow(non_snake_case)]
-pub mod savedWifiEntry;
-pub mod savedWifiEntryImpl;
+pub mod saved_wifi_entry;
+pub mod saved_wifi_entry_impl;
 pub mod utils;
-pub mod wifiAddressEntry;
-pub mod wifiAddressEntryImpl;
-pub mod wifiBox;
-pub mod wifiBoxImpl;
-pub mod wifiEntry;
-pub mod wifiEntryImpl;
-pub mod wifiOptions;
-pub mod wifiOptionsImpl;
-pub mod wifiRouteEntry;
-pub mod wifiRouteEntryImpl;
+pub mod wifi_address_entry;
+pub mod wifi_address_entry_impl;
+pub mod wifi_box;
+pub mod wifi_box_impl;
+pub mod wifi_entry;
+pub mod wifi_entry_impl;
+pub mod wifi_options;
+pub mod wifi_options_impl;
+pub mod wifi_route_entry;
+pub mod wifi_route_entry_impl;

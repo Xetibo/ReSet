@@ -1,7 +1,6 @@
-#![allow(non_snake_case)]
-pub mod outputStreamEntry;
-pub mod outputStreamEntryImpl;
-pub mod sourceBox;
-pub mod sourceBoxImpl;
-pub mod sourceEntry;
-pub mod sourceEntryImpl;
+pub mod output_stream_entry;
+pub mod output_stream_entry_impl;
+pub mod source_box;
+pub mod source_box_impl;
+pub mod source_entry;
+pub mod source_entry_impl;
