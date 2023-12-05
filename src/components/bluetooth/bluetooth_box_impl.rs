@@ -32,6 +32,10 @@ pub struct BluetoothBox {
     pub reset_visibility: TemplateChild<ActionRow>,
     #[template_child]
     pub reset_bluetooth_main_tab: TemplateChild<ListEntry>,
+    #[template_child]
+    pub reset_bluetooth_discoverable_switch: TemplateChild<Switch>,
+    #[template_child]
+    pub reset_bluetooth_pairable_switch: TemplateChild<Switch>,
     pub available_devices: BluetoothMap,
     pub connected_devices: BluetoothMap,
     pub reset_bluetooth_adapters: Arc<RwLock<HashMap<String, (BluetoothAdapter, u32)>>>,

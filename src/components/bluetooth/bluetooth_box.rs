@@ -12,7 +12,7 @@ use dbus::message::SignalArgs;
 use dbus::{Error, Path};
 use glib::{clone, Cast};
 use gtk::glib::Variant;
-use gtk::prelude::{ActionableExt, BoxExt, ListBoxRowExt, WidgetExt};
+use gtk::prelude::{ActionableExt, BoxExt, ButtonExt, ListBoxRowExt, WidgetExt};
 use gtk::{gio, StringObject, Widget};
 use ReSet_Lib::bluetooth::bluetooth::{BluetoothAdapter, BluetoothDevice};
 use ReSet_Lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
@@ -42,46 +42,70 @@ fn setup_callbacks(
     listeners: Arc<Listeners>,
     bluetooth_box: Arc<BluetoothBox>,
 ) -> Arc<BluetoothBox> {
+    let bluetooth_box_button_ref = bluetooth_box.clone();
     let bluetooth_box_ref = bluetooth_box.clone();
+    let listeners_ref = listeners.clone();
     let imp = bluetooth_box.imp();
-    // let bluetooth_box_ref = bluetooth_box.clone();
     imp.reset_visibility.set_activatable(true);
-    imp.reset_visibility.set_action_name(Some("navigation.push"));
+    imp.reset_visibility
+        .set_action_name(Some("navigation.push"));
     imp.reset_visibility
         .set_action_target_value(Some(&Variant::from("visibility")));
 
     imp.reset_bluetooth_main_tab
         .set_action_name(Some("navigation.pop"));
-    // TODO add a manual search button here
-    imp.reset_bluetooth_switch.connect_state_set(move |_, state| {
-        if !state {
-            let imp = bluetooth_box_ref.imp();
-            for x in imp
-                .reset_bluetooth_connected_devices
-                .observe_children()
-                .iter::<Object>()
-                .flatten()
-            {
-                // todo test this
-                if let Some(item) = x.downcast_ref::<Widget>() {
-                    imp.reset_bluetooth_available_devices.remove(item);
+
+    imp.reset_bluetooth_refresh_button.set_sensitive(false);
+    imp.reset_bluetooth_refresh_button
+        .connect_clicked(move |button| {
+            button.set_sensitive(false);
+            start_bluetooth_listener(listeners.clone(), bluetooth_box_button_ref.clone());
+        });
+
+    imp.reset_bluetooth_discoverable_switch
+        .connect_state_set(clone!(@weak imp => @default-return glib::Propagation::Proceed,move |_, state| {
+            set_bluetooth_adapter_visibility(imp.reset_current_bluetooth_adapter.borrow().path.clone(), state);
+            glib::Propagation::Proceed
+        }));
+
+    imp.reset_bluetooth_pairable_switch
+        .connect_state_set(clone!(@weak imp => @default-return glib::Propagation::Proceed,move |_, state| {
+            set_bluetooth_adapter_pairability(imp.reset_current_bluetooth_adapter.borrow().path.clone(), state);
+            glib::Propagation::Proceed
+        }));
+
+    imp.reset_bluetooth_switch
+        .connect_state_set(move |_, state| {
+            if !state {
+                let imp = bluetooth_box_ref.imp();
+                for x in imp
+                    .reset_bluetooth_connected_devices
+                    .observe_children()
+                    .iter::<Object>()
+                    .flatten()
+                {
+                    // todo test this
+                    if let Some(item) = x.downcast_ref::<Widget>() {
+                        imp.reset_bluetooth_available_devices.remove(item);
+                    }
                 }
+                listeners_ref
+                    .bluetooth_listener
+                    .store(false, Ordering::SeqCst);
+                set_adapter_enabled(
+                    imp.reset_current_bluetooth_adapter.borrow().path.clone(),
+                    false,
+                );
+            } else {
+                let imp = bluetooth_box_ref.imp();
+                set_adapter_enabled(
+                    imp.reset_current_bluetooth_adapter.borrow().path.clone(),
+                    true,
+                );
+                start_bluetooth_listener(listeners_ref.clone(), bluetooth_box_ref.clone());
             }
-            listeners.bluetooth_listener.store(false, Ordering::SeqCst);
-            set_adapter_enabled(
-                imp.reset_current_bluetooth_adapter.borrow().path.clone(),
-                false,
-            );
-        } else {
-            let imp = bluetooth_box_ref.imp();
-            set_adapter_enabled(
-                imp.reset_current_bluetooth_adapter.borrow().path.clone(),
-                true,
-            );
-            start_bluetooth_listener(listeners.clone(), bluetooth_box_ref.clone());
-        }
-        glib::Propagation::Proceed
-    });
+            glib::Propagation::Proceed
+        });
     bluetooth_box
 }
 
@@ -114,6 +138,23 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
                 if let Some(index) = map.get(&device.alias) {
                     imp.reset_bluetooth_adapter.set_selected(index.1);
                 }
+
+                {
+                    let current_adapter = imp.reset_current_bluetooth_adapter.borrow();
+                    imp.reset_bluetooth_switch
+                        .set_state(current_adapter.powered);
+                    imp.reset_bluetooth_switch
+                        .set_active(current_adapter.powered);
+                    imp.reset_bluetooth_discoverable_switch
+                        .set_state(current_adapter.discoverable);
+                    imp.reset_bluetooth_discoverable_switch
+                        .set_active(current_adapter.discoverable);
+                    imp.reset_bluetooth_pairable_switch
+                        .set_state(current_adapter.pairable);
+                    imp.reset_bluetooth_pairable_switch
+                        .set_active(current_adapter.pairable);
+                }
+
                 imp.reset_bluetooth_adapter.connect_selected_notify(
                     clone!(@weak imp => move |dropdown| {
                         let selected = dropdown.selected_item();
@@ -155,8 +196,10 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
 pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<BluetoothBox>) {
     gio::spawn_blocking(move || {
         if listeners.bluetooth_listener.load(Ordering::SeqCst) {
+            println!("bluetooth listener was active");
             return;
         }
+        println!("starting bluetooth listener");
 
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
@@ -164,13 +207,8 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
-        let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSetBluetooth",
-            "StartBluetoothListener",
-            #[allow(clippy::unnecessary_cast)]
-            (25000 as u32,),
-            // leave me alone clippy, I am dealing with C code
-        );
+        let _: Result<(), Error> =
+            proxy.method_call("org.Xetibo.ReSetBluetooth", "StartBluetoothListener", ());
         let device_added = BluetoothDeviceAdded::match_rule(
             Some(&"org.Xetibo.ReSetDaemon".into()),
             Some(&Path::from("/org/Xetibo/ReSetDaemon")),
@@ -258,9 +296,17 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                         }
                         if list_entry.2.paired != ir.bluetooth_device.paired {
                             if ir.bluetooth_device.paired {
-                                list_entry.0.imp().reset_bluetooth_button.set_sensitive(true);
+                                list_entry
+                                    .0
+                                    .imp()
+                                    .reset_bluetooth_button
+                                    .set_sensitive(true);
                             } else {
-                                list_entry.0.imp().reset_bluetooth_button.set_sensitive(false);
+                                list_entry
+                                    .0
+                                    .imp()
+                                    .reset_bluetooth_button
+                                    .set_sensitive(false);
                             }
                         }
                     }
@@ -281,21 +327,20 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
             if !listeners.bluetooth_listener.load(Ordering::SeqCst)
                 || time.elapsed().unwrap() > Duration::from_millis(25000)
             {
+                listeners.bluetooth_listener.store(false, Ordering::SeqCst);
                 glib::spawn_future(async move {
                     glib::idle_add_once(move || {
                         let imp = loop_box.imp();
-                        for x in imp
-                            .reset_bluetooth_available_devices
-                            .observe_children()
-                            .iter::<Object>()
-                            .flatten()
-                        {
-                            if let Some(item) = x.downcast_ref::<Widget>() {
-                                imp.reset_bluetooth_available_devices.remove(item);
-                            }
+                        let mut entries = imp.available_devices.borrow_mut();
+                        for entry in entries.iter() {
+                            imp.reset_bluetooth_available_devices.remove(&*entry.1 .1);
                         }
+                        entries.clear();
+                        imp.reset_bluetooth_refresh_button.set_sensitive(true);
                     });
                 });
+                let _: Result<(), Error> =
+                    proxy.method_call("org.Xetibo.ReSetBluetooth", "StopBluetoothListener", ());
                 println!("stopping bluetooth listener");
                 break;
             }
@@ -346,6 +391,34 @@ fn set_bluetooth_adapter(path: Path<'static>) {
     );
     let _: Result<(Vec<BluetoothAdapter>,), Error> =
         proxy.method_call("org.Xetibo.ReSetBluetooth", "SetBluetoothAdapter", (path,));
+}
+
+fn set_bluetooth_adapter_visibility(path: Path<'static>, visible: bool) {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(bool,), Error> = proxy.method_call(
+        "org.Xetibo.ReSetBluetooth",
+        "SetBluetoothAdapterVisibility",
+        (path, visible),
+    );
+}
+
+fn set_bluetooth_adapter_pairability(path: Path<'static>, visible: bool) {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let _: Result<(bool,), Error> = proxy.method_call(
+        "org.Xetibo.ReSetBluetooth",
+        "SetBluetoothAdapterPairability",
+        (path, visible),
+    );
 }
 
 fn set_adapter_enabled(path: Path<'static>, enabled: bool) {

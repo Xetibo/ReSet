@@ -156,6 +156,42 @@
                     <property name="margin-start">5</property>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
+                        <property name="label">Pairable</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="reset_bluetooth_pairable_switch"/>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
+                        <property name="label">Discoverable</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="reset_bluetooth_discoverable_switch"/>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
