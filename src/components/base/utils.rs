@@ -25,17 +25,18 @@ use crate::components::{
 
 #[derive(Default)]
 pub struct Listeners {
-    pub network_listener: AtomicBool,
+    pub wifi_disabled: AtomicBool,
+    pub wifi_listener: AtomicBool,
     pub bluetooth_listener: AtomicBool,
     pub pulse_listener: AtomicBool,
 }
 
 impl Listeners {
     pub fn stop_network_listener(&self) {
-        if !self.network_listener.load(Ordering::SeqCst) {
+        if !self.wifi_listener.load(Ordering::SeqCst) {
             return;
         }
-        self.network_listener.store(false, Ordering::SeqCst);
+        self.wifi_listener.store(false, Ordering::SeqCst);
         thread::spawn(|| {
             let conn = Connection::new_session().unwrap();
             let proxy = conn.with_proxy(

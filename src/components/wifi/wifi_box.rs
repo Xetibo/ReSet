@@ -48,6 +48,7 @@ impl WifiBox {
 }
 
 fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<WifiBox> {
+    let wifi_status = get_wifi_status();
     let imp = wifi_box.imp();
     let wifibox_ref = wifi_box.clone();
     imp.reset_saved_networks.set_activatable(true);
@@ -55,6 +56,10 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
         .set_action_name(Some("navigation.push"));
     imp.reset_saved_networks
         .set_action_target_value(Some(&Variant::from("saved")));
+
+    println!("{wifi_status}");
+    imp.reset_wifi_switch.set_active(wifi_status);
+    imp.reset_wifi_switch.set_state(wifi_status);
 
     imp.reset_available_networks.set_activatable(true);
     imp.reset_available_networks
@@ -70,7 +75,7 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
                 }
                 map.clear();
                 imp.wifi_entries_path.lock().unwrap().clear();
-                listeners.network_listener.store(false, Ordering::SeqCst);
+                listeners.wifi_listener.store(false, Ordering::SeqCst);
             } else {
                 start_event_listener(listeners.clone(), wifibox_ref.clone());
                 show_stored_connections(wifibox_ref.clone());
@@ -116,12 +121,15 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                 let list = imp.reset_model_list.read().unwrap();
                 imp.reset_wifi_device.set_model(Some(&*list));
                 let map = imp.reset_wifi_devices.read().unwrap();
-                let device = imp.reset_current_wifi_device.borrow();
-                if let Some(index) = map.get(&device.name) {
-                    imp.reset_wifi_device.set_selected(index.1);
+                {
+                    let device = imp.reset_current_wifi_device.borrow();
+                    if let Some(index) = map.get(&device.name) {
+                        imp.reset_wifi_device.set_selected(index.1);
+                    }
                 }
-                imp.reset_wifi_device
-                    .connect_selected_notify(clone!(@weak imp => move |dropdown| {
+
+                imp.reset_wifi_device.connect_selected_notify(
+                    clone!(@weak imp => move |dropdown| {
                         let selected = dropdown.selected_item();
                         if selected.is_none() {
                             return;
@@ -136,7 +144,8 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                             return;
                         }
                         set_wifi_device(device.unwrap().0.path.clone());
-                    }));
+                    }),
+                );
                 for access_point in access_points {
                     let ssid = access_point.ssid.clone();
                     let path = access_point.dbus_path.clone();
@@ -225,6 +234,21 @@ pub fn get_wifi_devices() -> Vec<WifiDevice> {
     devices
 }
 
+pub fn get_wifi_status() -> bool {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(bool,), Error> =
+        proxy.method_call("org.Xetibo.ReSetWireless", "GetWifiStatus", ());
+    if res.is_err() {
+        return false;
+    }
+    res.unwrap().0
+}
+
 pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
@@ -254,10 +278,12 @@ pub fn set_wifi_enabled(enabled: bool) {
 
 pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
     gio::spawn_blocking(move || {
-        if listeners.network_listener.load(Ordering::SeqCst) {
+        if listeners.wifi_disabled.load(Ordering::SeqCst)
+            || listeners.wifi_listener.load(Ordering::SeqCst)
+        {
             return;
         }
-        listeners.network_listener.store(true, Ordering::SeqCst);
+        listeners.wifi_listener.store(true, Ordering::SeqCst);
 
         let conn = Connection::new_session().unwrap();
         let added_ref = wifi_box.clone();
@@ -419,7 +445,7 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
         println!("starting thread listener");
         loop {
             let _ = conn.process(Duration::from_millis(1000));
-            if !listeners.network_listener.load(Ordering::SeqCst) {
+            if !listeners.wifi_listener.load(Ordering::SeqCst) {
                 println!("stopping thread listener");
                 break;
             }

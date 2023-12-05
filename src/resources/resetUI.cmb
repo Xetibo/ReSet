@@ -443,7 +443,6 @@
 	(5,20,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
 	(5,20,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None),
 	(5,22,"GtkLabel","justify","right",None,None,None,None,None,None,None,None,None),
-	(5,22,"GtkLabel","label","Connected",None,None,None,None,None,None,None,None,None),
 	(5,22,"GtkLabel","single-line-mode","True",None,None,None,None,None,None,None,None,None),
 	(5,22,"GtkLabel","xalign","0.0",None,None,None,None,None,None,None,None,None),
 	(5,22,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
