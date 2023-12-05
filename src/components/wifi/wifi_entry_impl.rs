@@ -8,22 +8,21 @@ use gtk::{glib, Button, CompositeTemplate, Image, Label};
 use std::cell::RefCell;
 use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWifiEntry.ui")]
 pub struct WifiEntry {
     #[template_child]
-    pub resetWifiStrength: TemplateChild<Image>,
+    pub reset_wifi_strength: TemplateChild<Image>,
     #[template_child]
-    pub resetWifiEncrypted: TemplateChild<Image>,
+    pub reset_wifi_encrypted: TemplateChild<Image>,
     #[template_child]
-    pub resetWifiLabel: TemplateChild<Label>,
+    pub reset_wifi_label: TemplateChild<Label>,
     #[template_child]
-    pub resetWifiEditButton: TemplateChild<Button>,
+    pub reset_wifi_edit_button: TemplateChild<Button>,
     #[template_child]
-    pub resetWifiConnected: TemplateChild<Label>,
+    pub reset_wifi_connected: TemplateChild<Label>,
     #[template_child]
-    pub resetWifiPopup: TemplateChild<Popup>,
+    pub reset_wifi_popup: TemplateChild<Popup>,
     pub wifi_name: RefCell<String>,
     pub wifi_strength: RefCell<WifiStrength>,
     pub access_point: RefCell<AccessPoint>,

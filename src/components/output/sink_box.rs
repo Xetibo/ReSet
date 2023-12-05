@@ -49,36 +49,36 @@ impl SinkBox {
 
     pub fn setup_callbacks(&self) {
         let self_imp = self.imp();
-        self_imp.resetSinksRow.set_activatable(true);
+        self_imp.reset_sinks_row.set_activatable(true);
         self_imp
-            .resetSinksRow
+            .reset_sinks_row
             .set_action_name(Some("navigation.push"));
         self_imp
-            .resetSinksRow
+            .reset_sinks_row
             .set_action_target_value(Some(&Variant::from("outputDevices")));
-        self_imp.resetCardsRow.set_activatable(true);
+        self_imp.reset_cards_row.set_activatable(true);
         self_imp
-            .resetCardsRow
+            .reset_cards_row
             .set_action_name(Some("navigation.push"));
         self_imp
-            .resetCardsRow
+            .reset_cards_row
             .set_action_target_value(Some(&Variant::from("profileConfiguration")));
-        self_imp.resetCardsRow.connect_action_name_notify(|_| {});
+        self_imp.reset_cards_row.connect_action_name_notify(|_| {});
 
-        self_imp.resetInputStreamButton.set_activatable(true);
+        self_imp.reset_input_stream_button.set_activatable(true);
         self_imp
-            .resetInputStreamButton
+            .reset_input_stream_button
             .set_action_name(Some("navigation.pop"));
 
-        self_imp.resetInputCardsBackButton.set_activatable(true);
+        self_imp.reset_input_cards_back_button.set_activatable(true);
         self_imp
-            .resetInputCardsBackButton
+            .reset_input_cards_back_button
             .set_action_name(Some("navigation.pop"));
 
         self_imp
-            .resetSinkDropdown
+            .reset_sink_dropdown
             .set_factory(Some(&create_dropdown_label_factory()));
-        set_combo_row_ellipsis(self_imp.resetSinkDropdown.get());
+        set_combo_row_ellipsis(self_imp.reset_sink_dropdown.get());
     }
 }
 
@@ -120,8 +120,8 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     let volume = sink.volume.first().unwrap_or(&0);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
-                    output_box_imp.resetVolumePercentage.set_text(&percentage);
-                    output_box_imp.resetVolumeSlider.set_value(*volume as f64);
+                    output_box_imp.reset_volume_percentage.set_text(&percentage);
+                    output_box_imp.reset_volume_slider.set_value(*volume as f64);
                     let mut list = output_box_imp.reset_sink_list.write().unwrap();
                     for sink in sinks {
                         let index = sink.index;
@@ -139,18 +139,18 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                         let entry = Arc::new(ListEntry::new(&*sink_entry));
                         entry.set_activatable(false);
                         list.insert(index, (entry.clone(), sink_clone, alias));
-                        output_box_imp.resetSinks.append(&*entry);
+                        output_box_imp.reset_sinks.append(&*entry);
                     }
                     let list = output_box_imp.reset_model_list.read().unwrap();
-                    output_box_imp.resetSinkDropdown.set_model(Some(&*list));
+                    output_box_imp.reset_sink_dropdown.set_model(Some(&*list));
                     let map = output_box_imp.reset_sink_map.read().unwrap();
                     let name = output_box_imp.reset_default_sink.borrow();
                     let name = &name.alias;
                     let index = map.get(name);
                     if let Some(index) = index {
-                        output_box_imp.resetSinkDropdown.set_selected(index.1);
+                        output_box_imp.reset_sink_dropdown.set_selected(index.1);
                     }
-                    output_box_imp.resetSinkDropdown.connect_selected_notify(
+                    output_box_imp.reset_sink_dropdown.connect_selected_notify(
                         clone!(@weak output_box_imp => move |dropdown| {
                             let selected = dropdown.selected_item();
                             if selected.is_none() {
@@ -172,12 +172,12 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                 }
                 output_box_ref
                     .imp()
-                    .resetVolumeSlider
+                    .reset_volume_slider
                     .connect_change_value(move |_, _, value| {
                         let imp = output_box_ref_slider.imp();
                         let fraction = (value / 655.36).round();
                         let percentage = (fraction).to_string() + "%";
-                        imp.resetVolumePercentage.set_text(&percentage);
+                        imp.reset_volume_percentage.set_text(&percentage);
                         let sink = imp.reset_default_sink.borrow();
                         let index = sink.index;
                         let channels = sink.channels;
@@ -195,7 +195,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     });
                 output_box_ref
                     .imp()
-                    .resetSinkMute
+                    .reset_sink_mute
                     .connect_clicked(move |_| {
                         let imp = output_box_ref_mute.imp();
                         let stream = imp.reset_default_sink.clone();
@@ -204,10 +204,10 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                         let muted = stream.muted;
                         let index = stream.index;
                         if muted {
-                            imp.resetSinkMute
+                            imp.reset_sink_mute
                                 .set_icon_name("audio-volume-muted-symbolic");
                         } else {
-                            imp.resetSinkMute
+                            imp.reset_sink_mute
                                 .set_icon_name("audio-volume-high-symbolic");
                         }
                         toggle_sink_mute(index, muted);
@@ -232,7 +232,7 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
                     let entry = Arc::new(ListEntry::new(&*input_stream));
                     entry.set_activatable(false);
                     list.insert(index, (entry.clone(), input_stream.clone()));
-                    output_box_imp.resetInputStreams.append(&*entry);
+                    output_box_imp.reset_input_streams.append(&*entry);
                 }
             });
         });
@@ -247,7 +247,7 @@ pub fn populate_cards(output_box: Arc<SinkBox>) {
             glib::idle_add_once(move || {
                 let imp = output_box_ref.imp();
                 for card in cards {
-                    imp.resetCards.add(&CardEntry::new(card));
+                    imp.reset_cards.add(&CardEntry::new(card));
                 }
             });
         });
@@ -376,7 +376,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let entry = Arc::new(ListEntry::new(&*sink_entry));
                 entry.set_activatable(false);
                 list.insert(sink_index, (entry.clone(), sink_clone, alias.clone()));
-                output_box_imp.resetSinks.append(&*entry);
+                output_box_imp.reset_sinks.append(&*entry);
                 let mut map = output_box_imp.reset_sink_map.write().unwrap();
                 let mut index = output_box_imp.reset_model_index.write().unwrap();
                 output_box_imp
@@ -406,7 +406,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 if entry.is_none() {
                     return;
                 }
-                output_box_imp.resetSinks.remove(&*entry.unwrap().0);
+                output_box_imp.reset_sinks.remove(&*entry.unwrap().0);
                 let alias = list.remove(&ir.index);
                 if alias.is_none() {
                     return;
@@ -452,15 +452,15 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 }
                 let imp = entry.unwrap().1.imp();
                 if is_default {
-                    output_box_imp.resetVolumePercentage.set_text(&percentage);
-                    output_box_imp.resetVolumeSlider.set_value(*volume as f64);
-                    imp.resetSelectedSink.set_active(true);
+                    output_box_imp.reset_volume_percentage.set_text(&percentage);
+                    output_box_imp.reset_volume_slider.set_value(*volume as f64);
+                    imp.reset_selected_sink.set_active(true);
                 } else {
-                    imp.resetSelectedSink.set_active(false);
+                    imp.reset_selected_sink.set_active(false);
                 }
-                imp.resetSinkName.set_title(ir.sink.alias.clone().as_str());
-                imp.resetVolumePercentage.set_text(&percentage);
-                imp.resetVolumeSlider.set_value(*volume as f64);
+                imp.reset_sink_name.set_title(ir.sink.alias.clone().as_str());
+                imp.reset_volume_percentage.set_text(&percentage);
+                imp.reset_volume_slider.set_value(*volume as f64);
             });
         });
         true
@@ -482,7 +482,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let entry = Arc::new(ListEntry::new(&*input_stream));
                 entry.set_activatable(false);
                 list.insert(index, (entry.clone(), input_stream.clone()));
-                output_box_imp.resetInputStreams.append(&*entry);
+                output_box_imp.reset_input_streams.append(&*entry);
             });
         });
         true
@@ -520,23 +520,23 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 }
                 let imp = entry.imp();
                 if ir.stream.muted {
-                    imp.resetSinkMute
+                    imp.reset_sink_mute
                         .set_icon_name("audio-volume-muted-symbolic");
                 } else {
-                    imp.resetSinkMute
+                    imp.reset_sink_mute
                         .set_icon_name("audio-volume-high-symbolic");
                 }
                 let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
-                imp.resetSinkSelection.set_title(name.as_str());
+                imp.reset_sink_selection.set_title(name.as_str());
                 let volume = ir.stream.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
-                imp.resetVolumePercentage.set_text(&percentage);
-                imp.resetVolumeSlider.set_value(*volume as f64);
+                imp.reset_volume_percentage.set_text(&percentage);
+                imp.reset_volume_slider.set_value(*volume as f64);
                 let map = output_box_imp.reset_sink_map.read().unwrap();
                 let index = map.get(&alias);
                 if let Some(index) = index {
-                    imp.resetSinkSelection.set_selected(index.1);
+                    imp.reset_sink_selection.set_selected(index.1);
                 }
             });
         });
@@ -558,7 +558,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 if entry.is_none() {
                     return;
                 }
-                output_box_imp.resetInputStreams.remove(&*entry.unwrap().0);
+                output_box_imp.reset_input_streams.remove(&*entry.unwrap().0);
                 list.remove(&ir.index);
             });
         });

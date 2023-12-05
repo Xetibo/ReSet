@@ -6,16 +6,15 @@ use gtk::{glib, Button, CompositeTemplate, Label, PasswordEntry, PasswordEntryBu
 
 use super::popup;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetPopup.ui")]
 pub struct Popup {
     #[template_child]
-    pub resetPopupLabel: TemplateChild<Label>,
+    pub reset_popup_label: TemplateChild<Label>,
     #[template_child]
-    pub resetPopupEntry: TemplateChild<PasswordEntry>,
+    pub reset_popup_entry: TemplateChild<PasswordEntry>,
     #[template_child]
-    pub resetPopupButton: TemplateChild<Button>,
+    pub reset_popup_button: TemplateChild<Button>,
     pub reset_popup_text: Arc<RefCell<PasswordEntryBuffer>>,
 }
 

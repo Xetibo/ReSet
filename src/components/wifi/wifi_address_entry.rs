@@ -34,12 +34,12 @@ impl WifiAddressEntry {
             let conn = conn.borrow();
             let address = unsafe { conn.ipv4.address_data.get_unchecked(address) };
 
-            entry_imp.resetAddressAddress.set_text(&address.address);
+            entry_imp.reset_address_address.set_text(&address.address);
             entry_imp
-                .resetAddressPrefix
+                .reset_address_prefix
                 .set_text(&address.prefix_length.to_string());
             entry_imp
-                .resetAddressRow
+                .reset_address_row
                 .set_title(&format!("{}/{}", &*address.address, address.prefix_length));
         }
         entry_imp.protocol.set(protocol);
@@ -51,13 +51,13 @@ impl WifiAddressEntry {
         let self_imp = self.imp();
 
         let conn = connection.clone();
-        self_imp.resetAddressAddress.connect_changed(clone!(@weak self_imp => move |entry| {
+        self_imp.reset_address_address.connect_changed(clone!(@weak self_imp => move |entry| {
             let address_input = entry.text();
             let mut conn = conn.borrow_mut();
 
             if address_input.is_empty() {
-                self_imp.resetAddressAddress.remove_css_class("error");
-                self_imp.resetAddressRow.set_title("Add new address");
+                self_imp.reset_address_address.remove_css_class("error");
+                self_imp.reset_address_row.set_title("Add new address");
                 return;
             }
             let result = match self_imp.protocol.get() {
@@ -66,7 +66,7 @@ impl WifiAddressEntry {
             };
             match result {
                 Ok(ip_addr) => {
-                    self_imp.resetAddressAddress.remove_css_class("error");
+                    self_imp.reset_address_address.remove_css_class("error");
                     let address_data = match self_imp.protocol.get() {
                         IpProtocol::IPv4 => &mut conn.ipv4.address_data,
                         IpProtocol::IPv6 => &mut conn.ipv6.address_data,
@@ -75,7 +75,7 @@ impl WifiAddressEntry {
                     *self_imp.address.borrow_mut() = (true, ip_addr.to_string());
                 }
                 Err(_) => {
-                    self_imp.resetAddressAddress.add_css_class("error");
+                    self_imp.reset_address_address.add_css_class("error");
                     *self_imp.address.borrow_mut() = (false, String::default());
                 }
             }
@@ -83,16 +83,16 @@ impl WifiAddressEntry {
         }));
 
         let conn = connection.clone();
-        self_imp.resetAddressPrefix.connect_changed(clone!(@weak self_imp => move |entry| {
+        self_imp.reset_address_prefix.connect_changed(clone!(@weak self_imp => move |entry| {
             let prefix_input = entry.text();
             let prefix = prefix_input.parse::<u8>();
             let mut conn = conn.borrow_mut();
 
             let handle_error = || {
-                if self_imp.resetAddressPrefix.text().is_empty() {
-                    self_imp.resetAddressPrefix.remove_css_class("error");
+                if self_imp.reset_address_prefix.text().is_empty() {
+                    self_imp.reset_address_prefix.remove_css_class("error");
                 } else {
-                    self_imp.resetAddressPrefix.add_css_class("error");
+                    self_imp.reset_address_prefix.add_css_class("error");
                 }
                 self_imp.prefix.set((false, 0));
                 set_row_name(&self_imp);
@@ -107,8 +107,8 @@ impl WifiAddressEntry {
             match self_imp.protocol.get() {
                 IpProtocol::IPv4 if prefix <= 32 => {
                     self_imp.prefix.set((true, prefix as u32));
-                    self_imp.resetAddressPrefix.remove_css_class("error");
-                    if let Ok(address2) = Ipv4Addr::from_str(self_imp.resetAddressAddress.text().as_str()) {
+                    self_imp.reset_address_prefix.remove_css_class("error");
+                    if let Ok(address2) = Ipv4Addr::from_str(self_imp.reset_address_address.text().as_str()) {
                         if let Some(addr) = conn.ipv4.address_data.iter_mut()
                         .find(|conn_addr| *conn_addr.address == address2.to_string()) {
                             addr.prefix_length = prefix as u32;
@@ -117,8 +117,8 @@ impl WifiAddressEntry {
                 }
                 IpProtocol::IPv6 if prefix <= 128 => {
                     self_imp.prefix.set((true, prefix as u32));
-                    self_imp.resetAddressPrefix.remove_css_class("error");
-                    if let Ok(address2) = Ipv6Addr::from_str(self_imp.resetAddressAddress.text().as_str()) {
+                    self_imp.reset_address_prefix.remove_css_class("error");
+                    if let Ok(address2) = Ipv6Addr::from_str(self_imp.reset_address_address.text().as_str()) {
                         if let Some(addr) = conn.ipv6.address_data.iter_mut()
                         .find(|conn_addr| *conn_addr.address == address2.to_string()) {
                             addr.prefix_length = prefix as u32;
@@ -131,9 +131,9 @@ impl WifiAddressEntry {
         }));
 
         let conn = connection.clone();
-        self_imp.resetAddressRemove.connect_clicked(
+        self_imp.reset_address_remove.connect_clicked(
             clone!(@weak self_imp, @weak self as what => move |_| {
-                let address = self_imp.resetAddressAddress.text();
+                let address = self_imp.reset_address_address.text();
                 let mut conn = conn.borrow_mut();
                 conn.ipv4.address_data.retain(|addr| addr.address != address);
                 what.unparent();
@@ -143,7 +143,7 @@ impl WifiAddressEntry {
 }
 
 fn set_row_name(self_imp: &WifiAddressEntryImpl) {
-    if self_imp.resetAddressAddress.text().is_empty() {
+    if self_imp.reset_address_address.text().is_empty() {
         return;
     }
     let address = self_imp.address.borrow();
@@ -156,5 +156,5 @@ fn set_row_name(self_imp: &WifiAddressEntryImpl) {
         (false, true) => "Address wrong".to_string(),
         (false, false) => "Address and Prefix wrong".to_string(),
     };
-    self_imp.resetAddressRow.set_title(&title);
+    self_imp.reset_address_row.set_title(&title);
 }

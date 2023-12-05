@@ -9,20 +9,19 @@ use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::OutputStream;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]
 pub struct OutputStreamEntry {
     #[template_child]
-    pub resetSourceSelection: TemplateChild<ComboRow>,
+    pub reset_source_selection: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetSourceMute: TemplateChild<Button>,
+    pub reset_source_mute: TemplateChild<Button>,
     #[template_child]
-    pub resetVolumeSlider: TemplateChild<Scale>,
+    pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
-    pub resetVolumePercentage: TemplateChild<Label>,
+    pub reset_volume_percentage: TemplateChild<Label>,
     #[template_child]
-    pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<OutputStream>>,
     pub associated_source: Arc<RefCell<(u32, String)>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,

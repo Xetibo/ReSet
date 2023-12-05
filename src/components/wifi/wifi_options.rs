@@ -52,36 +52,36 @@ impl WifiOptions {
 
             // General
             self_imp
-                .resetWifiAutoConnect
+                .reset_wifi_auto_connect
                 .set_active(conn.settings.autoconnect);
             self_imp
-                .resetWifiMetered
+                .reset_wifi_metered
                 .set_active(conn.settings.metered != -1);
             match &conn.device {
                 TypeSettings::WIFI(wifi) => {
-                    self_imp.resetWifiLinkSpeed.set_visible(false);
-                    self_imp.resetWifiIP4Addr.set_visible(false);
-                    self_imp.resetWifiIP6Addr.set_visible(false);
-                    self_imp.resetWifiDNS.set_visible(false);
-                    self_imp.resetWifiGateway.set_visible(false);
-                    self_imp.resetWifiLastUsed.set_visible(true);
-                    self_imp.resetWifiMac.set_subtitle(&wifi.cloned_mac_address);
+                    self_imp.reset_wifi_link_speed.set_visible(false);
+                    self_imp.reset_wifi_ip4_addr.set_visible(false);
+                    self_imp.reset_wifi_ip6_addr.set_visible(false);
+                    self_imp.reset_wifi_dns.set_visible(false);
+                    self_imp.reset_wifi_gateway.set_visible(false);
+                    self_imp.reset_wifi_last_used.set_visible(true);
+                    self_imp.reset_wifi_mac.set_subtitle(&wifi.cloned_mac_address);
                     self_imp
-                        .resetWifiName
+                        .reset_wifi_name
                         .set_subtitle(&String::from_utf8(wifi.ssid.clone()).unwrap_or_default());
                 }
                 TypeSettings::ETHERNET(ethernet) => {
-                    self_imp.resetWifiLinkSpeed.set_visible(true);
-                    self_imp.resetWifiIP4Addr.set_visible(true);
-                    self_imp.resetWifiIP6Addr.set_visible(true);
-                    self_imp.resetWifiDNS.set_visible(true);
-                    self_imp.resetWifiGateway.set_visible(true);
-                    self_imp.resetWifiLastUsed.set_visible(false);
+                    self_imp.reset_wifi_link_speed.set_visible(true);
+                    self_imp.reset_wifi_ip4_addr.set_visible(true);
+                    self_imp.reset_wifi_ip6_addr.set_visible(true);
+                    self_imp.reset_wifi_dns.set_visible(true);
+                    self_imp.reset_wifi_gateway.set_visible(true);
+                    self_imp.reset_wifi_last_used.set_visible(false);
                     self_imp
-                        .resetWifiMac
+                        .reset_wifi_mac
                         .set_subtitle(&ethernet.cloned_mac_address);
                     self_imp
-                        .resetWifiLinkSpeed
+                        .reset_wifi_link_speed
                         .set_subtitle(&ethernet.speed.to_string());
                 }
                 TypeSettings::VPN(_vpn) => {}
@@ -89,7 +89,7 @@ impl WifiOptions {
             };
             // IPv4
             self_imp
-                .resetIP4Method
+                .reset_ip4_method
                 .set_selected(conn.ipv4.dns_method.to_i32() as u32);
             self.set_ip4_visibility(conn.ipv4.dns_method.to_i32() as u32);
 
@@ -104,11 +104,11 @@ impl WifiOptions {
                         .join(".")
                 })
                 .collect();
-            self_imp.resetIP4DNS.set_text(&ipv4_dns.join(", "));
-            self_imp.resetIP4Gateway.set_text(&conn.ipv4.gateway);
+            self_imp.reset_ip4_dns.set_text(&ipv4_dns.join(", "));
+            self_imp.reset_ip4_gateway.set_text(&conn.ipv4.gateway);
             // IPv6
             self_imp
-                .resetIP6Method
+                .reset_ip6_method
                 .set_selected(conn.ipv6.dns_method.to_i32() as u32);
             self.set_ip6_visibility(conn.ipv6.dns_method.to_i32() as u32);
 
@@ -123,22 +123,22 @@ impl WifiOptions {
                         .join(":")
                 })
                 .collect();
-            self_imp.resetIP6DNS.set_text(&ipv6_dns.join(", "));
-            self_imp.resetIP6Gateway.set_text(&conn.ipv6.gateway);
+            self_imp.reset_ip6_dns.set_text(&ipv6_dns.join(", "));
+            self_imp.reset_ip6_gateway.set_text(&conn.ipv6.gateway);
 
             // Security
             if let TypeSettings::WIFI(wifi) = &conn.device {
                 match wifi.security_settings.key_management.as_str() {
                     "none" => {
-                        self_imp.resetWifiSecurityDropdown.set_selected(0);
-                        self_imp.resetWifiPassword.set_visible(false);
-                        self_imp.resetWifiPassword.set_text("");
+                        self_imp.reset_wifi_security_dropdown.set_selected(0);
+                        self_imp.reset_wifi_password.set_visible(false);
+                        self_imp.reset_wifi_password.set_text("");
                     }
                     "wpa-psk" => {
-                        self_imp.resetWifiSecurityDropdown.set_selected(1);
-                        self_imp.resetWifiPassword.set_visible(true);
+                        self_imp.reset_wifi_security_dropdown.set_selected(1);
+                        self_imp.reset_wifi_password.set_visible(true);
                         self_imp
-                            .resetWifiPassword
+                            .reset_wifi_password
                             .set_text(&wifi.security_settings.psk);
                     }
                     _ => {}
@@ -148,32 +148,32 @@ impl WifiOptions {
         // IPv4
         for i in 0..ip4_address_length {
             let address = &WifiAddressEntry::new(Some(i), self_imp.connection.clone(), IPv4);
-            self_imp.resetIP4AddressGroup.add(address);
+            self_imp.reset_ip4_address_group.add(address);
         }
         let address = &WifiAddressEntry::new(None, self_imp.connection.clone(), IPv4);
-        self_imp.resetIP4AddressGroup.add(address);
+        self_imp.reset_ip4_address_group.add(address);
 
         for i in 0..ip4_route_length {
             let route = &WifiRouteEntry::new(Some(i), self_imp.connection.clone(), IPv4);
-            self_imp.resetIP4RoutesGroup.add(route)
+            self_imp.reset_ip4_routes_group.add(route)
         }
         let route = &WifiRouteEntry::new(None, self_imp.connection.clone(), IPv4);
-        self_imp.resetIP4RoutesGroup.add(route);
+        self_imp.reset_ip4_routes_group.add(route);
 
         // IPv6
         for i in 0..ip6_address_length {
             let address = &WifiAddressEntry::new(Some(i), self_imp.connection.clone(), IPv6);
-            self_imp.resetIP6AddressGroup.add(address);
+            self_imp.reset_ip6_address_group.add(address);
         }
         let address = &WifiAddressEntry::new(None, self_imp.connection.clone(), IPv6);
-        self_imp.resetIP6AddressGroup.add(address);
+        self_imp.reset_ip6_address_group.add(address);
 
         for i in 0..ip6_route_length {
             let route = &WifiRouteEntry::new(Some(i), self_imp.connection.clone(), IPv6);
-            self_imp.resetIP6RoutesGroup.add(route);
+            self_imp.reset_ip6_routes_group.add(route);
         }
         let route = &WifiRouteEntry::new(None, self_imp.connection.clone(), IPv6);
-        self_imp.resetIP6RoutesGroup.add(route);
+        self_imp.reset_ip6_routes_group.add(route);
         // Security
     }
 
@@ -182,20 +182,20 @@ impl WifiOptions {
         match method {
             0 => {
                 // auto
-                self_imp.resetIP4AddressGroup.set_visible(false);
-                self_imp.resetIP4RoutesGroup.set_visible(true);
-                self_imp.resetIP4Gateway.set_visible(false);
+                self_imp.reset_ip4_address_group.set_visible(false);
+                self_imp.reset_ip4_routes_group.set_visible(true);
+                self_imp.reset_ip4_gateway.set_visible(false);
             }
             1 => {
                 // manual
-                self_imp.resetIP4AddressGroup.set_visible(true);
-                self_imp.resetIP4RoutesGroup.set_visible(true);
-                self_imp.resetIP4Gateway.set_visible(true);
+                self_imp.reset_ip4_address_group.set_visible(true);
+                self_imp.reset_ip4_routes_group.set_visible(true);
+                self_imp.reset_ip4_gateway.set_visible(true);
             }
             _ => {
-                self_imp.resetIP4AddressGroup.set_visible(false);
-                self_imp.resetIP4RoutesGroup.set_visible(false);
-                self_imp.resetIP4Gateway.set_visible(false);
+                self_imp.reset_ip4_address_group.set_visible(false);
+                self_imp.reset_ip4_routes_group.set_visible(false);
+                self_imp.reset_ip4_gateway.set_visible(false);
             }
         }
     }
@@ -205,20 +205,20 @@ impl WifiOptions {
         match method {
             0 | 1 => {
                 // auto, dhcp
-                self_imp.resetIP6AddressGroup.set_visible(false);
-                self_imp.resetIP6RoutesGroup.set_visible(true);
-                self_imp.resetIP6Gateway.set_visible(false);
+                self_imp.reset_ip6_address_group.set_visible(false);
+                self_imp.reset_ip6_routes_group.set_visible(true);
+                self_imp.reset_ip6_gateway.set_visible(false);
             }
             2 => {
                 // manual
-                self_imp.resetIP6AddressGroup.set_visible(true);
-                self_imp.resetIP6RoutesGroup.set_visible(true);
-                self_imp.resetIP6Gateway.set_visible(true);
+                self_imp.reset_ip6_address_group.set_visible(true);
+                self_imp.reset_ip6_routes_group.set_visible(true);
+                self_imp.reset_ip6_gateway.set_visible(true);
             }
             _ => {
-                self_imp.resetIP6AddressGroup.set_visible(false);
-                self_imp.resetIP6RoutesGroup.set_visible(false);
-                self_imp.resetIP6Gateway.set_visible(false);
+                self_imp.reset_ip6_address_group.set_visible(false);
+                self_imp.reset_ip6_routes_group.set_visible(false);
+                self_imp.reset_ip6_gateway.set_visible(false);
             }
         }
     }
@@ -228,22 +228,22 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
     let imp = wifi_options.imp();
 
     // General
-    imp.resetWifiAutoConnect
+    imp.reset_wifi_auto_connect
         .connect_active_notify(clone!(@weak imp => move |x| {
             imp.connection.borrow_mut().settings.autoconnect = x.is_active();
         }));
-    imp.resetWifiMetered
+    imp.reset_wifi_metered
         .connect_active_notify(clone!(@weak imp => move |x| {
             imp.connection.borrow_mut().settings.metered = if x.is_active() { 1 } else { 2 };
         }));
-    imp.wifiOptionsApplyButton
+    imp.wifi_options_apply_button
         .connect_clicked(clone!(@weak imp => move |_| {
             let prop = imp.connection.borrow().convert_to_propmap();
             set_connection_settings(path.clone(), prop);
         }));
     // IPv4
     let wifi_options_ip4 = wifi_options.clone();
-    imp.resetIP4Method
+    imp.reset_ip4_method
         .connect_selected_notify(clone!(@weak imp => move |dropdown| {
             let selected = dropdown.selected();
             let mut conn = imp.connection.borrow_mut();
@@ -251,49 +251,49 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             wifi_options_ip4.set_ip4_visibility(selected);
         }));
 
-    imp.resetIP4DNS
+    imp.reset_ip4_dns
         .connect_changed(clone!(@weak imp => move |entry| {
             let dns_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv4.dns.clear();
             if dns_input.is_empty() {
-                imp.resetIP4DNS.remove_css_class("error");
+                imp.reset_ip4_dns.remove_css_class("error");
                 return;
             }
             for dns_entry in dns_input.as_str().split(',').map(|s| s.trim()) {
                 if let Ok(addr) = Ipv4Addr::from_str(dns_entry) {
-                    imp.resetIP4DNS.remove_css_class("error");
+                    imp.reset_ip4_dns.remove_css_class("error");
                     conn.ipv4.dns.push(addr.octets().to_vec());
                 } else {
-                    imp.resetIP4DNS.add_css_class("error");
+                    imp.reset_ip4_dns.add_css_class("error");
                 }
             }
         }));
-    imp.resetIP4AddressAddButton
+    imp.reset_ip4_address_add_button
         .connect_clicked(clone!(@weak imp => move |_|  {
             let address = &WifiAddressEntry::new(None, imp.connection.clone(), IpProtocol::IPv4);
-            imp.resetIP4AddressGroup.add(address);
+            imp.reset_ip4_address_group.add(address);
         }));
 
-    imp.resetIP4Gateway
+    imp.reset_ip4_gateway
         .connect_changed(clone!(@weak imp => move |entry| {
             let gateway_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv4.gateway.clear();
             if gateway_input.is_empty() {
-                imp.resetIP4Gateway.remove_css_class("error");
+                imp.reset_ip4_gateway.remove_css_class("error");
                 return;
             }
             if Ipv4Addr::from_str(gateway_input.as_str()).is_ok() {
-                imp.resetIP4Gateway.remove_css_class("error");
+                imp.reset_ip4_gateway.remove_css_class("error");
                 conn.ipv4.gateway = gateway_input.to_string();
             } else {
-                imp.resetIP4Gateway.add_css_class("error");
+                imp.reset_ip4_gateway.add_css_class("error");
             }
         }));
     // IPv6
     let wifi_options_ip6 = wifi_options.clone();
-    imp.resetIP6Method
+    imp.reset_ip6_method
         .connect_selected_notify(clone!(@weak imp => move |dropdown| {
             let selected = dropdown.selected();
             let mut conn = imp.connection.borrow_mut();
@@ -301,61 +301,61 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             wifi_options_ip6.set_ip6_visibility(selected);
         }));
 
-    imp.resetIP6DNS
+    imp.reset_ip6_dns
         .connect_changed(clone!(@weak imp => move |entry| {
             let dns_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv6.dns.clear();
             if dns_input.is_empty() {
-                imp.resetIP6DNS.remove_css_class("error");
+                imp.reset_ip6_dns.remove_css_class("error");
                 return;
             }
             for dns_entry in dns_input.as_str().split(',').map(|s| s.trim()) {
                 if let Ok(addr) = Ipv6Addr::from_str(dns_entry) {
-                    imp.resetIP6DNS.remove_css_class("error");
+                    imp.reset_ip6_dns.remove_css_class("error");
                     conn.ipv6.dns.push(addr.octets().to_vec());
                 } else {
-                    imp.resetIP6DNS.add_css_class("error");
+                    imp.reset_ip6_dns.add_css_class("error");
                 }
             }
         }));
-    imp.resetIP6AddressAddButton
+    imp.reset_ip6_address_add_button
         .connect_clicked(clone!(@weak imp => move |_|  {
             let address = &WifiAddressEntry::new(None, imp.connection.clone(), IpProtocol::IPv4);
-            imp.resetIP6AddressGroup.add(address);
+            imp.reset_ip6_address_group.add(address);
         }));
 
-    imp.resetIP6Gateway
+    imp.reset_ip6_gateway
         .connect_changed(clone!(@weak imp => move |entry| {
             let gateway_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv6.gateway.clear();
             if gateway_input.is_empty() {
-                imp.resetIP6Gateway.remove_css_class("error");
+                imp.reset_ip6_gateway.remove_css_class("error");
                 return;
             }
             if Ipv6Addr::from_str(gateway_input.as_str()).is_ok() {
-                imp.resetIP6Gateway.remove_css_class("error");
+                imp.reset_ip6_gateway.remove_css_class("error");
                 conn.ipv6.gateway = gateway_input.to_string();
             } else {
-                imp.resetIP6Gateway.add_css_class("error");
+                imp.reset_ip6_gateway.add_css_class("error");
             }
         }));
 
     // Security
-    imp.resetWifiSecurityDropdown
+    imp.reset_wifi_security_dropdown
         .connect_selected_notify(clone!(@weak imp => move |dropdown| {
             let selected = dropdown.selected();
             let mut conn = imp.connection.borrow_mut();
 
             match (selected, &mut conn.device) {
                 (0 , TypeSettings::WIFI(wifi)) => { // None
-                    imp.resetWifiPassword.set_visible(false);
+                    imp.reset_wifi_password.set_visible(false);
                     wifi.security_settings.key_management = String::from("none");
                     wifi.security_settings.authentication_algorithm = String::from("open");
                 },
                 (1 , TypeSettings::WIFI(wifi)) => { // WPA/WPA2 Personal
-                    imp.resetWifiPassword.set_visible(true);
+                    imp.reset_wifi_password.set_visible(true);
                     wifi.security_settings.key_management = String::from("wpa-psk");
                     wifi.security_settings.authentication_algorithm = String::from("");
                 },
@@ -363,7 +363,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             }
         }));
 
-    imp.resetWifiPassword
+    imp.reset_wifi_password
         .connect_changed(clone!(@weak imp => move |entry| {
             let password_input = entry.text();
             let mut conn = imp.connection.borrow_mut();

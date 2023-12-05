@@ -12,26 +12,25 @@ use ReSet_Lib::network::network::WifiDevice;
 use crate::components::base::list_entry::ListEntry;
 use crate::components::wifi::wifi_entry::WifiEntry;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWiFi.ui")]
 pub struct WifiBox {
     #[template_child]
-    pub resetWifiNavigation: TemplateChild<NavigationView>,
+    pub reset_wifi_navigation: TemplateChild<NavigationView>,
     #[template_child]
-    pub resetWifiDetails: TemplateChild<PreferencesGroup>,
+    pub reset_wifi_details: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetWiFiDevice: TemplateChild<ComboRow>,
+    pub reset_wifi_device: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetSavedNetworks: TemplateChild<ActionRow>,
+    pub reset_saved_networks: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiSwitch: TemplateChild<Switch>,
+    pub reset_wifi_switch: TemplateChild<Switch>,
     #[template_child]
-    pub resetWifiList: TemplateChild<PreferencesGroup>,
+    pub reset_wifi_list: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetStoredWifiList: TemplateChild<PreferencesGroup>,
+    pub reset_stored_wifi_list: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetAvailableNetworks: TemplateChild<ActionRow>,
+    pub reset_available_networks: TemplateChild<ActionRow>,
     pub wifi_entries: Arc<Mutex<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
     pub wifi_entries_path: Arc<Mutex<HashMap<Path<'static>, Arc<WifiEntry>>>>,
     pub saved_wifi_entries: Arc<Mutex<Vec<ListEntry>>>,

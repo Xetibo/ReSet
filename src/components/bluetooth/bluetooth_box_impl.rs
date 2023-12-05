@@ -15,24 +15,23 @@ use crate::components::bluetooth::bluetooth_entry::BluetoothEntry;
 type BluetoothMap =
     RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, Arc<ListEntry>, BluetoothDevice)>>;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetBluetooth.ui")]
 pub struct BluetoothBox {
     #[template_child]
-    pub resetBluetoothSwitch: TemplateChild<Switch>,
+    pub reset_bluetooth_switch: TemplateChild<Switch>,
     #[template_child]
-    pub resetBluetoothAvailableDevices: TemplateChild<gtk::Box>,
+    pub reset_bluetooth_available_devices: TemplateChild<gtk::Box>,
     #[template_child]
-    pub resetBluetoothRefreshButton: TemplateChild<Button>,
+    pub reset_bluetooth_refresh_button: TemplateChild<Button>,
     #[template_child]
-    pub resetBluetoothAdapter: TemplateChild<ComboRow>,
+    pub reset_bluetooth_adapter: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetBluetoothConnectedDevices: TemplateChild<gtk::Box>,
+    pub reset_bluetooth_connected_devices: TemplateChild<gtk::Box>,
     #[template_child]
-    pub resetVisibility: TemplateChild<ActionRow>,
+    pub reset_visibility: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetBluetoothMainTab: TemplateChild<ListEntry>,
+    pub reset_bluetooth_main_tab: TemplateChild<ListEntry>,
     pub available_devices: BluetoothMap,
     pub connected_devices: BluetoothMap,
     pub reset_bluetooth_adapters: Arc<RwLock<HashMap<String, (BluetoothAdapter, u32)>>>,

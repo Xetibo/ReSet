@@ -18,34 +18,33 @@ type SinkEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, Str
 type InputStreamEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<InputStreamEntry>)>>>;
 type SinkMap = Arc<RwLock<HashMap<String, (u32, u32, String)>>>;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetAudioOutput.ui")]
 pub struct SinkBox {
     #[template_child]
-    pub resetSinksRow: TemplateChild<ActionRow>,
+    pub reset_sinks_row: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetCardsRow: TemplateChild<ActionRow>,
+    pub reset_cards_row: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetSinkDropdown: TemplateChild<ComboRow>,
+    pub reset_sink_dropdown: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetSinkMute: TemplateChild<Button>,
+    pub reset_sink_mute: TemplateChild<Button>,
     #[template_child]
-    pub resetVolumeSlider: TemplateChild<Scale>,
+    pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
-    pub resetVolumePercentage: TemplateChild<Label>,
+    pub reset_volume_percentage: TemplateChild<Label>,
     #[template_child]
-    pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub reset_volume_meter: TemplateChild<ProgressBar>,
     #[template_child]
-    pub resetSinks: TemplateChild<Box>,
+    pub reset_sinks: TemplateChild<Box>,
     #[template_child]
-    pub resetInputStreamButton: TemplateChild<ActionRow>,
+    pub reset_input_stream_button: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetInputStreams: TemplateChild<Box>,
+    pub reset_input_streams: TemplateChild<Box>,
     #[template_child]
-    pub resetInputCardsBackButton: TemplateChild<ActionRow>,
+    pub reset_input_cards_back_button: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetCards: TemplateChild<PreferencesGroup>,
+    pub reset_cards: TemplateChild<PreferencesGroup>,
     pub reset_default_check_button: Arc<CheckButton>,
     pub reset_default_sink: Arc<RefCell<Sink>>,
     pub reset_sink_list: SinkEntryMap,

@@ -24,27 +24,27 @@ impl BluetoothEntry {
     pub fn new(device: &BluetoothDevice) -> Self {
         let entry: BluetoothEntry = Object::builder().build();
         let entry_imp = entry.imp();
-        entry_imp.resetBluetoothLabel.get().set_text(&device.alias);
+        entry_imp.reset_bluetooth_label.get().set_text(&device.alias);
         entry_imp
-            .resetBluetoothAddress
+            .reset_bluetooth_address
             .get()
             .set_text(&device.address);
         if device.icon.is_empty() {
             entry_imp
-                .resetBluetoothDeviceType
+                .reset_bluetooth_device_type
                 .set_icon_name(Some("dialog-question-symbolic"));
         } else {
             entry_imp
-                .resetBluetoothDeviceType
+                .reset_bluetooth_device_type
                 .set_icon_name(Some(&device.icon));
         }
         if device.paired {
-            entry_imp.resetBluetoothButton.set_sensitive(true);
+            entry_imp.reset_bluetooth_button.set_sensitive(true);
         } else {
-            entry_imp.resetBluetoothButton.set_sensitive(false);
+            entry_imp.reset_bluetooth_button.set_sensitive(false);
         }
         let path = Arc::new(device.path.clone());
-        entry_imp.resetBluetoothButton.connect_clicked(move |_| {
+        entry_imp.reset_bluetooth_button.connect_clicked(move |_| {
             remove_device_pairing((*path).clone());
         });
         let gesture = GestureClick::new();

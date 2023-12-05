@@ -45,35 +45,35 @@ impl SourceBox {
 
     pub fn setup_callbacks(&self) {
         let self_imp = self.imp();
-        self_imp.resetSourceRow.set_activatable(true);
+        self_imp.reset_source_row.set_activatable(true);
         self_imp
-            .resetSourceRow
+            .reset_source_row
             .set_action_name(Some("navigation.push"));
         self_imp
-            .resetSourceRow
+            .reset_source_row
             .set_action_target_value(Some(&Variant::from("sources")));
-        self_imp.resetCardsRow.set_activatable(true);
+        self_imp.reset_cards_row.set_activatable(true);
         self_imp
-            .resetCardsRow
+            .reset_cards_row
             .set_action_name(Some("navigation.push"));
         self_imp
-            .resetCardsRow
+            .reset_cards_row
             .set_action_target_value(Some(&Variant::from("profileConfiguration")));
 
-        self_imp.resetOutputStreamButton.set_activatable(true);
+        self_imp.reset_output_stream_button.set_activatable(true);
         self_imp
-            .resetOutputStreamButton
+            .reset_output_stream_button
             .set_action_name(Some("navigation.pop"));
 
-        self_imp.resetInputCardsBackButton.set_activatable(true);
+        self_imp.reset_input_cards_back_button.set_activatable(true);
         self_imp
-            .resetInputCardsBackButton
+            .reset_input_cards_back_button
             .set_action_name(Some("navigation.pop"));
 
         self_imp
-            .resetSourceDropdown
+            .reset_source_dropdown
             .set_factory(Some(&create_dropdown_label_factory()));
-        set_combo_row_ellipsis(self_imp.resetSourceDropdown.get());
+        set_combo_row_ellipsis(self_imp.reset_source_dropdown.get());
     }
 }
 
@@ -116,8 +116,8 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     let volume = source.volume.first().unwrap_or(&0_u32);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
-                    output_box_imp.resetVolumePercentage.set_text(&percentage);
-                    output_box_imp.resetVolumeSlider.set_value(*volume as f64);
+                    output_box_imp.reset_volume_percentage.set_text(&percentage);
+                    output_box_imp.reset_volume_slider.set_value(*volume as f64);
                     let mut list = output_box_imp.reset_source_list.write().unwrap();
                     for stream in sources {
                         let index = source.index;
@@ -135,16 +135,16 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                         let entry = Arc::new(ListEntry::new(&*source_entry));
                         entry.set_activatable(false);
                         list.insert(index, (entry.clone(), source_clone, alias));
-                        output_box_imp.resetSources.append(&*entry);
+                        output_box_imp.reset_sources.append(&*entry);
                     }
                     let list = output_box_imp.reset_model_list.read().unwrap();
-                    output_box_imp.resetSourceDropdown.set_model(Some(&*list));
+                    output_box_imp.reset_source_dropdown.set_model(Some(&*list));
                     let map = output_box_imp.reset_source_map.read().unwrap();
                     let name = output_box_imp.reset_default_source.borrow();
                     if let Some(index) = map.get(&name.alias) {
-                        output_box_imp.resetSourceDropdown.set_selected(index.1);
+                        output_box_imp.reset_source_dropdown.set_selected(index.1);
                     }
-                    output_box_imp.resetSourceDropdown.connect_selected_notify(
+                    output_box_imp.reset_source_dropdown.connect_selected_notify(
                         clone!(@weak output_box_imp => move |dropdown| {
                             let selected = dropdown.selected_item();
                             if selected.is_none() {
@@ -166,12 +166,12 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                 }
                 output_box_ref
                     .imp()
-                    .resetVolumeSlider
+                    .reset_volume_slider
                     .connect_change_value(move |_, _, value| {
                         let imp = output_box_ref_slider.imp();
                         let fraction = (value / 655.36).round();
                         let percentage = (fraction).to_string() + "%";
-                        imp.resetVolumePercentage.set_text(&percentage);
+                        imp.reset_volume_percentage.set_text(&percentage);
                         let source = imp.reset_default_source.borrow();
                         let index = source.index;
                         let channels = source.channels;
@@ -190,7 +190,7 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
 
                 output_box_ref
                     .imp()
-                    .resetSourceMute
+                    .reset_source_mute
                     .connect_clicked(move |_| {
                         let imp = output_box_ref_mute.imp();
                         let stream = imp.reset_default_source.clone();
@@ -199,10 +199,10 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                         let muted = stream.muted;
                         let index = stream.index;
                         if muted {
-                            imp.resetSourceMute
+                            imp.reset_source_mute
                                 .set_icon_name("microphone-disabled-symbolic");
                         } else {
-                            imp.resetSourceMute
+                            imp.reset_source_mute
                                 .set_icon_name("audio-input-microphone-symbolic");
                         }
                         toggle_source_mute(index, muted);
@@ -228,7 +228,7 @@ pub fn populate_outputstreams(input_box: Arc<SourceBox>) {
                     let entry = Arc::new(ListEntry::new(&*input_stream));
                     entry.set_activatable(false);
                     list.insert(index, (entry.clone(), input_stream_clone));
-                    input_box_imp.resetOutputStreams.append(&*entry);
+                    input_box_imp.reset_output_streams.append(&*entry);
                 }
             });
         });
@@ -243,7 +243,7 @@ pub fn populate_cards(input_box: Arc<SourceBox>) {
             glib::idle_add_once(move || {
                 let imp = output_box_ref.imp();
                 for card in cards {
-                    imp.resetCards.add(&CardEntry::new(card));
+                    imp.reset_cards.add(&CardEntry::new(card));
                 }
             });
         });
@@ -372,7 +372,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 let entry = Arc::new(ListEntry::new(&*source_entry));
                 entry.set_activatable(false);
                 list.insert(source_index, (entry.clone(), source_clone, alias.clone()));
-                output_box_imp.resetSources.append(&*entry);
+                output_box_imp.reset_sources.append(&*entry);
                 let mut map = output_box_imp.reset_source_map.write().unwrap();
                 let mut index = output_box_imp.reset_model_index.write().unwrap();
                 output_box_imp
@@ -403,7 +403,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 if entry.is_none() {
                     return;
                 }
-                output_box_imp.resetSources.remove(&*entry.unwrap().0);
+                output_box_imp.reset_sources.remove(&*entry.unwrap().0);
                 list.remove(&ir.index);
                 let alias = list.remove(&ir.index);
                 if alias.is_none() {
@@ -449,16 +449,16 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 }
                 let imp = entry.unwrap().1.imp();
                 if is_default {
-                    output_box_imp.resetVolumePercentage.set_text(&percentage);
-                    output_box_imp.resetVolumeSlider.set_value(*volume as f64);
-                    imp.resetSelectedSource.set_active(true);
+                    output_box_imp.reset_volume_percentage.set_text(&percentage);
+                    output_box_imp.reset_volume_slider.set_value(*volume as f64);
+                    imp.reset_selected_source.set_active(true);
                 } else {
-                    imp.resetSelectedSource.set_active(false);
+                    imp.reset_selected_source.set_active(false);
                 }
-                imp.resetSourceName
+                imp.reset_source_name
                     .set_title(ir.source.alias.clone().as_str());
-                imp.resetVolumePercentage.set_text(&percentage);
-                imp.resetVolumeSlider.set_value(*volume as f64);
+                imp.reset_volume_percentage.set_text(&percentage);
+                imp.reset_volume_slider.set_value(*volume as f64);
             });
         });
         true
@@ -481,7 +481,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 let entry = Arc::new(ListEntry::new(&*output_stream));
                 entry.set_activatable(false);
                 list.insert(index, (entry.clone(), output_stream_clone));
-                output_box_imp.resetOutputStreams.append(&*entry);
+                output_box_imp.reset_output_streams.append(&*entry);
             });
         });
         true
@@ -520,22 +520,22 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     }
                     let imp = entry.imp();
                     if ir.stream.muted {
-                        imp.resetSourceMute
+                        imp.reset_source_mute
                             .set_icon_name("microphone-disabled-symbolic");
                     } else {
-                        imp.resetSourceMute
+                        imp.reset_source_mute
                             .set_icon_name("audio-input-microphone-symbolic");
                     }
                     let name = ir.stream.application_name.clone() + ": " + ir.stream.name.as_str();
-                    imp.resetSourceSelection.set_title(name.as_str());
+                    imp.reset_source_selection.set_title(name.as_str());
                     let volume = ir.stream.volume.first().unwrap_or(&0_u32);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
-                    imp.resetVolumePercentage.set_text(&percentage);
-                    imp.resetVolumeSlider.set_value(*volume as f64);
+                    imp.reset_volume_percentage.set_text(&percentage);
+                    imp.reset_volume_slider.set_value(*volume as f64);
                     let map = output_box_imp.reset_source_map.read().unwrap();
                     if let Some(index) = map.get(&alias) {
-                        imp.resetSourceSelection.set_selected(index.1);
+                        imp.reset_source_selection.set_selected(index.1);
                     }
                 });
             });
@@ -560,7 +560,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     if entry.is_none() {
                         return;
                     }
-                    output_box_imp.resetOutputStreams.remove(&*entry.unwrap().0);
+                    output_box_imp.reset_output_streams.remove(&*entry.unwrap().0);
                 });
             });
             true

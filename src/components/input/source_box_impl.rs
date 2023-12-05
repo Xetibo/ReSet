@@ -18,34 +18,33 @@ type SourceEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SourceEntry>,
 type OutputStreamEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<OutputStreamEntry>)>>>;
 type SourceMap = Arc<RwLock<HashMap<String, (u32, u32, String)>>>;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetAudioInput.ui")]
 pub struct SourceBox {
     #[template_child]
-    pub resetSourceRow: TemplateChild<ActionRow>,
+    pub reset_source_row: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetCardsRow: TemplateChild<ActionRow>,
+    pub reset_cards_row: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetSourceDropdown: TemplateChild<ComboRow>,
+    pub reset_source_dropdown: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetSourceMute: TemplateChild<Button>,
+    pub reset_source_mute: TemplateChild<Button>,
     #[template_child]
-    pub resetVolumeSlider: TemplateChild<Scale>,
+    pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
-    pub resetVolumePercentage: TemplateChild<Label>,
+    pub reset_volume_percentage: TemplateChild<Label>,
     #[template_child]
-    pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub reset_volume_meter: TemplateChild<ProgressBar>,
     #[template_child]
-    pub resetSources: TemplateChild<gtk::Box>,
+    pub reset_sources: TemplateChild<gtk::Box>,
     #[template_child]
-    pub resetOutputStreamButton: TemplateChild<ActionRow>,
+    pub reset_output_stream_button: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetOutputStreams: TemplateChild<gtk::Box>,
+    pub reset_output_streams: TemplateChild<gtk::Box>,
     #[template_child]
-    pub resetInputCardsBackButton: TemplateChild<ActionRow>,
+    pub reset_input_cards_back_button: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetCards: TemplateChild<PreferencesGroup>,
+    pub reset_cards: TemplateChild<PreferencesGroup>,
     pub reset_default_check_button: Arc<CheckButton>,
     pub reset_default_source: Arc<RefCell<Source>>,
     pub reset_source_list: SourceEntryMap,

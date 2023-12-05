@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="libadwaita" version="1.4"/>
-  <object class="AdwComboRow" id="resetCardEntry">
+  <object class="AdwComboRow" id="reset_card_entry">
     <property name="use-subtitle">True</property>
   </object>
 </interface>

@@ -18,14 +18,13 @@ pub enum Categories {
     Misc,
 }
 
-#[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/org/Xetibo/ReSet/resetSidebarEntry.ui")]
 pub struct SidebarEntry {
     #[template_child]
-    pub resetSidebarLabel: TemplateChild<Label>,
+    pub reset_sidebar_label: TemplateChild<Label>,
     #[template_child]
-    pub resetSidebarImage: TemplateChild<Image>,
+    pub reset_sidebar_image: TemplateChild<Image>,
     pub category: Cell<Categories>,
     pub is_subcategory: Cell<bool>,
     pub on_click_event: RefCell<SidebarAction>,

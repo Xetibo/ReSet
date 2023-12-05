@@ -19,7 +19,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkSwitch" id="resetWifiSwitch">
+          <object class="GtkSwitch" id="reset_wifi_switch">
             <property name="active">True</property>
             <property name="halign">end</property>
             <property name="hexpand">True</property>
@@ -30,7 +30,7 @@
       </object>
     </child>
     <child>
-      <object class="AdwNavigationView" id="resetWifiNavigation">
+      <object class="AdwNavigationView" id="reset_wifi_navigation">
         <child>
           <object class="AdwNavigationPage">
             <property name="tag">main</property>
@@ -39,14 +39,14 @@
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetWifiDetails">
+                  <object class="AdwPreferencesGroup" id="reset_wifi_details">
                     <child>
-                      <object class="AdwComboRow" id="resetWiFiDevice">
+                      <object class="AdwComboRow" id="reset_wifi_device">
                         <property name="title">WiFi Device</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="resetSavedNetworks">
+                      <object class="AdwActionRow" id="reset_saved_networks">
                         <property name="title">Saved Networks</property>
                         <child>
                           <object class="GtkImage">
@@ -61,7 +61,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetWifiList">
+                  <object class="AdwPreferencesGroup" id="reset_wifi_list">
                     <property name="margin-top">10</property>
                     <property name="title">Available networks</property>
                   </object>
@@ -80,7 +80,7 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwActionRow" id="resetAvailableNetworks">
+                      <object class="AdwActionRow" id="reset_available_networks">
                         <property name="title">Available Networks</property>
                         <child>
                           <object class="GtkImage">
@@ -95,7 +95,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup" id="resetStoredWifiList">
+                  <object class="AdwPreferencesGroup" id="reset_stored_wifi_list">
                     <property name="title">Saved Networks</property>
                   </object>
                 </child>

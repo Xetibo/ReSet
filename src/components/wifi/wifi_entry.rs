@@ -37,12 +37,12 @@ impl WifiEntry {
         let name_opt = String::from_utf8(ssid).unwrap_or_else(|_| String::from(""));
         let name = name_opt.as_str();
         entry_imp.wifi_strength.set(strength);
-        entry_imp.resetWifiLabel.get().set_text(name);
-        entry_imp.resetWifiEncrypted.set_visible(false);
+        entry_imp.reset_wifi_label.get().set_text(name);
+        entry_imp.reset_wifi_encrypted.set_visible(false);
         entry_imp.connected.set(connected);
         // TODO handle encryption thing
         entry_imp
-            .resetWifiStrength
+            .reset_wifi_strength
             .get()
             .set_from_icon_name(match strength {
                 WifiStrength::Excellent => Some("network-wireless-signal-excellent-symbolic"),
@@ -51,10 +51,10 @@ impl WifiEntry {
                 WifiStrength::None => Some("network-wireless-signal-none-symbolic"),
             });
         if !access_point.stored {
-            entry_imp.resetWifiEditButton.set_sensitive(false);
+            entry_imp.reset_wifi_edit_button.set_sensitive(false);
         }
         if connected {
-            entry_imp.resetWifiConnected.set_text("Connected");
+            entry_imp.reset_wifi_connected.set_text("Connected");
         }
         {
             let mut wifi_name = entry_imp.wifi_name.borrow_mut();
@@ -79,9 +79,9 @@ impl WifiEntry {
 
     pub fn setup_callbacks(&self, wifi_box: &WifiBox) {
         let self_imp = self.imp();
-        self_imp.resetWifiEditButton.connect_clicked(clone!(@ weak self_imp, @ weak wifi_box => move |_| {
+        self_imp.reset_wifi_edit_button.connect_clicked(clone!(@ weak self_imp, @ weak wifi_box => move |_| {
             let _option = get_connection_settings(self_imp.access_point.borrow().associated_connection.clone());
-            wifi_box.resetWifiNavigation.push(&*WifiOptions::new(_option, self_imp.access_point.borrow().dbus_path.clone()));
+            wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(_option, self_imp.access_point.borrow().dbus_path.clone()));
         }));
     }
 }
@@ -107,7 +107,7 @@ pub fn click_disconnect(entry: Arc<WifiEntry>) {
             imp.connected.replace(false);
             return;
         }
-        imp.resetWifiConnected.set_text("");
+        imp.reset_wifi_connected.set_text("");
         imp.connected.replace(false);
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
@@ -149,7 +149,7 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
                     return;
                 }
                 let imp = entry_ref.imp();
-                imp.resetWifiConnected.set_text("Connected");
+                imp.reset_wifi_connected.set_text("Connected");
                 imp.connected.replace(true);
             });
         });
@@ -161,11 +161,11 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
     let connect_new_network =
         |entry: Arc<WifiEntry>, access_point: AccessPoint, password: String| {
             let entry_ref = entry.clone();
-            let popup = entry.imp().resetWifiPopup.imp();
-            popup.resetPopupLabel.set_text("Connecting...");
-            popup.resetPopupLabel.set_visible(true);
-            popup.resetPopupEntry.set_sensitive(false);
-            popup.resetPopupButton.set_sensitive(false);
+            let popup = entry.imp().reset_wifi_popup.imp();
+            popup.reset_popup_label.set_text("Connecting...");
+            popup.reset_popup_label.set_visible(true);
+            popup.reset_popup_entry.set_sensitive(false);
+            popup.reset_popup_button.set_sensitive(false);
 
             gio::spawn_blocking(move || {
                 let conn = Connection::new_session().unwrap();
@@ -183,27 +183,27 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
                     glib::idle_add_once(move || {
                         if res.is_err() {
                             let imp = entry_ref.imp();
-                            imp.resetWifiPopup
+                            imp.reset_wifi_popup
                                 .imp()
-                                .resetPopupLabel
+                                .reset_popup_label
                                 .set_text("Could not connect to dbus.");
                             imp.connected.replace(false);
                             return;
                         }
                         if res.unwrap() == (false,) {
                             let imp = entry_ref.imp();
-                            imp.resetWifiPopup
+                            imp.reset_wifi_popup
                                 .imp()
-                                .resetPopupLabel
+                                .reset_popup_label
                                 .set_text("Could not connect to access point.");
                             imp.connected.replace(false);
                             return;
                         }
                         println!("worked?");
                         let imp = entry_ref.imp();
-                        imp.resetWifiPopup.popdown();
-                        imp.resetWifiEditButton.set_sensitive(true);
-                        imp.resetWifiConnected.set_text("Connected");
+                        imp.reset_wifi_popup.popdown();
+                        imp.reset_wifi_edit_button.set_sensitive(true);
+                        imp.reset_wifi_connected.set_text("Connected");
                         imp.connected.replace(true);
                     });
                 });
@@ -212,17 +212,17 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
         };
 
     let entry_imp = entry.imp();
-    let popup_imp = entry_imp.resetWifiPopup.imp();
+    let popup_imp = entry_imp.reset_wifi_popup.imp();
     popup_imp
-        .resetPopupEntry
+        .reset_popup_entry
         .connect_activate(clone!(@weak entry as orig_entry, @weak entry_imp => move |entry| {
                 connect_new_network(orig_entry, entry_imp.access_point.clone().take(), entry.text().to_string());
         }));
-    popup_imp.resetPopupButton.connect_clicked(
+    popup_imp.reset_popup_button.connect_clicked(
         clone!(@weak entry as orig_entry,@weak entry_imp, @weak popup_imp => move |_| {
-            let entry = entry_imp.resetWifiPopup.imp().resetPopupEntry.text().to_string();
+            let entry = entry_imp.reset_wifi_popup.imp().reset_popup_entry.text().to_string();
                 connect_new_network(orig_entry, entry_imp.access_point.clone().take(), entry);
         }),
     );
-    entry_imp.resetWifiPopup.popup();
+    entry_imp.reset_wifi_popup.popup();
 }

@@ -24,9 +24,9 @@ impl SidebarEntry {
     ) -> Self {
         let entry: SidebarEntry = Object::builder().build();
         let entry_imp = entry.imp();
-        entry_imp.resetSidebarLabel.get().set_text(entry_name);
+        entry_imp.reset_sidebar_label.get().set_text(entry_name);
         entry_imp
-            .resetSidebarImage
+            .reset_sidebar_image
             .set_from_icon_name(Some(icon_name));
         entry_imp.category.set(category);
         entry_imp.is_subcategory.set(is_subcategory);

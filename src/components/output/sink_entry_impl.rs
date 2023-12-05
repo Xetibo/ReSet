@@ -9,22 +9,21 @@ use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
 use ReSet_Lib::audio::audio::Sink;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSinkEntry.ui")]
 pub struct SinkEntry {
     #[template_child]
-    pub resetSinkName: TemplateChild<ActionRow>,
+    pub reset_sink_name: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetSelectedSink: TemplateChild<CheckButton>,
+    pub reset_selected_sink: TemplateChild<CheckButton>,
     #[template_child]
-    pub resetSinkMute: TemplateChild<Button>,
+    pub reset_sink_mute: TemplateChild<Button>,
     #[template_child]
-    pub resetVolumeSlider: TemplateChild<Scale>,
+    pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
-    pub resetVolumePercentage: TemplateChild<Label>,
+    pub reset_volume_percentage: TemplateChild<Label>,
     #[template_child]
-    pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<Sink>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }

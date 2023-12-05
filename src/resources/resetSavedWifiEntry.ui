@@ -8,7 +8,7 @@
     <property name="child">
       <object class="GtkBox">
         <child>
-          <object class="GtkLabel" id="resetSavedWifiLabel">
+          <object class="GtkLabel" id="reset_saved_wifi_label">
             <property name="ellipsize">end</property>
             <property name="hexpand">True</property>
             <property name="label">LoremIpsumInternet</property>
@@ -19,7 +19,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="resetEditSavedWifiButton">
+          <object class="GtkButton" id="reset_edit_saved_wifi_button">
             <property name="halign">end</property>
             <property name="has-frame">False</property>
             <property name="hexpand">True</property>
@@ -27,7 +27,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="resetDeleteSavedWifiButton">
+          <object class="GtkButton" id="reset_delete_saved_wifi_button">
             <property name="halign">start</property>
             <property name="has-frame">False</property>
             <property name="icon-name">user-trash-symbolic</property>

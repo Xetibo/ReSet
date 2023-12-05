@@ -33,18 +33,18 @@ impl WifiRouteEntry {
             let conn = conn.borrow();
             let address = unsafe { conn.ipv4.route_data.get_unchecked(address) };
 
-            entry_imp.resetRouteAddress.set_text(&address.address);
+            entry_imp.reset_route_address.set_text(&address.address);
             entry_imp
-                .resetRoutePrefix
+                .reset_route_prefix
                 .set_text(&address.prefix_length.to_string());
             if let Some(gateway) = &address.gateway {
-                entry_imp.resetRouteGateway.set_text(gateway);
+                entry_imp.reset_route_gateway.set_text(gateway);
             }
             if let Some(metric) = address.metric {
-                entry_imp.resetRouteMetric.set_text(&metric.to_string());
+                entry_imp.reset_route_metric.set_text(&metric.to_string());
             }
             entry_imp
-                .resetRouteRow
+                .reset_route_row
                 .set_title(&format!("{}/{}", &*address.address, address.prefix_length));
         }
         entry_imp.protocol.set(protocol);
@@ -56,13 +56,13 @@ impl WifiRouteEntry {
         let self_imp = self.imp();
 
         let conn = connection.clone();
-        self_imp.resetRouteAddress.connect_changed(clone!(@weak self_imp => move |entry| {
+        self_imp.reset_route_address.connect_changed(clone!(@weak self_imp => move |entry| {
             let address_input = entry.text();
             let mut conn = conn.borrow_mut();
 
             if address_input.is_empty() {
-                self_imp.resetRouteAddress.remove_css_class("error");
-                self_imp.resetRouteRow.set_title("Add new address");
+                self_imp.reset_route_address.remove_css_class("error");
+                self_imp.reset_route_row.set_title("Add new address");
                 return;
             }
             let result = match self_imp.protocol.get() {
@@ -71,7 +71,7 @@ impl WifiRouteEntry {
             };
             match result {
                 Ok(ip_addr) => {
-                    self_imp.resetRouteAddress.remove_css_class("error");
+                    self_imp.reset_route_address.remove_css_class("error");
                     let address_data = match self_imp.protocol.get() {
                         IpProtocol::IPv4 => &mut conn.ipv4.route_data,
                         IpProtocol::IPv6 => &mut conn.ipv6.route_data,
@@ -80,7 +80,7 @@ impl WifiRouteEntry {
                     *self_imp.address.borrow_mut() = (true, ip_addr.to_string());
                 }
                 Err(_) => {
-                    self_imp.resetRouteAddress.add_css_class("error");
+                    self_imp.reset_route_address.add_css_class("error");
                     *self_imp.address.borrow_mut() = (false, String::default());
                 }
             }
@@ -88,16 +88,16 @@ impl WifiRouteEntry {
         }));
 
         let conn = connection.clone();
-        self_imp.resetRoutePrefix.connect_changed(clone!(@weak self_imp => move |entry| {
+        self_imp.reset_route_prefix.connect_changed(clone!(@weak self_imp => move |entry| {
             let prefix_input = entry.text();
             let prefix = prefix_input.parse::<u8>();
             let mut conn = conn.borrow_mut();
 
             let handle_error = || {
-                if self_imp.resetRoutePrefix.text().is_empty() {
-                    self_imp.resetRoutePrefix.remove_css_class("error");
+                if self_imp.reset_route_prefix.text().is_empty() {
+                    self_imp.reset_route_prefix.remove_css_class("error");
                 } else {
-                    self_imp.resetRoutePrefix.add_css_class("error");
+                    self_imp.reset_route_prefix.add_css_class("error");
                 }
                 self_imp.prefix.set((false, 0));
                 set_row_title(&self_imp);
@@ -112,8 +112,8 @@ impl WifiRouteEntry {
             match self_imp.protocol.get() {
                 IpProtocol::IPv4 if prefix <= 32 => {
                     self_imp.prefix.set((true, prefix as u32));
-                    self_imp.resetRoutePrefix.remove_css_class("error");
-                    if let Ok(address2) = Ipv4Addr::from_str(self_imp.resetRouteAddress.text().as_str()) {
+                    self_imp.reset_route_prefix.remove_css_class("error");
+                    if let Ok(address2) = Ipv4Addr::from_str(self_imp.reset_route_address.text().as_str()) {
                         if let Some(addr) = conn.ipv4.route_data.iter_mut()
                         .find(|conn_addr| *conn_addr.address == address2.to_string()) {
                             addr.prefix_length = prefix as u32;
@@ -122,8 +122,8 @@ impl WifiRouteEntry {
                 }
                 IpProtocol::IPv6 if prefix <= 128 => {
                     self_imp.prefix.set((true, prefix as u32));
-                    self_imp.resetRoutePrefix.remove_css_class("error");
-                    if let Ok(address2) = Ipv6Addr::from_str(self_imp.resetRouteAddress.text().as_str()) {
+                    self_imp.reset_route_prefix.remove_css_class("error");
+                    if let Ok(address2) = Ipv6Addr::from_str(self_imp.reset_route_address.text().as_str()) {
                         if let Some(addr) = conn.ipv6.route_data.iter_mut()
                         .find(|conn_addr| *conn_addr.address == address2.to_string()) {
                             addr.prefix_length = prefix as u32;
@@ -137,13 +137,13 @@ impl WifiRouteEntry {
 
         let conn = connection.clone();
         self_imp
-            .resetRouteGateway
+            .reset_route_gateway
             .connect_changed(clone!(@weak self_imp => move |entry| {
                 let gateway_input = entry.text();
                 let mut conn = conn.borrow_mut();
 
                 if gateway_input.is_empty() {
-                    self_imp.resetRouteGateway.remove_css_class("error");
+                    self_imp.reset_route_gateway.remove_css_class("error");
                     *self_imp.gateway.borrow_mut() = None;
                     set_row_subtitle(&self_imp);
                     return;
@@ -154,19 +154,19 @@ impl WifiRouteEntry {
                 };
                 match result {
                     Ok(ip_addr) => {
-                        self_imp.resetRouteGateway.remove_css_class("error");
+                        self_imp.reset_route_gateway.remove_css_class("error");
                         let address_data = match self_imp.protocol.get() {
                             IpProtocol::IPv4 => &mut conn.ipv4.route_data,
                             IpProtocol::IPv6 => &mut conn.ipv6.route_data,
                         };
                         if let Some(address) = address_data.iter_mut()
-                        .find(|conn_addr| *conn_addr.address == self_imp.resetRouteAddress.text()) {
+                        .find(|conn_addr| *conn_addr.address == self_imp.reset_route_address.text()) {
                             address.gateway = Some(ip_addr.to_string());
                         }
                         *self_imp.gateway.borrow_mut() = Some(ip_addr.to_string());
                     }
                     Err(_) => {
-                        self_imp.resetRouteGateway.add_css_class("error");
+                        self_imp.reset_route_gateway.add_css_class("error");
                         *self_imp.gateway.borrow_mut() = None;
                     }
                 }
@@ -175,13 +175,13 @@ impl WifiRouteEntry {
 
         let conn = connection.clone();
         self_imp
-            .resetRouteMetric
+            .reset_route_metric
             .connect_changed(clone!(@weak self_imp => move |entry| {
                 let metric_input = entry.text();
                 let mut conn = conn.borrow_mut();
 
                 if metric_input.is_empty() {
-                    self_imp.resetRouteMetric.remove_css_class("error");
+                    self_imp.reset_route_metric.remove_css_class("error");
                     self_imp.metric.set(None);
                     set_row_subtitle(&self_imp);
                     return;
@@ -189,19 +189,19 @@ impl WifiRouteEntry {
                 let result = metric_input.parse::<u32>();
                 match result {
                     Ok(metric) => {
-                        self_imp.resetRouteMetric.remove_css_class("error");
+                        self_imp.reset_route_metric.remove_css_class("error");
                         let address_data = match self_imp.protocol.get() {
                             IpProtocol::IPv4 => &mut conn.ipv4.route_data,
                             IpProtocol::IPv6 => &mut conn.ipv6.route_data,
                         };
                         if let Some(address) = address_data.iter_mut()
-                        .find(|conn_addr| *conn_addr.address == self_imp.resetRouteAddress.text()) {
+                        .find(|conn_addr| *conn_addr.address == self_imp.reset_route_address.text()) {
                             address.metric = Some(metric);
                         }
                         self_imp.metric.set(Some(metric));
                     }
                     Err(_) => {
-                        self_imp.resetRouteMetric.add_css_class("error");
+                        self_imp.reset_route_metric.add_css_class("error");
                         self_imp.metric.set(None);
                     }
                 }
@@ -211,7 +211,7 @@ impl WifiRouteEntry {
 }
 
 fn set_row_title(self_imp: &WifiRouteEntryImpl) {
-    if self_imp.resetRouteAddress.text().is_empty() {
+    if self_imp.reset_route_address.text().is_empty() {
         return;
     }
     let address = self_imp.address.borrow();
@@ -224,7 +224,7 @@ fn set_row_title(self_imp: &WifiRouteEntryImpl) {
         (false, true) => "Address wrong".to_string(),
         (false, false) => "Address and Prefix wrong".to_string(),
     };
-    self_imp.resetRouteRow.set_title(&title);
+    self_imp.reset_route_row.set_title(&title);
 }
 
 fn set_row_subtitle(self_imp: &WifiRouteEntryImpl) {
@@ -238,5 +238,5 @@ fn set_row_subtitle(self_imp: &WifiRouteEntryImpl) {
         (None, Some(metric)) => metric.to_string(),
         (None, None) => String::default(),
     };
-    self_imp.resetRouteRow.set_subtitle(&title);
+    self_imp.reset_route_row.set_subtitle(&title);
 }

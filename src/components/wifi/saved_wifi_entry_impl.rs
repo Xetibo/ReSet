@@ -10,16 +10,15 @@ use ReSet_Lib::network::network::AccessPoint;
 
 use super::saved_wifi_entry;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSavedWifiEntry.ui")]
 pub struct SavedWifiEntry {
     #[template_child]
-    pub resetDeleteSavedWifiButton: TemplateChild<Button>,
+    pub reset_delete_saved_wifi_button: TemplateChild<Button>,
     #[template_child]
-    pub resetEditSavedWifiButton: TemplateChild<Button>,
+    pub reset_edit_saved_wifi_button: TemplateChild<Button>,
     #[template_child]
-    pub resetSavedWifiLabel: TemplateChild<Label>,
+    pub reset_saved_wifi_label: TemplateChild<Label>,
     pub reset_connection_path: RefCell<Path<'static>>,
     pub access_point: RefCell<AccessPoint>,
 }

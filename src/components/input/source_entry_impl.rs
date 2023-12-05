@@ -10,22 +10,21 @@ use ReSet_Lib::audio::audio::Source;
 
 use super::source_entry;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSourceEntry.ui")]
 pub struct SourceEntry {
     #[template_child]
-    pub resetSourceName: TemplateChild<ActionRow>,
+    pub reset_source_name: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetSelectedSource: TemplateChild<CheckButton>,
+    pub reset_selected_source: TemplateChild<CheckButton>,
     #[template_child]
-    pub resetSourceMute: TemplateChild<Button>,
+    pub reset_source_mute: TemplateChild<Button>,
     #[template_child]
-    pub resetVolumeSlider: TemplateChild<Scale>,
+    pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
-    pub resetVolumePercentage: TemplateChild<Label>,
+    pub reset_volume_percentage: TemplateChild<Label>,
     #[template_child]
-    pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<Source>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }

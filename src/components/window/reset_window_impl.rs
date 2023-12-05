@@ -13,32 +13,31 @@ use crate::components::wifi::wifi_box::WifiBox;
 use crate::components::window::reset_window;
 use crate::components::window::sidebar_entry::SidebarEntry;
 
-#[allow(non_snake_case)]
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/org/Xetibo/ReSet/resetMainWindow.ui")]
 pub struct ReSetWindow {
     #[template_child]
-    pub resetMain: TemplateChild<FlowBox>,
+    pub reset_main: TemplateChild<FlowBox>,
     #[template_child]
-    pub resetSidebarBreakpoint: TemplateChild<Breakpoint>,
+    pub reset_sidebar_breakpoint: TemplateChild<Breakpoint>,
     #[template_child]
-    pub resetOverlaySplitView: TemplateChild<OverlaySplitView>,
+    pub reset_overlay_split_view: TemplateChild<OverlaySplitView>,
     #[template_child]
-    pub resetSearchEntry: TemplateChild<SearchEntry>,
+    pub reset_search_entry: TemplateChild<SearchEntry>,
     #[template_child]
-    pub resetSidebarList: TemplateChild<ListBox>,
+    pub reset_sidebar_list: TemplateChild<ListBox>,
     #[template_child]
-    pub resetSideBarToggle: TemplateChild<Button>,
+    pub reset_sidebar_toggle: TemplateChild<Button>,
     #[template_child]
-    pub resetPopoverMenu: TemplateChild<PopoverMenu>,
+    pub reset_popover_menu: TemplateChild<PopoverMenu>,
     #[template_child]
-    pub resetClose: TemplateChild<Button>,
+    pub reset_close: TemplateChild<Button>,
     #[template_child]
-    pub resetAboutButton: TemplateChild<Button>,
+    pub reset_about_button: TemplateChild<Button>,
     #[template_child]
-    pub resetPreferenceButton: TemplateChild<Button>,
+    pub reset_preference_button: TemplateChild<Button>,
     #[template_child]
-    pub resetShortcutsButton: TemplateChild<Button>,
+    pub reset_shortcuts_button: TemplateChild<Button>,
     pub sidebar_entries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
     pub listeners: Arc<Listeners>,
 }

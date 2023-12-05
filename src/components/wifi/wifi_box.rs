@@ -50,23 +50,23 @@ impl WifiBox {
 fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<WifiBox> {
     let imp = wifi_box.imp();
     let wifibox_ref = wifi_box.clone();
-    imp.resetSavedNetworks.set_activatable(true);
-    imp.resetSavedNetworks
+    imp.reset_saved_networks.set_activatable(true);
+    imp.reset_saved_networks
         .set_action_name(Some("navigation.push"));
-    imp.resetSavedNetworks
+    imp.reset_saved_networks
         .set_action_target_value(Some(&Variant::from("saved")));
 
-    imp.resetAvailableNetworks.set_activatable(true);
-    imp.resetAvailableNetworks
+    imp.reset_available_networks.set_activatable(true);
+    imp.reset_available_networks
         .set_action_name(Some("navigation.pop"));
-    set_combo_row_ellipsis(imp.resetWiFiDevice.get());
-    imp.resetWifiSwitch.connect_state_set(
+    set_combo_row_ellipsis(imp.reset_wifi_device.get());
+    imp.reset_wifi_switch.connect_state_set(
         clone!(@weak imp => @default-return glib::Propagation::Proceed, move |_, value| {
             set_wifi_enabled(value);
             if !value {
                 let mut map = imp.wifi_entries.lock().unwrap();
                 for entry in map.iter() {
-                    imp.resetWifiList.remove(&*(*entry.1));
+                    imp.reset_wifi_list.remove(&*(*entry.1));
                 }
                 map.clear();
                 imp.wifi_entries_path.lock().unwrap().clear();
@@ -114,13 +114,13 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                 let imp = wifibox_ref.imp();
 
                 let list = imp.reset_model_list.read().unwrap();
-                imp.resetWiFiDevice.set_model(Some(&*list));
+                imp.reset_wifi_device.set_model(Some(&*list));
                 let map = imp.reset_wifi_devices.read().unwrap();
                 let device = imp.reset_current_wifi_device.borrow();
                 if let Some(index) = map.get(&device.name) {
-                    imp.resetWiFiDevice.set_selected(index.1);
+                    imp.reset_wifi_device.set_selected(index.1);
                 }
-                imp.resetWiFiDevice
+                imp.reset_wifi_device
                     .connect_selected_notify(clone!(@weak imp => move |dropdown| {
                         let selected = dropdown.selected_item();
                         if selected.is_none() {
@@ -145,7 +145,7 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                     let entry = WifiEntry::new(connected, access_point, imp);
                     wifi_entries.insert(ssid, entry.clone());
                     wifi_entries_path.insert(path, entry.clone());
-                    imp.resetWifiList.add(&*entry);
+                    imp.reset_wifi_list.add(&*entry);
                 }
             });
         });
@@ -164,7 +164,7 @@ pub fn show_stored_connections(wifi_box: Arc<WifiBox>) {
                     let name =
                         &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
                     let entry = SavedWifiEntry::new(name, connection.0, self_imp);
-                    self_imp.resetStoredWifiList.add(&entry);
+                    self_imp.reset_stored_wifi_list.add(&entry);
                 }
             });
         });
@@ -302,7 +302,7 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                     let entry = WifiEntry::new(connected, ir.access_point, imp);
                     wifi_entries.insert(ssid, entry.clone());
                     wifi_entries_path.insert(path, entry.clone());
-                    imp.resetWifiList.add(&*entry);
+                    imp.reset_wifi_list.add(&*entry);
                 });
             });
             true
@@ -326,7 +326,7 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                     let entry = entry.unwrap();
                     let ssid = entry.imp().access_point.borrow().ssid.clone();
                     wifi_entries.remove(&ssid);
-                    imp.resetWifiList.remove(&*entry);
+                    imp.reset_wifi_list.remove(&*entry);
                 });
             });
             true
@@ -354,11 +354,11 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                     let name_opt = String::from_utf8(ssid).unwrap_or_else(|_| String::from(""));
                     let name = name_opt.as_str();
                     entry_imp.wifi_strength.set(strength);
-                    entry_imp.resetWifiLabel.get().set_text(name);
-                    entry_imp.resetWifiEncrypted.set_visible(false);
+                    entry_imp.reset_wifi_label.get().set_text(name);
+                    entry_imp.reset_wifi_encrypted.set_visible(false);
                     // TODO handle encryption thing
                     entry_imp
-                        .resetWifiStrength
+                        .reset_wifi_strength
                         .get()
                         .set_from_icon_name(match strength {
                             WifiStrength::Excellent => {
@@ -369,14 +369,14 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                             WifiStrength::None => Some("network-wireless-signal-none-symbolic"),
                         });
                     if !ir.access_point.stored {
-                        entry_imp.resetWifiEditButton.set_sensitive(false);
+                        entry_imp.reset_wifi_edit_button.set_sensitive(false);
                     }
                     if ir.access_point.dbus_path
                         == imp.reset_current_wifi_device.borrow().active_access_point
                     {
-                        entry_imp.resetWifiConnected.set_text("Connected");
+                        entry_imp.reset_wifi_connected.set_text("Connected");
                     } else {
-                        entry_imp.resetWifiConnected.set_text("");
+                        entry_imp.reset_wifi_connected.set_text("");
                     }
                     {
                         let mut wifi_name = entry_imp.wifi_name.borrow_mut();

@@ -33,32 +33,32 @@ impl InputStreamEntry {
             let box_imp = sink_box.imp();
             let imp = obj.imp();
             if stream.muted {
-                imp.resetSinkMute
+                imp.reset_sink_mute
                     .set_icon_name("audio-volume-muted-symbolic");
             } else {
-                imp.resetSinkMute
+                imp.reset_sink_mute
                     .set_icon_name("audio-volume-high-symbolic");
             }
             let name = stream.application_name.clone() + ": " + stream.name.as_str();
-            imp.resetSinkSelection.set_title(name.as_str());
-            imp.resetSinkSelection
+            imp.reset_sink_selection.set_title(name.as_str());
+            imp.reset_sink_selection
                 .set_factory(Some(&create_dropdown_label_factory()));
-            set_combo_row_ellipsis(imp.resetSinkSelection.get());
+            set_combo_row_ellipsis(imp.reset_sink_selection.get());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
-            imp.resetVolumePercentage.set_text(&percentage);
-            imp.resetVolumeSlider.set_value(*volume as f64);
+            imp.reset_volume_percentage.set_text(&percentage);
+            imp.reset_volume_slider.set_value(*volume as f64);
             imp.stream.replace(stream);
             {
                 let sink = box_imp.reset_default_sink.borrow();
                 imp.associated_sink.replace((sink.index, sink.name.clone()));
             }
-            imp.resetVolumeSlider.connect_change_value(
+            imp.reset_volume_slider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
-                    imp.resetVolumePercentage.set_text(&percentage);
+                    imp.reset_volume_percentage.set_text(&percentage);
                     let mut stream = imp.stream.try_borrow();
                     while stream.is_err() {
                         stream = imp.stream.try_borrow();
@@ -83,7 +83,7 @@ impl InputStreamEntry {
                 //     list = box_imp.resetModelList.try_borrow();
                 // }
                 // let list = list.unwrap();
-                imp.resetSinkSelection.set_model(Some(&*list));
+                imp.reset_sink_selection.set_model(Some(&*list));
                 let map = box_imp.reset_sink_map.read().unwrap();
                 let sink_list = box_imp.reset_sink_list.read().unwrap();
                 let name = sink_list.get(&index);
@@ -91,7 +91,7 @@ impl InputStreamEntry {
                     let name = &name.2;
                     let index = map.get(name);
                     if let Some(index) = index {
-                        imp.resetSinkSelection.set_selected(index.1);
+                        imp.reset_sink_selection.set_selected(index.1);
                     }
                 } else {
                     let mut name = box_imp.reset_default_sink.try_borrow();
@@ -101,11 +101,11 @@ impl InputStreamEntry {
                     let name = &name.unwrap().alias;
                     let index = map.get(name);
                     if let Some(index) = index {
-                        imp.resetSinkSelection.set_selected(index.1);
+                        imp.reset_sink_selection.set_selected(index.1);
                     }
                 }
             }
-            imp.resetSinkSelection.connect_selected_notify(
+            imp.reset_sink_selection.connect_selected_notify(
                 clone!(@weak imp, @weak box_imp => move |dropdown| {
                     let selected = dropdown.selected_item();
                     if selected.is_none() {
@@ -132,7 +132,7 @@ impl InputStreamEntry {
                     set_sink_of_input_stream(stream.index, sink);
                 }),
             );
-            imp.resetSinkMute
+            imp.reset_sink_mute
                 .connect_clicked(clone!(@weak imp => move |_| {
                     let stream = imp.stream.clone();
                     let mut stream = stream.try_borrow_mut();
@@ -144,10 +144,10 @@ impl InputStreamEntry {
                     let muted = stream.muted;
                     let index = stream.index;
                     if muted {
-                        imp.resetSinkMute
+                        imp.reset_sink_mute
                            .set_icon_name("audio-volume-muted-symbolic");
                     } else {
-                        imp.resetSinkMute
+                        imp.reset_sink_mute
                            .set_icon_name("audio-volume-high-symbolic");
                     }
                     toggle_input_stream_mute(index, muted);

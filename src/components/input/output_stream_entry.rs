@@ -32,21 +32,21 @@ impl OutputStreamEntry {
             let box_imp = source_box.imp();
             let imp = obj.imp();
             let name = stream.application_name.clone() + ": " + stream.name.as_str();
-            imp.resetSourceSelection.set_title(name.as_str());
-            imp.resetSourceSelection
+            imp.reset_source_selection.set_title(name.as_str());
+            imp.reset_source_selection
                 .set_factory(Some(&create_dropdown_label_factory()));
-            set_combo_row_ellipsis(imp.resetSourceSelection.get());
+            set_combo_row_ellipsis(imp.reset_source_selection.get());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
-            imp.resetVolumePercentage.set_text(&percentage);
-            imp.resetVolumeSlider.set_value(*volume as f64);
+            imp.reset_volume_percentage.set_text(&percentage);
+            imp.reset_volume_slider.set_value(*volume as f64);
             imp.stream.replace(stream);
-            imp.resetVolumeSlider.connect_change_value(
+            imp.reset_volume_slider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
-                    imp.resetVolumePercentage.set_text(&percentage);
+                    imp.reset_volume_percentage.set_text(&percentage);
                     let mut stream = imp.stream.try_borrow();
                     while stream.is_err() {
                         stream = imp.stream.try_borrow();
@@ -69,7 +69,7 @@ impl OutputStreamEntry {
             );
             {
                 let list = box_imp.reset_model_list.read().unwrap();
-                imp.resetSourceSelection.set_model(Some(&*list));
+                imp.reset_source_selection.set_model(Some(&*list));
                 let map = box_imp.reset_source_map.write().unwrap();
                 let mut name = box_imp.reset_default_source.try_borrow();
                 while name.is_err() {
@@ -79,10 +79,10 @@ impl OutputStreamEntry {
                 let name = &name.alias;
                 let index = map.get(name);
                 if let Some(index) = index {
-                    imp.resetSourceSelection.set_selected(index.1);
+                    imp.reset_source_selection.set_selected(index.1);
                 }
             }
-            imp.resetSourceSelection.connect_selected_notify(
+            imp.reset_source_selection.connect_selected_notify(
                 clone!(@weak imp, @weak box_imp => move |dropdown| {
                     let selected = dropdown.selected_item();
                     if selected.is_none() {
@@ -105,7 +105,7 @@ impl OutputStreamEntry {
                     set_source_of_output_stream(stream.index, source);
                 }),
             );
-            imp.resetSourceMute
+            imp.reset_source_mute
                 .connect_clicked(clone!(@weak imp => move |_| {
                     let stream = imp.stream.clone();
                     let mut stream = stream.try_borrow_mut();
@@ -117,10 +117,10 @@ impl OutputStreamEntry {
                     let muted = stream.muted;
                     let index = stream.index;
                     if muted {
-                        imp.resetSourceMute
+                        imp.reset_source_mute
                            .set_icon_name("microphone-disabled-symbolic");
                     } else {
-                        imp.resetSourceMute
+                        imp.reset_source_mute
                            .set_icon_name("audio-input-microphone-symbolic");
                     }
                     toggle_output_stream_mute(index, muted);

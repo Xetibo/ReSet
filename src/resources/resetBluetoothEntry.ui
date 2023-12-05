@@ -5,7 +5,7 @@
   <template class="resetBluetoothEntry" parent="GtkBox">
     <property name="margin-start">5</property>
     <child>
-      <object class="GtkImage" id="resetBluetoothDeviceType">
+      <object class="GtkImage" id="reset_bluetooth_device_type">
         <property name="icon-name">input-mouse-symbolic</property>
         <property name="margin-end">15</property>
       </object>
@@ -14,7 +14,7 @@
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkLabel" id="resetBluetoothLabel">
+          <object class="GtkLabel" id="reset_bluetooth_label">
             <property name="ellipsize">end</property>
             <property name="hexpand">True</property>
             <property name="hexpand-set">True</property>
@@ -28,7 +28,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetBluetoothAddress">
+          <object class="GtkLabel" id="reset_bluetooth_address">
             <property name="ellipsize">end</property>
             <property name="halign">start</property>
             <property name="label">LoremIpsum Wireless Mouse</property>
@@ -42,7 +42,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="resetBluetoothButton">
+      <object class="GtkButton" id="reset_bluetooth_button">
         <property name="has-frame">False</property>
         <property name="icon-name">emblem-system-symbolic</property>
       </object>

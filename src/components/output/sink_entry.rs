@@ -28,19 +28,19 @@ impl SinkEntry {
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
         {
             let imp = obj.imp();
-            imp.resetSinkName.set_title(stream.alias.clone().as_str());
+            imp.reset_sink_name.set_title(stream.alias.clone().as_str());
             let name = Arc::new(stream.name.clone());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
-            imp.resetVolumePercentage.set_text(&percentage);
-            imp.resetVolumeSlider.set_value(*volume as f64);
+            imp.reset_volume_percentage.set_text(&percentage);
+            imp.reset_volume_slider.set_value(*volume as f64);
             imp.stream.replace(stream);
-            imp.resetVolumeSlider.connect_change_value(
+            imp.reset_volume_slider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
-                    imp.resetVolumePercentage.set_text(&percentage);
+                    imp.reset_volume_percentage.set_text(&percentage);
                      let sink = imp.stream.borrow();
                      let index = sink.index;
                      let channels = sink.channels;
@@ -55,18 +55,18 @@ impl SinkEntry {
                     Propagation::Proceed
                 }),
             );
-            imp.resetSelectedSink.set_group(Some(&*check_group));
+            imp.reset_selected_sink.set_group(Some(&*check_group));
             if is_default {
-                imp.resetSelectedSink.set_active(true);
+                imp.reset_selected_sink.set_active(true);
             } else {
-                imp.resetSelectedSink.set_active(false);
+                imp.reset_selected_sink.set_active(false);
             }
-            imp.resetSelectedSink.connect_toggled(move |button| {
+            imp.reset_selected_sink.connect_toggled(move |button| {
                 if button.is_active() {
                     set_default_sink(name.clone());
                 }
             });
-            imp.resetSinkMute
+            imp.reset_sink_mute
                 .connect_clicked(clone!(@weak imp => move |_| {
                     let stream = imp.stream.clone();
                     let mut stream = stream.borrow_mut();
@@ -74,10 +74,10 @@ impl SinkEntry {
                     let muted = stream.muted;
                     let index = stream.index;
                     if muted {
-                        imp.resetSinkMute
+                        imp.reset_sink_mute
                            .set_icon_name("audio-volume-muted-symbolic");
                     } else {
-                        imp.resetSinkMute
+                        imp.reset_sink_mute
                            .set_icon_name("audio-volume-high-symbolic");
                     }
                     toggle_sink_mute(index, muted);

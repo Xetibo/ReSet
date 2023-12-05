@@ -10,20 +10,19 @@ use ReSet_Lib::audio::audio::InputStream;
 
 use super::input_stream_entry;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetInputStreamEntry.ui")]
 pub struct InputStreamEntry {
     #[template_child]
-    pub resetSinkSelection: TemplateChild<ComboRow>,
+    pub reset_sink_selection: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetSinkMute: TemplateChild<Button>,
+    pub reset_sink_mute: TemplateChild<Button>,
     #[template_child]
-    pub resetVolumeSlider: TemplateChild<Scale>,
+    pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
-    pub resetVolumePercentage: TemplateChild<Label>,
+    pub reset_volume_percentage: TemplateChild<Label>,
     #[template_child]
-    pub resetVolumeMeter: TemplateChild<ProgressBar>,
+    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<InputStream>>,
     pub associated_sink: Arc<RefCell<(u32, String)>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,

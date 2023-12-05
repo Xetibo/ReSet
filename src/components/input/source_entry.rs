@@ -28,19 +28,19 @@ impl SourceEntry {
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
         {
             let imp = obj.imp();
-            imp.resetSourceName.set_title(stream.alias.clone().as_str());
+            imp.reset_source_name.set_title(stream.alias.clone().as_str());
             let name = Arc::new(stream.name.clone());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
-            imp.resetVolumePercentage.set_text(&percentage);
-            imp.resetVolumeSlider.set_value(*volume as f64);
+            imp.reset_volume_percentage.set_text(&percentage);
+            imp.reset_volume_slider.set_value(*volume as f64);
             imp.stream.replace(stream);
-            imp.resetVolumeSlider.connect_change_value(
+            imp.reset_volume_slider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
-                    imp.resetVolumePercentage.set_text(&percentage);
+                    imp.reset_volume_percentage.set_text(&percentage);
                     let source = imp.stream.borrow();
                     let index = source.index;
                     let channels = source.channels;
@@ -57,19 +57,19 @@ impl SourceEntry {
                     Propagation::Proceed
                 }),
             );
-            imp.resetSelectedSource.set_group(Some(&*check_group));
+            imp.reset_selected_source.set_group(Some(&*check_group));
             // check_group.set_group(Some(&*imp.resetSelectedSink));
             if is_default {
-                imp.resetSelectedSource.set_active(true);
+                imp.reset_selected_source.set_active(true);
             } else {
-                imp.resetSelectedSource.set_active(false);
+                imp.reset_selected_source.set_active(false);
             }
-            imp.resetSelectedSource.connect_toggled(move |button| {
+            imp.reset_selected_source.connect_toggled(move |button| {
                 if button.is_active() {
                     set_default_source(name.clone());
                 }
             });
-            imp.resetSourceMute
+            imp.reset_source_mute
                 .connect_clicked(clone!(@weak imp => move |_| {
                     let stream = imp.stream.clone();
                     let mut stream = stream.borrow_mut();
@@ -77,10 +77,10 @@ impl SourceEntry {
                     let muted = stream.muted;
                     let index = stream.index;
                     if muted {
-                        imp.resetSourceMute
+                        imp.reset_source_mute
                            .set_icon_name("microphone-disabled-symbolic");
                     } else {
-                        imp.resetSourceMute
+                        imp.reset_source_mute
                            .set_icon_name("audio-input-microphone-symbolic");
                     }
                     toggle_source_mute(index, muted);

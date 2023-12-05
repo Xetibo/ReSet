@@ -9,69 +9,68 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use ReSet_Lib::network::connection::Connection;
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWifiOptions.ui")]
 pub struct WifiOptions {
     // General
     #[template_child]
-    pub resetWifiName: TemplateChild<ActionRow>,
+    pub reset_wifi_name: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiMac: TemplateChild<ActionRow>,
+    pub reset_wifi_mac: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiLinkSpeed: TemplateChild<ActionRow>,
+    pub reset_wifi_link_speed: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiIP4Addr: TemplateChild<ActionRow>,
+    pub reset_wifi_ip4_addr: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiIP6Addr: TemplateChild<ActionRow>,
+    pub reset_wifi_ip6_addr: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiGateway: TemplateChild<ActionRow>,
+    pub reset_wifi_gateway: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiDNS: TemplateChild<ActionRow>,
+    pub reset_wifi_dns: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiLastUsed: TemplateChild<ActionRow>,
+    pub reset_wifi_last_used: TemplateChild<ActionRow>,
     #[template_child]
-    pub resetWifiAutoConnect: TemplateChild<SwitchRow>,
+    pub reset_wifi_auto_connect: TemplateChild<SwitchRow>,
     #[template_child]
-    pub resetWifiMetered: TemplateChild<SwitchRow>,
+    pub reset_wifi_metered: TemplateChild<SwitchRow>,
     // IPv4
     #[template_child]
-    pub resetIP4Method: TemplateChild<ComboRow>,
+    pub reset_ip4_method: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetIP4DNS: TemplateChild<EntryRow>,
+    pub reset_ip4_dns: TemplateChild<EntryRow>,
     #[template_child]
-    pub resetIP4Gateway: TemplateChild<EntryRow>,
+    pub reset_ip4_gateway: TemplateChild<EntryRow>,
     #[template_child]
-    pub resetIP4AddressGroup: TemplateChild<PreferencesGroup>,
+    pub reset_ip4_address_group: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetIP4AddressAddButton: TemplateChild<Button>,
+    pub reset_ip4_address_add_button: TemplateChild<Button>,
     #[template_child]
-    pub resetIP4RoutesGroup: TemplateChild<PreferencesGroup>,
+    pub reset_ip4_routes_group: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetIP4RouteAddButton: TemplateChild<Button>,
+    pub reset_ip4_route_add_button: TemplateChild<Button>,
     // IPv6
     #[template_child]
-    pub resetIP6Method: TemplateChild<ComboRow>,
+    pub reset_ip6_method: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetIP6DNS: TemplateChild<EntryRow>,
+    pub reset_ip6_dns: TemplateChild<EntryRow>,
     #[template_child]
-    pub resetIP6Gateway: TemplateChild<EntryRow>,
+    pub reset_ip6_gateway: TemplateChild<EntryRow>,
     #[template_child]
-    pub resetIP6AddressGroup: TemplateChild<PreferencesGroup>,
+    pub reset_ip6_address_group: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetIP6AddressAddButton: TemplateChild<Button>,
+    pub reset_ip6_address_add_button: TemplateChild<Button>,
     #[template_child]
-    pub resetIP6RoutesGroup: TemplateChild<PreferencesGroup>,
+    pub reset_ip6_routes_group: TemplateChild<PreferencesGroup>,
     #[template_child]
-    pub resetIP6RouteAddButton: TemplateChild<Button>,
+    pub reset_ip6_route_add_button: TemplateChild<Button>,
     // Security
     #[template_child]
-    pub resetWifiSecurityDropdown: TemplateChild<ComboRow>,
+    pub reset_wifi_security_dropdown: TemplateChild<ComboRow>,
     #[template_child]
-    pub resetWifiPassword: TemplateChild<PasswordEntryRow>,
+    pub reset_wifi_password: TemplateChild<PasswordEntryRow>,
     // Misc
     #[template_child]
-    pub wifiOptionsApplyButton: TemplateChild<Button>,
+    pub wifi_options_apply_button: TemplateChild<Button>,
     pub connection: Rc<RefCell<Connection>>,
 }
 

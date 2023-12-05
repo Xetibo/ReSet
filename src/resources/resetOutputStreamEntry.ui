@@ -10,7 +10,7 @@
       </object>
     </child>
     <child>
-      <object class="AdwComboRow" id="resetSourceSelection">
+      <object class="AdwComboRow" id="reset_source_selection">
         <property name="css-classes">audioRow</property>
         <property name="title">asadf</property>
         <property name="use-subtitle">True</property>
@@ -26,14 +26,14 @@
                 <property name="margin-bottom">5</property>
                 <property name="margin-top">5</property>
                 <child>
-                  <object class="GtkButton" id="resetSourceMute">
+                  <object class="GtkButton" id="reset_source_mute">
                     <property name="icon-name">audio-input-microphone-symbolic</property>
                     <property name="margin-end">5</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkScale" id="resetVolumeSlider">
+                  <object class="GtkScale" id="reset_volume_slider">
                     <property name="adjustment">
                       <object class="GtkAdjustment">
                         <property name="page-increment">2005.4016</property>
@@ -50,7 +50,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="resetVolumePercentage">
+                  <object class="GtkLabel" id="reset_volume_percentage">
                     <property name="label">100%</property>
                     <property name="lines">1</property>
                     <property name="width-request">40</property>
@@ -59,7 +59,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkProgressBar" id="resetVolumeMeter">
+              <object class="GtkProgressBar" id="reset_volume_meter">
                 <property name="margin-top">5</property>
               </object>
             </child>

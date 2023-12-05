@@ -5,18 +5,17 @@ use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate};
 use std::cell::{Cell, RefCell};
 
-#[allow(non_snake_case)]
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWifiAddressEntry.ui")]
 pub struct WifiAddressEntryImpl {
     #[template_child]
-    pub resetAddressRow: TemplateChild<ExpanderRow>,
+    pub reset_address_row: TemplateChild<ExpanderRow>,
     #[template_child]
-    pub resetAddressAddress: TemplateChild<EntryRow>,
+    pub reset_address_address: TemplateChild<EntryRow>,
     #[template_child]
-    pub resetAddressPrefix: TemplateChild<EntryRow>,
+    pub reset_address_prefix: TemplateChild<EntryRow>,
     #[template_child]
-    pub resetAddressRemove: TemplateChild<Button>,
+    pub reset_address_remove: TemplateChild<Button>,
     pub address: RefCell<(bool, String)>,
     pub prefix: Cell<(bool, u32)>,
     pub protocol: Cell<IpProtocol>,

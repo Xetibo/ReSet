@@ -24,7 +24,7 @@ impl SavedWifiEntry {
         entry.set_activatable(false);
         let entry_imp = entry.imp();
 
-        entry_imp.resetEditSavedWifiButton.connect_clicked(
+        entry_imp.reset_edit_saved_wifi_button.connect_clicked(
             clone!(@ weak entry_imp, @ weak wifi_box => move |_| {
                 // TODO accesspoint has to be saved somewhere i guess
                 // let _option = getConnectionSettings(entryImp.accessPoint.borrow().associated_connection.clone());
@@ -32,9 +32,9 @@ impl SavedWifiEntry {
             }),
         );
 
-        entry_imp.resetSavedWifiLabel.set_text(name);
+        entry_imp.reset_saved_wifi_label.set_text(name);
         entry_imp.reset_connection_path.set(path);
-        entry_imp.resetDeleteSavedWifiButton.connect_clicked(
+        entry_imp.reset_delete_saved_wifi_button.connect_clicked(
             clone!(@weak entry as entry => move |_| {
             delete_connection(entry.imp().reset_connection_path.take());
             // TODO handle error

@@ -29,28 +29,28 @@ impl ReSetWindow {
     pub fn setup_callback(&self) {
         let self_imp = self.imp();
 
-        self_imp.resetSearchEntry.connect_search_changed(
+        self_imp.reset_search_entry.connect_search_changed(
             clone!(@ weak self as window => move |_| {
                 window.filter_list();
             }),
         );
 
         self_imp
-            .resetSideBarToggle
+            .reset_sidebar_toggle
             .connect_clicked(clone!(@ weak self as window => move |_| {
                 window.toggle_sidebar();
             }));
 
-        self_imp.resetSidebarList.connect_row_activated(
+        self_imp.reset_sidebar_list.connect_row_activated(
             clone!(@ weak self_imp as flowbox => move |_, y| {
                 let result = y.downcast_ref::<SidebarEntry>().unwrap();
                 let click_event = result.imp().on_click_event.borrow().on_click_event;
-                (click_event)(flowbox.listeners.clone(), flowbox.resetMain.get());
+                (click_event)(flowbox.listeners.clone(), flowbox.reset_main.get());
             }),
         );
 
         self_imp
-            .resetClose
+            .reset_close
             .connect_clicked(clone!(@ weak self as window => move |_| {
                 window.close();
             }));
@@ -64,22 +64,22 @@ impl ReSetWindow {
     pub fn handle_dynamic_sidebar(&self) {
         let self_imp = self.imp();
         self_imp
-            .resetSidebarBreakpoint
+            .reset_sidebar_breakpoint
             .set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
-        self_imp.resetSidebarBreakpoint.add_setter(
-            &Object::from(self_imp.resetOverlaySplitView.get()),
+        self_imp.reset_sidebar_breakpoint.add_setter(
+            &Object::from(self_imp.reset_overlay_split_view.get()),
             "collapsed",
             &true.to_value(),
         );
-        self_imp.resetSidebarBreakpoint.add_setter(
-            &Object::from(self_imp.resetSideBarToggle.get()),
+        self_imp.reset_sidebar_breakpoint.add_setter(
+            &Object::from(self_imp.reset_sidebar_toggle.get()),
             "visible",
             &true.to_value(),
         );
     }
 
     pub fn filter_list(&self) {
-        let text = self.imp().resetSearchEntry.text().to_string();
+        let text = self.imp().reset_search_entry.text().to_string();
         for (main_entry, sub_entriess) in self.imp().sidebar_entries.borrow().iter() {
             if text.is_empty() {
                 main_entry.set_visible(true);
@@ -117,10 +117,10 @@ impl ReSetWindow {
     }
 
     pub fn toggle_sidebar(&self) {
-        if self.imp().resetOverlaySplitView.shows_sidebar() {
-            self.imp().resetOverlaySplitView.set_show_sidebar(false);
+        if self.imp().reset_overlay_split_view.shows_sidebar() {
+            self.imp().reset_overlay_split_view.set_show_sidebar(false);
         } else {
-            self.imp().resetOverlaySplitView.set_show_sidebar(true);
+            self.imp().reset_overlay_split_view.set_show_sidebar(true);
         }
     }
 
@@ -227,28 +227,28 @@ impl ReSetWindow {
         // ));
 
         self_imp
-            .resetSidebarList
+            .reset_sidebar_list
             .connect_row_activated(clone!(@ weak self_imp => move |_, _| {
-                self_imp.resetSearchEntry.set_text("");
+                self_imp.reset_search_entry.set_text("");
             }));
 
         for (main_entry, sub_entries) in sidebar_entries.iter() {
-            self_imp.resetSidebarList.append(main_entry);
+            self_imp.reset_sidebar_list.append(main_entry);
             for sub_entry in sub_entries {
-                self_imp.resetSidebarList.append(sub_entry);
+                self_imp.reset_sidebar_list.append(sub_entry);
             }
             let separator = ListBoxRow::new();
             separator.set_child(Some(&gtk::Separator::new(Orientation::Horizontal)));
             separator.set_selectable(false);
             separator.set_activatable(false);
-            self_imp.resetSidebarList.append(&separator);
+            self_imp.reset_sidebar_list.append(&separator);
         }
     }
 
     pub fn setup_popover_buttons(&self) {
         let self_imp = self.imp();
         self_imp
-            .resetAboutButton
+            .reset_about_button
             .connect_clicked(clone!(@ weak self as window => move |_| {
                     let dialog = adw::AboutWindow::builder()
                         .application_name("ReSet")
@@ -265,21 +265,21 @@ impl ReSetWindow {
                         .developers(vec!["DashieTM".to_string(), "Takotori".to_string()])
                         .designers(vec!["DashieTM".to_string(), "Takotori".to_string()])
                         .build();
-                window.imp().resetPopoverMenu.popdown();
+                window.imp().reset_popover_menu.popdown();
                 dialog.present();
             }));
         self_imp
-            .resetPreferenceButton
+            .reset_preference_button
             .connect_clicked(clone!(@weak self as window => move |_| {
                 let preferences = adw::PreferencesWindow::builder().build();
-                window.imp().resetPopoverMenu.popdown();
+                window.imp().reset_popover_menu.popdown();
                 preferences.present();
             }));
         self_imp
-            .resetShortcutsButton
+            .reset_shortcuts_button
             .connect_clicked(clone!(@weak self as window => move |_| {
                 let shortcuts = gtk::ShortcutsWindow::builder().build();
-                window.imp().resetPopoverMenu.popdown();
+                window.imp().reset_popover_menu.popdown();
                 shortcuts.present();
             }));
     }

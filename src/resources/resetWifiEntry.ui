@@ -11,12 +11,12 @@
           <object class="GtkBox">
             <property name="width-request">35</property>
             <child>
-              <object class="GtkImage" id="resetWifiStrength">
+              <object class="GtkImage" id="reset_wifi_strength">
                 <property name="icon-name">network-wireless-signal-excellent-symbolic</property>
               </object>
             </child>
             <child>
-              <object class="GtkImage" id="resetWifiEncrypted">
+              <object class="GtkImage" id="reset_wifi_encrypted">
                 <property name="halign">start</property>
                 <property name="icon-name">system-lock-screen-symbolic</property>
                 <property name="margin-bottom">6</property>
@@ -27,7 +27,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetWifiLabel">
+          <object class="GtkLabel" id="reset_wifi_label">
             <property name="ellipsize">end</property>
             <property name="hexpand">True</property>
             <property name="label">LoremIpsumInternet</property>
@@ -38,7 +38,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetWifiConnected">
+          <object class="GtkLabel" id="reset_wifi_connected">
             <property name="halign">end</property>
             <property name="hexpand">True</property>
             <property name="justify">right</property>
@@ -49,7 +49,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="resetWifiEditButton">
+          <object class="GtkButton" id="reset_wifi_edit_button">
             <property name="halign">start</property>
             <property name="has-frame">False</property>
             <property name="icon-name">document-edit-symbolic</property>
@@ -57,7 +57,7 @@
           </object>
         </child>
         <child>
-          <object class="resetPopup" id="resetWifiPopup"/>
+          <object class="resetPopup" id="reset_wifi_popup"/>
         </child>
       </object>
     </property>
