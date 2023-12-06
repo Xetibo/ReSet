@@ -14,17 +14,39 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="reset_bluetooth_label">
-            <property name="ellipsize">end</property>
+          <object class="GtkBox">
             <property name="hexpand">True</property>
             <property name="hexpand-set">True</property>
-            <property name="label">LoremIpsum Wireless Mouse</property>
-            <property name="margin-end">10</property>
-            <property name="single-line-mode">True</property>
-            <property name="vexpand">True</property>
-            <property name="vexpand-set">True</property>
-            <property name="width-request">200</property>
-            <property name="xalign">0.0</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="reset_bluetooth_label">
+                <property name="ellipsize">end</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="label">LoremIpsum Wireless Mouse</property>
+                <property name="margin-end">10</property>
+                <property name="single-line-mode">True</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+                <property name="width-request">200</property>
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="reset_bluetooth_address">
+                <property name="ellipsize">end</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="label">LoremIpsum Wireless Mouse</property>
+                <property name="margin-end">10</property>
+                <property name="sensitive">False</property>
+                <property name="single-line-mode">True</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+                <property name="width-request">200</property>
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

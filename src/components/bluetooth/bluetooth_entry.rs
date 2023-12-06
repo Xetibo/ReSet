@@ -3,7 +3,6 @@ use std::time::Duration;
 
 use crate::components::bluetooth::bluetooth_entry_impl;
 use adw::glib::Object;
-use adw::prelude::ActionRowExt;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use adw::{glib, ActionRow};
 use dbus::blocking::Connection;
@@ -29,7 +28,10 @@ impl BluetoothEntry {
             .reset_bluetooth_label
             .get()
             .set_text(&device.alias);
-        entry.set_subtitle(&device.address);
+        entry_imp
+            .reset_bluetooth_address
+            .get()
+            .set_text(&device.address);
         entry.set_activatable(true);
         if device.icon.is_empty() {
             entry_imp

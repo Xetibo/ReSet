@@ -14,6 +14,8 @@ pub struct BluetoothEntry {
     #[template_child]
     pub reset_bluetooth_label: TemplateChild<Label>,
     #[template_child]
+    pub reset_bluetooth_address: TemplateChild<Label>,
+    #[template_child]
     pub reset_bluetooth_button: TemplateChild<Button>,
     pub device_name: RefCell<String>,
 }
