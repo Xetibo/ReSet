@@ -31,20 +31,20 @@ impl BluetoothEntry {
         entry.set_subtitle(&device.address);
         entry.set_activatable(true);
 
-        entry_imp.button.replace(Button::builder().icon_name("user-trash-symbolic").valign(Align::Center).build());
-        entry.add_suffix(entry_imp.button.borrow().deref());
+        entry_imp.remove_device_button.replace(Button::builder().icon_name("user-trash-symbolic").valign(Align::Center).build());
+        entry.add_suffix(entry_imp.remove_device_button.borrow().deref());
         if device.icon.is_empty() {
             entry.add_prefix(&Image::from_icon_name("dialog-question-symbolic"));
         } else {
             entry.add_prefix(&Image::from_icon_name(&device.icon));
         }
         if device.connected || device.paired {
-            entry_imp.button.borrow().set_sensitive(true);
+            entry_imp.remove_device_button.borrow().set_sensitive(true);
         } else {
-            entry_imp.button.borrow().set_sensitive(false);
+            entry_imp.remove_device_button.borrow().set_sensitive(false);
         }
         let path = Arc::new(device.path.clone());
-        entry_imp.button.borrow().connect_clicked(move |_| {
+        entry_imp.remove_device_button.borrow().connect_clicked(move |_| {
             remove_device_pairing((*path).clone());
         });
         let gesture = GestureClick::new();

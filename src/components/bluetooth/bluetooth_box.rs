@@ -295,14 +295,14 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                                 list_entry
                                     .0
                                     .imp()
-                                    .button
+                                    .remove_device_button
                                     .borrow()
                                     .set_sensitive(true);
                             } else {
                                 list_entry
                                     .0
                                     .imp()
-                                    .button
+                                    .remove_device_button
                                     .borrow()
                                     .set_sensitive(false);
                             }

@@ -9,7 +9,7 @@ use std::cell::RefCell;
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetBluetoothEntry.ui")]
 pub struct BluetoothEntry {
-    pub button: RefCell<Button>,
+    pub remove_device_button: RefCell<Button>,
     pub device_name: RefCell<String>,
 }
 
