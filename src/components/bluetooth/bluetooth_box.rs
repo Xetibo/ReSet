@@ -295,13 +295,15 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                                 list_entry
                                     .0
                                     .imp()
-                                    .reset_bluetooth_button
+                                    .button
+                                    .borrow()
                                     .set_sensitive(true);
                             } else {
                                 list_entry
                                     .0
                                     .imp()
-                                    .reset_bluetooth_button
+                                    .button
+                                    .borrow()
                                     .set_sensitive(false);
                             }
                         }

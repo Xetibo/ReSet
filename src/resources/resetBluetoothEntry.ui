@@ -1,63 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-  <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.0"/>
   <template class="resetBluetoothEntry" parent="AdwActionRow">
-    <property name="child">
-      <object class="GtkBox">
-        <child>
-          <object class="GtkImage" id="reset_bluetooth_device_type">
-            <property name="halign">start</property>
-            <property name="icon-name">input-mouse-symbolic</property>
-            <property name="margin-end">15</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="hexpand">True</property>
-            <property name="hexpand-set">True</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkLabel" id="reset_bluetooth_label">
-                <property name="ellipsize">end</property>
-                <property name="hexpand">True</property>
-                <property name="hexpand-set">True</property>
-                <property name="label">LoremIpsum Wireless Mouse</property>
-                <property name="margin-end">10</property>
-                <property name="single-line-mode">True</property>
-                <property name="vexpand">True</property>
-                <property name="vexpand-set">True</property>
-                <property name="width-request">200</property>
-                <property name="xalign">0.0</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="reset_bluetooth_address">
-                <property name="ellipsize">end</property>
-                <property name="hexpand">True</property>
-                <property name="hexpand-set">True</property>
-                <property name="label">LoremIpsum Wireless Mouse</property>
-                <property name="margin-end">10</property>
-                <property name="sensitive">False</property>
-                <property name="single-line-mode">True</property>
-                <property name="vexpand">True</property>
-                <property name="vexpand-set">True</property>
-                <property name="width-request">200</property>
-                <property name="xalign">0.0</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="reset_bluetooth_button">
-            <property name="halign">end</property>
-            <property name="has-frame">False</property>
-            <property name="icon-name">user-trash-symbolic</property>
-          </object>
-        </child>
-      </object>
-    </property>
     <property name="margin-start">5</property>
   </template>
 </interface>

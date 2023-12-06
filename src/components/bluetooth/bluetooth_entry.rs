@@ -1,20 +1,22 @@
+use std::ops::Deref;
 use std::sync::Arc;
 use std::time::Duration;
 
 use crate::components::bluetooth::bluetooth_entry_impl;
 use adw::glib::Object;
-use adw::subclass::prelude::ObjectSubclassIsExt;
 use adw::{glib, ActionRow};
+use adw::prelude::{ActionRowExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
+use glib::subclass::prelude::ObjectSubclassIsExt;
 use gtk::prelude::{ButtonExt, ListBoxRowExt, WidgetExt};
-use gtk::{gio, GestureClick};
+use gtk::{gio, GestureClick, Image, Button, Align};
 use re_set_lib::bluetooth::bluetooth_structures::BluetoothDevice;
 
 glib::wrapper! {
     pub struct BluetoothEntry(ObjectSubclass<bluetooth_entry_impl::BluetoothEntry>)
         @extends ActionRow, gtk::Widget,
-        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, gtk::ListBoxRow;
+        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, gtk::ListBoxRow, adw::PreferencesRow;
 }
 
 unsafe impl Send for BluetoothEntry {}
@@ -24,31 +26,25 @@ impl BluetoothEntry {
     pub fn new(device: &BluetoothDevice) -> Self {
         let entry: BluetoothEntry = Object::builder().build();
         let entry_imp = entry.imp();
-        entry_imp
-            .reset_bluetooth_label
-            .get()
-            .set_text(&device.alias);
-        entry_imp
-            .reset_bluetooth_address
-            .get()
-            .set_text(&device.address);
+
+        entry.set_title(&device.alias);
+        entry.set_subtitle(&device.address);
         entry.set_activatable(true);
+
+        entry_imp.button.replace(Button::builder().icon_name("user-trash-symbolic").valign(Align::Center).build());
+        entry.add_suffix(entry_imp.button.borrow().deref());
         if device.icon.is_empty() {
-            entry_imp
-                .reset_bluetooth_device_type
-                .set_icon_name(Some("dialog-question-symbolic"));
+            entry.add_prefix(&Image::from_icon_name("dialog-question-symbolic"));
         } else {
-            entry_imp
-                .reset_bluetooth_device_type
-                .set_icon_name(Some(&device.icon));
+            entry.add_prefix(&Image::from_icon_name(&device.icon));
         }
         if device.connected || device.paired {
-            entry_imp.reset_bluetooth_button.set_sensitive(true);
+            entry_imp.button.borrow().set_sensitive(true);
         } else {
-            entry_imp.reset_bluetooth_button.set_sensitive(false);
+            entry_imp.button.borrow().set_sensitive(false);
         }
         let path = Arc::new(device.path.clone());
-        entry_imp.reset_bluetooth_button.connect_clicked(move |_| {
+        entry_imp.button.borrow().connect_clicked(move |_| {
             remove_device_pairing((*path).clone());
         });
         let gesture = GestureClick::new();

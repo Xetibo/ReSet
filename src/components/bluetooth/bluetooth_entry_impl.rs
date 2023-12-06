@@ -3,20 +3,13 @@ use adw::subclass::action_row::ActionRowImpl;
 use adw::subclass::preferences_row::PreferencesRowImpl;
 use adw::ActionRow;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Image, Label};
+use gtk::{glib, Button, CompositeTemplate};
 use std::cell::RefCell;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetBluetoothEntry.ui")]
 pub struct BluetoothEntry {
-    #[template_child]
-    pub reset_bluetooth_device_type: TemplateChild<Image>,
-    #[template_child]
-    pub reset_bluetooth_label: TemplateChild<Label>,
-    #[template_child]
-    pub reset_bluetooth_address: TemplateChild<Label>,
-    #[template_child]
-    pub reset_bluetooth_button: TemplateChild<Button>,
+    pub button: RefCell<Button>,
     pub device_name: RefCell<String>,
 }
 
