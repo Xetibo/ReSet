@@ -335,7 +335,7 @@
 	(3,1,"GtkWidget","height-request","200",None,None,None,None,None,None,None,None,None),
 	(3,1,"GtkWidget","width-request","600",None,None,None,None,None,None,None,None,None),
 	(3,1,"GtkWindow","default-height","500",None,None,None,None,None,None,None,None,None),
-	(3,1,"GtkWindow","default-width","800",None,None,None,None,None,None,None,None,None),
+	(3,1,"GtkWindow","default-width","951",None,None,None,None,None,None,None,None,None),
 	(3,2,"AdwOverlaySplitView","content",None,None,None,None,None,3,None,None,None,None),
 	(3,2,"AdwOverlaySplitView","max-sidebar-width","180.0",None,None,None,None,None,None,None,None,None),
 	(3,2,"AdwOverlaySplitView","sidebar",None,None,None,None,None,18,None,None,None,None),
