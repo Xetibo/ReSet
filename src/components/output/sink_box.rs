@@ -200,19 +200,16 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     .reset_sink_mute
                     .connect_clicked(move |_| {
                         let imp = output_box_ref_mute.imp();
-                        let stream = imp.reset_default_sink.clone();
-                        let mut stream = stream.borrow_mut();
+                        let mut stream = imp.reset_default_sink.borrow_mut();
                         stream.muted = !stream.muted;
-                        let muted = stream.muted;
-                        let index = stream.index;
-                        if muted {
+                        if stream.muted {
                             imp.reset_sink_mute
                                 .set_icon_name("audio-volume-muted-symbolic");
                         } else {
                             imp.reset_sink_mute
                                 .set_icon_name("audio-volume-high-symbolic");
                         }
-                        toggle_sink_mute(index, muted);
+                        toggle_sink_mute(stream.index, stream.muted);
                     });
             });
         });
@@ -282,6 +279,21 @@ fn get_sinks() -> Vec<Sink> {
         proxy.method_call("org.Xetibo.ReSetAudio", "ListSinks", ());
     if res.is_err() {
         return Vec::new();
+    }
+    res.unwrap().0
+}
+
+fn get_default_sink_name() -> String {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(String,), Error> =
+        proxy.method_call("org.Xetibo.ReSetAudio", "GetDefaultSinkName", ());
+    if res.is_err() {
+        return String::from("");
     }
     res.unwrap().0
 }
@@ -437,12 +449,12 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
 
     let res = conn.add_match(sink_changed, move |ir: SinkChanged, _, _| {
         let sink_box = sink_changed_box.clone();
-        let default_sink = get_default_sink();
+        let default_sink = get_default_sink_name();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
-                let is_default = ir.sink.name == default_sink.name;
+                let is_default = ir.sink.name == default_sink;
                 let volume = ir.sink.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
@@ -456,6 +468,16 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 if is_default {
                     output_box_imp.reset_volume_percentage.set_text(&percentage);
                     output_box_imp.reset_volume_slider.set_value(*volume as f64);
+                    output_box_imp.reset_default_sink.replace(ir.sink.clone());
+                    if ir.sink.muted {
+                        output_box_imp
+                            .reset_sink_mute
+                            .set_icon_name("audio-volume-muted-symbolic");
+                    } else {
+                        output_box_imp
+                            .reset_sink_mute
+                            .set_icon_name("audio-volume-high-symbolic");
+                    }
                     imp.reset_selected_sink.set_active(true);
                 } else {
                     imp.reset_selected_sink.set_active(false);
@@ -464,12 +486,19 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                     .set_title(ir.sink.alias.clone().as_str());
                 imp.reset_volume_percentage.set_text(&percentage);
                 imp.reset_volume_slider.set_value(*volume as f64);
+                if ir.sink.muted {
+                    imp.reset_sink_mute
+                        .set_icon_name("audio-volume-muted-symbolic");
+                } else {
+                    imp.reset_sink_mute
+                        .set_icon_name("audio-volume-high-symbolic");
+                }
             });
         });
         true
     });
     if res.is_err() {
-        println!("fail on sink remove");
+        println!("fail on sink change");
         return conn;
     }
 

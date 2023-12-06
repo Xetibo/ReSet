@@ -41,7 +41,6 @@ fn setup_callbacks(
     listeners: Arc<Listeners>,
     bluetooth_box: Arc<BluetoothBox>,
 ) -> Arc<BluetoothBox> {
-    let bluetooth_box_button_ref = bluetooth_box.clone();
     let bluetooth_box_ref = bluetooth_box.clone();
     let listeners_ref = listeners.clone();
     let imp = bluetooth_box.imp();
@@ -58,7 +57,9 @@ fn setup_callbacks(
     imp.reset_bluetooth_refresh_button
         .connect_clicked(move |button| {
             button.set_sensitive(false);
-            start_bluetooth_listener(listeners.clone(), bluetooth_box_button_ref.clone());
+            listeners
+                .bluetooth_scan_requested
+                .store(true, Ordering::SeqCst);
         });
 
     imp.reset_bluetooth_discoverable_switch
@@ -176,7 +177,7 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
                 for device in devices {
                     let path = device.path.clone();
                     let connected = device.connected;
-                    let bluetooth_entry = Arc::new(BluetoothEntry::new(&device));
+                    let bluetooth_entry = BluetoothEntry::new(&device);
                     imp.available_devices
                         .borrow_mut()
                         .insert(path, (bluetooth_entry.clone(), device));
@@ -236,7 +237,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     let imp = bluetooth_box.imp();
                     let path = ir.bluetooth_device.path.clone();
                     let connected = ir.bluetooth_device.connected;
-                    let bluetooth_entry = Arc::new(BluetoothEntry::new(&ir.bluetooth_device));
+                    let bluetooth_entry = BluetoothEntry::new(&ir.bluetooth_device);
                     imp.available_devices
                         .borrow_mut()
                         .insert(path, (bluetooth_entry.clone(), ir.bluetooth_device));
@@ -275,7 +276,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
 
         let res = conn.add_match(device_changed, move |ir: BluetoothDeviceChanged, _, _| {
             let bluetooth_box = device_changed_box.clone();
-            println!("removed");
+            println!("changed");
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
                     let imp = bluetooth_box.imp();
@@ -318,17 +319,21 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
         }
 
         listeners.bluetooth_listener.store(true, Ordering::SeqCst);
-        let time = SystemTime::now();
+        let mut time = SystemTime::now();
+        let mut listener_active = true;
 
         loop {
             let _ = conn.process(Duration::from_millis(1000));
-            if !listeners.bluetooth_listener.load(Ordering::SeqCst)
-                || time.elapsed().unwrap() > Duration::from_millis(25000)
-            {
-                listeners.bluetooth_listener.store(false, Ordering::SeqCst);
+            if !listeners.bluetooth_listener.load(Ordering::SeqCst) {
+                println!("stopping bluetooth listener");
+                break;
+            }
+            if listener_active && time.elapsed().unwrap() > Duration::from_millis(25000) {
+                listener_active = false;
+                let instance_ref = loop_box.clone();
                 glib::spawn_future(async move {
                     glib::idle_add_once(move || {
-                        let imp = loop_box.imp();
+                        let imp = instance_ref.imp();
                         let mut entries = imp.available_devices.borrow_mut();
                         for entry in entries.iter() {
                             imp.reset_bluetooth_available_devices.remove(&*entry.1 .0);
@@ -339,8 +344,15 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                 });
                 let _: Result<(), Error> =
                     proxy.method_call("org.Xetibo.ReSetBluetooth", "StopBluetoothListener", ());
-                println!("stopping bluetooth listener");
-                break;
+            }
+            if !listener_active && listeners.bluetooth_scan_requested.load(Ordering::SeqCst) {
+                listeners
+                    .bluetooth_scan_requested
+                    .store(false, Ordering::SeqCst);
+                listener_active = true;
+                let _: Result<(), Error> =
+                    proxy.method_call("org.Xetibo.ReSetBluetooth", "StartBluetoothListener", ());
+                time = SystemTime::now();
             }
             thread::sleep(Duration::from_millis(100));
         }

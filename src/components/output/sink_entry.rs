@@ -71,16 +71,14 @@ impl SinkEntry {
                     let stream = imp.stream.clone();
                     let mut stream = stream.borrow_mut();
                     stream.muted = !stream.muted;
-                    let muted = stream.muted;
-                    let index = stream.index;
-                    if muted {
+                    if stream.muted {
                         imp.reset_sink_mute
                            .set_icon_name("audio-volume-muted-symbolic");
                     } else {
                         imp.reset_sink_mute
                            .set_icon_name("audio-volume-high-symbolic");
                     }
-                    toggle_sink_mute(index, muted);
+                    toggle_sink_mute(stream.index, stream.muted);
                 }));
         }
         obj

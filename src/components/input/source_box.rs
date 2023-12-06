@@ -193,19 +193,16 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     .reset_source_mute
                     .connect_clicked(move |_| {
                         let imp = output_box_ref_mute.imp();
-                        let stream = imp.reset_default_source.clone();
-                        let mut stream = stream.borrow_mut();
+                        let mut stream = imp.reset_default_source.borrow_mut();
                         stream.muted = !stream.muted;
-                        let muted = stream.muted;
-                        let index = stream.index;
-                        if muted {
+                        if stream.muted {
                             imp.reset_source_mute
                                 .set_icon_name("microphone-disabled-symbolic");
                         } else {
                             imp.reset_source_mute
                                 .set_icon_name("audio-input-microphone-symbolic");
                         }
-                        toggle_source_mute(index, muted);
+                        toggle_source_mute(stream.index, stream.muted);
                     });
             });
         });
@@ -291,6 +288,21 @@ fn get_cards() -> Vec<Card> {
         proxy.method_call("org.Xetibo.ReSetAudio", "ListCards", ());
     if res.is_err() {
         return Vec::new();
+    }
+    res.unwrap().0
+}
+
+fn get_default_source_name() -> String {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(String,), Error> =
+        proxy.method_call("org.Xetibo.ReSetAudio", "GetDefaultSourceName", ());
+    if res.is_err() {
+        return String::from("");
     }
     res.unwrap().0
 }
@@ -393,7 +405,6 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
 
     let res = conn.add_match(source_removed, move |ir: SourceRemoved, _, _| {
         let source_box = source_removed_box.clone();
-        println!("removed {}", ir.index);
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box = source_box.clone();
@@ -433,12 +444,12 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
 
     let res = conn.add_match(source_changed, move |ir: SourceChanged, _, _| {
         let source_box = source_changed_box.clone();
-        let default_source = get_default_source();
+        let default_source = get_default_source_name();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box = source_box.clone();
                 let output_box_imp = output_box.imp();
-                let is_default = ir.source.name == default_source.name;
+                let is_default = ir.source.name == default_source;
                 let volume = ir.source.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
@@ -451,6 +462,18 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 if is_default {
                     output_box_imp.reset_volume_percentage.set_text(&percentage);
                     output_box_imp.reset_volume_slider.set_value(*volume as f64);
+                    output_box_imp
+                        .reset_default_source
+                        .replace(ir.source.clone());
+                    if ir.source.muted {
+                        output_box_imp
+                            .reset_source_mute
+                            .set_icon_name("microphone-disabled-symbolic");
+                    } else {
+                        output_box_imp
+                            .reset_source_mute
+                            .set_icon_name("audio-input-microphone-symbolic");
+                    }
                     imp.reset_selected_source.set_active(true);
                 } else {
                     imp.reset_selected_source.set_active(false);
@@ -459,6 +482,13 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     .set_title(ir.source.alias.clone().as_str());
                 imp.reset_volume_percentage.set_text(&percentage);
                 imp.reset_volume_slider.set_value(*volume as f64);
+                if ir.source.muted {
+                    imp.reset_source_mute
+                        .set_icon_name("microphone-disabled-symbolic");
+                } else {
+                    imp.reset_source_mute
+                        .set_icon_name("audio-input-microphone-symbolic");
+                }
             });
         });
         true

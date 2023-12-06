@@ -59,7 +59,6 @@ impl SourceEntry {
                 }),
             );
             imp.reset_selected_source.set_group(Some(&*check_group));
-            // check_group.set_group(Some(&*imp.resetSelectedSink));
             if is_default {
                 imp.reset_selected_source.set_active(true);
             } else {
@@ -75,16 +74,14 @@ impl SourceEntry {
                     let stream = imp.stream.clone();
                     let mut stream = stream.borrow_mut();
                     stream.muted = !stream.muted;
-                    let muted = stream.muted;
-                    let index = stream.index;
-                    if muted {
+                    if stream.muted {
                         imp.reset_source_mute
                            .set_icon_name("microphone-disabled-symbolic");
                     } else {
                         imp.reset_source_mute
                            .set_icon_name("audio-input-microphone-symbolic");
                     }
-                    toggle_source_mute(index, muted);
+                    toggle_source_mute(stream.index, stream.muted);
                 }));
         }
         obj

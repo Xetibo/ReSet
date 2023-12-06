@@ -28,6 +28,7 @@ pub struct Listeners {
     pub wifi_disabled: AtomicBool,
     pub wifi_listener: AtomicBool,
     pub bluetooth_listener: AtomicBool,
+    pub bluetooth_scan_requested: AtomicBool,
     pub pulse_listener: AtomicBool,
 }
 
