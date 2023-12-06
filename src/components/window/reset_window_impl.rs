@@ -77,19 +77,19 @@ impl ObjectImpl for ReSetWindow {
 
 impl WidgetImpl for ReSetWindow {
     fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
-        // felixusan, use "the force" for debugging
-        // aka this variable
-        // println!("{width}");
         self.parent_size_allocate(width, height, baseline);
-        if width > 738 {
-            self.reset_main.set_margin_start(100);
-            self.reset_main.set_margin_end(100);
-        } else if width > 600 {
-            self.reset_main.set_margin_start((width - 600) / 2);
-            self.reset_main.set_margin_end((width - 600) / 2);
+        if width > 658 {
+            self.reset_main.set_margin_start(60);
+            self.reset_main.set_margin_end(60);
         } else {
-            self.reset_main.set_margin_start(0);
-            self.reset_main.set_margin_end(0);
+            let div = (width - 540) / 2;
+            if div > 1 { 
+                self.reset_main.set_margin_start(div);
+                self.reset_main.set_margin_end(div);
+            } else {
+                self.reset_main.set_margin_start(0);
+                self.reset_main.set_margin_end(0);
+            }
         }
     }
 }

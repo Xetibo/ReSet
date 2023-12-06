@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <requires lib="libadwaita" version="1.3"/>
+  <requires lib="libadwaita" version="1.0"/>
   <template class="resetBluetoothEntry" parent="AdwActionRow">
     <property name="child">
       <object class="GtkBox">
@@ -36,11 +36,6 @@
         </child>
       </object>
     </property>
-    <property name="focusable">True</property>
-    <property name="hexpand">True</property>
-    <property name="hexpand-set">True</property>
     <property name="margin-start">5</property>
-    <property name="subtitle-lines">1</property>
-    <property name="title-lines">1</property>
   </template>
 </interface>

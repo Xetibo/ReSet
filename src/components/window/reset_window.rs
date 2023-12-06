@@ -60,7 +60,7 @@ impl ReSetWindow {
         let self_imp = self.imp();
         self_imp
             .reset_sidebar_breakpoint
-            .set_condition(BreakpointCondition::parse("max-width: 950sp").as_ref().ok());
+            .set_condition(BreakpointCondition::parse("max-width: 860sp").as_ref().ok());
         self_imp.reset_sidebar_breakpoint.add_setter(
             &Object::from(self_imp.reset_overlay_split_view.get()),
             "collapsed",

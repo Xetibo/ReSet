@@ -7,7 +7,7 @@
     <property name="default-height">500</property>
     <property name="default-width">951</property>
     <property name="height-request">200</property>
-    <property name="width-request">600</property>
+    <property name="width-request">540</property>
     <child>
       <object class="GtkWindowHandle"/>
     </child>

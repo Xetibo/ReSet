@@ -8,14 +8,14 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use adw::{glib, ActionRow};
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
-use gtk::prelude::{ButtonExt, WidgetExt};
+use gtk::prelude::{ButtonExt, ListBoxRowExt, WidgetExt};
 use gtk::{gio, GestureClick};
 use re_set_lib::bluetooth::bluetooth_structures::BluetoothDevice;
 
 glib::wrapper! {
     pub struct BluetoothEntry(ObjectSubclass<bluetooth_entry_impl::BluetoothEntry>)
         @extends ActionRow, gtk::Widget,
-        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget;
+        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, gtk::ListBoxRow;
 }
 
 unsafe impl Send for BluetoothEntry {}
@@ -24,13 +24,13 @@ unsafe impl Sync for BluetoothEntry {}
 impl BluetoothEntry {
     pub fn new(device: &BluetoothDevice) -> Self {
         let entry: BluetoothEntry = Object::builder().build();
-        entry.set_sensitive(true);
         let entry_imp = entry.imp();
         entry_imp
             .reset_bluetooth_label
             .get()
             .set_text(&device.alias);
         entry.set_subtitle(&device.address);
+        entry.set_activatable(true);
         if device.icon.is_empty() {
             entry_imp
                 .reset_bluetooth_device_type
@@ -40,7 +40,7 @@ impl BluetoothEntry {
                 .reset_bluetooth_device_type
                 .set_icon_name(Some(&device.icon));
         }
-        if device.paired {
+        if device.connected || device.paired {
             entry_imp.reset_bluetooth_button.set_sensitive(true);
         } else {
             entry_imp.reset_bluetooth_button.set_sensitive(false);

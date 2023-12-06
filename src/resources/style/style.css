@@ -24,3 +24,7 @@ label.resetSettingLabel {
 row.audioRow  {
     border-color: transparent;
 }
+
+flowboxchild {
+  max-width: 800px;
+}

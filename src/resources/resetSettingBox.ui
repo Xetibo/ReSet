@@ -3,6 +3,7 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="resetSettingBox" parent="GtkBox">
+    <property name="css-classes">settings-box</property>
     <property name="orientation">vertical</property>
     <property name="width-request">500</property>
   </template>
