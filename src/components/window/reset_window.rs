@@ -1,7 +1,7 @@
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::BreakpointCondition;
-use glib::Object;
+use adw::{ApplicationWindow, BreakpointCondition};
+use glib::{closure_local, Object};
 use gtk::prelude::*;
 use gtk::{gio, glib, Application, ListBoxRow, Orientation};
 
@@ -12,7 +12,7 @@ use crate::components::window::sidebar_entry_impl::Categories;
 
 glib::wrapper! {
     pub struct ReSetWindow(ObjectSubclass<reset_window_impl::ReSetWindow>)
-        @extends gtk::ApplicationWindow, gtk::Window, gtk::Widget,
+        @extends adw::ApplicationWindow, gtk::Window, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap, gtk::Accessible, gtk::Buildable,
                     gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager;
 }
@@ -54,18 +54,13 @@ impl ReSetWindow {
             .connect_clicked(clone!(@ weak self as window => move |_| {
                 window.close();
             }));
-
-        // selfImp.resetMenu.connect_clicked(|_| {
-        //     WifiBox::donotdisturb();
-        //
-        // });
     }
 
     pub fn handle_dynamic_sidebar(&self) {
         let self_imp = self.imp();
         self_imp
             .reset_sidebar_breakpoint
-            .set_condition(BreakpointCondition::parse("max-width: 700sp").as_ref().ok());
+            .set_condition(BreakpointCondition::parse("max-width: 950sp").as_ref().ok());
         self_imp.reset_sidebar_breakpoint.add_setter(
             &Object::from(self_imp.reset_overlay_split_view.get()),
             "collapsed",
@@ -143,6 +138,7 @@ impl ReSetWindow {
                 true,
                 HANDLE_BLUETOOTH_CLICK,
             ),
+            // uncommented when VPN is implemented
             // SidebarEntry::new(
             //     "VPN",
             //     "network-vpn-symbolic",
@@ -191,6 +187,7 @@ impl ReSetWindow {
             audio_list,
         ));
 
+        // uncommented when implemented
         // let peripheralsList = vec![
         //     SidebarEntry::new(
         //         "Displays",

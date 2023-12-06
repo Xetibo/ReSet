@@ -2,8 +2,12 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.0"/>
   <template class="resetBluetoothEntry" parent="GtkBox">
     <property name="margin-start">5</property>
+    <child>
+      <object class="AdwComboRow"/>
+    </child>
     <child>
       <object class="GtkImage" id="reset_bluetooth_device_type">
         <property name="icon-name">input-mouse-symbolic</property>

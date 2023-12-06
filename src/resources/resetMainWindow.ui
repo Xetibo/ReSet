@@ -90,10 +90,8 @@
                     <child>
                       <object class="GtkFlowBox" id="reset_main">
                         <property name="column-spacing">25</property>
-                        <property name="halign">center</property>
                         <property name="hexpand">True</property>
                         <property name="hexpand-set">True</property>
-                        <property name="homogeneous">True</property>
                         <property name="margin-top">5</property>
                         <property name="row-spacing">25</property>
                         <property name="selection-mode">none</property>

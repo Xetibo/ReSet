@@ -74,9 +74,7 @@
                         <child>
                           <object class="GtkViewport">
                             <child>
-                              <object class="GtkBox" id="reset_bluetooth_available_devices">
-                                <property name="orientation">vertical</property>
-                              </object>
+                              <object class="AdwPreferencesGroup" id="reset_bluetooth_available_devices"/>
                             </child>
                           </object>
                         </child>
@@ -94,9 +92,7 @@
                         <child>
                           <object class="GtkViewport">
                             <child>
-                              <object class="GtkBox" id="reset_bluetooth_connected_devices">
-                                <property name="orientation">vertical</property>
-                              </object>
+                              <object class="AdwPreferencesGroup" id="reset_bluetooth_connected_devices"/>
                             </child>
                           </object>
                         </child>

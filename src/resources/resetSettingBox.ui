@@ -3,7 +3,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="resetSettingBox" parent="GtkBox">
-    <property name="halign">center</property>
     <property name="orientation">vertical</property>
     <property name="width-request">500</property>
   </template>

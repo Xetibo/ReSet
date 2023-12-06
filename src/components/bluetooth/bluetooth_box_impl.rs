@@ -1,4 +1,4 @@
-use adw::{ActionRow, ComboRow};
+use adw::{ActionRow, ComboRow, PreferencesGroup};
 use dbus::Path;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Switch};
@@ -21,13 +21,13 @@ pub struct BluetoothBox {
     #[template_child]
     pub reset_bluetooth_switch: TemplateChild<Switch>,
     #[template_child]
-    pub reset_bluetooth_available_devices: TemplateChild<gtk::Box>,
+    pub reset_bluetooth_available_devices: TemplateChild<PreferencesGroup>,
     #[template_child]
     pub reset_bluetooth_refresh_button: TemplateChild<Button>,
     #[template_child]
     pub reset_bluetooth_adapter: TemplateChild<ComboRow>,
     #[template_child]
-    pub reset_bluetooth_connected_devices: TemplateChild<gtk::Box>,
+    pub reset_bluetooth_connected_devices: TemplateChild<PreferencesGroup>,
     #[template_child]
     pub reset_visibility: TemplateChild<ActionRow>,
     #[template_child]

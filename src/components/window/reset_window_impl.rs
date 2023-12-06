@@ -5,6 +5,7 @@ use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;
 use adw::{Breakpoint, OverlaySplitView};
 use glib::subclass::InitializingObject;
+use gtk::prelude::WidgetExt;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, SearchEntry};
 
@@ -74,7 +75,24 @@ impl ObjectImpl for ReSetWindow {
     }
 }
 
-impl WidgetImpl for ReSetWindow {}
+impl WidgetImpl for ReSetWindow {
+    fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
+        // felixusan, use "the force" for debugging
+        // aka this variable
+        // println!("{width}");
+        self.parent_size_allocate(width, height, baseline);
+        if width > 738 {
+            self.reset_main.set_margin_start(100);
+            self.reset_main.set_margin_end(100);
+        } else if width > 600 {
+            self.reset_main.set_margin_start((width - 600)/2);
+            self.reset_main.set_margin_end((width - 600)/2);
+        } else {
+            self.reset_main.set_margin_start(0);
+            self.reset_main.set_margin_end(0);
+        }
+    }
+}
 
 impl WindowImpl for ReSetWindow {}
 
