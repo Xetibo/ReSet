@@ -21,8 +21,7 @@
 	(20,None,None,"resetCardEntry.ui",None,None,None,None,None,None,None),
 	(21,1,None,"resetWifiOptions.ui",None,None,None,None,None,None,None),
 	(22,1,None,"resetWifiAddressEntry.ui",None,None,None,None,None,None,None),
-	(23,1,None,"resetWifiRouteEntry.ui",None,None,None,None,None,None,None),
-	(24,None,None,None,None,None,None,None,None,None,None)
+	(23,1,None,"resetWifiRouteEntry.ui",None,None,None,None,None,None,None)
   </ui>
   <ui_library>
 	(21,"gtk","4.12",None),
@@ -308,9 +307,7 @@
 	(23,8,"AdwEntryRow","reset_route_metric",6,None,None,None,1,None),
 	(23,9,"GtkBox",None,2,None,None,None,None,None),
 	(23,10,"AdwEntryRow","reset_route_address",9,None,None,None,None,None),
-	(23,11,"AdwEntryRow","reset_route_prefix",9,None,None,None,1,None),
-	(24,1,"AdwActionRow","resetBluetoothEntry",None,None,None,None,None,None),
-	(24,2,"GtkButton",None,1,None,None,None,-1,None)
+	(23,11,"AdwEntryRow","reset_route_prefix",9,None,None,None,1,None)
   </object>
   <object_property>
 	(3,1,"GtkWidget","height-request","200",None,None,None,None,None,None,None,None,None),
@@ -857,10 +854,7 @@
 	(23,10,"AdwPreferencesRow","title","Address",None,None,None,None,None,None,None,None,None),
 	(23,10,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
 	(23,11,"AdwPreferencesRow","title","Prefix",None,None,None,None,None,None,None,None,None),
-	(23,11,"GtkEditable","max-width-chars","5",None,None,None,None,None,None,None,None,None),
-	(24,1,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
-	(24,2,"GtkButton","icon-name","user-trash-symbolic",None,None,None,None,None,None,None,None,None),
-	(24,2,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None)
+	(23,11,"GtkEditable","max-width-chars","5",None,None,None,None,None,None,None,None,None)
   </object_property>
   <object_data>
 	(3,42,"GtkWidget",1,1,None,None,None,None,None,None),
