@@ -1,5 +1,6 @@
 use adw::subclass::prelude::PreferencesGroupImpl;
 use adw::{ComboRow, PreferencesGroup};
+use re_set_lib::audio::audio_structures::OutputStream;
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -7,7 +8,6 @@ use std::time::SystemTime;
 use crate::components::input::output_stream_entry;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale};
-use ReSet_Lib::audio::audio::OutputStream;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]

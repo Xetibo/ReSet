@@ -1,12 +1,12 @@
 use adw::subclass::preferences_row::PreferencesRowImpl;
 use adw::subclass::prelude::ActionRowImpl;
 use adw::ActionRow;
+use re_set_lib::network::network_structures::AccessPoint;
 use std::cell::RefCell;
 
 use dbus::Path;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Label};
-use ReSet_Lib::network::network::AccessPoint;
 
 use super::saved_wifi_entry;
 

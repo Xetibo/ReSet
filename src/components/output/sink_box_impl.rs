@@ -1,4 +1,5 @@
 use adw::{ActionRow, ComboRow, PreferencesGroup};
+use re_set_lib::audio::audio_structures::Sink;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
@@ -9,7 +10,6 @@ use crate::components::output::input_stream_entry::InputStreamEntry;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Box, Button, CheckButton, CompositeTemplate, Label, StringList, TemplateChild};
 use gtk::{prelude::*, ProgressBar, Scale};
-use ReSet_Lib::audio::audio::Sink;
 
 use super::sink_box;
 use super::sink_entry::SinkEntry;

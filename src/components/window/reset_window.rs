@@ -1,7 +1,7 @@
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::{ApplicationWindow, BreakpointCondition};
-use glib::{closure_local, Object};
+use adw::BreakpointCondition;
+use glib::Object;
 use gtk::prelude::*;
 use gtk::{gio, glib, Application, ListBoxRow, Orientation};
 

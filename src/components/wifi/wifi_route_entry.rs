@@ -5,11 +5,11 @@ use adw::prelude::{ExpanderRowExt, PreferencesRowExt};
 use glib::clone;
 use glib::subclass::prelude::ObjectSubclassIsExt;
 use gtk::prelude::{EditableExt, WidgetExt};
+use re_set_lib::network::connection::{Address, Connection};
 use std::cell::RefCell;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 use std::rc::Rc;
 use std::str::FromStr;
-use ReSet_Lib::network::connection::{Address, Connection};
 
 use crate::components::wifi::wifi_route_entry_impl;
 use crate::components::wifi::wifi_route_entry_impl::WifiRouteEntryImpl;

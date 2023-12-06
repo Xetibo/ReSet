@@ -1,5 +1,6 @@
 use adw::subclass::prelude::PreferencesGroupImpl;
 use adw::{ActionRow, PreferencesGroup};
+use re_set_lib::audio::audio_structures::Sink;
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -7,7 +8,6 @@ use std::time::SystemTime;
 use crate::components::output::sink_entry;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
-use ReSet_Lib::audio::audio::Sink;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSinkEntry.ui")]

@@ -9,7 +9,7 @@ use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
-use ReSet_Lib::audio::audio::Sink;
+use re_set_lib::audio::audio_structures::Sink;
 
 use super::sink_entry_impl;
 

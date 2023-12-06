@@ -9,7 +9,7 @@ use adw::prelude::PreferencesRowExt;
 use glib::clone;
 use glib::subclass::prelude::ObjectSubclassIsExt;
 use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
-use ReSet_Lib::network::connection::{Address, Connection};
+use re_set_lib::network::connection::{Address, Connection};
 
 use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifi_address_entry_impl;
@@ -71,7 +71,7 @@ impl WifiAddressEntry {
                         IpProtocol::IPv4 => &mut conn.ipv4.address_data,
                         IpProtocol::IPv6 => &mut conn.ipv6.address_data,
                     };
-                    address_data.push(Address::theBetterNew(ip_addr.to_string(), self_imp.prefix.get().1 as u32));
+                    address_data.push(Address::new_no_options(ip_addr.to_string(), self_imp.prefix.get().1 as u32));
                     *self_imp.address.borrow_mut() = (true, ip_addr.to_string());
                 }
                 Err(_) => {

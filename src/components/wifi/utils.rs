@@ -2,9 +2,9 @@ use dbus::arg::RefArg;
 use dbus::blocking::Connection;
 use dbus::Error;
 use dbus::Path;
+use re_set_lib::network::connection::Connection as ResetConnection;
 use std::collections::HashMap;
 use std::time::Duration;
-use ReSet_Lib::network::connection::Connection as ResetConnection;
 
 #[derive(Default, Copy, Clone)]
 pub enum IpProtocol {

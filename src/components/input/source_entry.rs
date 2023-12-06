@@ -9,7 +9,7 @@ use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
-use ReSet_Lib::audio::audio::Source;
+use re_set_lib::audio::audio_structures::Source;
 
 use super::source_entry_impl;
 
@@ -28,7 +28,8 @@ impl SourceEntry {
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
         {
             let imp = obj.imp();
-            imp.reset_source_name.set_title(stream.alias.clone().as_str());
+            imp.reset_source_name
+                .set_title(stream.alias.clone().as_str());
             let name = Arc::new(stream.name.clone());
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();

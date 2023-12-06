@@ -3,10 +3,10 @@ use dbus::Path;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Switch};
 use gtk::{prelude::*, StringList};
+use re_set_lib::bluetooth::bluetooth_structures::{BluetoothAdapter, BluetoothDevice};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
-use ReSet_Lib::bluetooth::bluetooth::{BluetoothAdapter, BluetoothDevice};
 
 use crate::components::base::list_entry::ListEntry;
 use crate::components::bluetooth::bluetooth_box;

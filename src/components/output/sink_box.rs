@@ -1,5 +1,8 @@
 use adw::prelude::PreferencesGroupExt;
 use adw::prelude::PreferencesRowExt;
+use re_set_lib::audio::audio_structures::Card;
+use re_set_lib::audio::audio_structures::InputStream;
+use re_set_lib::audio::audio_structures::Sink;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
@@ -13,7 +16,6 @@ use glib::subclass::prelude::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{Card, InputStream, Sink};
 
 use crate::components::base::card_entry::CardEntry;
 use crate::components::base::list_entry::ListEntry;
@@ -458,7 +460,8 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 } else {
                     imp.reset_selected_sink.set_active(false);
                 }
-                imp.reset_sink_name.set_title(ir.sink.alias.clone().as_str());
+                imp.reset_sink_name
+                    .set_title(ir.sink.alias.clone().as_str());
                 imp.reset_volume_percentage.set_text(&percentage);
                 imp.reset_volume_slider.set_value(*volume as f64);
             });
@@ -558,7 +561,9 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 if entry.is_none() {
                     return;
                 }
-                output_box_imp.reset_input_streams.remove(&*entry.unwrap().0);
+                output_box_imp
+                    .reset_input_streams
+                    .remove(&*entry.unwrap().0);
                 list.remove(&ir.index);
             });
         });

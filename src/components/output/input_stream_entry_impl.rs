@@ -1,12 +1,12 @@
 use adw::subclass::prelude::PreferencesGroupImpl;
 use adw::{ComboRow, PreferencesGroup};
+use re_set_lib::audio::audio_structures::InputStream;
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale};
-use ReSet_Lib::audio::audio::InputStream;
 
 use super::input_stream_entry;
 

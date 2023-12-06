@@ -1,4 +1,5 @@
 use adw::{ActionRow, ComboRow, PreferencesGroup};
+use re_set_lib::audio::audio_structures::Source;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
@@ -9,7 +10,6 @@ use crate::components::input::source_box;
 use gtk::subclass::prelude::*;
 use gtk::{glib, CheckButton, CompositeTemplate, StringList, TemplateChild};
 use gtk::{prelude::*, Button, Label, ProgressBar, Scale};
-use ReSet_Lib::audio::audio::Source;
 
 use super::output_stream_entry::OutputStreamEntry;
 use super::source_entry::SourceEntry;

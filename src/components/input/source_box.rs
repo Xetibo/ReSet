@@ -1,4 +1,5 @@
 use adw::prelude::PreferencesRowExt;
+use re_set_lib::audio::audio_structures::{Card, OutputStream, Source};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
@@ -14,7 +15,6 @@ use glib::subclass::prelude::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::{Card, OutputStream, Source};
 
 use crate::components::base::card_entry::CardEntry;
 use crate::components::base::list_entry::ListEntry;
@@ -144,8 +144,9 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     if let Some(index) = map.get(&name.alias) {
                         output_box_imp.reset_source_dropdown.set_selected(index.1);
                     }
-                    output_box_imp.reset_source_dropdown.connect_selected_notify(
-                        clone!(@weak output_box_imp => move |dropdown| {
+                    output_box_imp
+                        .reset_source_dropdown
+                        .connect_selected_notify(clone!(@weak output_box_imp => move |dropdown| {
                             let selected = dropdown.selected_item();
                             if selected.is_none() {
                                 return;
@@ -161,8 +162,7 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                             }
                             let sink = Arc::new(source.unwrap().2.clone());
                             set_default_source(sink);
-                        }),
-                    );
+                        }));
                 }
                 output_box_ref
                     .imp()
@@ -560,7 +560,9 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     if entry.is_none() {
                         return;
                     }
-                    output_box_imp.reset_output_streams.remove(&*entry.unwrap().0);
+                    output_box_imp
+                        .reset_output_streams
+                        .remove(&*entry.unwrap().0);
                 });
             });
             true

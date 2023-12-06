@@ -10,7 +10,7 @@ use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast, Propagation};
 use gtk::{gio, StringObject};
-use ReSet_Lib::audio::audio::OutputStream;
+use re_set_lib::audio::audio_structures::OutputStream;
 
 use super::output_stream_entry_impl;
 use super::source_box::SourceBox;

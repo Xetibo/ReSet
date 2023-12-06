@@ -18,9 +18,9 @@ use glib::{clone, Cast, PropertySet};
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, WidgetExt};
 use gtk::{gio, StringObject};
-use ReSet_Lib::network::network::{AccessPoint, WifiDevice, WifiStrength};
-use ReSet_Lib::signals::{AccessPointAdded, WifiDeviceChanged};
-use ReSet_Lib::signals::{AccessPointChanged, AccessPointRemoved};
+use re_set_lib::network::network_structures::{AccessPoint, WifiDevice, WifiStrength};
+use re_set_lib::signals::{AccessPointAdded, WifiDeviceChanged};
+use re_set_lib::signals::{AccessPointChanged, AccessPointRemoved};
 
 use crate::components::wifi::wifi_box_impl;
 use crate::components::wifi::wifi_entry::WifiEntry;

@@ -85,8 +85,8 @@ impl WidgetImpl for ReSetWindow {
             self.reset_main.set_margin_start(100);
             self.reset_main.set_margin_end(100);
         } else if width > 600 {
-            self.reset_main.set_margin_start((width - 600)/2);
-            self.reset_main.set_margin_end((width - 600)/2);
+            self.reset_main.set_margin_start((width - 600) / 2);
+            self.reset_main.set_margin_end((width - 600) / 2);
         } else {
             self.reset_main.set_margin_start(0);
             self.reset_main.set_margin_end(0);

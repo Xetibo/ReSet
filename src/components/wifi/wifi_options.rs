@@ -11,8 +11,8 @@ use dbus::arg::PropMap;
 use dbus::{Error, Path};
 use glib::{clone, PropertySet};
 use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
+use re_set_lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, TypeSettings};
 use IpProtocol::{IPv4, IPv6};
-use ReSet_Lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, TypeSettings};
 
 use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifi_address_entry::WifiAddressEntry;
@@ -65,7 +65,9 @@ impl WifiOptions {
                     self_imp.reset_wifi_dns.set_visible(false);
                     self_imp.reset_wifi_gateway.set_visible(false);
                     self_imp.reset_wifi_last_used.set_visible(true);
-                    self_imp.reset_wifi_mac.set_subtitle(&wifi.cloned_mac_address);
+                    self_imp
+                        .reset_wifi_mac
+                        .set_subtitle(&wifi.cloned_mac_address);
                     self_imp
                         .reset_wifi_name
                         .set_subtitle(&String::from_utf8(wifi.ssid.clone()).unwrap_or_default());

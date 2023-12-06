@@ -14,8 +14,8 @@ use glib::{clone, Cast};
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, ButtonExt, ListBoxRowExt, WidgetExt};
 use gtk::{gio, StringObject, Widget};
-use ReSet_Lib::bluetooth::bluetooth::{BluetoothAdapter, BluetoothDevice};
-use ReSet_Lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
+use re_set_lib::bluetooth::bluetooth_structures::{BluetoothAdapter, BluetoothDevice};
+use re_set_lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
 
 use crate::components::base::list_entry::ListEntry;
 use crate::components::base::utils::Listeners;
@@ -402,7 +402,7 @@ fn set_bluetooth_adapter_visibility(path: Path<'static>, visible: bool) {
     );
     let _: Result<(bool,), Error> = proxy.method_call(
         "org.Xetibo.ReSetBluetooth",
-        "SetBluetoothAdapterVisibility",
+        "SetBluetoothAdapterDiscoverability",
         (path, visible),
     );
 }

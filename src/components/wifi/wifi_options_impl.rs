@@ -5,9 +5,9 @@ use adw::{
 };
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate};
+use re_set_lib::network::connection::Connection;
 use std::cell::RefCell;
 use std::rc::Rc;
-use ReSet_Lib::network::connection::Connection;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetWifiOptions.ui")]

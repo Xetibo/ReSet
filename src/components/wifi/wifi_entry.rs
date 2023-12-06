@@ -11,7 +11,7 @@ use dbus::Error;
 use glib::clone;
 use gtk::gio;
 use gtk::prelude::{ListBoxRowExt, WidgetExt};
-use ReSet_Lib::network::network::{AccessPoint, WifiStrength};
+use re_set_lib::network::network_structures::{AccessPoint, WifiStrength};
 
 use crate::components::wifi::wifi_box_impl::WifiBox;
 use crate::components::wifi::wifi_entry_impl;

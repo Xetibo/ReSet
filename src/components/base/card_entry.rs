@@ -8,9 +8,9 @@ use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Cast};
 use gtk::{gio, StringList, StringObject};
-use ReSet_Lib::audio::audio::Card;
 
 use components::utils::create_dropdown_label_factory;
+use re_set_lib::audio::audio_structures::Card;
 
 use crate::components;
 

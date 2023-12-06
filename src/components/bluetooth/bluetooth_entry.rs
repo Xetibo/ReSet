@@ -9,7 +9,7 @@ use dbus::blocking::Connection;
 use dbus::{Error, Path};
 use gtk::prelude::{ButtonExt, WidgetExt};
 use gtk::{gio, GestureClick};
-use ReSet_Lib::bluetooth::bluetooth::BluetoothDevice;
+use re_set_lib::bluetooth::bluetooth_structures::BluetoothDevice;
 
 glib::wrapper! {
     pub struct BluetoothEntry(ObjectSubclass<bluetooth_entry_impl::BluetoothEntry>)
@@ -24,7 +24,10 @@ impl BluetoothEntry {
     pub fn new(device: &BluetoothDevice) -> Self {
         let entry: BluetoothEntry = Object::builder().build();
         let entry_imp = entry.imp();
-        entry_imp.reset_bluetooth_label.get().set_text(&device.alias);
+        entry_imp
+            .reset_bluetooth_label
+            .get()
+            .set_text(&device.alias);
         entry_imp
             .reset_bluetooth_address
             .get()

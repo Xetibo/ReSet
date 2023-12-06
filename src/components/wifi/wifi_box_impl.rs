@@ -4,10 +4,10 @@ use dbus::Path;
 use gtk::subclass::prelude::*;
 use gtk::{glib, CompositeTemplate, Switch};
 use gtk::{prelude::*, StringList};
+use re_set_lib::network::network_structures::WifiDevice;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, RwLock};
-use ReSet_Lib::network::network::WifiDevice;
 
 use crate::components::base::list_entry::ListEntry;
 use crate::components::wifi::wifi_entry::WifiEntry;

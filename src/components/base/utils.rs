@@ -13,8 +13,8 @@ use dbus::{
     Error,
 };
 use gtk::gio;
-use ReSet_Lib::{
-    audio::audio::{InputStream, OutputStream, Sink, Source},
+use re_set_lib::{
+    audio::audio_structures::{InputStream, OutputStream, Sink, Source},
     signals::GetVal,
 };
 
