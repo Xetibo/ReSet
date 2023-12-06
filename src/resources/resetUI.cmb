@@ -170,7 +170,6 @@
 	(11,6,"GtkBox",None,2,None,None,None,2,None),
 	(11,7,"GtkLabel","reset_bluetooth_label",6,None,None,None,None,None),
 	(11,8,"GtkLabel","reset_bluetooth_address",6,None,None,None,1,None),
-	(11,9,"AdwComboRow",None,2,None,None,None,None,None),
 	(12,11,"GtkBox","resetAudioInput",None,None,None,None,None,None),
 	(12,12,"GtkLabel",None,11,None,None,None,None,None),
 	(12,13,"AdwNavigationView",None,11,None,None,None,1,None),
