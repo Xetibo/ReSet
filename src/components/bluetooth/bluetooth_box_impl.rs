@@ -13,7 +13,7 @@ use crate::components::bluetooth::bluetooth_box;
 use crate::components::bluetooth::bluetooth_entry::BluetoothEntry;
 
 type BluetoothMap =
-    RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, Arc<ListEntry>, BluetoothDevice)>>;
+    RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, BluetoothDevice)>>;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetBluetooth.ui")]

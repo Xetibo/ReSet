@@ -1,4 +1,7 @@
 use crate::components::bluetooth::bluetooth_entry;
+use adw::subclass::action_row::ActionRowImpl;
+use adw::subclass::preferences_row::PreferencesRowImpl;
+use adw::ActionRow;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Image, Label};
 use std::cell::RefCell;
@@ -11,8 +14,6 @@ pub struct BluetoothEntry {
     #[template_child]
     pub reset_bluetooth_label: TemplateChild<Label>,
     #[template_child]
-    pub reset_bluetooth_address: TemplateChild<Label>,
-    #[template_child]
     pub reset_bluetooth_button: TemplateChild<Button>,
     pub device_name: RefCell<String>,
 }
@@ -22,7 +23,7 @@ impl ObjectSubclass for BluetoothEntry {
     const ABSTRACT: bool = false;
     const NAME: &'static str = "resetBluetoothEntry";
     type Type = bluetooth_entry::BluetoothEntry;
-    type ParentType = gtk::Box;
+    type ParentType = ActionRow;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -39,7 +40,11 @@ impl ObjectImpl for BluetoothEntry {
     }
 }
 
-impl BoxImpl for BluetoothEntry {}
+impl ActionRowImpl for BluetoothEntry {}
+
+impl PreferencesRowImpl for BluetoothEntry {}
+
+impl ListBoxRowImpl for BluetoothEntry {}
 
 impl WidgetImpl for BluetoothEntry {}
 

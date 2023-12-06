@@ -2,17 +2,17 @@
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
-  <template class="resetBluetoothEntry" parent="GtkBox">
-    <property name="margin-start">5</property>
-    <child>
-      <object class="GtkImage" id="reset_bluetooth_device_type">
-        <property name="icon-name">input-mouse-symbolic</property>
-        <property name="margin-end">15</property>
-      </object>
-    </child>
-    <child>
+  <requires lib="libadwaita" version="1.3"/>
+  <template class="resetBluetoothEntry" parent="AdwActionRow">
+    <property name="child">
       <object class="GtkBox">
-        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkImage" id="reset_bluetooth_device_type">
+            <property name="halign">start</property>
+            <property name="icon-name">input-mouse-symbolic</property>
+            <property name="margin-end">15</property>
+          </object>
+        </child>
         <child>
           <object class="GtkLabel" id="reset_bluetooth_label">
             <property name="ellipsize">end</property>
@@ -28,24 +28,19 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="reset_bluetooth_address">
-            <property name="ellipsize">end</property>
-            <property name="halign">start</property>
-            <property name="label">LoremIpsum Wireless Mouse</property>
-            <property name="margin-end">10</property>
-            <property name="single-line-mode">True</property>
-            <property name="valign">end</property>
-            <property name="width-request">200</property>
-            <property name="xalign">0.0</property>
+          <object class="GtkButton" id="reset_bluetooth_button">
+            <property name="halign">end</property>
+            <property name="has-frame">False</property>
+            <property name="icon-name">user-trash-symbolic</property>
           </object>
         </child>
       </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="reset_bluetooth_button">
-        <property name="has-frame">False</property>
-        <property name="icon-name">emblem-system-symbolic</property>
-      </object>
-    </child>
+    </property>
+    <property name="focusable">True</property>
+    <property name="hexpand">True</property>
+    <property name="hexpand-set">True</property>
+    <property name="margin-start">5</property>
+    <property name="subtitle-lines">1</property>
+    <property name="title-lines">1</property>
   </template>
 </interface>

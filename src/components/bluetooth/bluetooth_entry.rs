@@ -2,9 +2,10 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use crate::components::bluetooth::bluetooth_entry_impl;
-use adw::glib;
 use adw::glib::Object;
+use adw::prelude::ActionRowExt;
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use adw::{glib, ActionRow};
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
 use gtk::prelude::{ButtonExt, WidgetExt};
@@ -13,7 +14,7 @@ use re_set_lib::bluetooth::bluetooth_structures::BluetoothDevice;
 
 glib::wrapper! {
     pub struct BluetoothEntry(ObjectSubclass<bluetooth_entry_impl::BluetoothEntry>)
-        @extends gtk::Box, gtk::Widget,
+        @extends ActionRow, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget;
 }
 
@@ -23,15 +24,13 @@ unsafe impl Sync for BluetoothEntry {}
 impl BluetoothEntry {
     pub fn new(device: &BluetoothDevice) -> Self {
         let entry: BluetoothEntry = Object::builder().build();
+        entry.set_sensitive(true);
         let entry_imp = entry.imp();
         entry_imp
             .reset_bluetooth_label
             .get()
             .set_text(&device.alias);
-        entry_imp
-            .reset_bluetooth_address
-            .get()
-            .set_text(&device.address);
+        entry.set_subtitle(&device.address);
         if device.icon.is_empty() {
             entry_imp
                 .reset_bluetooth_device_type

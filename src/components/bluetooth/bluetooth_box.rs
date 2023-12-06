@@ -17,7 +17,6 @@ use gtk::{gio, StringObject, Widget};
 use re_set_lib::bluetooth::bluetooth_structures::{BluetoothAdapter, BluetoothDevice};
 use re_set_lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
 
-use crate::components::base::list_entry::ListEntry;
 use crate::components::base::utils::Listeners;
 use crate::components::bluetooth::bluetooth_box_impl;
 use crate::components::bluetooth::bluetooth_entry::BluetoothEntry;
@@ -178,14 +177,13 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
                     let path = device.path.clone();
                     let connected = device.connected;
                     let bluetooth_entry = Arc::new(BluetoothEntry::new(&device));
-                    let entry = Arc::new(ListEntry::new(&*bluetooth_entry));
                     imp.available_devices
                         .borrow_mut()
-                        .insert(path, (bluetooth_entry.clone(), entry.clone(), device));
+                        .insert(path, (bluetooth_entry.clone(), device));
                     if connected {
-                        imp.reset_bluetooth_connected_devices.add(&*entry);
+                        imp.reset_bluetooth_connected_devices.add(&*bluetooth_entry);
                     } else {
-                        imp.reset_bluetooth_available_devices.add(&*entry);
+                        imp.reset_bluetooth_available_devices.add(&*bluetooth_entry);
                     }
                 }
             });
@@ -239,15 +237,13 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     let path = ir.bluetooth_device.path.clone();
                     let connected = ir.bluetooth_device.connected;
                     let bluetooth_entry = Arc::new(BluetoothEntry::new(&ir.bluetooth_device));
-                    let entry = Arc::new(ListEntry::new(&*bluetooth_entry));
-                    imp.available_devices.borrow_mut().insert(
-                        path,
-                        (bluetooth_entry.clone(), entry.clone(), ir.bluetooth_device),
-                    );
+                    imp.available_devices
+                        .borrow_mut()
+                        .insert(path, (bluetooth_entry.clone(), ir.bluetooth_device));
                     if connected {
-                        imp.reset_bluetooth_connected_devices.add(&*entry);
+                        imp.reset_bluetooth_connected_devices.add(&*bluetooth_entry);
                     } else {
-                        imp.reset_bluetooth_available_devices.add(&*entry);
+                        imp.reset_bluetooth_available_devices.add(&*bluetooth_entry);
                     }
                 });
             });
@@ -266,7 +262,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     let imp = bluetooth_box.imp();
                     let map = imp.available_devices.borrow_mut();
                     if let Some(list_entry) = map.get(&ir.bluetooth_device) {
-                        imp.reset_bluetooth_connected_devices.remove(&*list_entry.1);
+                        imp.reset_bluetooth_connected_devices.remove(&*list_entry.0);
                     }
                 });
             });
@@ -285,16 +281,16 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     let imp = bluetooth_box.imp();
                     let map = imp.available_devices.borrow_mut();
                     if let Some(list_entry) = map.get(&ir.bluetooth_device.path) {
-                        if list_entry.2.connected != ir.bluetooth_device.connected {
+                        if list_entry.1.connected != ir.bluetooth_device.connected {
                             if ir.bluetooth_device.connected {
-                                imp.reset_bluetooth_connected_devices.add(&*list_entry.1);
-                                imp.reset_bluetooth_available_devices.remove(&*list_entry.1);
+                                imp.reset_bluetooth_connected_devices.add(&*list_entry.0);
+                                imp.reset_bluetooth_available_devices.remove(&*list_entry.0);
                             } else {
-                                imp.reset_bluetooth_available_devices.add(&*list_entry.1);
-                                imp.reset_bluetooth_connected_devices.remove(&*list_entry.1);
+                                imp.reset_bluetooth_available_devices.add(&*list_entry.0);
+                                imp.reset_bluetooth_connected_devices.remove(&*list_entry.0);
                             }
                         }
-                        if list_entry.2.paired != ir.bluetooth_device.paired {
+                        if list_entry.1.paired != ir.bluetooth_device.paired {
                             if ir.bluetooth_device.paired {
                                 list_entry
                                     .0
@@ -333,7 +329,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                         let imp = loop_box.imp();
                         let mut entries = imp.available_devices.borrow_mut();
                         for entry in entries.iter() {
-                            imp.reset_bluetooth_available_devices.remove(&*entry.1 .1);
+                            imp.reset_bluetooth_available_devices.remove(&*entry.1 .0);
                         }
                         entries.clear();
                         imp.reset_bluetooth_refresh_button.set_sensitive(true);
