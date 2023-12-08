@@ -2,19 +2,6 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/ReSet-Lib/ReSet-Lib-0.6.3.crate",
-        "sha256": "299882cb1f2c9516ffb3ad541b103f495c53c1fc424d39d6b729bfea35640d9d",
-        "dest": "cargo/vendor/ReSet-Lib-0.6.3"
-    },
-    {
-        "type": "inline",
-        "contents": "{\"package\": \"299882cb1f2c9516ffb3ad541b103f495c53c1fc424d39d6b729bfea35640d9d\", \"files\": {}}",
-        "dest": "cargo/vendor/ReSet-Lib-0.6.3",
-        "dest-filename": ".cargo-checksum.json"
-    },
-    {
-        "type": "archive",
-        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/addr2line/addr2line-0.21.0.crate",
         "sha256": "8a30b2e23b9e17a9f90641c7ab1549cd9b44f296d3ccbf309d2863cfe398a0cb",
         "dest": "cargo/vendor/addr2line-0.21.0"
@@ -1042,6 +1029,19 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/re_set-lib/re_set-lib-0.6.5.crate",
+        "sha256": "56e82abb32ee1fc61de5bea404bf768eaee4bc349f47a42fa1d303710efabb98",
+        "dest": "cargo/vendor/re_set-lib-0.6.5"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"56e82abb32ee1fc61de5bea404bf768eaee4bc349f47a42fa1d303710efabb98\", \"files\": {}}",
+        "dest": "cargo/vendor/re_set-lib-0.6.5",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/redox_syscall/redox_syscall-0.4.1.crate",
         "sha256": "4722d768eff46b75989dd134e5c353f0d6296e5aaa3132e776cbdb56be7731aa",
         "dest": "cargo/vendor/redox_syscall-0.4.1"
@@ -1068,14 +1068,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/reset_daemon/reset_daemon-0.3.9.crate",
-        "sha256": "7bc399eebff1f7e3ea2c642b83eabf76425eaed6d3c955645691b24aa6b1504c",
-        "dest": "cargo/vendor/reset_daemon-0.3.9"
+        "url": "https://static.crates.io/crates/reset_daemon/reset_daemon-0.4.5.crate",
+        "sha256": "443dc968a14afdc9d94ec073d49a454135c23844657323ec6b9b66e851cbbbde",
+        "dest": "cargo/vendor/reset_daemon-0.4.5"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"7bc399eebff1f7e3ea2c642b83eabf76425eaed6d3c955645691b24aa6b1504c\", \"files\": {}}",
-        "dest": "cargo/vendor/reset_daemon-0.3.9",
+        "contents": "{\"package\": \"443dc968a14afdc9d94ec073d49a454135c23844657323ec6b9b66e851cbbbde\", \"files\": {}}",
+        "dest": "cargo/vendor/reset_daemon-0.4.5",
         "dest-filename": ".cargo-checksum.json"
     },
     {
