@@ -3,7 +3,7 @@ use dbus::Path;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Switch};
 use gtk::{prelude::*, StringList};
-use re_set_lib::bluetooth::bluetooth_structures::{BluetoothAdapter, BluetoothDevice};
+use re_set_lib::bluetooth::bluetooth_structures::BluetoothAdapter;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
@@ -12,8 +12,7 @@ use crate::components::base::list_entry::ListEntry;
 use crate::components::bluetooth::bluetooth_box;
 use crate::components::bluetooth::bluetooth_entry::BluetoothEntry;
 
-type BluetoothMap =
-    RefCell<HashMap<Path<'static>, (Arc<BluetoothEntry>, BluetoothDevice)>>;
+type BluetoothMap = RefCell<HashMap<Path<'static>, Arc<BluetoothEntry>>>;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetBluetooth.ui")]

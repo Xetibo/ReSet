@@ -399,7 +399,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         true
     });
     if res.is_err() {
-        println!("fail on source add");
+        println!("fail on source add event");
         return conn;
     }
 
@@ -438,7 +438,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         true
     });
     if res.is_err() {
-        println!("fail on source remove");
+        println!("fail on source remove event");
         return conn;
     }
 
@@ -494,7 +494,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         true
     });
     if res.is_err() {
-        println!("fail on source remove");
+        println!("fail on source change event");
         return conn;
     }
 
@@ -517,7 +517,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         true
     });
     if res.is_err() {
-        println!("fail on stream add");
+        println!("fail on output stream add event");
         return conn;
     }
 
@@ -573,7 +573,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         },
     );
     if res.is_err() {
-        println!("fail on stream change");
+        println!("fail on output stream change event");
         return conn;
     }
 
@@ -599,7 +599,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         },
     );
     if res.is_err() {
-        println!("fail on stream remove");
+        println!("fail on output stream remove event");
         return conn;
     }
 

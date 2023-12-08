@@ -4,6 +4,7 @@ use adw::subclass::preferences_row::PreferencesRowImpl;
 use adw::ActionRow;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, Label};
+use re_set_lib::bluetooth::bluetooth_structures::BluetoothDevice;
 use std::cell::RefCell;
 
 #[derive(Default, CompositeTemplate)]
@@ -12,6 +13,7 @@ pub struct BluetoothEntry {
     pub remove_device_button: RefCell<Button>,
     pub connecting_label: RefCell<Label>,
     pub device_name: RefCell<String>,
+    pub bluetooth_device: RefCell<BluetoothDevice>
 }
 
 #[glib::object_subclass]

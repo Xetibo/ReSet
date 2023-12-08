@@ -405,7 +405,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
         true
     });
     if res.is_err() {
-        println!("fail on sink add");
+        println!("fail on sink add event");
         return conn;
     }
 
@@ -443,7 +443,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
         true
     });
     if res.is_err() {
-        println!("fail on sink remove");
+        println!("fail on sink remove event");
         return conn;
     }
 
@@ -498,7 +498,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
         true
     });
     if res.is_err() {
-        println!("fail on sink change");
+        println!("fail on sink change event");
         return conn;
     }
 
@@ -520,7 +520,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
         true
     });
     if res.is_err() {
-        println!("fail on stream add");
+        println!("fail on input stream add event");
         return conn;
     }
 
@@ -575,7 +575,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
         true
     });
     if res.is_err() {
-        println!("fail on stream change");
+        println!("fail on input stream change event");
         return conn;
     }
 
@@ -599,7 +599,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
         true
     });
     if res.is_err() {
-        println!("fail on stream remove");
+        println!("fail on input stream remove event");
         return conn;
     }
 

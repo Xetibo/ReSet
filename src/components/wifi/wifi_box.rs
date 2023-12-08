@@ -57,7 +57,6 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
     imp.reset_saved_networks
         .set_action_target_value(Some(&Variant::from("saved")));
 
-    println!("{wifi_status}");
     imp.reset_wifi_switch.set_active(wifi_status);
     imp.reset_wifi_switch.set_state(wifi_status);
 
@@ -258,7 +257,6 @@ pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     );
     let res: ResultMap = proxy.method_call("org.Xetibo.ReSetWireless", "ListStoredConnections", ());
     if res.is_err() {
-        println!("we got error...");
         return Vec::new();
     }
     let (connections,) = res.unwrap();
@@ -311,7 +309,6 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
         )
         .static_clone();
         let res = conn.add_match(access_point_added, move |ir: AccessPointAdded, _, _| {
-            println!("received added event");
             let wifi_box = added_ref.clone();
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
@@ -334,11 +331,10 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             true
         });
         if res.is_err() {
-            println!("fail on add");
+            println!("fail on access point add event");
             return;
         }
         let res = conn.add_match(access_point_removed, move |ir: AccessPointRemoved, _, _| {
-            println!("received removed event");
             let wifi_box = removed_ref.clone();
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
@@ -358,12 +354,10 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             true
         });
         if res.is_err() {
-            println!("fail on remove");
+            println!("fail on access point remove event");
             return;
         }
         let res = conn.add_match(access_point_changed, move |ir: AccessPointChanged, _, _| {
-            println!("received changed event");
-            dbg!(ir.access_point.clone());
             let wifi_box = changed_ref.clone();
             glib::spawn_future(async move {
                 glib::idle_add_local_once(move || {
@@ -413,11 +407,10 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             true
         });
         if res.is_err() {
-            println!("fail on change");
+            println!("fail on access point change event");
             return;
         }
         let res = conn.add_match(device_changed, move |ir: WifiDeviceChanged, _, _| {
-            println!("received wifidevice changed event");
             let wifi_box = wifi_changed_ref.clone();
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
@@ -439,14 +432,13 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             true
         });
         if res.is_err() {
-            println!("fail on add");
+            println!("fail on wifi device change event");
             return;
         }
-        println!("starting thread listener");
+
         loop {
             let _ = conn.process(Duration::from_millis(1000));
             if !listeners.wifi_listener.load(Ordering::SeqCst) {
-                println!("stopping thread listener");
                 break;
             }
         }

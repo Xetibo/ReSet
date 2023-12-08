@@ -87,7 +87,6 @@ impl WifiEntry {
 }
 
 pub fn click_disconnect(entry: Arc<WifiEntry>) {
-    println!("called disconnect");
     let entry_ref = entry.clone();
     entry.set_activatable(false);
     gio::spawn_blocking(move || {
@@ -139,12 +138,10 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
                 entry.set_activatable(true);
                 let imp = entry_ref.imp();
                 if res.is_err() {
-                    println!("wtf?");
                     imp.connected.replace(false);
                     return;
                 }
                 if res.unwrap() == (false,) {
-                    println!("false on connecting");
                     imp.connected.replace(false);
                     return;
                 }
@@ -199,7 +196,6 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
                             imp.connected.replace(false);
                             return;
                         }
-                        println!("worked?");
                         let imp = entry_ref.imp();
                         imp.reset_wifi_popup.popdown();
                         imp.reset_wifi_edit_button.set_sensitive(true);
