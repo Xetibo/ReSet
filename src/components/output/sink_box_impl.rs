@@ -16,6 +16,8 @@ use super::sink_entry::SinkEntry;
 
 type SinkEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, String)>>>;
 type InputStreamEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<InputStreamEntry>)>>>;
+// key is model name -> alias, first u32 is the index of the sink, the second the index in the model list and the third is
+// the detailed name
 type SinkMap = Arc<RwLock<HashMap<String, (u32, u32, String)>>>;
 
 #[derive(Default, CompositeTemplate)]
@@ -51,8 +53,6 @@ pub struct SinkBox {
     pub reset_input_stream_list: InputStreamEntryMap,
     pub reset_model_list: Arc<RwLock<StringList>>,
     pub reset_model_index: Arc<RwLock<u32>>,
-    // first u32 is the index of the sink, the second the index in the model list and the third is
-    // the full name
     pub reset_sink_map: SinkMap,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }

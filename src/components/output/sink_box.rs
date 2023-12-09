@@ -65,7 +65,6 @@ impl SinkBox {
         self_imp
             .reset_cards_row
             .set_action_target_value(Some(&Variant::from("profileConfiguration")));
-        self_imp.reset_cards_row.connect_action_name_notify(|_| {});
 
         self_imp.reset_input_stream_button.set_activatable(true);
         self_imp
@@ -92,12 +91,11 @@ impl Default for SinkBox {
 
 pub fn populate_sinks(output_box: Arc<SinkBox>) {
     gio::spawn_blocking(move || {
-        let output_box_ref = output_box.clone();
         let sinks = get_sinks();
         {
             let output_box_imp = output_box.imp();
-            let mut map = output_box_imp.reset_sink_map.write().unwrap();
             let list = output_box_imp.reset_model_list.write().unwrap();
+            let mut map = output_box_imp.reset_sink_map.write().unwrap();
             let mut model_index = output_box_imp.reset_model_index.write().unwrap();
             output_box_imp
                 .reset_default_sink
@@ -112,8 +110,10 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
         populate_cards(output_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
+                let output_box_ref_select = output_box.clone();
                 let output_box_ref_slider = output_box.clone();
                 let output_box_ref_mute = output_box.clone();
+                let output_box_ref = output_box.clone();
                 {
                     let output_box_imp = output_box_ref.imp();
                     let default_sink = output_box_imp.reset_default_sink.clone();
@@ -136,6 +136,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                             is_default,
                             output_box_imp.reset_default_check_button.clone(),
                             sink,
+                            output_box.clone(),
                         ));
                         let sink_clone = sink_entry.clone();
                         let entry = Arc::new(ListEntry::new(&*sink_entry));
@@ -147,13 +148,12 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     output_box_imp.reset_sink_dropdown.set_model(Some(&*list));
                     let map = output_box_imp.reset_sink_map.read().unwrap();
                     let name = output_box_imp.reset_default_sink.borrow();
-                    let name = &name.alias;
-                    let index = map.get(name);
-                    if let Some(index) = index {
+                    if let Some(index) = map.get(&name.alias) {
                         output_box_imp.reset_sink_dropdown.set_selected(index.1);
                     }
                     output_box_imp.reset_sink_dropdown.connect_selected_notify(
                         clone!(@weak output_box_imp => move |dropdown| {
+                            let output_box_ref = output_box_ref_select.clone();
                             let selected = dropdown.selected_item();
                             if selected.is_none() {
                                 return;
@@ -167,8 +167,15 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                             if sink.is_none() {
                                 return;
                             }
-                            let sink = Arc::new(sink.unwrap().2.clone());
-                            set_default_sink(sink);
+                            let new_sink_name = Arc::new(sink.unwrap().2.clone());
+                            gio::spawn_blocking(move || {
+                                let result = set_default_sink(new_sink_name);
+                                if result.is_none() {
+                                    return;
+                                }
+                                let new_sink = result.unwrap();
+                                refresh_default_sink(new_sink, output_box_ref, false);
+                            });
                         }),
                     );
                 }
@@ -212,6 +219,43 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                         toggle_sink_mute(stream.index, stream.muted);
                     });
             });
+        });
+    });
+}
+
+pub fn refresh_default_sink(new_sink: Sink, output_box: Arc<SinkBox>, entry: bool) {
+    let volume = *new_sink.volume.first().unwrap_or(&0_u32);
+    let fraction = (volume as f64 / 655.36).round();
+    let percentage = (fraction).to_string() + "%";
+    glib::spawn_future(async move {
+        glib::idle_add_once(move || {
+            let imp = output_box.imp();
+            if !entry {
+                let list = imp.reset_sink_list.read().unwrap();
+                let entry = list.get(&new_sink.index);
+                if entry.is_none() {
+                    return;
+                }
+                let entry_imp = entry.unwrap().1.imp();
+                entry_imp.reset_selected_sink.set_active(true);
+            } else {
+                let map = imp.reset_sink_map.read().unwrap();
+                let entry = map.get(&new_sink.alias);
+                if entry.is_none() {
+                    return;
+                }
+                imp.reset_sink_dropdown.set_selected(entry.unwrap().1);
+            }
+            imp.reset_volume_percentage.set_text(&percentage);
+            imp.reset_volume_slider.set_value(volume as f64);
+            if new_sink.muted {
+                imp.reset_sink_mute
+                    .set_icon_name("audio-volume-muted-symbolic");
+            } else {
+                imp.reset_sink_mute
+                    .set_icon_name("audio-volume-high-symbolic");
+            }
+            imp.reset_default_sink.replace(new_sink);
         });
     });
 }
@@ -283,6 +327,21 @@ fn get_sinks() -> Vec<Sink> {
     res.unwrap().0
 }
 
+fn get_cards() -> Vec<Card> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Vec<Card>,), Error> =
+        proxy.method_call("org.Xetibo.ReSetAudio", "ListCards", ());
+    if res.is_err() {
+        return Vec::new();
+    }
+    res.unwrap().0
+}
+
 fn get_default_sink_name() -> String {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
@@ -309,21 +368,6 @@ fn get_default_sink() -> Sink {
         proxy.method_call("org.Xetibo.ReSetAudio", "GetDefaultSink", ());
     if res.is_err() {
         return Sink::default();
-    }
-    res.unwrap().0
-}
-
-fn get_cards() -> Vec<Card> {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Vec<Card>,), Error> =
-        proxy.method_call("org.Xetibo.ReSetAudio", "ListCards", ());
-    if res.is_err() {
-        return Vec::new();
     }
     res.unwrap().0
 }
@@ -385,6 +429,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                     is_default,
                     output_box_imp.reset_default_check_button.clone(),
                     ir.sink,
+                    output_box.clone(),
                 ));
                 let sink_clone = sink_entry.clone();
                 let entry = Arc::new(ListEntry::new(&*sink_entry));
@@ -416,17 +461,15 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
                 let mut list = output_box_imp.reset_sink_list.write().unwrap();
-                let entry = list.get(&ir.index);
+                let entry = list.remove(&ir.index);
                 if entry.is_none() {
                     return;
                 }
-                output_box_imp.reset_sinks.remove(&*entry.unwrap().0);
-                let alias = list.remove(&ir.index);
-                if alias.is_none() {
-                    return;
-                }
+                output_box_imp
+                    .reset_sinks
+                    .remove(&*entry.clone().unwrap().0);
                 let mut map = output_box_imp.reset_sink_map.write().unwrap();
-                let entry_index = map.remove(&alias.unwrap().2);
+                let entry_index = map.remove(&entry.unwrap().2);
                 if let Some(entry_index) = entry_index {
                     output_box_imp
                         .reset_model_list
@@ -529,8 +572,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
         let alias: String;
         {
             let sink_list = imp.reset_sink_list.read().unwrap();
-            let alias_opt = sink_list.get(&ir.stream.sink_index);
-            if let Some(alias_opt) = alias_opt {
+            if let Some(alias_opt) = sink_list.get(&ir.stream.sink_index) {
                 alias = alias_opt.2.clone();
             } else {
                 alias = String::from("");
@@ -566,8 +608,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 imp.reset_volume_percentage.set_text(&percentage);
                 imp.reset_volume_slider.set_value(*volume as f64);
                 let map = output_box_imp.reset_sink_map.read().unwrap();
-                let index = map.get(&alias);
-                if let Some(index) = index {
+                if let Some(index) = map.get(&alias) {
                     imp.reset_sink_selection.set_selected(index.1);
                 }
             });
@@ -586,14 +627,13 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
                 let mut list = output_box_imp.reset_input_stream_list.write().unwrap();
-                let entry = list.get(&ir.index);
+                let entry = list.remove(&ir.index);
                 if entry.is_none() {
                     return;
                 }
                 output_box_imp
                     .reset_input_streams
                     .remove(&*entry.unwrap().0);
-                list.remove(&ir.index);
             });
         });
         true

@@ -40,7 +40,13 @@ unsafe impl Sync for SourceBox {}
 
 impl SourceBox {
     pub fn new() -> Self {
-        Object::builder().build()
+        let obj: Self = Object::builder().build();
+        {
+            let imp = obj.imp();
+            let mut model_index = imp.reset_model_index.write().unwrap();
+            *model_index = 0;
+        }
+        obj
     }
 
     pub fn setup_callbacks(&self) {
@@ -85,68 +91,70 @@ impl Default for SourceBox {
 
 pub fn populate_sources(input_box: Arc<SourceBox>) {
     gio::spawn_blocking(move || {
-        let output_box_imp = input_box.imp();
         let sources = get_sources();
         {
-            let list = output_box_imp.reset_model_list.write().unwrap();
-            let mut map = output_box_imp.reset_source_map.write().unwrap();
-            let mut model_index = output_box_imp.reset_model_index.write().unwrap();
+            let input_box_imp = input_box.imp();
+            let list = input_box_imp.reset_model_list.write().unwrap();
+            let mut map = input_box_imp.reset_source_map.write().unwrap();
+            let mut model_index = input_box_imp.reset_model_index.write().unwrap();
+            input_box_imp
+                .reset_default_source
+                .replace(get_default_source());
             for (i, source) in (0_u32..).zip(sources.iter()) {
                 list.append(&source.alias);
                 map.insert(source.alias.clone(), (source.index, i, source.name.clone()));
                 *model_index += 1;
             }
         }
-        output_box_imp
-            .reset_default_source
-            .replace(get_default_source());
 
         populate_outputstreams(input_box.clone());
         populate_cards(input_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let output_box_ref_slider = input_box.clone();
-                let output_box_ref_mute = input_box.clone();
-                let output_box_ref = input_box.clone();
+                let input_box_ref_slider = input_box.clone();
+                let input_box_ref_toggle = input_box.clone();
+                let input_box_ref_mute = input_box.clone();
+                let input_box_ref = input_box.clone();
                 {
-                    let output_box_imp = output_box_ref.imp();
-                    let default_sink = output_box_imp.reset_default_source.clone();
+                    let input_box_imp = input_box_ref.imp();
+                    let default_sink = input_box_imp.reset_default_source.clone();
                     let source = default_sink.borrow();
 
                     let volume = source.volume.first().unwrap_or(&0_u32);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
-                    output_box_imp.reset_volume_percentage.set_text(&percentage);
-                    output_box_imp.reset_volume_slider.set_value(*volume as f64);
-                    let mut list = output_box_imp.reset_source_list.write().unwrap();
-                    for stream in sources {
+                    input_box_imp.reset_volume_percentage.set_text(&percentage);
+                    input_box_imp.reset_volume_slider.set_value(*volume as f64);
+                    let mut list = input_box_imp.reset_source_list.write().unwrap();
+                    for source in sources {
                         let index = source.index;
                         let alias = source.alias.clone();
                         let mut is_default = false;
-                        if output_box_imp.reset_default_source.borrow().name == stream.name {
+                        if input_box_imp.reset_default_source.borrow().name == source.name {
                             is_default = true;
                         }
                         let source_entry = Arc::new(SourceEntry::new(
                             is_default,
-                            output_box_imp.reset_default_check_button.clone(),
-                            stream,
+                            input_box_imp.reset_default_check_button.clone(),
+                            source,
+                            input_box.clone(),
                         ));
                         let source_clone = source_entry.clone();
                         let entry = Arc::new(ListEntry::new(&*source_entry));
                         entry.set_activatable(false);
                         list.insert(index, (entry.clone(), source_clone, alias));
-                        output_box_imp.reset_sources.append(&*entry);
+                        input_box_imp.reset_sources.append(&*entry);
                     }
-                    let list = output_box_imp.reset_model_list.read().unwrap();
-                    output_box_imp.reset_source_dropdown.set_model(Some(&*list));
-                    let map = output_box_imp.reset_source_map.read().unwrap();
-                    let name = output_box_imp.reset_default_source.borrow();
+                    let list = input_box_imp.reset_model_list.read().unwrap();
+                    input_box_imp.reset_source_dropdown.set_model(Some(&*list));
+                    let map = input_box_imp.reset_source_map.read().unwrap();
+                    let name = input_box_imp.reset_default_source.borrow();
                     if let Some(index) = map.get(&name.alias) {
-                        output_box_imp.reset_source_dropdown.set_selected(index.1);
+                        input_box_imp.reset_source_dropdown.set_selected(index.1);
                     }
-                    output_box_imp
-                        .reset_source_dropdown
-                        .connect_selected_notify(clone!(@weak output_box_imp => move |dropdown| {
+                    input_box_imp.reset_source_dropdown.connect_selected_notify(
+                        clone!(@weak input_box_imp => move |dropdown| {
+                            let input_box = input_box_ref_toggle.clone();
                             let selected = dropdown.selected_item();
                             if selected.is_none() {
                                 return;
@@ -155,20 +163,27 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                             let selected = selected.downcast_ref::<StringObject>().unwrap();
                             let selected = selected.string().to_string();
 
-                            let source = output_box_imp.reset_source_map.read().unwrap();
+                            let source = input_box_imp.reset_source_map.read().unwrap();
                             let source = source.get(&selected);
                             if source.is_none() {
                                 return;
                             }
-                            let sink = Arc::new(source.unwrap().2.clone());
-                            set_default_source(sink);
-                        }));
+                            let source = Arc::new(source.unwrap().2.clone());
+                            gio::spawn_blocking(move || {
+                                let result = set_default_source(source);
+                                if result.is_none(){
+                                    return;
+                                }
+                                refresh_default_source(result.unwrap(), input_box.clone(), false);
+                            });
+                        }),
+                    );
                 }
-                output_box_ref
+                input_box_ref
                     .imp()
                     .reset_volume_slider
                     .connect_change_value(move |_, _, value| {
-                        let imp = output_box_ref_slider.imp();
+                        let imp = input_box_ref_slider.imp();
                         let fraction = (value / 655.36).round();
                         let percentage = (fraction).to_string() + "%";
                         imp.reset_volume_percentage.set_text(&percentage);
@@ -188,23 +203,60 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                         Propagation::Proceed
                     });
 
-                output_box_ref
+                input_box_ref
                     .imp()
                     .reset_source_mute
                     .connect_clicked(move |_| {
-                        let imp = output_box_ref_mute.imp();
-                        let mut stream = imp.reset_default_source.borrow_mut();
-                        stream.muted = !stream.muted;
-                        if stream.muted {
+                        let imp = input_box_ref_mute.imp();
+                        let mut source = imp.reset_default_source.borrow_mut();
+                        source.muted = !source.muted;
+                        if source.muted {
                             imp.reset_source_mute
                                 .set_icon_name("microphone-disabled-symbolic");
                         } else {
                             imp.reset_source_mute
                                 .set_icon_name("audio-input-microphone-symbolic");
                         }
-                        toggle_source_mute(stream.index, stream.muted);
+                        toggle_source_mute(source.index, source.muted);
                     });
             });
+        });
+    });
+}
+
+pub fn refresh_default_source(new_source: Source, input_box: Arc<SourceBox>, entry: bool) {
+    let volume = *new_source.volume.first().unwrap_or(&0_u32);
+    let fraction = (volume as f64 / 655.36).round();
+    let percentage = (fraction).to_string() + "%";
+    glib::spawn_future(async move {
+        glib::idle_add_once(move || {
+            let imp = input_box.imp();
+            if !entry {
+                let list = imp.reset_source_list.read().unwrap();
+                let entry = list.get(&new_source.index);
+                if entry.is_none() {
+                    return;
+                }
+                let entry_imp = entry.unwrap().1.imp();
+                entry_imp.reset_selected_source.set_active(true);
+            } else {
+                let map = imp.reset_source_map.read().unwrap();
+                let entry = map.get(&new_source.alias);
+                if entry.is_none() {
+                    return;
+                }
+                imp.reset_source_dropdown.set_selected(entry.unwrap().1);
+            }
+            imp.reset_volume_percentage.set_text(&percentage);
+            imp.reset_volume_slider.set_value(volume as f64);
+            if new_source.muted {
+                imp.reset_source_mute
+                    .set_icon_name("microphone-disabled-symbolic");
+            } else {
+                imp.reset_source_mute
+                    .set_icon_name("audio-input-microphone-symbolic");
+            }
+            imp.reset_default_source.replace(new_source);
         });
     });
 }
@@ -234,11 +286,11 @@ pub fn populate_outputstreams(input_box: Arc<SourceBox>) {
 
 pub fn populate_cards(input_box: Arc<SourceBox>) {
     gio::spawn_blocking(move || {
-        let output_box_ref = input_box.clone();
+        let input_box_ref = input_box.clone();
         let cards = get_cards();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let imp = output_box_ref.imp();
+                let imp = input_box_ref.imp();
                 for card in cards {
                     imp.reset_cards.add(&CardEntry::new(card));
                 }
@@ -365,29 +417,30 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         let source_box = source_added_box.clone();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let output_box = source_box.clone();
-                let output_box_imp = output_box.imp();
-                let mut list = output_box_imp.reset_source_list.write().unwrap();
+                let input_box = source_box.clone();
+                let input_box_imp = input_box.imp();
+                let mut list = input_box_imp.reset_source_list.write().unwrap();
                 let source_index = ir.source.index;
                 let alias = ir.source.alias.clone();
                 let name = ir.source.name.clone();
                 let mut is_default = false;
-                if output_box_imp.reset_default_source.borrow().name == ir.source.name {
+                if input_box_imp.reset_default_source.borrow().name == ir.source.name {
                     is_default = true;
                 }
                 let source_entry = Arc::new(SourceEntry::new(
                     is_default,
-                    output_box_imp.reset_default_check_button.clone(),
+                    input_box_imp.reset_default_check_button.clone(),
                     ir.source,
+                    input_box.clone(),
                 ));
                 let source_clone = source_entry.clone();
                 let entry = Arc::new(ListEntry::new(&*source_entry));
                 entry.set_activatable(false);
                 list.insert(source_index, (entry.clone(), source_clone, alias.clone()));
-                output_box_imp.reset_sources.append(&*entry);
-                let mut map = output_box_imp.reset_source_map.write().unwrap();
-                let mut index = output_box_imp.reset_model_index.write().unwrap();
-                output_box_imp
+                input_box_imp.reset_sources.append(&*entry);
+                let mut map = input_box_imp.reset_source_map.write().unwrap();
+                let mut index = input_box_imp.reset_model_index.write().unwrap();
+                input_box_imp
                     .reset_model_list
                     .write()
                     .unwrap()
@@ -407,29 +460,26 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         let source_box = source_removed_box.clone();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let output_box = source_box.clone();
-                let output_box_imp = output_box.imp();
-                let mut list = output_box_imp.reset_source_list.write().unwrap();
-                let entry = list.get(&ir.index);
+                let input_box = source_box.clone();
+                let input_box_imp = input_box.imp();
+                let mut list = input_box_imp.reset_source_list.write().unwrap();
+                let entry = list.remove(&ir.index);
                 if entry.is_none() {
                     return;
                 }
-                output_box_imp.reset_sources.remove(&*entry.unwrap().0);
-                list.remove(&ir.index);
-                let alias = list.remove(&ir.index);
-                if alias.is_none() {
-                    return;
-                }
-                let mut map = output_box_imp.reset_source_map.write().unwrap();
-                let entry_index = map.remove(&alias.unwrap().2);
+                input_box_imp
+                    .reset_sources
+                    .remove(&*entry.clone().unwrap().0);
+                let mut map = input_box_imp.reset_source_map.write().unwrap();
+                let entry_index = map.remove(&entry.unwrap().2);
                 if let Some(entry_index) = entry_index {
-                    output_box_imp
+                    input_box_imp
                         .reset_model_list
                         .write()
                         .unwrap()
                         .remove(entry_index.1);
                 }
-                let mut index = output_box_imp.reset_model_index.write().unwrap();
+                let mut index = input_box_imp.reset_model_index.write().unwrap();
                 if *index != 0 {
                     *index -= 1;
                 }
@@ -447,30 +497,31 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         let default_source = get_default_source_name();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let output_box = source_box.clone();
-                let output_box_imp = output_box.imp();
+                let input_box = source_box.clone();
+                let input_box_imp = input_box.imp();
                 let is_default = ir.source.name == default_source;
                 let volume = ir.source.volume.first().unwrap_or(&0_u32);
                 let fraction = (*volume as f64 / 655.36).round();
                 let percentage = (fraction).to_string() + "%";
-                let list = output_box_imp.reset_source_list.read().unwrap();
+
+                let list = input_box_imp.reset_source_list.read().unwrap();
                 let entry = list.get(&ir.source.index);
                 if entry.is_none() {
                     return;
                 }
                 let imp = entry.unwrap().1.imp();
                 if is_default {
-                    output_box_imp.reset_volume_percentage.set_text(&percentage);
-                    output_box_imp.reset_volume_slider.set_value(*volume as f64);
-                    output_box_imp
+                    input_box_imp.reset_volume_percentage.set_text(&percentage);
+                    input_box_imp.reset_volume_slider.set_value(*volume as f64);
+                    input_box_imp
                         .reset_default_source
                         .replace(ir.source.clone());
                     if ir.source.muted {
-                        output_box_imp
+                        input_box_imp
                             .reset_source_mute
                             .set_icon_name("microphone-disabled-symbolic");
                     } else {
-                        output_box_imp
+                        input_box_imp
                             .reset_source_mute
                             .set_icon_name("audio-input-microphone-symbolic");
                     }
@@ -502,16 +553,15 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
         let source_box = output_stream_added_box.clone();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let output_box = source_box.clone();
-                let output_box_imp = output_box.imp();
-                let mut list = output_box_imp.reset_output_stream_list.write().unwrap();
+                let input_box = source_box.clone();
+                let input_box_imp = input_box.imp();
+                let mut list = input_box_imp.reset_output_stream_list.write().unwrap();
                 let index = ir.stream.index;
-                let output_stream = Arc::new(OutputStreamEntry::new(output_box.clone(), ir.stream));
-                let output_stream_clone = output_stream.clone();
+                let output_stream = Arc::new(OutputStreamEntry::new(input_box.clone(), ir.stream));
                 let entry = Arc::new(ListEntry::new(&*output_stream));
                 entry.set_activatable(false);
-                list.insert(index, (entry.clone(), output_stream_clone));
-                output_box_imp.reset_output_streams.append(&*entry);
+                list.insert(index, (entry.clone(), output_stream.clone()));
+                input_box_imp.reset_output_streams.append(&*entry);
             });
         });
         true
@@ -537,11 +587,11 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
             let source_box = output_stream_changed_box.clone();
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
-                    let output_box = source_box.clone();
-                    let output_box_imp = output_box.imp();
+                    let input_box = source_box.clone();
+                    let input_box_imp = input_box.imp();
                     let entry: Arc<OutputStreamEntry>;
                     {
-                        let list = output_box_imp.reset_output_stream_list.read().unwrap();
+                        let list = input_box_imp.reset_output_stream_list.read().unwrap();
                         let entry_opt = list.get(&ir.stream.index);
                         if entry_opt.is_none() {
                             return;
@@ -563,7 +613,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     let percentage = (fraction).to_string() + "%";
                     imp.reset_volume_percentage.set_text(&percentage);
                     imp.reset_volume_slider.set_value(*volume as f64);
-                    let map = output_box_imp.reset_source_map.read().unwrap();
+                    let map = input_box_imp.reset_source_map.read().unwrap();
                     if let Some(index) = map.get(&alias) {
                         imp.reset_source_selection.set_selected(index.1);
                     }
@@ -583,14 +633,14 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
             let source_box = output_stream_removed_box.clone();
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
-                    let output_box = source_box.clone();
-                    let output_box_imp = output_box.imp();
-                    let mut list = output_box_imp.reset_output_stream_list.write().unwrap();
+                    let input_box = source_box.clone();
+                    let input_box_imp = input_box.imp();
+                    let mut list = input_box_imp.reset_output_stream_list.write().unwrap();
                     let entry = list.remove(&ir.index);
                     if entry.is_none() {
                         return;
                     }
-                    output_box_imp
+                    input_box_imp
                         .reset_output_streams
                         .remove(&*entry.unwrap().0);
                 });

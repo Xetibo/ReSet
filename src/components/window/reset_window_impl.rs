@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::rc::Rc;
 use std::sync::Arc;
 
 use adw::glib::StaticTypeExt;
@@ -9,7 +10,7 @@ use gtk::prelude::WidgetExt;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, SearchEntry};
 
-use crate::components::base::utils::Listeners;
+use crate::components::base::utils::{Listeners, Position};
 use crate::components::wifi::wifi_box::WifiBox;
 use crate::components::window::reset_window;
 use crate::components::window::sidebar_entry::SidebarEntry;
@@ -41,6 +42,7 @@ pub struct ReSetWindow {
     pub reset_shortcuts_button: TemplateChild<Button>,
     pub sidebar_entries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
     pub listeners: Arc<Listeners>,
+    pub position: Rc<RefCell<Position>>,
 }
 
 unsafe impl Send for ReSetWindow {}
@@ -83,7 +85,7 @@ impl WidgetImpl for ReSetWindow {
             self.reset_main.set_margin_end(60);
         } else {
             let div = (width - 540) / 2;
-            if div > 1 { 
+            if div > 1 {
                 self.reset_main.set_margin_start(div);
                 self.reset_main.set_margin_end(div);
             } else {

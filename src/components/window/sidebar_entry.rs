@@ -1,6 +1,8 @@
+use std::cell::RefCell;
+use std::rc::Rc;
 use std::sync::Arc;
 
-use crate::components::base::utils::Listeners;
+use crate::components::base::utils::{Listeners, Position};
 use crate::components::window::sidebar_entry_impl;
 use crate::components::window::sidebar_entry_impl::{Categories, SidebarAction};
 use adw::subclass::prelude::ObjectSubclassIsExt;
@@ -20,7 +22,7 @@ impl SidebarEntry {
         icon_name: &str,
         category: Categories,
         is_subcategory: bool,
-        click_event: fn(Arc<Listeners>, FlowBox),
+        click_event: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>),
     ) -> Self {
         let entry: SidebarEntry = Object::builder().build();
         let entry_imp = entry.imp();

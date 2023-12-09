@@ -11,6 +11,7 @@ use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
 use re_set_lib::audio::audio_structures::Sink;
 
+use super::sink_box::{refresh_default_sink, SinkBox};
 use super::sink_entry_impl;
 
 glib::wrapper! {
@@ -23,7 +24,12 @@ unsafe impl Send for SinkEntry {}
 unsafe impl Sync for SinkEntry {}
 
 impl SinkEntry {
-    pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Sink) -> Self {
+    pub fn new(
+        is_default: bool,
+        check_group: Arc<CheckButton>,
+        stream: Sink,
+        output_box: Arc<SinkBox>,
+    ) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
         {
@@ -62,8 +68,16 @@ impl SinkEntry {
                 imp.reset_selected_sink.set_active(false);
             }
             imp.reset_selected_sink.connect_toggled(move |button| {
+                let output_box_ref = output_box.clone();
                 if button.is_active() {
-                    set_default_sink(name.clone());
+                    let name = name.clone();
+                    gio::spawn_blocking(move || {
+                        let result = set_default_sink(name);
+                        if result.is_none() {
+                            return;
+                        }
+                        refresh_default_sink(result.unwrap(), output_box_ref, true);
+                    });
                 }
             });
             imp.reset_sink_mute
@@ -124,21 +138,17 @@ pub fn toggle_sink_mute(index: u32, muted: bool) -> bool {
     true
 }
 
-pub fn set_default_sink(name: Arc<String>) {
-    gio::spawn_blocking(move || {
-        let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetAudio", "SetDefaultSink", (name.as_str(),));
-        // if res.is_err() {
-        //     return;
-        // }
-        // handle change
-    });
+pub fn set_default_sink(name: Arc<String>) -> Option<Sink> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Sink,), Error> =
+        proxy.method_call("org.Xetibo.ReSetAudio", "SetDefaultSink", (name.as_str(),));
+    if res.is_err() {
+        return None;
+    }
+    Some(res.unwrap().0)
 }
-
-// TODO propagate error from dbus

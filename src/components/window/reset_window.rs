@@ -45,7 +45,7 @@ impl ReSetWindow {
             clone!(@ weak self_imp as flowbox => move |_, y| {
                 let result = y.downcast_ref::<SidebarEntry>().unwrap();
                 let click_event = result.imp().on_click_event.borrow().on_click_event;
-                (click_event)(flowbox.listeners.clone(), flowbox.reset_main.get());
+                (click_event)(flowbox.listeners.clone(), flowbox.reset_main.get(), flowbox.position.clone());
             }),
         );
 

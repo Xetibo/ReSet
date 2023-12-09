@@ -1,11 +1,12 @@
 use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 use std::sync::Arc;
 
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
 use gtk::{glib, CompositeTemplate, FlowBox, Image, Label, ListBoxRow};
 
-use crate::components::base::utils::Listeners;
+use crate::components::base::utils::{Listeners, Position};
 use crate::components::window::handle_sidebar_click::HANDLE_HOME;
 use crate::components::window::sidebar_entry;
 
@@ -32,7 +33,7 @@ pub struct SidebarEntry {
 }
 
 pub struct SidebarAction {
-    pub on_click_event: fn(Arc<Listeners>, FlowBox),
+    pub on_click_event: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>),
 }
 
 impl Default for SidebarAction {

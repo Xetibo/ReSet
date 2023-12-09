@@ -11,6 +11,7 @@ use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
 use re_set_lib::audio::audio_structures::Source;
 
+use super::source_box::{refresh_default_source, SourceBox};
 use super::source_entry_impl;
 
 glib::wrapper! {
@@ -23,26 +24,31 @@ unsafe impl Send for SourceEntry {}
 unsafe impl Sync for SourceEntry {}
 
 impl SourceEntry {
-    pub fn new(is_default: bool, check_group: Arc<CheckButton>, stream: Source) -> Self {
+    pub fn new(
+        is_default: bool,
+        check_group: Arc<CheckButton>,
+        source: Source,
+        input_box: Arc<SourceBox>,
+    ) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
         {
             let imp = obj.imp();
             imp.reset_source_name
-                .set_title(stream.alias.clone().as_str());
-            let name = Arc::new(stream.name.clone());
-            let volume = stream.volume.first().unwrap_or(&0_u32);
+                .set_title(source.alias.clone().as_str());
+            let name = Arc::new(source.name.clone());
+            let volume = source.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
             imp.reset_volume_percentage.set_text(&percentage);
             imp.reset_volume_slider.set_value(*volume as f64);
-            imp.stream.replace(stream);
+            imp.source.replace(source);
             imp.reset_volume_slider.connect_change_value(
                 clone!(@weak imp => @default-return Propagation::Stop, move |_, _, value| {
                     let fraction = (value / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
                     imp.reset_volume_percentage.set_text(&percentage);
-                    let source = imp.stream.borrow();
+                    let source = imp.source.borrow();
                     let index = source.index;
                     let channels = source.channels;
                     {
@@ -65,23 +71,30 @@ impl SourceEntry {
                 imp.reset_selected_source.set_active(false);
             }
             imp.reset_selected_source.connect_toggled(move |button| {
+                let input_box = input_box.clone();
                 if button.is_active() {
-                    set_default_source(name.clone());
+                    let name = name.clone();
+                    gio::spawn_blocking(move || {
+                        let result = set_default_source(name);
+                        if result.is_none() {
+                            return;
+                        }
+                        refresh_default_source(result.unwrap(), input_box, true);
+                    });
                 }
             });
             imp.reset_source_mute
                 .connect_clicked(clone!(@weak imp => move |_| {
-                    let stream = imp.stream.clone();
-                    let mut stream = stream.borrow_mut();
-                    stream.muted = !stream.muted;
-                    if stream.muted {
+                    let mut source = imp.source.borrow_mut();
+                    source.muted = !source.muted;
+                    if source.muted {
                         imp.reset_source_mute
                            .set_icon_name("microphone-disabled-symbolic");
                     } else {
                         imp.reset_source_mute
                            .set_icon_name("audio-input-microphone-symbolic");
                     }
-                    toggle_source_mute(stream.index, stream.muted);
+                    toggle_source_mute(source.index, source.muted);
                 }));
         }
         obj
@@ -127,22 +140,20 @@ pub fn toggle_source_mute(index: u32, muted: bool) -> bool {
     true
 }
 
-pub fn set_default_source(name: Arc<String>) -> bool {
-    gio::spawn_blocking(move || {
-        let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetAudio", "SetDefaultSink", (name.as_str(),));
-        // if res.is_err() {
-        //     return;
-        // }
-        // handle change
-    });
-    true
+pub fn set_default_source(name: Arc<String>) -> Option<Source> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(
+        "org.Xetibo.ReSetDaemon",
+        "/org/Xetibo/ReSetDaemon",
+        Duration::from_millis(1000),
+    );
+    let res: Result<(Source,), Error> = proxy.method_call(
+        "org.Xetibo.ReSetAudio",
+        "SetDefaultSource",
+        (name.as_str(),),
+    );
+    if res.is_err() {
+        return None;
+    }
+    Some(res.unwrap().0)
 }
-
-// TODO propagate error from dbus

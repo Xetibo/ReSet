@@ -23,6 +23,18 @@ use crate::components::{
     output::sink_box::{start_output_box_listener, SinkBox},
 };
 
+#[derive(Default, PartialEq, Eq)]
+pub enum Position {
+    Connectivity,
+    Wifi,
+    Bluetooth,
+    Audio,
+    AudioOutput,
+    AudioInput,
+    #[default]
+    Home,
+}
+
 #[derive(Default)]
 pub struct Listeners {
     pub wifi_disabled: AtomicBool,
@@ -405,11 +417,9 @@ pub fn start_audio_listener(
 
         listeners.pulse_listener.store(true, Ordering::SeqCst);
 
-        println!("starting audio listener");
         loop {
             let _ = conn.process(Duration::from_millis(1000));
             if !listeners.pulse_listener.load(Ordering::SeqCst) {
-                println!("stopping audio listener");
                 stop_dbus_audio_listener(conn);
                 break;
             }
