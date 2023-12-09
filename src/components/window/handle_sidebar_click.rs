@@ -1,7 +1,9 @@
 use gtk::prelude::FrameExt;
 use std::cell::RefCell;
+use std::hint::spin_loop;
 use std::rc::Rc;
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 
 use crate::components::base::setting_box::SettingBox;
 use crate::components::base::utils::{start_audio_listener, Listeners, Position};
@@ -73,10 +75,13 @@ pub const HANDLE_AUDIO_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>)
         let audio_output = Arc::new(SinkBox::new());
         let audio_input = Arc::new(SourceBox::new());
         start_audio_listener(
-            listeners,
+            listeners.clone(),
             Some(audio_output.clone()),
             Some(audio_input.clone()),
         );
+        if !listeners.pulse_listener.load(Ordering::SeqCst) {
+            spin_loop();
+        }
         populate_sinks(audio_output.clone());
         populate_sources(audio_input.clone());
         let sink_frame = wrap_in_flow_box_child(SettingBox::new(&*audio_output));
@@ -93,7 +98,10 @@ pub const HANDLE_VOLUME_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>
             return;
         }
         let audio_output = Arc::new(SinkBox::new());
-        start_audio_listener(listeners, Some(audio_output.clone()), None);
+        start_audio_listener(listeners.clone(), Some(audio_output.clone()), None);
+        if !listeners.pulse_listener.load(Ordering::SeqCst) {
+            spin_loop();
+        }
         populate_sinks(audio_output.clone());
         let audio_frame = wrap_in_flow_box_child(SettingBox::new(&*audio_output));
         reset_main.remove_all();
@@ -107,7 +115,10 @@ pub const HANDLE_MICROPHONE_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Positi
             return;
         }
         let audio_input = Arc::new(SourceBox::new());
-        start_audio_listener(listeners, None, Some(audio_input.clone()));
+        start_audio_listener(listeners.clone(), None, Some(audio_input.clone()));
+        if !listeners.pulse_listener.load(Ordering::SeqCst) {
+            spin_loop();
+        }
         populate_sources(audio_input.clone());
         let source_frame = wrap_in_flow_box_child(SettingBox::new(&*audio_input));
         reset_main.remove_all();

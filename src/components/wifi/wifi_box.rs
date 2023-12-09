@@ -426,6 +426,11 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                         let imp = entry.1.imp();
                         let mut connected = imp.connected.borrow_mut();
                         *connected = imp.access_point.borrow().dbus_path == current_device.path;
+                        if *connected {
+                            imp.reset_wifi_connected.set_text("Connected");
+                        } else {
+                            imp.reset_wifi_connected.set_text("");
+                        }
                     }
                 });
             });
