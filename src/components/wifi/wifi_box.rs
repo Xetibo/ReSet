@@ -146,6 +146,9 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                     }),
                 );
                 for access_point in access_points {
+                    if access_point.ssid.is_empty() {
+                        continue;
+                    }
                     let ssid = access_point.ssid.clone();
                     let path = access_point.dbus_path.clone();
                     let connected =
@@ -317,7 +320,7 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                     let mut wifi_entries_path = imp.wifi_entries_path.lock().unwrap();
                     let ssid = ir.access_point.ssid.clone();
                     let path = ir.access_point.dbus_path.clone();
-                    if wifi_entries.get(&ssid).is_some() {
+                    if wifi_entries.get(&ssid).is_some() || ssid.is_empty() {
                         return;
                     }
                     let connected = imp.reset_current_wifi_device.borrow().active_access_point
