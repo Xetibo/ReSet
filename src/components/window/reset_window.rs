@@ -23,14 +23,7 @@ unsafe impl Sync for ReSetWindow {}
 
 impl ReSetWindow {
     pub fn new(app: &Application) -> Self {
-        let obj: Self = Object::builder().property("application", app).build();
-        let imp = obj.imp();
-        (HANDLE_HOME)(
-            imp.listeners.clone(),
-            imp.reset_main.get(),
-            imp.position.clone(),
-        );
-        obj
+        Object::builder().property("application", app).build()
     }
 
     pub fn setup_callback(&self) {
@@ -219,16 +212,21 @@ impl ReSetWindow {
         //     ),
         // ];
 
-        // sidebarEntries.push((
-        //     SidebarEntry::new(
-        //         "Peripherals",
-        //         "preferences-system-devices-symbolic",
-        //         Categories::Peripherals,
-        //         false,
-        //         HANDLE_PERIPHERALS_CLICK,
-        //     ),
-        //     peripheralsList,
-        // ));
+        // let home = SidebarEntry::new(
+        //     "Home",
+        //     "preferences-system-devices-symbolic",
+        //     Categories::Peripherals,
+        //     false,
+        //     HANDLE_VOLUME_CLICK,
+        // );
+        //
+        // sidebar_entries.push((home, Vec::new()));
+
+        (HANDLE_VOLUME_CLICK)(
+            self_imp.listeners.clone(),
+            self_imp.reset_main.clone(),
+            self_imp.position.clone(),
+        );
 
         self_imp
             .reset_sidebar_list
