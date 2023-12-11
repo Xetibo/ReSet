@@ -99,7 +99,7 @@ impl WifiEntry {
         let self_imp = self.imp();
         self_imp.reset_wifi_edit_button.borrow().connect_clicked(clone!(@ weak self_imp, @ weak wifi_box => move |_| {
             let _option = get_connection_settings(self_imp.access_point.borrow().associated_connection.clone());
-            wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(_option, self_imp.access_point.borrow().dbus_path.clone()));
+            wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(_option, self_imp.access_point.borrow().associated_connection.clone()));
         }));
     }
 }
