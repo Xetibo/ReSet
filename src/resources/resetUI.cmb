@@ -21,8 +21,7 @@
 	(20,None,None,"resetCardEntry.ui",None,None,None,None,None,None,None),
 	(21,1,None,"resetWifiOptions.ui",None,None,None,None,None,None,None),
 	(22,1,None,"resetWifiAddressEntry.ui",None,None,None,None,None,None,None),
-	(23,1,None,"resetWifiRouteEntry.ui",None,None,None,None,None,None,None),
-	(24,None,None,None,None,None,None,None,None,None,None)
+	(23,1,None,"resetWifiRouteEntry.ui",None,None,None,None,None,None,None)
   </ui>
   <ui_library>
 	(21,"gtk","4.12",None),
@@ -301,16 +300,7 @@
 	(23,8,"AdwEntryRow","reset_route_metric",6,None,None,None,1,None),
 	(23,9,"GtkBox",None,2,None,None,None,None,None),
 	(23,10,"AdwEntryRow","reset_route_address",9,None,None,None,None,None),
-	(23,11,"AdwEntryRow","reset_route_prefix",9,None,None,None,1,None),
-	(24,9,"AdwActionRow","resetWifiEntry",None,None,None,None,None,None),
-	(24,10,"GtkBox",None,9,None,None,None,-1,None),
-	(24,11,"GtkBox",None,10,None,None,None,None,None),
-	(24,12,"GtkBox",None,11,None,None,None,None,None),
-	(24,13,"GtkImage","reset_wifi_strength",12,None,None,None,None,None),
-	(24,14,"GtkImage","reset_wifi_encrypted",12,None,None,None,1,None),
-	(24,15,"GtkLabel","reset_wifi_label",11,None,None,None,1,None),
-	(24,16,"GtkLabel","reset_wifi_connected",11,None,None,None,2,None),
-	(24,17,"GtkButton","reset_wifi_edit_button",11,None,None,None,3,None)
+	(23,11,"AdwEntryRow","reset_route_prefix",9,None,None,None,1,None)
   </object>
   <object_property>
 	(3,1,"GtkWidget","height-request","200",None,None,None,None,None,None,None,None,None),
@@ -875,33 +865,7 @@
 	(23,10,"AdwPreferencesRow","title","Address",None,None,None,None,None,None,None,None,None),
 	(23,10,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
 	(23,11,"AdwPreferencesRow","title","Prefix",None,None,None,None,None,None,None,None,None),
-	(23,11,"GtkEditable","max-width-chars","5",None,None,None,None,None,None,None,None,None),
-	(24,9,"GtkListBoxRow","child",None,None,None,None,None,10,None,None,None,None),
-	(24,11,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
-	(24,12,"GtkWidget","width-request","35",None,None,None,None,None,None,None,None,None),
-	(24,13,"GtkImage","icon-name","network-wireless-signal-excellent-symbolic",None,None,None,None,None,None,None,None,None),
-	(24,14,"GtkImage","icon-name","system-lock-screen-symbolic",None,None,None,None,None,None,None,None,None),
-	(24,14,"GtkImage","pixel-size","9",None,None,None,None,None,None,None,None,None),
-	(24,14,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
-	(24,14,"GtkWidget","margin-bottom","6",None,None,None,None,None,None,None,None,None),
-	(24,14,"GtkWidget","valign","end",None,None,None,None,None,None,None,None,None),
-	(24,15,"GtkLabel","ellipsize","end",None,None,None,None,None,None,None,None,None),
-	(24,15,"GtkLabel","label","LoremIpsumInternet",None,None,None,None,None,None,None,None,None),
-	(24,15,"GtkLabel","single-line-mode","True",None,None,None,None,None,None,None,None,None),
-	(24,15,"GtkLabel","xalign","0.0",None,None,None,None,None,None,None,None,None),
-	(24,15,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
-	(24,15,"GtkWidget","margin-end","10",None,None,None,None,None,None,None,None,None),
-	(24,15,"GtkWidget","width-request","200",None,None,None,None,None,None,None,None,None),
-	(24,16,"GtkLabel","justify","right",None,None,None,None,None,None,None,None,None),
-	(24,16,"GtkLabel","single-line-mode","True",None,None,None,None,None,None,None,None,None),
-	(24,16,"GtkLabel","xalign","0.0",None,None,None,None,None,None,None,None,None),
-	(24,16,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
-	(24,16,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
-	(24,16,"GtkWidget","margin-end","10",None,None,None,None,None,None,None,None,None),
-	(24,17,"GtkButton","has-frame","False",None,None,None,None,None,None,None,None,None),
-	(24,17,"GtkButton","icon-name","document-edit-symbolic",None,None,None,None,None,None,None,None,None),
-	(24,17,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
-	(24,17,"GtkWidget","valign","center",None,None,None,None,None,None,None,None,None)
+	(23,11,"GtkEditable","max-width-chars","5",None,None,None,None,None,None,None,None,None)
   </object_property>
   <object_data>
 	(3,42,"GtkWidget",1,1,None,None,None,None,None,None),
