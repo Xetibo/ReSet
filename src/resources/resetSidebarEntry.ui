@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="resetSidebarEntry" parent="GtkListBoxRow">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <child>
+          <object class="GtkImage" id="reset_sidebar_image">
+            <property name="margin-end">10</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="reset_sidebar_label"/>
+        </child>
+      </object>
+    </property>
+    <property name="css-classes">resetSidebarEntry</property>
+    <property name="margin-bottom">2</property>
+    <property name="margin-top">2</property>
+  </template>
+</interface>

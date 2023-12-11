@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.0"/>
+  <template class="resetSavedWifiEntry" parent="AdwActionRow">
+    <property name="activatable">False</property>
+    <property name="child">
+      <object class="GtkBox">
+        <child>
+          <object class="GtkLabel" id="reset_saved_wifi_label">
+            <property name="ellipsize">end</property>
+            <property name="hexpand">True</property>
+            <property name="label">LoremIpsumInternet</property>
+            <property name="margin-end">10</property>
+            <property name="single-line-mode">True</property>
+            <property name="width-request">200</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="reset_edit_saved_wifi_button">
+            <property name="halign">end</property>
+            <property name="has-frame">False</property>
+            <property name="hexpand">True</property>
+            <property name="icon-name">document-edit-symbolic</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="reset_delete_saved_wifi_button">
+            <property name="halign">start</property>
+            <property name="has-frame">False</property>
+            <property name="icon-name">user-trash-symbolic</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>

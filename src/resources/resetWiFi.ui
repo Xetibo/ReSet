@@ -1,61 +1,109 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
-  <object class="GtkListBoxRow" id="resetWifiEntry">
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="libadwaita" version="1.4"/>
+  <template class="resetWifi" parent="GtkBox">
+    <property name="hexpand">True</property>
+    <property name="hexpand-set">True</property>
+    <property name="orientation">vertical</property>
+    <property name="valign">start</property>
     <child>
       <object class="GtkBox">
+        <property name="height-request">40</property>
         <child>
-          <object class="GtkImage" id="resetWifiStrength">
-            <property name="icon-name">network-wireless-symbolic</property>
-            <property name="margin-end">15</property>
+          <object class="GtkLabel">
+            <property name="css-classes">resetSettingLabel</property>
+            <property name="label">WiFi</property>
+            <property name="margin-start">5</property>
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="resetWifiLabel">
+          <object class="GtkSwitch" id="reset_wifi_switch">
+            <property name="active">True</property>
+            <property name="halign">end</property>
             <property name="hexpand">True</property>
-            <property name="label">LoremIpsumInternet</property>
-            <property name="xalign">0.0</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="resetWifiButton">
-            <property name="halign">start</property>
-            <property name="icon-name">emblem-system-symbolic</property>
+            <property name="margin-end">5</property>
             <property name="valign">center</property>
           </object>
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkBox" id="resetWifi">
-    <property name="orientation">vertical</property>
     <child>
-      <object class="AdwClampScrollable">
-        <property name="orientation">vertical</property>
+      <object class="AdwNavigationView" id="reset_wifi_navigation">
         <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
+          <object class="AdwNavigationPage">
+            <property name="tag">main</property>
+            <property name="title">main</property>
             <child>
-              <object class="GtkLabel">
-                <property name="halign">start</property>
-                <property name="justify">right</property>
-                <property name="label">Available networks</property>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwPreferencesGroup" id="reset_wifi_details">
+                    <child>
+                      <object class="AdwComboRow" id="reset_wifi_device">
+                        <property name="title">WiFi Device</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="reset_saved_networks">
+                        <property name="title">Saved Networks</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="icon-name">go-previous-symbolic-rtl</property>
+                            <property name="margin-end">5</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup" id="reset_wifi_list">
+                    <property name="margin-top">10</property>
+                    <property name="title">Available networks</property>
+                  </object>
+                </child>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="tag">saved</property>
+            <property name="title">saved</property>
             <child>
-              <object class="GtkListBox" id="resetWifiList"/>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <child>
+                      <object class="AdwActionRow" id="reset_available_networks">
+                        <property name="title">Available Networks</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="icon-name">go-previous-symbolic</property>
+                            <property name="margin-end">5</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup" id="reset_stored_wifi_list">
+                    <property name="title">Saved Networks</property>
+                  </object>
+                </child>
+              </object>
             </child>
           </object>
         </child>
       </object>
     </child>
-    <child>
-      <object class="GtkButton">
-        <property name="halign">start</property>
-        <property name="label">Advanced</property>
-        <property name="valign">start</property>
-      </object>
-    </child>
-  </object>
-  <object class="AdwToast"/>
+  </template>
 </interface>

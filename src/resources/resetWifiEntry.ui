@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.0"/>
+  <template class="resetWifiEntry" parent="AdwActionRow">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="margin-start">5</property>
+        <child>
+          <object class="GtkBox">
+            <property name="width-request">35</property>
+            <child>
+              <object class="GtkImage" id="reset_wifi_strength">
+                <property name="icon-name">network-wireless-signal-excellent-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage" id="reset_wifi_encrypted">
+                <property name="halign">start</property>
+                <property name="icon-name">system-lock-screen-symbolic</property>
+                <property name="margin-bottom">6</property>
+                <property name="pixel-size">9</property>
+                <property name="valign">end</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="reset_wifi_label">
+            <property name="ellipsize">end</property>
+            <property name="hexpand">True</property>
+            <property name="label">LoremIpsumInternet</property>
+            <property name="margin-end">10</property>
+            <property name="single-line-mode">True</property>
+            <property name="width-request">200</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="reset_wifi_connected">
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="justify">right</property>
+            <property name="margin-end">10</property>
+            <property name="single-line-mode">True</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="reset_wifi_edit_button">
+            <property name="halign">start</property>
+            <property name="has-frame">False</property>
+            <property name="icon-name">document-edit-symbolic</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+        <child>
+          <object class="resetPopup" id="reset_wifi_popup"/>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>

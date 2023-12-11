@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=ReSet
+GenericName=SettingsApplication
+GenericName[de]=SettingsApplikation
+Exec=reset
+Terminal=false
+Type=Application
+Keywords=settings;gtk;
+Icon=org.xetibo.ReSet
+Categories=Utility;GTK;
+StartupNotify=false

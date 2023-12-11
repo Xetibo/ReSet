@@ -1,0 +1,27 @@
+button.resetClose {
+    border-radius: 25px;
+}
+
+row.resetSidebarEntry {
+    border-radius: 5px;
+}
+
+label.resetSettingLabel {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+frame.resetSettingFrame {
+    border-radius: 5px;
+    padding: 10px;
+}
+
+label.resetSettingLabel {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+row.audioRow  {
+    border-color: transparent;
+}
+

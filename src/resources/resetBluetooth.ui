@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.4"/>
+  <template class="resetBluetooth" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="valign">start</property>
+    <child>
+      <object class="GtkBox">
+        <property name="height-request">40</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="css-classes">resetSettingLabel</property>
+            <property name="label">Bluetooth</property>
+            <property name="margin-start">5</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSwitch" id="reset_bluetooth_switch">
+            <property name="active">True</property>
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="margin-end">5</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwNavigationView">
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="tag">main</property>
+            <property name="title">main</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwPreferencesGroup" id="reset_bluetooth_details">
+                    <child>
+                      <object class="AdwComboRow" id="reset_bluetooth_adapter">
+                        <property name="title">Bluetooth Adapter</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="reset_visibility">
+                        <property name="title">Visibility Settings</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="icon-name">go-previous-symbolic-rtl</property>
+                            <property name="margin-end">5</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup" id="reset_bluetooth_available_devices">
+                    <property name="header-suffix">
+                      <object class="GtkButton" id="reset_bluetooth_refresh_button">
+                        <property name="icon-name">view-refresh-symbolic</property>
+                      </object>
+                    </property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="title">Available Devices</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup" id="reset_bluetooth_connected_devices">
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="title">Connected Devices</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="tag">visibility</property>
+            <property name="title">visibility</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkListBox">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="show-separators">True</property>
+                    <property name="valign">start</property>
+                    <child>
+                      <object class="resetListBoxRow" id="reset_bluetooth_main_tab">
+                        <child>
+                          <object class="GtkBox">
+                            <property name="height-request">40</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Main</property>
+                                <property name="margin-start">5</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="icon-name">go-previous-symbolic</property>
+                                <property name="margin-end">5</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="halign">start</property>
+                    <property name="label">Visibility Settings</property>
+                    <property name="margin-start">5</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
+                        <property name="label">Pairable</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="reset_bluetooth_pairable_switch"/>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
+                        <property name="label">Discoverable</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="reset_bluetooth_discoverable_switch"/>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
