@@ -17,7 +17,7 @@ use dbus::Path;
 use glib::{clone, Cast, PropertySet};
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, WidgetExt};
-use gtk::{gio, StringObject};
+use gtk::{gio, StringObject, StringList};
 use re_set_lib::network::network_structures::{AccessPoint, WifiDevice, WifiStrength};
 use re_set_lib::signals::{AccessPointAdded, WifiDeviceChanged};
 use re_set_lib::signals::{AccessPointChanged, AccessPointRemoved};
@@ -68,6 +68,9 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
         clone!(@weak imp => @default-return glib::Propagation::Proceed, move |_, value| {
             set_wifi_enabled(value);
             if !value {
+                imp.reset_wifi_devices.write().unwrap().clear();
+                *imp.reset_model_list.write().unwrap() = StringList::new(&[]);
+                *imp.reset_model_index.write().unwrap() = 0;
                 let mut map = imp.wifi_entries.lock().unwrap();
                 for entry in map.iter() {
                     imp.reset_wifi_list.remove(&*(*entry.1));
