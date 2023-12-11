@@ -12,17 +12,11 @@ use std::cell::RefCell;
 #[template(resource = "/org/Xetibo/ReSet/resetWifiEntry.ui")]
 pub struct WifiEntry {
     #[template_child]
-    pub reset_wifi_strength: TemplateChild<Image>,
-    #[template_child]
-    pub reset_wifi_encrypted: TemplateChild<Image>,
-    #[template_child]
-    pub reset_wifi_label: TemplateChild<Label>,
-    #[template_child]
-    pub reset_wifi_edit_button: TemplateChild<Button>,
-    #[template_child]
-    pub reset_wifi_connected: TemplateChild<Label>,
-    #[template_child]
     pub reset_wifi_popup: TemplateChild<Popup>,
+    pub reset_wifi_strength: RefCell<Image>,
+    pub reset_wifi_encrypted: RefCell<Image>,
+    pub reset_wifi_connected: RefCell<Label>,
+    pub reset_wifi_edit_button: RefCell<Button>,
     pub wifi_name: RefCell<String>,
     pub wifi_strength: RefCell<WifiStrength>,
     pub access_point: RefCell<AccessPoint>,

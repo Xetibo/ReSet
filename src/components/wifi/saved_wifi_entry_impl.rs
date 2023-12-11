@@ -13,12 +13,6 @@ use super::saved_wifi_entry;
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSavedWifiEntry.ui")]
 pub struct SavedWifiEntry {
-    #[template_child]
-    pub reset_delete_saved_wifi_button: TemplateChild<Button>,
-    #[template_child]
-    pub reset_edit_saved_wifi_button: TemplateChild<Button>,
-    #[template_child]
-    pub reset_saved_wifi_label: TemplateChild<Label>,
     pub reset_connection_path: RefCell<Path<'static>>,
     pub access_point: RefCell<AccessPoint>,
 }
