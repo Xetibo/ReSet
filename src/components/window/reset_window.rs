@@ -23,7 +23,14 @@ unsafe impl Sync for ReSetWindow {}
 
 impl ReSetWindow {
     pub fn new(app: &Application) -> Self {
-        Object::builder().property("application", app).build()
+        let obj: Self = Object::builder().property("application", app).build();
+        let imp = obj.imp();
+        (HANDLE_HOME)(
+            imp.listeners.clone(),
+            imp.reset_main.get(),
+            imp.position.clone(),
+        );
+        obj
     }
 
     pub fn setup_callback(&self) {
@@ -234,11 +241,16 @@ impl ReSetWindow {
             for sub_entry in sub_entries {
                 self_imp.reset_sidebar_list.append(sub_entry);
             }
-            let separator = ListBoxRow::new();
-            separator.set_child(Some(&gtk::Separator::new(Orientation::Horizontal)));
-            separator.set_selectable(false);
-            separator.set_activatable(false);
-            self_imp.reset_sidebar_list.append(&separator);
+            let separator = gtk::Separator::builder()
+                .margin_bottom(3)
+                .margin_top(3)
+                .orientation(Orientation::Horizontal)
+                .build();
+            let separator_row = ListBoxRow::new();
+            separator_row.set_child(Some(&separator));
+            separator_row.set_selectable(false);
+            separator_row.set_activatable(false);
+            self_imp.reset_sidebar_list.append(&separator_row);
         }
     }
 

@@ -426,6 +426,8 @@
 	(5,22,"GtkWidget","margin-end","10",None,None,None,None,None,None,None,None,None),
 	(6,1,"GtkListBoxRow","child",None,None,None,None,None,2,None,None,None,None),
 	(6,1,"GtkWidget","css-classes","resetSidebarEntry",None,None,None,None,None,None,None,None,None),
+	(6,1,"GtkWidget","margin-bottom","2",None,None,None,None,None,None,None,None,None),
+	(6,1,"GtkWidget","margin-top","2",None,None,None,None,None,None,None,None,None),
 	(6,2,"GtkWidget","margin-bottom","10",None,None,None,None,None,None,None,None,None),
 	(6,2,"GtkWidget","margin-start","10",None,None,None,None,None,None,None,None,None),
 	(6,2,"GtkWidget","margin-top","10",None,None,None,None,None,None,None,None,None),
