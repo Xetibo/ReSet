@@ -120,6 +120,16 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     let default_sink = input_box_imp.reset_default_source.clone();
                     let source = default_sink.borrow();
 
+                    if source.muted {
+                        input_box_imp
+                            .reset_source_mute
+                            .set_icon_name("microphone-disabled-symbolic");
+                    } else {
+                        input_box_imp
+                            .reset_source_mute
+                            .set_icon_name("audio-input-microphone-symbolic");
+                    }
+
                     let volume = source.volume.first().unwrap_or(&0_u32);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";

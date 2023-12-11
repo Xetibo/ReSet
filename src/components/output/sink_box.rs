@@ -119,6 +119,16 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     let default_sink = output_box_imp.reset_default_sink.clone();
                     let sink = default_sink.borrow();
 
+                    if sink.muted {
+                        output_box_imp
+                            .reset_sink_mute
+                            .set_icon_name("audio-volume-muted-symbolic");
+                    } else {
+                        output_box_imp
+                            .reset_sink_mute
+                            .set_icon_name("audio-volume-high-symbolic");
+                    }
+
                     let volume = sink.volume.first().unwrap_or(&0);
                     let fraction = (*volume as f64 / 655.36).round();
                     let percentage = (fraction).to_string() + "%";
