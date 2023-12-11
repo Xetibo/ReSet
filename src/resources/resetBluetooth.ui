@@ -91,33 +91,16 @@
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkListBox">
-                    <property name="css-classes">boxed-list</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-end">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="show-separators">True</property>
-                    <property name="valign">start</property>
+                  <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="resetListBoxRow" id="reset_bluetooth_main_tab">
+                      <object class="AdwActionRow" id="reset_bluetooth_main_tab">
+                        <property name="title">Available Networks</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="height-request">40</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Main</property>
-                                <property name="margin-start">5</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="halign">end</property>
-                                <property name="hexpand">True</property>
-                                <property name="icon-name">go-previous-symbolic</property>
-                                <property name="margin-end">5</property>
-                              </object>
-                            </child>
+                          <object class="GtkImage">
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="icon-name">go-previous-symbolic</property>
+                            <property name="margin-end">5</property>
                           </object>
                         </child>
                       </object>
@@ -125,45 +108,17 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="halign">start</property>
-                    <property name="label">Visibility Settings</property>
-                    <property name="margin-start">5</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <property name="margin-bottom">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title">Visibility Settings</property>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="halign">start</property>
-                        <property name="hexpand">True</property>
-                        <property name="hexpand-set">True</property>
-                        <property name="label">Pairable</property>
+                      <object class="AdwSwitchRow" id="reset_bluetooth_pairable_switch">
+                        <property name="title">Pairable</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkSwitch" id="reset_bluetooth_pairable_switch"/>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <property name="margin-bottom">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">5</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="halign">start</property>
-                        <property name="hexpand">True</property>
-                        <property name="hexpand-set">True</property>
-                        <property name="label">Discoverable</property>
+                      <object class="AdwSwitchRow" id="reset_bluetooth_discoverable_switch">
+                        <property name="title">Discoverable</property>
                       </object>
-                    </child>
-                    <child>
-                      <object class="GtkSwitch" id="reset_bluetooth_discoverable_switch"/>
                     </child>
                   </object>
                 </child>
