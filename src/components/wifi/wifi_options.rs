@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::net::{Ipv4Addr, Ipv6Addr};
 use std::str::FromStr;
 use std::sync::Arc;
@@ -375,7 +376,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
         }));
 }
 
-fn set_connection_settings(path: Path<'static>, prop: PropMap) {
+fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) {
     gio::spawn_blocking(move || {
         let conn = dbus::blocking::Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
