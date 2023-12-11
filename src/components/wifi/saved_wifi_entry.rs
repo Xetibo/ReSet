@@ -11,6 +11,8 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, PropertySet};
 use gtk::{Align, Button, gio, Orientation};
 use gtk::prelude::{BoxExt, ListBoxRowExt};
+use crate::components::wifi::utils::get_connection_settings;
+use crate::components::wifi::wifi_options::WifiOptions;
 
 glib::wrapper! {
     pub struct SavedWifiEntry(ObjectSubclass<saved_wifi_entry_impl::SavedWifiEntry>)
@@ -43,9 +45,8 @@ impl SavedWifiEntry {
 
         edit_button.connect_clicked(
             clone!(@ weak entry_imp, @ weak wifi_box => move |_| {
-                // TODO accesspoint has to be saved somewhere i guess
-                // let _option = getConnectionSettings(entryImp.accessPoint.borrow().associated_connection.clone());
-                // wifiBox.resetWifiNavigation.push(&*WifiOptions::new(_option));
+                let _option = get_connection_settings(entry_imp.reset_connection_path.borrow().clone());
+                wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(_option, entry_imp.reset_connection_path.borrow().clone()));
             }),
         );
 
