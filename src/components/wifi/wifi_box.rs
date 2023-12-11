@@ -178,7 +178,7 @@ pub fn show_stored_connections(wifi_box: Arc<WifiBox>) {
                     let name =
                         &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
                     let entry = SavedWifiEntry::new(name, connection.0, self_imp);
-                    self_imp.reset_stored_wifi_list.add(&entry);
+                    self_imp.reset_stored_wifi_list.add(&*entry);
                 }
             });
         });

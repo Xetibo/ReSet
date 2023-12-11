@@ -1,10 +1,11 @@
+use std::rc::Rc;
 use std::time::Duration;
 
 use crate::components::wifi::saved_wifi_entry_impl;
 use crate::components::wifi::wifi_box_impl::WifiBox;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{ActionRowExt, ButtonExt, PreferencesRowExt, WidgetExt};
+use adw::prelude::{ActionRowExt, ButtonExt, PreferencesRowExt, PreferencesGroupExt};
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
 use glib::subclass::types::ObjectSubclassIsExt;
@@ -21,8 +22,8 @@ glib::wrapper! {
 }
 
 impl SavedWifiEntry {
-    pub fn new(name: &str, path: Path<'static>, wifi_box: &WifiBox) -> Self {
-        let entry: SavedWifiEntry = Object::builder().build();
+    pub fn new(name: &str, path: Path<'static>, wifi_box: &WifiBox) -> Rc<Self> {
+        let entry: Rc<SavedWifiEntry> = Rc::new(Object::builder().build());
         entry.set_activatable(false);
         let entry_imp = entry.imp();
 
@@ -50,15 +51,13 @@ impl SavedWifiEntry {
             }),
         );
 
-        delete_button.connect_clicked(
-            clone!(@weak entry as entry => move |_| {
-            delete_connection(entry.imp().reset_connection_path.take());
+        let entry_ref = entry.clone();
+        delete_button.connect_clicked(clone!(@weak wifi_box => move |_| {
+            delete_connection(entry_ref.imp().reset_connection_path.take());
             // TODO handle error
-            let parent = entry.parent().unwrap();
-            parent.set_visible(false);
-            parent.unparent();
-            }),
-        );
+            wifi_box.reset_stored_wifi_list.remove(&*entry_ref);
+
+        }));
         entry
     }
 }
