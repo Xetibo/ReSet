@@ -7,7 +7,7 @@ use std::time::SystemTime;
 
 use crate::components::output::sink_entry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
+use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, Scale};
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSinkEntry.ui")]
@@ -22,8 +22,6 @@ pub struct SinkEntry {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<Sink>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }

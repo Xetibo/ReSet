@@ -9,7 +9,7 @@ use crate::components::base::list_entry::ListEntry;
 use crate::components::output::input_stream_entry::InputStreamEntry;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Box, Button, CheckButton, CompositeTemplate, Label, StringList, TemplateChild};
-use gtk::{prelude::*, ProgressBar, Scale};
+use gtk::{prelude::*, Scale};
 
 use super::sink_box;
 use super::sink_entry::SinkEntry;
@@ -35,8 +35,6 @@ pub struct SinkBox {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
     #[template_child]
     pub reset_sinks: TemplateChild<Box>,
     #[template_child]

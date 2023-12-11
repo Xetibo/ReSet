@@ -9,7 +9,7 @@ use crate::components::base::list_entry::ListEntry;
 use crate::components::input::source_box;
 use gtk::subclass::prelude::*;
 use gtk::{glib, CheckButton, CompositeTemplate, StringList, TemplateChild};
-use gtk::{prelude::*, Button, Label, ProgressBar, Scale};
+use gtk::{prelude::*, Button, Label, Scale};
 
 use super::output_stream_entry::OutputStreamEntry;
 use super::source_entry::SourceEntry;
@@ -33,8 +33,7 @@ pub struct SourceBox {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
+
     #[template_child]
     pub reset_sources: TemplateChild<gtk::Box>,
     #[template_child]

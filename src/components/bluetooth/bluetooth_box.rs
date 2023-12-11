@@ -54,6 +54,7 @@ fn setup_callbacks(
     imp.reset_visibility
         .set_action_target_value(Some(&Variant::from("visibility")));
 
+    imp.reset_bluetooth_main_tab.set_activatable(true);
     imp.reset_bluetooth_main_tab
         .set_action_name(Some("navigation.pop"));
 
@@ -67,15 +68,13 @@ fn setup_callbacks(
         });
 
     imp.reset_bluetooth_discoverable_switch
-        .connect_state_set(clone!(@weak imp => @default-return glib::Propagation::Proceed,move |_, state| {
-            set_bluetooth_adapter_visibility(imp.reset_current_bluetooth_adapter.borrow().path.clone(), state);
-            glib::Propagation::Proceed
+        .connect_active_notify(clone!(@weak imp => move |state| {
+            set_bluetooth_adapter_visibility(imp.reset_current_bluetooth_adapter.borrow().path.clone(), state.is_active());
         }));
 
     imp.reset_bluetooth_pairable_switch
-        .connect_state_set(clone!(@weak imp => @default-return glib::Propagation::Proceed,move |_, state| {
-            set_bluetooth_adapter_pairability(imp.reset_current_bluetooth_adapter.borrow().path.clone(), state);
-            glib::Propagation::Proceed
+        .connect_active_notify(clone!(@weak imp => move |state| {
+            set_bluetooth_adapter_pairability(imp.reset_current_bluetooth_adapter.borrow().path.clone(), state.is_active());
         }));
 
     imp.reset_bluetooth_switch
@@ -151,11 +150,11 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
                     imp.reset_bluetooth_switch
                         .set_active(current_adapter.powered);
                     imp.reset_bluetooth_discoverable_switch
-                        .set_state(current_adapter.discoverable);
+                        .set_active(current_adapter.discoverable);
                     imp.reset_bluetooth_discoverable_switch
                         .set_active(current_adapter.discoverable);
                     imp.reset_bluetooth_pairable_switch
-                        .set_state(current_adapter.pairable);
+                        .set_active(current_adapter.pairable);
                     imp.reset_bluetooth_pairable_switch
                         .set_active(current_adapter.pairable);
                 }

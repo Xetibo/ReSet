@@ -12,7 +12,7 @@ use dbus::arg::PropMap;
 use dbus::{Error, Path};
 use glib::{clone, PropertySet};
 use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
-use re_set_lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, TypeSettings};
+use re_set_lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, KeyManagement, TypeSettings};
 use IpProtocol::{IPv4, IPv6};
 
 use crate::components::wifi::utils::IpProtocol;
@@ -30,11 +30,11 @@ unsafe impl Send for WifiOptions {}
 unsafe impl Sync for WifiOptions {}
 
 impl WifiOptions {
-    pub fn new(connection: Connection, access_point: Path<'static>) -> Arc<Self> {
+    pub fn new(connection: Connection, connection_path: Path<'static>) -> Arc<Self> {
         let wifi_option: Arc<WifiOptions> = Arc::new(Object::builder().build());
         wifi_option.imp().connection.set(connection);
         wifi_option.initialize_ui();
-        setup_callbacks(&wifi_option, access_point);
+        setup_callbacks(&wifi_option, connection_path);
         wifi_option
     }
 
@@ -59,7 +59,7 @@ impl WifiOptions {
                 .reset_wifi_metered
                 .set_active(conn.settings.metered != -1);
             match &conn.device {
-                TypeSettings::WIFI(wifi) => {
+                TypeSettings::WIFI(wifi, _) => {
                     self_imp.reset_wifi_link_speed.set_visible(false);
                     self_imp.reset_wifi_ip4_addr.set_visible(false);
                     self_imp.reset_wifi_ip6_addr.set_visible(false);
@@ -93,27 +93,26 @@ impl WifiOptions {
             // IPv4
             self_imp
                 .reset_ip4_method
-                .set_selected(conn.ipv4.dns_method.to_i32() as u32);
-            self.set_ip4_visibility(conn.ipv4.dns_method.to_i32() as u32);
+                .set_selected(conn.ipv4.method.to_i32() as u32);
+            self.set_ip4_visibility(conn.ipv4.method.to_i32() as u32);
 
-            let ipv4_dns: Vec<String> = conn
+            let ipv4_dns: Vec<Ipv4Addr> = conn
                 .ipv4
                 .dns
                 .iter()
-                .map(|addr| {
-                    addr.iter()
-                        .map(|octet| octet.to_string())
-                        .collect::<Vec<String>>()
-                        .join(".")
-                })
+                .map(|addr| Ipv4Addr::from(*addr))
                 .collect();
-            self_imp.reset_ip4_dns.set_text(&ipv4_dns.join(", "));
+
+            self_imp.reset_ip4_dns.set_text(&ipv4_dns.iter()
+                .map(|ip| ip.to_string())
+                .collect::<Vec<String>>()
+                .join(", "));
             self_imp.reset_ip4_gateway.set_text(&conn.ipv4.gateway);
             // IPv6
             self_imp
                 .reset_ip6_method
-                .set_selected(conn.ipv6.dns_method.to_i32() as u32);
-            self.set_ip6_visibility(conn.ipv6.dns_method.to_i32() as u32);
+                .set_selected(conn.ipv6.method.to_i32() as u32);
+            self.set_ip6_visibility(conn.ipv6.method.to_i32() as u32);
 
             let ipv6_dns: Vec<String> = conn
                 .ipv6
@@ -126,23 +125,24 @@ impl WifiOptions {
                         .join(":")
                 })
                 .collect();
+
             self_imp.reset_ip6_dns.set_text(&ipv6_dns.join(", "));
             self_imp.reset_ip6_gateway.set_text(&conn.ipv6.gateway);
 
             // Security
-            if let TypeSettings::WIFI(wifi) = &conn.device {
-                match wifi.security_settings.key_management.as_str() {
-                    "none" => {
+            if let TypeSettings::WIFI(_, wifi_security) = &conn.device {
+                match wifi_security.key_management {
+                    KeyManagement::NONE => {
                         self_imp.reset_wifi_security_dropdown.set_selected(0);
                         self_imp.reset_wifi_password.set_visible(false);
                         self_imp.reset_wifi_password.set_text("");
                     }
-                    "wpa-psk" => {
+                    KeyManagement::WPAPSK => {
                         self_imp.reset_wifi_security_dropdown.set_selected(1);
                         self_imp.reset_wifi_password.set_visible(true);
                         self_imp
                             .reset_wifi_password
-                            .set_text(&wifi.security_settings.psk);
+                            .set_text(&wifi_security.psk);
                     }
                     _ => {}
                 }
@@ -242,6 +242,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
     imp.wifi_options_apply_button
         .connect_clicked(clone!(@weak imp => move |_| {
             let prop = imp.connection.borrow().convert_to_propmap();
+            dbg!(&prop);
             set_connection_settings(path.clone(), prop);
         }));
     // IPv4
@@ -250,7 +251,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
         .connect_selected_notify(clone!(@weak imp => move |dropdown| {
             let selected = dropdown.selected();
             let mut conn = imp.connection.borrow_mut();
-            conn.ipv4.dns_method = DNSMethod4::from_i32(selected as i32);
+            conn.ipv4.method = DNSMethod4::from_i32(selected as i32);
             wifi_options_ip4.set_ip4_visibility(selected);
         }));
 
@@ -266,7 +267,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             for dns_entry in dns_input.as_str().split(',').map(|s| s.trim()) {
                 if let Ok(addr) = Ipv4Addr::from_str(dns_entry) {
                     imp.reset_ip4_dns.remove_css_class("error");
-                    conn.ipv4.dns.push(addr.octets().to_vec());
+                    conn.ipv4.dns.push(u32::from_be_bytes(addr.octets()));
                 } else {
                     imp.reset_ip4_dns.add_css_class("error");
                 }
@@ -274,7 +275,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
         }));
     imp.reset_ip4_address_add_button
         .connect_clicked(clone!(@weak imp => move |_|  {
-            let address = &WifiAddressEntry::new(None, imp.connection.clone(), IpProtocol::IPv4);
+            let address = &WifiAddressEntry::new(None, imp.connection.clone(), IPv4);
             imp.reset_ip4_address_group.add(address);
         }));
 
@@ -300,7 +301,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
         .connect_selected_notify(clone!(@weak imp => move |dropdown| {
             let selected = dropdown.selected();
             let mut conn = imp.connection.borrow_mut();
-            conn.ipv6.dns_method = DNSMethod6::from_i32(selected as i32);
+            conn.ipv6.method = DNSMethod6::from_i32(selected as i32);
             wifi_options_ip6.set_ip6_visibility(selected);
         }));
 
@@ -324,7 +325,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
         }));
     imp.reset_ip6_address_add_button
         .connect_clicked(clone!(@weak imp => move |_|  {
-            let address = &WifiAddressEntry::new(None, imp.connection.clone(), IpProtocol::IPv4);
+            let address = &WifiAddressEntry::new(None, imp.connection.clone(), IPv4);
             imp.reset_ip6_address_group.add(address);
         }));
 
@@ -352,15 +353,15 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             let mut conn = imp.connection.borrow_mut();
 
             match (selected, &mut conn.device) {
-                (0 , TypeSettings::WIFI(wifi)) => { // None
+                (0 , TypeSettings::WIFI(_, wifi_security)) => { // None
                     imp.reset_wifi_password.set_visible(false);
-                    wifi.security_settings.key_management = String::from("none");
-                    wifi.security_settings.authentication_algorithm = String::from("open");
+                    wifi_security.key_management = KeyManagement::NONE;
+                    wifi_security.authentication_algorithm = String::from("none");
                 },
-                (1 , TypeSettings::WIFI(wifi)) => { // WPA/WPA2 Personal
+                (1 , TypeSettings::WIFI(_, wifi_security)) => { // WPA/WPA2 Personal
                     imp.reset_wifi_password.set_visible(true);
-                    wifi.security_settings.key_management = String::from("wpa-psk");
-                    wifi.security_settings.authentication_algorithm = String::from("");
+                    wifi_security.key_management = KeyManagement::WPAPSK;
+                    wifi_security.authentication_algorithm = String::from("none");
                 },
                 (_, _) => {}
             }
@@ -370,8 +371,8 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
         .connect_changed(clone!(@weak imp => move |entry| {
             let password_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
-            if let TypeSettings::WIFI(wifi) = &mut conn.device {
-                wifi.security_settings.psk = password_input.to_string();
+            if let TypeSettings::WIFI(_, wifi_security) = &mut conn.device {
+                wifi_security.psk = password_input.to_string();
             }
         }));
 }

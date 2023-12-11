@@ -7,7 +7,7 @@ use std::time::SystemTime;
 
 use crate::components::input::output_stream_entry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale};
+use gtk::{glib, Button, CompositeTemplate, Label, Scale};
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]
@@ -20,8 +20,6 @@ pub struct OutputStreamEntry {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<OutputStream>>,
     pub associated_source: Arc<RefCell<(u32, String)>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,

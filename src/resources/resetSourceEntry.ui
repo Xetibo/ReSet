@@ -60,11 +60,6 @@
                 </child>
               </object>
             </child>
-            <child>
-              <object class="GtkProgressBar" id="reset_volume_meter">
-                <property name="margin-top">5</property>
-              </object>
-            </child>
           </object>
         </property>
         <property name="css-classes">audioRow
