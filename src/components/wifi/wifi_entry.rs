@@ -1,16 +1,17 @@
+use std::ops::Deref;
 use std::sync::Arc;
 use std::time::Duration;
 
 use crate::components::wifi::utils::get_connection_settings;
 use adw::glib;
 use adw::glib::{Object, PropertySet};
-use adw::prelude::{ActionRowExt, ButtonExt, EditableExt, PopoverExt};
+use adw::prelude::{ActionRowExt, ButtonExt, EditableExt, PopoverExt, PreferencesRowExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::clone;
-use gtk::gio;
-use gtk::prelude::{ListBoxRowExt, WidgetExt};
+use gtk::{Align, Button, gio, Image, Orientation};
+use gtk::prelude::{BoxExt, ListBoxRowExt, WidgetExt};
 use re_set_lib::network::network_structures::{AccessPoint, WifiStrength};
 
 use crate::components::wifi::wifi_box_impl::WifiBox;
@@ -20,7 +21,7 @@ use crate::components::wifi::wifi_options::WifiOptions;
 glib::wrapper! {
     pub struct WifiEntry(ObjectSubclass<wifi_entry_impl::WifiEntry>)
         @extends adw::ActionRow, gtk::Widget,
-        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, gtk::ListBoxRow;
+        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, adw::PreferencesRow, gtk::ListBoxRow;
 }
 
 unsafe impl Send for WifiEntry {}
@@ -37,24 +38,41 @@ impl WifiEntry {
         let name_opt = String::from_utf8(ssid).unwrap_or_else(|_| String::from(""));
         let name = name_opt.as_str();
         entry_imp.wifi_strength.set(strength);
-        entry_imp.reset_wifi_label.get().set_text(name);
-        entry_imp.reset_wifi_encrypted.set_visible(false);
+        entry.set_title(name);
         entry_imp.connected.set(connected);
+        entry_imp.reset_wifi_edit_button.replace(Button::builder()
+            .icon_name("document-edit-symbolic")
+            .valign(Align::Center)
+            .build());
+
         // TODO handle encryption thing
-        entry_imp
-            .reset_wifi_strength
-            .get()
-            .set_from_icon_name(match strength {
-                WifiStrength::Excellent => Some("network-wireless-signal-excellent-symbolic"),
-                WifiStrength::Ok => Some("network-wireless-signal-ok-symbolic"),
-                WifiStrength::Weak => Some("network-wireless-signal-weak-symbolic"),
-                WifiStrength::None => Some("network-wireless-signal-none-symbolic"),
-            });
+        let wifi_strength = Image::builder().icon_name(match strength {
+            WifiStrength::Excellent => "network-wireless-signal-excellent-symbolic",
+            WifiStrength::Ok => "network-wireless-signal-ok-symbolic",
+            WifiStrength::Weak => "network-wireless-signal-weak-symbolic",
+            WifiStrength::None => "network-wireless-signal-none-symbolic",
+        }).build();
+
+        let prefix_box = gtk::Box::new(Orientation::Horizontal, 0);
+        prefix_box.append(&wifi_strength);
+        prefix_box.append(&Image::builder()
+            .icon_name("system-lock-screen-symbolic")
+            .valign(Align::End)
+            .pixel_size(9)
+            .margin_bottom(12)
+            .build());
+        entry.add_prefix(&prefix_box);
+
+        let suffix_box = gtk::Box::new(Orientation::Horizontal, 5);
+        suffix_box.append(entry_imp.reset_wifi_connected.borrow().deref());
+        suffix_box.append(entry_imp.reset_wifi_edit_button.borrow().deref());
+        entry.add_suffix(&suffix_box);
+
         if !access_point.stored {
-            entry_imp.reset_wifi_edit_button.set_sensitive(false);
+            entry_imp.reset_wifi_edit_button.borrow().set_sensitive(false);
         }
         if connected {
-            entry_imp.reset_wifi_connected.set_text("Connected");
+            entry_imp.reset_wifi_connected.borrow().set_text("Connected");
         }
         {
             let mut wifi_name = entry_imp.wifi_name.borrow_mut();
@@ -79,7 +97,7 @@ impl WifiEntry {
 
     pub fn setup_callbacks(&self, wifi_box: &WifiBox) {
         let self_imp = self.imp();
-        self_imp.reset_wifi_edit_button.connect_clicked(clone!(@ weak self_imp, @ weak wifi_box => move |_| {
+        self_imp.reset_wifi_edit_button.borrow().connect_clicked(clone!(@ weak self_imp, @ weak wifi_box => move |_| {
             let _option = get_connection_settings(self_imp.access_point.borrow().associated_connection.clone());
             wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(_option, self_imp.access_point.borrow().dbus_path.clone()));
         }));
@@ -106,7 +124,7 @@ pub fn click_disconnect(entry: Arc<WifiEntry>) {
             imp.connected.replace(false);
             return;
         }
-        imp.reset_wifi_connected.set_text("");
+        imp.reset_wifi_connected.borrow().set_text("");
         imp.connected.replace(false);
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
@@ -146,7 +164,7 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
                     return;
                 }
                 let imp = entry_ref.imp();
-                imp.reset_wifi_connected.set_text("Connected");
+                imp.reset_wifi_connected.borrow().set_text("Connected");
                 imp.connected.replace(true);
             });
         });
@@ -198,8 +216,8 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
                         }
                         let imp = entry_ref.imp();
                         imp.reset_wifi_popup.popdown();
-                        imp.reset_wifi_edit_button.set_sensitive(true);
-                        imp.reset_wifi_connected.set_text("Connected");
+                        imp.reset_wifi_edit_button.borrow().set_sensitive(true);
+                        imp.reset_wifi_connected.borrow().set_text("Connected");
                         imp.connected.replace(true);
                     });
                 });

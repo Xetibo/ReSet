@@ -8,7 +8,7 @@ use crate::components::base::utils::Listeners;
 use crate::components::utils::set_combo_row_ellipsis;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{ComboRowExt, ListBoxRowExt, PreferencesGroupExt};
+use adw::prelude::{ComboRowExt, ListBoxRowExt, PreferencesGroupExt, PreferencesRowExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
@@ -377,12 +377,11 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                     let name_opt = String::from_utf8(ssid).unwrap_or_else(|_| String::from(""));
                     let name = name_opt.as_str();
                     entry_imp.wifi_strength.set(strength);
-                    entry_imp.reset_wifi_label.get().set_text(name);
-                    entry_imp.reset_wifi_encrypted.set_visible(false);
+                    entry.set_title(name);
                     // TODO handle encryption thing
                     entry_imp
                         .reset_wifi_strength
-                        .get()
+                        .borrow()
                         .set_from_icon_name(match strength {
                             WifiStrength::Excellent => {
                                 Some("network-wireless-signal-excellent-symbolic")
@@ -392,14 +391,14 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                             WifiStrength::None => Some("network-wireless-signal-none-symbolic"),
                         });
                     if !ir.access_point.stored {
-                        entry_imp.reset_wifi_edit_button.set_sensitive(false);
+                        entry_imp.reset_wifi_edit_button.borrow().set_sensitive(false);
                     }
                     if ir.access_point.dbus_path
                         == imp.reset_current_wifi_device.borrow().active_access_point
                     {
-                        entry_imp.reset_wifi_connected.set_text("Connected");
+                        entry_imp.reset_wifi_connected.borrow().set_text("Connected");
                     } else {
-                        entry_imp.reset_wifi_connected.set_text("");
+                        entry_imp.reset_wifi_connected.borrow().set_text("");
                     }
                     {
                         let mut wifi_name = entry_imp.wifi_name.borrow_mut();
@@ -430,9 +429,9 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                         let mut connected = imp.connected.borrow_mut();
                         *connected = imp.access_point.borrow().dbus_path == current_device.path;
                         if *connected {
-                            imp.reset_wifi_connected.set_text("Connected");
+                            imp.reset_wifi_connected.borrow().set_text("Connected");
                         } else {
-                            imp.reset_wifi_connected.set_text("");
+                            imp.reset_wifi_connected.borrow().set_text("");
                         }
                     }
                 });
