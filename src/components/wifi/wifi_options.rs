@@ -130,7 +130,7 @@ impl WifiOptions {
             self_imp.reset_ip6_gateway.set_text(&conn.ipv6.gateway);
 
             // Security
-            if let TypeSettings::WIFI(wifi, wifi_security) = &conn.device {
+            if let TypeSettings::WIFI(_, wifi_security) = &conn.device {
                 match wifi_security.key_management {
                     KeyManagement::NONE => {
                         self_imp.reset_wifi_security_dropdown.set_selected(0);
@@ -353,12 +353,12 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             let mut conn = imp.connection.borrow_mut();
 
             match (selected, &mut conn.device) {
-                (0 , TypeSettings::WIFI(wifi, wifi_security)) => { // None
+                (0 , TypeSettings::WIFI(_, wifi_security)) => { // None
                     imp.reset_wifi_password.set_visible(false);
                     wifi_security.key_management = KeyManagement::NONE;
                     wifi_security.authentication_algorithm = String::from("none");
                 },
-                (1 , TypeSettings::WIFI(wifi, wifi_security)) => { // WPA/WPA2 Personal
+                (1 , TypeSettings::WIFI(_, wifi_security)) => { // WPA/WPA2 Personal
                     imp.reset_wifi_password.set_visible(true);
                     wifi_security.key_management = KeyManagement::WPAPSK;
                     wifi_security.authentication_algorithm = String::from("none");
@@ -371,7 +371,7 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
         .connect_changed(clone!(@weak imp => move |entry| {
             let password_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
-            if let TypeSettings::WIFI(wifi, wifi_security) = &mut conn.device {
+            if let TypeSettings::WIFI(_, wifi_security) = &mut conn.device {
                 wifi_security.psk = password_input.to_string();
             }
         }));
@@ -385,11 +385,10 @@ fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) 
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
-        let asdf: Result<(bool,), Error> = proxy.method_call(
+        let _: Result<(bool,), Error> = proxy.method_call(
             "org.Xetibo.ReSetWireless",
             "SetConnectionSettings",
             (path, prop),
         );
-        dbg!(asdf);
     });
 }

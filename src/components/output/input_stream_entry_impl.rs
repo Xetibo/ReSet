@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, ProgressBar, Scale};
+use gtk::{glib, Button, CompositeTemplate, Label, Scale};
 
 use super::input_stream_entry;
 

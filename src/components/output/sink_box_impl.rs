@@ -9,7 +9,7 @@ use crate::components::base::list_entry::ListEntry;
 use crate::components::output::input_stream_entry::InputStreamEntry;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Box, Button, CheckButton, CompositeTemplate, Label, StringList, TemplateChild};
-use gtk::{prelude::*, ProgressBar, Scale};
+use gtk::{prelude::*, Scale};
 
 use super::sink_box;
 use super::sink_entry::SinkEntry;

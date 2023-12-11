@@ -7,7 +7,7 @@ use std::time::SystemTime;
 
 use crate::components::output::sink_entry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
+use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, Scale};
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSinkEntry.ui")]
