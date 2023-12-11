@@ -33,8 +33,7 @@ pub struct SourceBox {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
+
     #[template_child]
     pub reset_sources: TemplateChild<gtk::Box>,
     #[template_child]

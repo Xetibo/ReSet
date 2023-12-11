@@ -36,8 +36,6 @@ pub struct SinkBox {
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
     #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
-    #[template_child]
     pub reset_sinks: TemplateChild<Box>,
     #[template_child]
     pub reset_input_stream_button: TemplateChild<ActionRow>,

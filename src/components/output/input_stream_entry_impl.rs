@@ -21,8 +21,6 @@ pub struct InputStreamEntry {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<InputStream>>,
     pub associated_sink: Arc<RefCell<(u32, String)>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,

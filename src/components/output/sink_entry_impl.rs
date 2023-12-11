@@ -22,8 +22,6 @@ pub struct SinkEntry {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub stream: Arc<RefCell<Sink>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }
