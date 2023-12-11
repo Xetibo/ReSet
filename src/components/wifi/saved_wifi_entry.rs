@@ -4,18 +4,18 @@ use crate::components::wifi::saved_wifi_entry_impl;
 use crate::components::wifi::wifi_box_impl::WifiBox;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{ButtonExt, WidgetExt};
+use adw::prelude::{ActionRowExt, ButtonExt, PreferencesRowExt, WidgetExt};
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, PropertySet};
-use gtk::gio;
-use gtk::prelude::ListBoxRowExt;
+use gtk::{Align, Button, gio, Orientation};
+use gtk::prelude::{BoxExt, ListBoxRowExt};
 
 glib::wrapper! {
     pub struct SavedWifiEntry(ObjectSubclass<saved_wifi_entry_impl::SavedWifiEntry>)
         @extends adw::ActionRow, gtk::Widget,
-        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, gtk::ListBoxRow;
+        @implements gtk::Accessible, gtk::Buildable, gtk::Actionable, gtk::ConstraintTarget, adw::PreferencesRow, gtk::ListBoxRow;
 }
 
 impl SavedWifiEntry {
@@ -24,7 +24,24 @@ impl SavedWifiEntry {
         entry.set_activatable(false);
         let entry_imp = entry.imp();
 
-        entry_imp.reset_edit_saved_wifi_button.connect_clicked(
+        entry.set_title(name);
+        entry_imp.reset_connection_path.set(path);
+
+        let edit_button = Button::builder()
+            .icon_name("document-edit-symbolic")
+            .valign(Align::Center)
+            .build();
+        let delete_button = Button::builder()
+            .icon_name("user-trash-symbolic")
+            .valign(Align::Center)
+            .build();
+
+        let suffix_box = gtk::Box::new(Orientation::Horizontal, 5);
+        suffix_box.append(&edit_button);
+        suffix_box.append(&delete_button);
+        entry.add_suffix(&suffix_box);
+
+        edit_button.connect_clicked(
             clone!(@ weak entry_imp, @ weak wifi_box => move |_| {
                 // TODO accesspoint has to be saved somewhere i guess
                 // let _option = getConnectionSettings(entryImp.accessPoint.borrow().associated_connection.clone());
@@ -32,9 +49,7 @@ impl SavedWifiEntry {
             }),
         );
 
-        entry_imp.reset_saved_wifi_label.set_text(name);
-        entry_imp.reset_connection_path.set(path);
-        entry_imp.reset_delete_saved_wifi_button.connect_clicked(
+        delete_button.connect_clicked(
             clone!(@weak entry as entry => move |_| {
             delete_connection(entry.imp().reset_connection_path.take());
             // TODO handle error
