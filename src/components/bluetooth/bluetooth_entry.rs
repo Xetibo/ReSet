@@ -48,10 +48,8 @@ impl BluetoothEntry {
             entry.add_prefix(&Image::from_icon_name(&device.icon));
         }
         if device.connected || device.bonded {
-            println!("was bonded");
             entry_imp.remove_device_button.borrow().set_sensitive(true);
         } else {
-            dbg!(&device);
             entry_imp.remove_device_button.borrow().set_sensitive(false);
         }
 
