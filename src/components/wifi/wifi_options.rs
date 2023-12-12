@@ -391,11 +391,10 @@ fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) 
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
-        let asdf: Result<(bool,), Error> = proxy.method_call(
+        let _: Result<(bool,), Error> = proxy.method_call(
             "org.Xetibo.ReSetWireless",
             "SetConnectionSettings",
             (path, prop),
         );
-        dbg!(asdf);
     });
 }
