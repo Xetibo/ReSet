@@ -8,7 +8,7 @@ use adw::{Breakpoint, OverlaySplitView};
 use glib::subclass::InitializingObject;
 use gtk::prelude::WidgetExt;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, PopoverMenu, SearchEntry};
+use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
 
 use crate::components::base::utils::{Listeners, Position};
 use crate::components::wifi::wifi_box::WifiBox;
