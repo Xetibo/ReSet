@@ -161,12 +161,12 @@ fn set_inputstream_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSetAudio",
+            "org.Xetibo.ReSet.Audio",
             "SetInputStreamVolume",
             (index, channels, value as u32),
         );
@@ -182,12 +182,12 @@ fn toggle_input_stream_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSetAudio",
+            "org.Xetibo.ReSet.Audio",
             "SetInputStreamMute",
             (index, muted),
         );
@@ -203,12 +203,12 @@ fn set_sink_of_input_stream(stream: u32, sink: u32) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSetAudio",
+            "org.Xetibo.ReSet.Audio",
             "SetSinkOfInputStream",
             (stream, sink),
         );

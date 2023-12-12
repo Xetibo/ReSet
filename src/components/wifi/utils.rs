@@ -19,12 +19,12 @@ type ResultType =
 pub fn get_connection_settings(path: Path<'static>) -> ResetConnection {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
     let res: ResultType =
-        proxy.method_call("org.Xetibo.ReSetWireless", "GetConnectionSettings", (path,));
+        proxy.method_call("org.Xetibo.ReSet.Wireless", "GetConnectionSettings", (path,));
     if res.is_err() {
         ResetConnection::default();
     }

@@ -389,12 +389,12 @@ fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) 
     gio::spawn_blocking(move || {
         let conn = dbus::blocking::Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(1000),
         );
         let _: Result<(bool,), Error> = proxy.method_call(
-            "org.Xetibo.ReSetWireless",
+            "org.Xetibo.ReSet.Wireless",
             "SetConnectionSettings",
             (path, prop),
         );

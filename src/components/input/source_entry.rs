@@ -105,12 +105,12 @@ pub fn set_source_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSetAudio",
+            "org.Xetibo.ReSet.Audio",
             "SetSourceVolume",
             (index, channels, value as u32),
         );
@@ -126,12 +126,12 @@ pub fn toggle_source_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetAudio", "SetSourceMute", (index, muted));
+            proxy.method_call("org.Xetibo.ReSet.Audio", "SetSourceMute", (index, muted));
         // if res.is_err() {
         //     return false;
         // }
@@ -143,12 +143,12 @@ pub fn toggle_source_mute(index: u32, muted: bool) -> bool {
 pub fn set_default_source(name: Arc<String>) -> Option<Source> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
     let res: Result<(Source,), Error> = proxy.method_call(
-        "org.Xetibo.ReSetAudio",
+        "org.Xetibo.ReSet.Audio",
         "SetDefaultSource",
         (name.as_str(),),
     );

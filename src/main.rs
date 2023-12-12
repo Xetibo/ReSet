@@ -53,12 +53,12 @@ fn shutdown(_: &Application) {
     thread::spawn(|| {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(100),
         );
         let res: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetDaemon", "UnregisterClient", ("ReSet",));
+            proxy.method_call("org.Xetibo.ReSet.Daemon", "UnregisterClient", ("ReSet",));
         res
     });
 }
@@ -67,16 +67,16 @@ async fn daemon_check() {
     let handle = thread::spawn(|| {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(100),
         );
         let res: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetDaemon", "RegisterClient", ("ReSet",));
+            proxy.method_call("org.Xetibo.ReSet.Daemon", "RegisterClient", ("ReSet",));
         res
     });
     let res = handle.join();
     if res.unwrap().is_err() {
-        run_daemon().await;
+        run_daemon(APP_ID).await;
     } 
 }

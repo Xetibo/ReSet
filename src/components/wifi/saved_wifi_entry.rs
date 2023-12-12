@@ -66,11 +66,11 @@ fn delete_connection(path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSetDaemon",
-            "/org/Xetibo/ReSetDaemon",
+            "org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSetWireless", "DeleteConnection", (path,));
+            proxy.method_call("org.Xetibo.ReSet.Wireless", "DeleteConnection", (path,));
     });
 }

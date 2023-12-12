@@ -6,6 +6,6 @@ Exec=reset
 Terminal=false
 Type=Application
 Keywords=settings;gtk;
-Icon=org.xetibo.ReSet
+Icon=org.Xetibo.ReSet
 Categories=Utility;GTK;
 StartupNotify=false

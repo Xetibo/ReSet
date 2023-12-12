@@ -103,6 +103,11 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
             let list = imp.reset_model_list.write().unwrap();
             let mut model_index = imp.reset_model_index.write().unwrap();
             let mut map = imp.reset_wifi_devices.write().unwrap();
+            {
+                if imp.reset_current_wifi_device.borrow().path == Path::from("/") {
+                    return;
+                }
+            }
             imp.reset_current_wifi_device
                 .replace(devices.last().unwrap().clone());
             for (index, device) in devices.into_iter().enumerate() {
@@ -188,23 +193,23 @@ pub fn show_stored_connections(wifi_box: Arc<WifiBox>) {
 pub fn dbus_start_network_events() {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
     let _: Result<(), Error> =
-        proxy.method_call("org.Xetibo.ReSetWireless", "StartNetworkListener", ());
+        proxy.method_call("org.Xetibo.ReSet.Wireless", "StartNetworkListener", ());
 }
 
 pub fn get_access_points() -> Vec<AccessPoint> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<AccessPoint>,), Error> =
-        proxy.method_call("org.Xetibo.ReSetWireless", "ListAccessPoints", ());
+        proxy.method_call("org.Xetibo.ReSet.Wireless", "ListAccessPoints", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -215,23 +220,23 @@ pub fn get_access_points() -> Vec<AccessPoint> {
 pub fn set_wifi_device(path: Path<'static>) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
     let _: Result<(bool,), Error> =
-        proxy.method_call("org.Xetibo.ReSetWireless", "SetWifiDevice", (path,));
+        proxy.method_call("org.Xetibo.ReSet.Wireless", "SetWifiDevice", (path,));
 }
 
 pub fn get_wifi_devices() -> Vec<WifiDevice> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<WifiDevice>,), Error> =
-        proxy.method_call("org.Xetibo.ReSetWireless", "GetAllWifiDevices", ());
+        proxy.method_call("org.Xetibo.ReSet.Wireless", "GetAllWifiDevices", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -242,12 +247,12 @@ pub fn get_wifi_devices() -> Vec<WifiDevice> {
 pub fn get_wifi_status() -> bool {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
     let res: Result<(bool,), Error> =
-        proxy.method_call("org.Xetibo.ReSetWireless", "GetWifiStatus", ());
+        proxy.method_call("org.Xetibo.ReSet.Wireless", "GetWifiStatus", ());
     if res.is_err() {
         return false;
     }
@@ -257,11 +262,12 @@ pub fn get_wifi_status() -> bool {
 pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
-    let res: ResultMap = proxy.method_call("org.Xetibo.ReSetWireless", "ListStoredConnections", ());
+    let res: ResultMap =
+        proxy.method_call("org.Xetibo.ReSet.Wireless", "ListStoredConnections", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -272,12 +278,12 @@ pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
 pub fn set_wifi_enabled(enabled: bool) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSetDaemon",
-        "/org/Xetibo/ReSetDaemon",
+        "org.Xetibo.ReSet.Daemon",
+        "/org/Xetibo/ReSet/Daemon",
         Duration::from_millis(1000),
     );
     let _: Result<(bool,), Error> =
-        proxy.method_call("org.Xetibo.ReSetWireless", "SetWifiEnabled", (enabled,));
+        proxy.method_call("org.Xetibo.ReSet.Wireless", "SetWifiEnabled", (enabled,));
 }
 
 pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
@@ -295,23 +301,23 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
         let changed_ref = wifi_box.clone();
         let wifi_changed_ref = wifi_box.clone();
         let access_point_added = AccessPointAdded::match_rule(
-            Some(&"org.Xetibo.ReSetDaemon".into()),
-            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
+            Some(&"org.Xetibo.ReSet.Daemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
         )
         .static_clone();
         let access_point_removed = AccessPointRemoved::match_rule(
-            Some(&"org.Xetibo.ReSetDaemon".into()),
-            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
+            Some(&"org.Xetibo.ReSet.Daemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
         )
         .static_clone();
         let access_point_changed = AccessPointChanged::match_rule(
-            Some(&"org.Xetibo.ReSetDaemon".into()),
-            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
+            Some(&"org.Xetibo.ReSet.Daemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
         )
         .static_clone();
         let device_changed = WifiDeviceChanged::match_rule(
-            Some(&"org.Xetibo.ReSetDaemon".into()),
-            Some(&Path::from("/org/Xetibo/ReSetDaemon")),
+            Some(&"org.Xetibo.ReSet.Daemon".into()),
+            Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
         )
         .static_clone();
         let res = conn.add_match(access_point_added, move |ir: AccessPointAdded, _, _| {
