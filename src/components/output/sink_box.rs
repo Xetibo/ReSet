@@ -23,6 +23,9 @@ use crate::components::base::utils::{
     InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
 use crate::components::output::sink_entry::set_sink_volume;
+use crate::components::utils::AUDIO;
+use crate::components::utils::BASE;
+use crate::components::utils::DBUS_PATH;
 use crate::components::utils::{create_dropdown_label_factory, set_combo_row_ellipsis};
 
 use super::input_stream_entry::InputStreamEntry;
@@ -310,12 +313,12 @@ pub fn populate_cards(output_box: Arc<SinkBox>) {
 fn get_input_streams() -> Vec<InputStream> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<InputStream>,), Error> =
-        proxy.method_call("org.Xetibo.ReSet.Audio", "ListInputStreams", ());
+        proxy.method_call(AUDIO, "ListInputStreams", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -325,12 +328,12 @@ fn get_input_streams() -> Vec<InputStream> {
 fn get_sinks() -> Vec<Sink> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<Sink>,), Error> =
-        proxy.method_call("org.Xetibo.ReSet.Audio", "ListSinks", ());
+        proxy.method_call(AUDIO, "ListSinks", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -340,12 +343,12 @@ fn get_sinks() -> Vec<Sink> {
 fn get_cards() -> Vec<Card> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<Card>,), Error> =
-        proxy.method_call("org.Xetibo.ReSet.Audio", "ListCards", ());
+        proxy.method_call(AUDIO, "ListCards", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -355,12 +358,12 @@ fn get_cards() -> Vec<Card> {
 fn get_default_sink_name() -> String {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let res: Result<(String,), Error> =
-        proxy.method_call("org.Xetibo.ReSet.Audio", "GetDefaultSinkName", ());
+        proxy.method_call(AUDIO, "GetDefaultSinkName", ());
     if res.is_err() {
         return String::from("");
     }
@@ -370,12 +373,12 @@ fn get_default_sink_name() -> String {
 fn get_default_sink() -> Sink {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let res: Result<(Sink,), Error> =
-        proxy.method_call("org.Xetibo.ReSet.Audio", "GetDefaultSink", ());
+        proxy.method_call(AUDIO, "GetDefaultSink", ());
     if res.is_err() {
         return Sink::default();
     }
@@ -384,33 +387,33 @@ fn get_default_sink() -> Sink {
 
 pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Connection {
     let sink_added = SinkAdded::match_rule(
-        Some(&"org.Xetibo.ReSet.Daemon".into()),
-        Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+        Some(&BASE.into()),
+        Some(&Path::from(DBUS_PATH)),
     )
     .static_clone();
     let sink_removed = SinkRemoved::match_rule(
-        Some(&"org.Xetibo.ReSet.Daemon".into()),
-        Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+        Some(&BASE.into()),
+        Some(&Path::from(DBUS_PATH)),
     )
     .static_clone();
     let sink_changed = SinkChanged::match_rule(
-        Some(&"org.Xetibo.ReSet.Daemon".into()),
-        Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+        Some(&BASE.into()),
+        Some(&Path::from(DBUS_PATH)),
     )
     .static_clone();
     let input_stream_added = InputStreamAdded::match_rule(
-        Some(&"org.Xetibo.ReSet.Daemon".into()),
-        Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+        Some(&BASE.into()),
+        Some(&Path::from(DBUS_PATH)),
     )
     .static_clone();
     let input_stream_removed = InputStreamRemoved::match_rule(
-        Some(&"org.Xetibo.ReSet.Daemon".into()),
-        Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+        Some(&BASE.into()),
+        Some(&Path::from(DBUS_PATH)),
     )
     .static_clone();
     let input_stream_changed = InputStreamChanged::match_rule(
-        Some(&"org.Xetibo.ReSet.Daemon".into()),
-        Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+        Some(&BASE.into()),
+        Some(&Path::from(DBUS_PATH)),
     )
     .static_clone();
 

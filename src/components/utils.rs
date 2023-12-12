@@ -5,6 +5,12 @@ use glib::{Cast, Object};
 use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, WidgetExt};
 use gtk::{Align, SignalListItemFactory, StringObject};
 
+pub const DBUS_PATH: &str = "/org/Xetibo/ReSet/Daemon";
+pub const WIRELESS: &str = "org.Xetibo.ReSet.Wireless";
+pub const BLUETOOTH: &str = "org.Xetibo.ReSet.Bluetooth";
+pub const AUDIO: &str = "org.Xetibo.ReSet.Audio";
+pub const BASE: &str = "org.Xetibo.ReSet.Daemon";
+
 pub fn create_dropdown_label_factory() -> SignalListItemFactory {
     let factory = SignalListItemFactory::new();
     factory.connect_setup(|_, item| {

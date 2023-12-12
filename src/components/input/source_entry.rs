@@ -11,6 +11,8 @@ use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
 use re_set_lib::audio::audio_structures::Source;
 
+use crate::components::utils::{BASE, DBUS_PATH, AUDIO};
+
 use super::source_box::{refresh_default_source, SourceBox};
 use super::source_entry_impl;
 
@@ -105,12 +107,12 @@ pub fn set_source_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Audio",
+            AUDIO,
             "SetSourceVolume",
             (index, channels, value as u32),
         );
@@ -126,12 +128,12 @@ pub fn toggle_source_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSet.Audio", "SetSourceMute", (index, muted));
+            proxy.method_call(AUDIO, "SetSourceMute", (index, muted));
         // if res.is_err() {
         //     return false;
         // }
@@ -143,12 +145,12 @@ pub fn toggle_source_mute(index: u32, muted: bool) -> bool {
 pub fn set_default_source(name: Arc<String>) -> Option<Source> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let res: Result<(Source,), Error> = proxy.method_call(
-        "org.Xetibo.ReSet.Audio",
+        AUDIO,
         "SetDefaultSource",
         (name.as_str(),),
     );

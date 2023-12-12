@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use crate::components::utils::{create_dropdown_label_factory, set_combo_row_ellipsis};
+use crate::components::utils::{create_dropdown_label_factory, set_combo_row_ellipsis, BASE, DBUS_PATH, AUDIO};
 use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
@@ -134,12 +134,12 @@ fn set_outputstream_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Audio",
+            AUDIO,
             "SetOutputStreamVolume",
             (index, channels, value as u32),
         );
@@ -155,12 +155,12 @@ fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Audio",
+            AUDIO,
             "SetOutputStreamMute",
             (index, muted),
         );
@@ -176,12 +176,12 @@ fn set_source_of_output_stream(stream: u32, source: u32) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(bool,), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Audio",
+            AUDIO,
             "SetSourceOfOutputStream",
             (stream, source),
         );

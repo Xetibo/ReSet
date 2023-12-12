@@ -18,6 +18,7 @@ use re_set_lib::network::connection::{
 
 use IpProtocol::{IPv4, IPv6};
 
+use crate::components::utils::{BASE, DBUS_PATH, WIRELESS};
 use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifi_address_entry::WifiAddressEntry;
 use crate::components::wifi::wifi_options_impl;
@@ -59,7 +60,7 @@ impl WifiOptions {
                 .set_active(conn.settings.autoconnect);
             self_imp
                 .reset_wifi_metered
-                .set_active(conn.settings.metered != -1);
+                .set_active(conn.settings.metered != 0);
             match &conn.device {
                 TypeSettings::WIFI(wifi) => {
                     self_imp.reset_wifi_link_speed.set_visible(false);
@@ -389,12 +390,12 @@ fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) 
     gio::spawn_blocking(move || {
         let conn = dbus::blocking::Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(bool,), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Wireless",
+            WIRELESS,
             "SetConnectionSettings",
             (path, prop),
         );

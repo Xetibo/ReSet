@@ -13,6 +13,7 @@ use components::utils::create_dropdown_label_factory;
 use re_set_lib::audio::audio_structures::Card;
 
 use crate::components;
+use crate::components::utils::{BASE, DBUS_PATH, AUDIO};
 
 use super::card_entry_impl;
 
@@ -66,12 +67,12 @@ fn set_card_profile_of_device(device_index: u32, profile_name: String) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Audio",
+            AUDIO,
             "SetCardProfileOfDevice",
             (device_index, profile_name),
         );

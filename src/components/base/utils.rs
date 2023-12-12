@@ -20,7 +20,7 @@ use re_set_lib::{
 
 use crate::components::{
     input::source_box::{start_input_box_listener, SourceBox},
-    output::sink_box::{start_output_box_listener, SinkBox},
+    output::sink_box::{start_output_box_listener, SinkBox}, utils::{BASE, DBUS_PATH, AUDIO, WIRELESS},
 };
 
 #[derive(Default, PartialEq, Eq)]
@@ -53,12 +53,12 @@ impl Listeners {
         thread::spawn(|| {
             let conn = Connection::new_session().unwrap();
             let proxy = conn.with_proxy(
-                "org.Xetibo.ReSet.Daemon",
-                "/org/Xetibo/ReSet/Daemon",
+                BASE,
+                DBUS_PATH,
                 Duration::from_millis(1000),
             );
             let _: Result<(bool,), Error> =
-                proxy.method_call("org.Xetibo.ReSet.Wireless", "StopNetworkListener", ());
+                proxy.method_call(WIRELESS, "StopNetworkListener", ());
         });
     }
 
@@ -90,7 +90,7 @@ impl arg::ReadAll for SinkAdded {
 
 impl dbus::message::SignalArgs for SinkAdded {
     const NAME: &'static str = "SinkAdded";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(Sink,)> for SinkAdded {
@@ -118,7 +118,7 @@ impl arg::ReadAll for SinkChanged {
 
 impl dbus::message::SignalArgs for SinkChanged {
     const NAME: &'static str = "SinkChanged";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(Sink,)> for SinkChanged {
@@ -146,7 +146,7 @@ impl arg::ReadAll for SinkRemoved {
 
 impl dbus::message::SignalArgs for SinkRemoved {
     const NAME: &'static str = "SinkRemoved";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(u32,)> for SinkRemoved {
@@ -174,7 +174,7 @@ impl arg::ReadAll for InputStreamAdded {
 
 impl dbus::message::SignalArgs for InputStreamAdded {
     const NAME: &'static str = "InputStreamAdded";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(InputStream,)> for InputStreamAdded {
@@ -202,7 +202,7 @@ impl arg::ReadAll for InputStreamChanged {
 
 impl dbus::message::SignalArgs for InputStreamChanged {
     const NAME: &'static str = "InputStreamChanged";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 #[derive(Debug)]
@@ -224,7 +224,7 @@ impl arg::ReadAll for InputStreamRemoved {
 
 impl dbus::message::SignalArgs for InputStreamRemoved {
     const NAME: &'static str = "InputStreamRemoved";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(u32,)> for InputStreamRemoved {
@@ -252,7 +252,7 @@ impl arg::ReadAll for SourceAdded {
 
 impl dbus::message::SignalArgs for SourceAdded {
     const NAME: &'static str = "SourceAdded";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(Source,)> for SourceAdded {
@@ -280,7 +280,7 @@ impl arg::ReadAll for SourceChanged {
 
 impl dbus::message::SignalArgs for SourceChanged {
     const NAME: &'static str = "SourceChanged";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(Source,)> for SourceChanged {
@@ -308,7 +308,7 @@ impl arg::ReadAll for SourceRemoved {
 
 impl dbus::message::SignalArgs for SourceRemoved {
     const NAME: &'static str = "SourceRemoved";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(u32,)> for SourceRemoved {
@@ -336,7 +336,7 @@ impl arg::ReadAll for OutputStreamAdded {
 
 impl dbus::message::SignalArgs for OutputStreamAdded {
     const NAME: &'static str = "OutputStreamAdded";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(OutputStream,)> for OutputStreamAdded {
@@ -364,7 +364,7 @@ impl arg::ReadAll for OutputStreamChanged {
 
 impl dbus::message::SignalArgs for OutputStreamChanged {
     const NAME: &'static str = "OutputStreamChanged";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 #[derive(Debug)]
@@ -386,7 +386,7 @@ impl arg::ReadAll for OutputStreamRemoved {
 
 impl dbus::message::SignalArgs for OutputStreamRemoved {
     const NAME: &'static str = "OutputStreamRemoved";
-    const INTERFACE: &'static str = "org.Xetibo.ReSet.Audio";
+    const INTERFACE: &'static str = AUDIO;
 }
 
 impl GetVal<(u32,)> for OutputStreamRemoved {
@@ -431,19 +431,19 @@ pub fn start_audio_listener(
 
 fn start_dbus_audio_listener(conn: Connection) -> Connection {
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
-    let _: Result<(), Error> = proxy.method_call("org.Xetibo.ReSet.Audio", "StartAudioListener", ());
+    let _: Result<(), Error> = proxy.method_call(AUDIO, "StartAudioListener", ());
     conn
 }
 
 fn stop_dbus_audio_listener(conn: Connection) {
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
-    let _: Result<(), Error> = proxy.method_call("org.Xetibo.ReSet.Audio", "StopAudioListener", ());
+    let _: Result<(), Error> = proxy.method_call(AUDIO, "StopAudioListener", ());
 }

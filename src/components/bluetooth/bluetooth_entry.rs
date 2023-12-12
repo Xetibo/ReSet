@@ -3,6 +3,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use crate::components::bluetooth::bluetooth_entry_impl;
+use crate::components::utils::{BASE, DBUS_PATH, BLUETOOTH};
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, PreferencesRowExt};
 use adw::{glib, ActionRow};
@@ -87,12 +88,12 @@ fn connect_to_device(entry: Arc<BluetoothEntry>, path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let res: Result<(bool,), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Bluetooth",
+            BLUETOOTH,
             "ConnectToBluetoothDevice",
             (path,),
         );
@@ -118,12 +119,12 @@ fn connect_to_device(entry: Arc<BluetoothEntry>, path: Path<'static>) {
 //     gio::spawn_blocking(move || {
 //         let conn = Connection::new_session().unwrap();
 //         let proxy = conn.with_proxy(
-//             "org.Xetibo.ReSet.Daemon",
-//             "/org/Xetibo/ReSet/Daemon",
+//             BASE,
+//             DBUS_PATH,
 //             Duration::from_millis(1000),
 //         );
 //         let _: Result<(bool,), Error> = proxy.method_call(
-//             "org.Xetibo.ReSet.Bluetooth",
+//             BLUETOOTH,
 //             "PairWithBluetoothDevice",
 //             (path,),
 //         );
@@ -134,12 +135,12 @@ fn disconnect_from_device(entry: Arc<BluetoothEntry>, path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let res: Result<(bool,), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Bluetooth",
+            BLUETOOTH,
             "DisconnectFromBluetoothDevice",
             (path,),
         );
@@ -164,11 +165,11 @@ fn remove_device_pairing(path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(bool,), Error> =
-            proxy.method_call("org.Xetibo.ReSet.Bluetooth", "RemoveDevicePairing", (path,));
+            proxy.method_call(BLUETOOTH, "RemoveDevicePairing", (path,));
     });
 }

@@ -20,6 +20,7 @@ use re_set_lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, Bluetoot
 use crate::components::base::utils::Listeners;
 use crate::components::bluetooth::bluetooth_box_impl;
 use crate::components::bluetooth::bluetooth_entry::BluetoothEntry;
+use crate::components::utils::{DBUS_PATH, BASE, BLUETOOTH};
 
 glib::wrapper! {
     pub struct BluetoothBox(ObjectSubclass<bluetooth_box_impl::BluetoothBox>)
@@ -123,10 +124,8 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
             let list = imp.reset_model_list.write().unwrap();
             let mut model_index = imp.reset_model_index.write().unwrap();
             let mut map = imp.reset_bluetooth_adapters.write().unwrap();
-            {
-                if imp.reset_bluetooth_adapters.read().unwrap().is_empty() {
-                    return;
-                }
+            if adapters.is_empty() {
+                return;
             }
             imp.reset_current_bluetooth_adapter
                 .replace(adapters.last().unwrap().clone());
@@ -209,25 +208,25 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
 
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSet.Bluetooth", "StartBluetoothListener", ());
+            proxy.method_call(BLUETOOTH, "StartBluetoothListener", ());
         let device_added = BluetoothDeviceAdded::match_rule(
-            Some(&"org.Xetibo.ReSet.Daemon".into()),
-            Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+            Some(&BASE.into()),
+            Some(&Path::from(DBUS_PATH)),
         )
         .static_clone();
         let device_removed = BluetoothDeviceRemoved::match_rule(
-            Some(&"org.Xetibo.ReSet.Daemon".into()),
-            Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+            Some(&BASE.into()),
+            Some(&Path::from(DBUS_PATH)),
         )
         .static_clone();
         let device_changed = BluetoothDeviceChanged::match_rule(
-            Some(&"org.Xetibo.ReSet.Daemon".into()),
-            Some(&Path::from("/org/Xetibo/ReSet/Daemon")),
+            Some(&BASE.into()),
+            Some(&Path::from(DBUS_PATH)),
         )
         .static_clone();
         let device_added_box = bluetooth_box.clone();
@@ -334,7 +333,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
             let _ = conn.process(Duration::from_millis(1000));
             if !listeners.bluetooth_listener.load(Ordering::SeqCst) {
                 let _: Result<(), Error> =
-                    proxy.method_call("org.Xetibo.ReSet.Bluetooth", "StopBluetoothListener", ());
+                    proxy.method_call(BLUETOOTH, "StopBluetoothListener", ());
                 break;
             }
             if listener_active && time.elapsed().unwrap() > Duration::from_millis(10000) {
@@ -349,7 +348,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     });
                 });
                 let _: Result<(), Error> =
-                    proxy.method_call("org.Xetibo.ReSet.Bluetooth", "StopBluetoothScan", ());
+                    proxy.method_call(BLUETOOTH, "StopBluetoothScan", ());
             }
             if !listener_active && listeners.bluetooth_scan_requested.load(Ordering::SeqCst) {
                 listeners
@@ -357,7 +356,7 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     .store(false, Ordering::SeqCst);
                 listener_active = true;
                 let _: Result<(), Error> =
-                    proxy.method_call("org.Xetibo.ReSet.Bluetooth", "StartBluetoothListener", ());
+                    proxy.method_call(BLUETOOTH, "StartBluetoothListener", ());
                 time = SystemTime::now();
             }
             thread::sleep(Duration::from_millis(100));
@@ -368,12 +367,12 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
 fn get_connected_devices() -> Vec<BluetoothDevice> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<BluetoothDevice>,), Error> = proxy.method_call(
-        "org.Xetibo.ReSet.Bluetooth",
+        BLUETOOTH,
         "GetConnectedBluetoothDevices",
         (),
     );
@@ -386,12 +385,12 @@ fn get_connected_devices() -> Vec<BluetoothDevice> {
 fn get_bluetooth_adapters() -> Vec<BluetoothAdapter> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let res: Result<(Vec<BluetoothAdapter>,), Error> =
-        proxy.method_call("org.Xetibo.ReSet.Bluetooth", "GetBluetoothAdapters", ());
+        proxy.method_call(BLUETOOTH, "GetBluetoothAdapters", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -401,23 +400,23 @@ fn get_bluetooth_adapters() -> Vec<BluetoothAdapter> {
 fn set_bluetooth_adapter(path: Path<'static>) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let _: Result<(Vec<BluetoothAdapter>,), Error> =
-        proxy.method_call("org.Xetibo.ReSet.Bluetooth", "SetBluetoothAdapter", (path,));
+        proxy.method_call(BLUETOOTH, "SetBluetoothAdapter", (path,));
 }
 
 fn set_bluetooth_adapter_visibility(path: Path<'static>, visible: bool) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let _: Result<(bool,), Error> = proxy.method_call(
-        "org.Xetibo.ReSet.Bluetooth",
+        BLUETOOTH,
         "SetBluetoothAdapterDiscoverability",
         (path, visible),
     );
@@ -426,12 +425,12 @@ fn set_bluetooth_adapter_visibility(path: Path<'static>, visible: bool) {
 fn set_bluetooth_adapter_pairability(path: Path<'static>, visible: bool) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let _: Result<(bool,), Error> = proxy.method_call(
-        "org.Xetibo.ReSet.Bluetooth",
+        BLUETOOTH,
         "SetBluetoothAdapterPairability",
         (path, visible),
     );
@@ -440,12 +439,12 @@ fn set_bluetooth_adapter_pairability(path: Path<'static>, visible: bool) {
 fn set_adapter_enabled(path: Path<'static>, enabled: bool) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(
-        "org.Xetibo.ReSet.Daemon",
-        "/org/Xetibo/ReSet/Daemon",
+        BASE,
+        DBUS_PATH,
         Duration::from_millis(1000),
     );
     let _: Result<(Vec<BluetoothAdapter>,), Error> = proxy.method_call(
-        "org.Xetibo.ReSet.Bluetooth",
+        BLUETOOTH,
         "SetBluetoothAdapterEnabled",
         (path, enabled),
     );

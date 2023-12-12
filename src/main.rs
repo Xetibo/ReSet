@@ -1,6 +1,7 @@
 use std::thread;
 use std::time::Duration;
 
+use components::utils::{BASE, DBUS_PATH};
 use components::window::reset_window::ReSetWindow;
 use dbus::blocking::Connection;
 use dbus::Error;
@@ -8,6 +9,8 @@ use gtk::gdk::Display;
 use gtk::prelude::*;
 use gtk::{gio, Application, CssProvider};
 use reset_daemon::run_daemon;
+
+
 
 mod components;
 
@@ -53,12 +56,12 @@ fn shutdown(_: &Application) {
     thread::spawn(|| {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(100),
         );
         let res: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSet.Daemon", "UnregisterClient", ("ReSet",));
+            proxy.method_call(BASE, "UnregisterClient", ("ReSet",));
         res
     });
 }
@@ -67,16 +70,16 @@ async fn daemon_check() {
     let handle = thread::spawn(|| {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(100),
         );
         let res: Result<(), Error> =
-            proxy.method_call("org.Xetibo.ReSet.Daemon", "RegisterClient", ("ReSet",));
+            proxy.method_call(BASE, "RegisterClient", ("ReSet",));
         res
     });
     let res = handle.join();
     if res.unwrap().is_err() {
-        run_daemon(APP_ID).await;
+        run_daemon().await;
     } 
 }

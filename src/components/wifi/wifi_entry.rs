@@ -2,6 +2,7 @@ use std::ops::Deref;
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::components::utils::{WIRELESS, DBUS_PATH, BASE};
 use crate::components::wifi::utils::get_connection_settings;
 use adw::glib;
 use adw::glib::{Object, PropertySet};
@@ -123,12 +124,12 @@ pub fn click_disconnect(entry: Arc<WifiEntry>) {
         let imp = entry_ref.imp();
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(10000),
         );
         let res: Result<(bool,), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Wireless",
+            WIRELESS,
             "DisconnectFromCurrentAccessPoint",
             (),
         );
@@ -154,12 +155,12 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
-            "org.Xetibo.ReSet.Daemon",
-            "/org/Xetibo/ReSet/Daemon",
+            BASE,
+            DBUS_PATH,
             Duration::from_millis(10000),
         );
         let res: Result<(bool,), Error> = proxy.method_call(
-            "org.Xetibo.ReSet.Wireless",
+            WIRELESS,
             "ConnectToKnownAccessPoint",
             (access_point,),
         );
@@ -197,12 +198,12 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
             gio::spawn_blocking(move || {
                 let conn = Connection::new_session().unwrap();
                 let proxy = conn.with_proxy(
-                    "org.Xetibo.ReSet.Daemon",
-                    "/org/Xetibo/ReSet/Daemon",
+                    BASE,
+                    DBUS_PATH,
                     Duration::from_millis(10000),
                 );
                 let res: Result<(bool,), Error> = proxy.method_call(
-                    "org.Xetibo.ReSet.Wireless",
+                    WIRELESS,
                     "ConnectToNewAccessPoint",
                     (access_point, password),
                 );
