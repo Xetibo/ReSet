@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.17.0 -->
 <interface>
+  <requires lib="gio" version="2.0"/>
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetUI" parent="AdwApplicationWindow">
@@ -38,33 +39,7 @@
                         <property name="hexpand">True</property>
                         <property name="hexpand-set">True</property>
                         <property name="icon-name">open-menu-symbolic</property>
-                        <property name="popover">
-                          <object class="GtkPopoverMenu" id="reset_popover_menu">
-                            <property name="child">
-                              <object class="GtkBox">
-                                <property name="orientation">vertical</property>
-                                <child>
-                                  <object class="GtkButton" id="reset_shortcuts_button">
-                                    <property name="has-frame">False</property>
-                                    <property name="label">Shortcuts</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="reset_preference_button">
-                                    <property name="has-frame">False</property>
-                                    <property name="label">Preferences</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="reset_about_button">
-                                    <property name="has-frame">False</property>
-                                    <property name="label">About</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </property>
-                          </object>
-                        </property>
+                        <property name="menu-model">main_menu</property>
                         <property name="valign">end</property>
                         <property name="vexpand">True</property>
                       </object>
@@ -152,4 +127,14 @@
     </object>
     </child>
   </template>
+  <menu id="main_menu">
+    <item>
+      <attribute name="action">win.about</attribute>
+      <attribute name="label">About</attribute>
+    </item>
+    <item>
+      <attribute name="action">win.show-help-overlay</attribute>
+      <attribute name="label">Shortcuts</attribute>
+    </item>
+  </menu>
 </interface>
