@@ -67,7 +67,7 @@ fn set_card_profile_of_device(device_index: u32, profile_name: String) -> bool {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(
             "org.Xetibo.ReSet.Daemon",
-            "/org.Xetibo.ReSet.Daemon",
+            "/org/Xetibo/ReSet/Daemon",
             Duration::from_millis(1000),
         );
         let _: Result<(), Error> = proxy.method_call(
