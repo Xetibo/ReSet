@@ -36,7 +36,7 @@ impl WifiRouteEntry {
             entry_imp.reset_route_address.set_text(&address.address);
             entry_imp
                 .reset_route_prefix
-                .set_text(&address.prefix_length.to_string());
+                .set_text(&address.prefix.to_string());
             if let Some(gateway) = &address.gateway {
                 entry_imp.reset_route_gateway.set_text(gateway);
             }
@@ -45,7 +45,7 @@ impl WifiRouteEntry {
             }
             entry_imp
                 .reset_route_row
-                .set_title(&format!("{}/{}", &*address.address, address.prefix_length));
+                .set_title(&format!("{}/{}", &*address.address, address.prefix));
         }
         entry_imp.protocol.set(protocol);
         entry.setup_callbacks(conn);
@@ -54,8 +54,8 @@ impl WifiRouteEntry {
 
     fn setup_callbacks(&self, connection: Rc<RefCell<Connection>>) {
         let self_imp = self.imp();
-
         let conn = connection.clone();
+        dbg!(conn.borrow());
         self_imp.reset_route_address.connect_changed(clone!(@weak self_imp => move |entry| {
             let address_input = entry.text();
             let mut conn = conn.borrow_mut();
@@ -116,7 +116,7 @@ impl WifiRouteEntry {
                     if let Ok(address2) = Ipv4Addr::from_str(self_imp.reset_route_address.text().as_str()) {
                         if let Some(addr) = conn.ipv4.route_data.iter_mut()
                         .find(|conn_addr| *conn_addr.address == address2.to_string()) {
-                            addr.prefix_length = prefix as u32;
+                            addr.prefix = prefix as u32;
                         }
                     }
                 }
@@ -126,7 +126,7 @@ impl WifiRouteEntry {
                     if let Ok(address2) = Ipv6Addr::from_str(self_imp.reset_route_address.text().as_str()) {
                         if let Some(addr) = conn.ipv6.route_data.iter_mut()
                         .find(|conn_addr| *conn_addr.address == address2.to_string()) {
-                            addr.prefix_length = prefix as u32;
+                            addr.prefix = prefix as u32;
                         }
                     }
                 }

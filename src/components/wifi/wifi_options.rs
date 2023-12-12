@@ -4,15 +4,16 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Duration;
 
+use adw::{gio, glib};
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::{gio, glib};
-use dbus::arg::PropMap;
 use dbus::{Error, Path};
+use dbus::arg::PropMap;
 use glib::{clone, PropertySet};
-use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
+use gtk::prelude::{ActionableExt, ButtonExt, EditableExt, ListBoxRowExt, WidgetExt};
 use re_set_lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, KeyManagement, TypeSettings};
+
 use IpProtocol::{IPv4, IPv6};
 
 use crate::components::wifi::utils::IpProtocol;
@@ -50,7 +51,7 @@ impl WifiOptions {
             ip4_route_length = conn.ipv4.route_data.len();
             ip6_address_length = conn.ipv4.address_data.len();
             ip6_route_length = conn.ipv4.route_data.len();
-
+            // dbg!(&conn);
             // General
             self_imp
                 .reset_wifi_auto_connect
@@ -59,7 +60,7 @@ impl WifiOptions {
                 .reset_wifi_metered
                 .set_active(conn.settings.metered != -1);
             match &conn.device {
-                TypeSettings::WIFI(wifi, _) => {
+                TypeSettings::WIFI(wifi) => {
                     self_imp.reset_wifi_link_speed.set_visible(false);
                     self_imp.reset_wifi_ip4_addr.set_visible(false);
                     self_imp.reset_wifi_ip6_addr.set_visible(false);
@@ -130,24 +131,24 @@ impl WifiOptions {
             self_imp.reset_ip6_gateway.set_text(&conn.ipv6.gateway);
 
             // Security
-            if let TypeSettings::WIFI(_, wifi_security) = &conn.device {
-                match wifi_security.key_management {
-                    KeyManagement::NONE => {
-                        self_imp.reset_wifi_security_dropdown.set_selected(0);
-                        self_imp.reset_wifi_password.set_visible(false);
-                        self_imp.reset_wifi_password.set_text("");
-                    }
-                    KeyManagement::WPAPSK => {
-                        self_imp.reset_wifi_security_dropdown.set_selected(1);
-                        self_imp.reset_wifi_password.set_visible(true);
-                        self_imp
-                            .reset_wifi_password
-                            .set_text(&wifi_security.psk);
-                    }
-                    _ => {}
+
+            match  &conn.security.key_management {
+                KeyManagement::NONE => {
+                    self_imp.reset_wifi_security_dropdown.set_selected(0);
+                    self_imp.reset_wifi_password.set_visible(false);
+                    self_imp.reset_wifi_password.set_text("");
                 }
+                KeyManagement::WPAPSK => {
+                    self_imp.reset_wifi_security_dropdown.set_selected(1);
+                    self_imp.reset_wifi_password.set_visible(true);
+                    self_imp
+                        .reset_wifi_password
+                        .set_text(&conn.security.psk);
+                }
+                _ => {}
             }
         }
+
         // IPv4
         for i in 0..ip4_address_length {
             let address = &WifiAddressEntry::new(Some(i), self_imp.connection.clone(), IPv4);
@@ -177,7 +178,6 @@ impl WifiOptions {
         }
         let route = &WifiRouteEntry::new(None, self_imp.connection.clone(), IPv6);
         self_imp.reset_ip6_routes_group.add(route);
-        // Security
     }
 
     pub fn set_ip4_visibility(&self, method: u32) {
@@ -352,29 +352,35 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             let selected = dropdown.selected();
             let mut conn = imp.connection.borrow_mut();
 
-            match (selected, &mut conn.device) {
-                (0 , TypeSettings::WIFI(_, wifi_security)) => { // None
+            match selected {
+                0 => { // None
                     imp.reset_wifi_password.set_visible(false);
-                    wifi_security.key_management = KeyManagement::NONE;
-                    wifi_security.authentication_algorithm = String::from("none");
+                    conn.security.key_management = KeyManagement::NONE;
+                    conn.security.authentication_algorithm = String::from("none");
                 },
-                (1 , TypeSettings::WIFI(_, wifi_security)) => { // WPA/WPA2 Personal
+                1 => { // WPA/WPA2 Personal
                     imp.reset_wifi_password.set_visible(true);
-                    wifi_security.key_management = KeyManagement::WPAPSK;
-                    wifi_security.authentication_algorithm = String::from("none");
+                    conn.security.key_management = KeyManagement::WPAPSK;
+                    conn.security.authentication_algorithm = String::from("none");
                 },
-                (_, _) => {}
+                _ => {}
             }
         }));
 
-    imp.reset_wifi_password
-        .connect_changed(clone!(@weak imp => move |entry| {
-            let password_input = entry.text();
-            let mut conn = imp.connection.borrow_mut();
-            if let TypeSettings::WIFI(_, wifi_security) = &mut conn.device {
-                wifi_security.psk = password_input.to_string();
-            }
-        }));
+    imp.reset_wifi_password.connect_changed(clone!(@weak imp => move |entry| {
+        let password_input = entry.text();
+        if password_input.len() < 8 && !password_input.is_empty() {
+            entry.add_css_class("error");
+        } else {
+            entry.remove_css_class("error");
+        }
+        let mut conn = imp.connection.borrow_mut();
+        conn.security.psk = password_input.to_string();
+    }));
+
+    imp.reset_available_networks.set_activatable(true);
+    imp.reset_available_networks
+        .set_action_name(Some("navigation.pop"));
 }
 
 fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) {
@@ -385,10 +391,11 @@ fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) 
             "/org/Xetibo/ReSetDaemon",
             Duration::from_millis(1000),
         );
-        let _: Result<(bool,), Error> = proxy.method_call(
+        let asdf: Result<(bool,), Error> = proxy.method_call(
             "org.Xetibo.ReSetWireless",
             "SetConnectionSettings",
             (path, prop),
         );
+        dbg!(asdf);
     });
 }

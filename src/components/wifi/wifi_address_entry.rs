@@ -1,3 +1,4 @@
+use re_set_lib::network::connection::Address;
 use std::cell::RefCell;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 use std::rc::Rc;
@@ -9,7 +10,7 @@ use adw::prelude::PreferencesRowExt;
 use glib::clone;
 use glib::subclass::prelude::ObjectSubclassIsExt;
 use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
-use re_set_lib::network::connection::{Address, Connection};
+use re_set_lib::network::connection::{Connection};
 
 use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifi_address_entry_impl;
@@ -37,10 +38,10 @@ impl WifiAddressEntry {
             entry_imp.reset_address_address.set_text(&address.address);
             entry_imp
                 .reset_address_prefix
-                .set_text(&address.prefix_length.to_string());
+                .set_text(&address.prefix.to_string());
             entry_imp
                 .reset_address_row
-                .set_title(&format!("{}/{}", &*address.address, address.prefix_length));
+                .set_title(&format!("{}/{}", &*address.address, address.prefix));
         }
         entry_imp.protocol.set(protocol);
         entry.setup_callbacks(conn);
@@ -71,7 +72,7 @@ impl WifiAddressEntry {
                         IpProtocol::IPv4 => &mut conn.ipv4.address_data,
                         IpProtocol::IPv6 => &mut conn.ipv6.address_data,
                     };
-                    address_data.push(Address::new_no_options(ip_addr.to_string(), self_imp.prefix.get().1 as u32));
+                    address_data.push(Address::new_no_options(ip_addr.to_string(), self_imp.prefix.get().1));
                     *self_imp.address.borrow_mut() = (true, ip_addr.to_string());
                 }
                 Err(_) => {
@@ -111,7 +112,7 @@ impl WifiAddressEntry {
                     if let Ok(address2) = Ipv4Addr::from_str(self_imp.reset_address_address.text().as_str()) {
                         if let Some(addr) = conn.ipv4.address_data.iter_mut()
                         .find(|conn_addr| *conn_addr.address == address2.to_string()) {
-                            addr.prefix_length = prefix as u32;
+                            addr.prefix = prefix as u32;
                         }
                     }
                 }
@@ -121,7 +122,7 @@ impl WifiAddressEntry {
                     if let Ok(address2) = Ipv6Addr::from_str(self_imp.reset_address_address.text().as_str()) {
                         if let Some(addr) = conn.ipv6.address_data.iter_mut()
                         .find(|conn_addr| *conn_addr.address == address2.to_string()) {
-                            addr.prefix_length = prefix as u32;
+                            addr.prefix = prefix as u32;
                         }
                     }
                 }

@@ -23,8 +23,6 @@ pub struct SourceEntry {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    #[template_child]
-    pub reset_volume_meter: TemplateChild<ProgressBar>,
     pub source: Arc<RefCell<Source>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }
