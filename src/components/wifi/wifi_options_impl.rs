@@ -4,7 +4,7 @@ use adw::{
     ActionRow, ComboRow, EntryRow, NavigationPage, PasswordEntryRow, PreferencesGroup, SwitchRow,
 };
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate};
+use gtk::{glib, Button, CompositeTemplate, Label};
 use re_set_lib::network::connection::Connection;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -70,7 +70,11 @@ pub struct WifiOptions {
     pub reset_wifi_password: TemplateChild<PasswordEntryRow>,
     // Misc
     #[template_child]
+    pub reset_available_networks: TemplateChild<ActionRow>,
+    #[template_child]
     pub wifi_options_apply_button: TemplateChild<Button>,
+    #[template_child]
+    pub wifi_options_error_msg: TemplateChild<Label>,
     pub connection: Rc<RefCell<Connection>>,
 }
 

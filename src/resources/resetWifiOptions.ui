@@ -8,7 +8,25 @@
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
+          <object class="AdwPreferencesGroup">
+            <child>
+              <object class="AdwActionRow" id="reset_available_networks">
+                <property name="title">Available Networks</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="halign">end</property>
+                    <property name="hexpand">True</property>
+                    <property name="icon-name">go-previous-symbolic</property>
+                    <property name="margin-end">5</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
           <object class="GtkNotebook">
+            <property name="margin-top">10</property>
             <property name="scrollable">True</property>
             <property name="show-border">False</property>
             <child>
@@ -111,11 +129,6 @@
                         <property name="title">DNS (separate IP by comma, empty for automatic)</property>
                       </object>
                     </child>
-                    <child>
-                      <object class="AdwEntryRow" id="reset_ip4_gateway">
-                        <property name="title">Gateway</property>
-                      </object>
-                    </child>
                   </object>
                 </child>
                 <child>
@@ -127,6 +140,11 @@
                     </property>
                     <property name="margin-top">10</property>
                     <property name="title">Addresses</property>
+                    <child>
+                      <object class="AdwEntryRow" id="reset_ip4_gateway">
+                        <property name="title">Gateway</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -279,10 +297,22 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="wifi_options_apply_button">
+          <object class="GtkBox">
             <property name="halign">end</property>
-            <property name="label">Apply</property>
             <property name="margin-top">10</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkLabel" id="wifi_options_error_msg">
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="wifi_options_apply_button">
+                <property name="halign">end</property>
+                <property name="label">Apply</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
