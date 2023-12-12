@@ -4,15 +4,17 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Duration;
 
-use adw::{gio, glib};
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use dbus::{Error, Path};
+use adw::{gio, glib};
 use dbus::arg::PropMap;
+use dbus::{Error, Path};
 use glib::{clone, PropertySet};
 use gtk::prelude::{ActionableExt, ButtonExt, EditableExt, ListBoxRowExt, WidgetExt};
-use re_set_lib::network::connection::{Connection, DNSMethod4, DNSMethod6, Enum, KeyManagement, TypeSettings};
+use re_set_lib::network::connection::{
+    Connection, DNSMethod4, DNSMethod6, Enum, KeyManagement, TypeSettings,
+};
 
 use IpProtocol::{IPv4, IPv6};
 
@@ -51,7 +53,6 @@ impl WifiOptions {
             ip4_route_length = conn.ipv4.route_data.len();
             ip6_address_length = conn.ipv4.address_data.len();
             ip6_route_length = conn.ipv4.route_data.len();
-            // dbg!(&conn);
             // General
             self_imp
                 .reset_wifi_auto_connect
@@ -104,10 +105,13 @@ impl WifiOptions {
                 .map(|addr| Ipv4Addr::from(*addr))
                 .collect();
 
-            self_imp.reset_ip4_dns.set_text(&ipv4_dns.iter()
-                .map(|ip| ip.to_string())
-                .collect::<Vec<String>>()
-                .join(", "));
+            self_imp.reset_ip4_dns.set_text(
+                &ipv4_dns
+                    .iter()
+                    .map(|ip| ip.to_string())
+                    .collect::<Vec<String>>()
+                    .join(", "),
+            );
             self_imp.reset_ip4_gateway.set_text(&conn.ipv4.gateway);
             // IPv6
             self_imp
@@ -132,7 +136,7 @@ impl WifiOptions {
 
             // Security
 
-            match  &conn.security.key_management {
+            match &conn.security.key_management {
                 KeyManagement::NONE => {
                     self_imp.reset_wifi_security_dropdown.set_selected(0);
                     self_imp.reset_wifi_password.set_visible(false);
@@ -141,9 +145,7 @@ impl WifiOptions {
                 KeyManagement::WPAPSK => {
                     self_imp.reset_wifi_security_dropdown.set_selected(1);
                     self_imp.reset_wifi_password.set_visible(true);
-                    self_imp
-                        .reset_wifi_password
-                        .set_text(&conn.security.psk);
+                    self_imp.reset_wifi_password.set_text(&conn.security.psk);
                 }
                 _ => {}
             }
@@ -242,7 +244,6 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
     imp.wifi_options_apply_button
         .connect_clicked(clone!(@weak imp => move |_| {
             let prop = imp.connection.borrow().convert_to_propmap();
-            dbg!(&prop);
             set_connection_settings(path.clone(), prop);
         }));
     // IPv4
@@ -367,16 +368,17 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             }
         }));
 
-    imp.reset_wifi_password.connect_changed(clone!(@weak imp => move |entry| {
-        let password_input = entry.text();
-        if password_input.len() < 8 && !password_input.is_empty() {
-            entry.add_css_class("error");
-        } else {
-            entry.remove_css_class("error");
-        }
-        let mut conn = imp.connection.borrow_mut();
-        conn.security.psk = password_input.to_string();
-    }));
+    imp.reset_wifi_password
+        .connect_changed(clone!(@weak imp => move |entry| {
+            let password_input = entry.text();
+            if password_input.len() < 8 && !password_input.is_empty() {
+                entry.add_css_class("error");
+            } else {
+                entry.remove_css_class("error");
+            }
+            let mut conn = imp.connection.borrow_mut();
+            conn.security.psk = password_input.to_string();
+        }));
 
     imp.reset_available_networks.set_activatable(true);
     imp.reset_available_networks

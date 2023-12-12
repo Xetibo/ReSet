@@ -10,8 +10,8 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::clone;
-use gtk::{Align, Button, gio, Image, Orientation};
 use gtk::prelude::{BoxExt, ListBoxRowExt, WidgetExt};
+use gtk::{gio, Align, Button, Image, Orientation};
 use re_set_lib::network::network_structures::{AccessPoint, WifiStrength};
 
 use crate::components::wifi::wifi_box_impl::WifiBox;
@@ -40,27 +40,33 @@ impl WifiEntry {
         entry_imp.wifi_strength.set(strength);
         entry.set_title(name);
         entry_imp.connected.set(connected);
-        entry_imp.reset_wifi_edit_button.replace(Button::builder()
-            .icon_name("document-edit-symbolic")
-            .valign(Align::Center)
-            .build());
+        entry_imp.reset_wifi_edit_button.replace(
+            Button::builder()
+                .icon_name("document-edit-symbolic")
+                .valign(Align::Center)
+                .build(),
+        );
 
         // TODO handle encryption thing
-        let wifi_strength = Image::builder().icon_name(match strength {
-            WifiStrength::Excellent => "network-wireless-signal-excellent-symbolic",
-            WifiStrength::Ok => "network-wireless-signal-ok-symbolic",
-            WifiStrength::Weak => "network-wireless-signal-weak-symbolic",
-            WifiStrength::None => "network-wireless-signal-none-symbolic",
-        }).build();
+        let wifi_strength = Image::builder()
+            .icon_name(match strength {
+                WifiStrength::Excellent => "network-wireless-signal-excellent-symbolic",
+                WifiStrength::Ok => "network-wireless-signal-ok-symbolic",
+                WifiStrength::Weak => "network-wireless-signal-weak-symbolic",
+                WifiStrength::None => "network-wireless-signal-none-symbolic",
+            })
+            .build();
 
         let prefix_box = gtk::Box::new(Orientation::Horizontal, 0);
         prefix_box.append(&wifi_strength);
-        prefix_box.append(&Image::builder()
-            .icon_name("system-lock-screen-symbolic")
-            .valign(Align::End)
-            .pixel_size(9)
-            .margin_bottom(12)
-            .build());
+        prefix_box.append(
+            &Image::builder()
+                .icon_name("system-lock-screen-symbolic")
+                .valign(Align::End)
+                .pixel_size(9)
+                .margin_bottom(12)
+                .build(),
+        );
         entry.add_prefix(&prefix_box);
 
         let suffix_box = gtk::Box::new(Orientation::Horizontal, 5);
@@ -69,10 +75,16 @@ impl WifiEntry {
         entry.add_suffix(&suffix_box);
 
         if !access_point.stored {
-            entry_imp.reset_wifi_edit_button.borrow().set_sensitive(false);
+            entry_imp
+                .reset_wifi_edit_button
+                .borrow()
+                .set_sensitive(false);
         }
         if connected {
-            entry_imp.reset_wifi_connected.borrow().set_text("Connected");
+            entry_imp
+                .reset_wifi_connected
+                .borrow()
+                .set_text("Connected");
         }
         {
             let mut wifi_name = entry_imp.wifi_name.borrow_mut();

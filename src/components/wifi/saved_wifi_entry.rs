@@ -2,18 +2,18 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use crate::components::wifi::saved_wifi_entry_impl;
+use crate::components::wifi::utils::get_connection_settings;
 use crate::components::wifi::wifi_box_impl::WifiBox;
+use crate::components::wifi::wifi_options::WifiOptions;
 use adw::glib;
 use adw::glib::Object;
-use adw::prelude::{ActionRowExt, ButtonExt, PreferencesRowExt, PreferencesGroupExt};
+use adw::prelude::{ActionRowExt, ButtonExt, PreferencesGroupExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, PropertySet};
-use gtk::{Align, Button, gio, Orientation};
 use gtk::prelude::{BoxExt, ListBoxRowExt};
-use crate::components::wifi::utils::get_connection_settings;
-use crate::components::wifi::wifi_options::WifiOptions;
+use gtk::{gio, Align, Button, Orientation};
 
 glib::wrapper! {
     pub struct SavedWifiEntry(ObjectSubclass<saved_wifi_entry_impl::SavedWifiEntry>)

@@ -55,7 +55,6 @@ impl WifiRouteEntry {
     fn setup_callbacks(&self, connection: Rc<RefCell<Connection>>) {
         let self_imp = self.imp();
         let conn = connection.clone();
-        dbg!(conn.borrow());
         self_imp.reset_route_address.connect_changed(clone!(@weak self_imp => move |entry| {
             let address_input = entry.text();
             let mut conn = conn.borrow_mut();

@@ -13,7 +13,7 @@ pub struct BluetoothEntry {
     pub remove_device_button: RefCell<Button>,
     pub connecting_label: RefCell<Label>,
     pub device_name: RefCell<String>,
-    pub bluetooth_device: RefCell<BluetoothDevice>
+    pub bluetooth_device: RefCell<BluetoothDevice>,
 }
 
 #[glib::object_subclass]

@@ -17,7 +17,7 @@ use dbus::Path;
 use glib::{clone, Cast, PropertySet};
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, WidgetExt};
-use gtk::{gio, StringObject, StringList};
+use gtk::{gio, StringList, StringObject};
 use re_set_lib::network::network_structures::{AccessPoint, WifiDevice, WifiStrength};
 use re_set_lib::signals::{AccessPointAdded, WifiDeviceChanged};
 use re_set_lib::signals::{AccessPointChanged, AccessPointRemoved};
@@ -394,12 +394,18 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                             WifiStrength::None => Some("network-wireless-signal-none-symbolic"),
                         });
                     if !ir.access_point.stored {
-                        entry_imp.reset_wifi_edit_button.borrow().set_sensitive(false);
+                        entry_imp
+                            .reset_wifi_edit_button
+                            .borrow()
+                            .set_sensitive(false);
                     }
                     if ir.access_point.dbus_path
                         == imp.reset_current_wifi_device.borrow().active_access_point
                     {
-                        entry_imp.reset_wifi_connected.borrow().set_text("Connected");
+                        entry_imp
+                            .reset_wifi_connected
+                            .borrow()
+                            .set_text("Connected");
                     } else {
                         entry_imp.reset_wifi_connected.borrow().set_text("");
                     }

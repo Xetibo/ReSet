@@ -2,8 +2,8 @@ use gtk::prelude::FrameExt;
 use std::cell::RefCell;
 use std::hint::spin_loop;
 use std::rc::Rc;
-use std::sync::Arc;
 use std::sync::atomic::Ordering;
+use std::sync::Arc;
 
 use crate::components::base::setting_box::SettingBox;
 use crate::components::base::utils::{start_audio_listener, Listeners, Position};

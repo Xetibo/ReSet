@@ -10,7 +10,7 @@ use adw::prelude::PreferencesRowExt;
 use glib::clone;
 use glib::subclass::prelude::ObjectSubclassIsExt;
 use gtk::prelude::{ButtonExt, EditableExt, WidgetExt};
-use re_set_lib::network::connection::{Connection};
+use re_set_lib::network::connection::Connection;
 
 use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifi_address_entry_impl;
