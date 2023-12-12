@@ -321,7 +321,7 @@
 	(3,18,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
 	(3,18,"GtkWidget","margin-top","5",None,None,None,None,None,None,None,None,None),
 	(3,19,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
-	(3,20,"GtkSearchEntry","placeholder-text","Search",None,None,None,None,None,None,None,None,None),
+	(3,20,"GtkSearchEntry","placeholder-text","Search (Ctrl + F)",None,None,None,None,None,None,None,None,None),
 	(3,20,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
 	(3,25,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
 	(3,26,"GtkButton","icon-name","sidebar-show-symbolic",None,None,None,None,None,None,None,None,None),
