@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.17.0 -->
+<interface>
+  <requires lib="gio" version="2.0"/>
+  <menu id="menu">
+    <item>
+      <attribute name="action">win.about</attribute>
+      <attribute name="label">About</attribute>
+    </item>
+    <item>
+      <attribute name="action">win.show-help-overlay</attribute>
+      <attribute name="label">Shortcuts</attribute>
+    </item>
+  </menu>
+</interface>

@@ -31,15 +31,7 @@ pub struct ReSetWindow {
     #[template_child]
     pub reset_sidebar_toggle: TemplateChild<Button>,
     #[template_child]
-    pub reset_popover_menu: TemplateChild<PopoverMenu>,
-    #[template_child]
     pub reset_close: TemplateChild<Button>,
-    #[template_child]
-    pub reset_about_button: TemplateChild<Button>,
-    #[template_child]
-    pub reset_preference_button: TemplateChild<Button>,
-    #[template_child]
-    pub reset_shortcuts_button: TemplateChild<Button>,
     pub sidebar_entries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
     pub listeners: Arc<Listeners>,
     pub position: Rc<RefCell<Position>>,
@@ -70,8 +62,8 @@ impl ObjectImpl for ReSetWindow {
         self.parent_constructed();
 
         let obj = self.obj();
+        obj.setup_shortcuts();
         obj.setup_callback();
-        obj.setup_popover_buttons();
         obj.handle_dynamic_sidebar();
         obj.setup_sidebar_entries();
     }

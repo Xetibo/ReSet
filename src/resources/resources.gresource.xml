@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/Xetibo/ReSet/">
-    <!--Main window-->
+    <!--Main
+    window-->
     <file compressed="true" preprocess="xml-stripblanks">resetMainWindow.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSidebarEntry.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetSettingBox.ui</file>
@@ -26,6 +27,8 @@
     <file compressed="true" preprocess="xml-stripblanks">resetSourceEntry.ui</file>
     <!--Misc-->
     <file compressed="true" preprocess="xml-stripblanks">resetPopup.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">resetShortcuts.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetMenu.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetCardEntry.ui</file>
   </gresource>
 </gresources>

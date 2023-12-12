@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, ProgressBar, Scale};
+use gtk::{glib, Button, CheckButton, CompositeTemplate, Label, Scale};
 
 use super::source_entry;
 

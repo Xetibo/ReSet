@@ -2,8 +2,9 @@ use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use adw::BreakpointCondition;
 use glib::Object;
-use gtk::prelude::*;
+use gtk::gio::ActionEntry;
 use gtk::{gio, glib, Application, ListBoxRow, Orientation};
+use gtk::{prelude::*, DirectionType};
 
 use crate::components::window::handle_sidebar_click::*;
 use crate::components::window::reset_window_impl;
@@ -23,7 +24,85 @@ unsafe impl Sync for ReSetWindow {}
 
 impl ReSetWindow {
     pub fn new(app: &Application) -> Self {
+        app.set_accels_for_action("win.search", &["<Ctrl>F"]);
+        app.set_accels_for_action("win.close", &["<Ctrl>Q"]);
+        app.set_accels_for_action("win.about", &["<Ctrl>A"]);
+        // implemented when a proper movement method is found
+        // app.set_accels_for_action("win.up", &["<Ctrl>K"]);
+        // app.set_accels_for_action("win.right", &["<Ctrl>L"]);
+        // app.set_accels_for_action("win.down", &["<Ctrl>J"]);
+        // app.set_accels_for_action("win.left", &["<Ctrl>H"]);
         Object::builder().property("application", app).build()
+    }
+
+    pub fn setup_shortcuts(&self) {
+        let search_action = ActionEntry::builder("search")
+            .activate(move |window: &Self, _, _| {
+                window.imp().reset_search_entry.grab_focus();
+            })
+            .build();
+
+        let close_action = ActionEntry::builder("close")
+            .activate(move |window: &Self, _, _| {
+                window.close();
+            })
+            .build();
+
+        let vim_up = ActionEntry::builder("up")
+            .activate(move |window: &Self, _, _| {
+                window.child_focus(DirectionType::Up);
+            })
+            .build();
+
+        let vim_right = ActionEntry::builder("right")
+            .activate(move |window: &Self, _, _| {
+                window.child_focus(DirectionType::Right);
+            })
+            .build();
+
+        let vim_down = ActionEntry::builder("down")
+            .activate(move |window: &Self, _, _| {
+                window.child_focus(DirectionType::Down);
+            })
+            .build();
+
+        let vim_left = ActionEntry::builder("left")
+            .activate(move |window: &Self, _, _| {
+                window.child_focus(DirectionType::Left);
+            })
+            .build();
+
+        let about_action = ActionEntry::builder("about")
+            .activate(move |window: &ReSetWindow, _, _| {
+                let dialog = adw::AboutWindow::builder()
+                    .application_name("ReSet")
+                    .application_icon("ReSet")
+                    .developer_name("Xetibo")
+                    .license("GPL-3.0")
+                    .license_type(gtk::License::Gpl30)
+                    .website("https://github.com/Xetibo/ReSet")
+                    .issue_url("https://github.com/Xetibo/ReSet/issues")
+                    .version("0.0.1")
+                    .transient_for(window)
+                    .modal(true)
+                    .copyright("© 2022-2023 Xetibo")
+                    .developers(vec!["DashieTM".to_string(), "Takotori".to_string()])
+                    .designers(vec!["DashieTM".to_string(), "Takotori".to_string()])
+                    .build();
+                // window.imp().reset_popover_menu.popdown();
+                dialog.present();
+            })
+            .build();
+
+        self.add_action_entries([
+            search_action,
+            close_action,
+            about_action,
+            vim_up,
+            vim_right,
+            vim_down,
+            vim_left,
+        ]);
     }
 
     pub fn setup_callback(&self) {
@@ -248,46 +327,9 @@ impl ReSetWindow {
             separator_row.set_child(Some(&separator));
             separator_row.set_selectable(false);
             separator_row.set_activatable(false);
+            separator_row.set_can_target(false);
+            // TODO how to simply skip this ?
             self_imp.reset_sidebar_list.append(&separator_row);
         }
-    }
-
-    pub fn setup_popover_buttons(&self) {
-        let self_imp = self.imp();
-        self_imp
-            .reset_about_button
-            .connect_clicked(clone!(@ weak self as window => move |_| {
-                    let dialog = adw::AboutWindow::builder()
-                        .application_name("ReSet")
-                        .application_icon("ReSet")
-                        .developer_name("Xetibo")
-                        .license("GPL-3.0")
-                        .license_type(gtk::License::Gpl30)
-                        .website("https://github.com/Xetibo/ReSet")
-                        .issue_url("https://github.com/Xetibo/ReSet/issues")
-                        .version("0.0.1")
-                        .transient_for(&window)
-                        .modal(true)
-                        .copyright("© 2022-2023 Xetibo")
-                        .developers(vec!["DashieTM".to_string(), "Takotori".to_string()])
-                        .designers(vec!["DashieTM".to_string(), "Takotori".to_string()])
-                        .build();
-                window.imp().reset_popover_menu.popdown();
-                dialog.present();
-            }));
-        self_imp
-            .reset_preference_button
-            .connect_clicked(clone!(@weak self as window => move |_| {
-                let preferences = adw::PreferencesWindow::builder().build();
-                window.imp().reset_popover_menu.popdown();
-                preferences.present();
-            }));
-        self_imp
-            .reset_shortcuts_button
-            .connect_clicked(clone!(@weak self as window => move |_| {
-                let shortcuts = gtk::ShortcutsWindow::builder().build();
-                window.imp().reset_popover_menu.popdown();
-                shortcuts.present();
-            }));
     }
 }
