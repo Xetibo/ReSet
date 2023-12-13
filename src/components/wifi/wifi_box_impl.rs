@@ -33,7 +33,6 @@ pub struct WifiBox {
     pub reset_available_networks: TemplateChild<ActionRow>,
     pub wifi_entries: Arc<Mutex<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
     pub wifi_entries_path: Arc<Mutex<HashMap<Path<'static>, Arc<WifiEntry>>>>,
-    pub saved_wifi_entries: Arc<Mutex<Vec<ListEntry>>>,
     pub reset_wifi_devices: Arc<RwLock<HashMap<String, (WifiDevice, u32)>>>,
     pub reset_current_wifi_device: Arc<RefCell<WifiDevice>>,
     pub reset_model_list: Arc<RwLock<StringList>>,

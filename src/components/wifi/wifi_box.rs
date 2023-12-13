@@ -19,7 +19,7 @@ use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, WidgetExt};
 use gtk::{gio, StringList, StringObject};
 use re_set_lib::network::network_structures::{AccessPoint, WifiDevice, WifiStrength};
-use re_set_lib::signals::{AccessPointAdded, WifiDeviceChanged};
+use re_set_lib::signals::{AccessPointAdded, WifiDeviceChanged, WifiDeviceReset};
 use re_set_lib::signals::{AccessPointChanged, AccessPointRemoved};
 
 use crate::components::wifi::wifi_box_impl;
@@ -265,6 +265,7 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
         let removed_ref = wifi_box.clone();
         let changed_ref = wifi_box.clone();
         let wifi_changed_ref = wifi_box.clone();
+        let wifi_reset_ref = wifi_box.clone();
         let access_point_added =
             AccessPointAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
                 .static_clone();
@@ -276,6 +277,9 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                 .static_clone();
         let device_changed =
             WifiDeviceChanged::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
+                .static_clone();
+        let devices_reset =
+            WifiDeviceReset::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
                 .static_clone();
         let res = conn.add_match(access_point_added, move |ir: AccessPointAdded, _, _| {
             let wifi_box = added_ref.clone();
@@ -404,6 +408,44 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                             imp.reset_wifi_connected.borrow().set_text("Connected");
                         } else {
                             imp.reset_wifi_connected.borrow().set_text("");
+                        }
+                    }
+                });
+            });
+            true
+        });
+        if res.is_err() {
+            println!("fail on wifi device change event");
+            return;
+        }
+        let res = conn.add_match(devices_reset, move |ir: WifiDeviceReset, _, _| {
+            if ir.devices.is_empty() {
+                return true;
+            }
+            {
+                let imp = wifi_reset_ref.imp();
+                let list = imp.reset_model_list.write().unwrap();
+                let mut model_index = imp.reset_model_index.write().unwrap();
+                let mut map = imp.reset_wifi_devices.write().unwrap();
+                imp.reset_current_wifi_device
+                    .replace(ir.devices.last().unwrap().clone());
+                for (index, device) in ir.devices.into_iter().enumerate() {
+                    list.append(&device.name);
+                    map.insert(device.name.clone(), (device, index as u32));
+                    *model_index += 1;
+                }
+            }
+            let wifi_box = wifi_reset_ref.clone();
+            glib::spawn_future(async move {
+                glib::idle_add_once(move || {
+                    let imp = wifi_box.imp();
+                    let list = imp.reset_model_list.read().unwrap();
+                    imp.reset_wifi_device.set_model(Some(&*list));
+                    let map = imp.reset_wifi_devices.read().unwrap();
+                    {
+                        let device = imp.reset_current_wifi_device.borrow();
+                        if let Some(index) = map.get(&device.name) {
+                            imp.reset_wifi_device.set_selected(index.1);
                         }
                     }
                 });

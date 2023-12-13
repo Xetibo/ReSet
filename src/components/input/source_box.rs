@@ -1,5 +1,6 @@
 use adw::prelude::PreferencesRowExt;
 use re_set_lib::audio::audio_structures::{Card, OutputStream, Source};
+use re_set_lib::signals::{OutputStreamChanged, OutputStreamRemoved, OutputStreamAdded, SourceChanged, SourceRemoved, SourceAdded};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
@@ -18,10 +19,6 @@ use gtk::{gio, StringObject};
 
 use crate::components::base::card_entry::CardEntry;
 use crate::components::base::list_entry::ListEntry;
-use crate::components::base::utils::{
-    OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
-    SourceRemoved,
-};
 use crate::components::input::source_box_impl;
 use crate::components::input::source_entry::set_source_volume;
 use crate::components::utils::{create_dropdown_label_factory, set_combo_row_ellipsis, BASE, DBUS_PATH, AUDIO};

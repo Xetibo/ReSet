@@ -3,6 +3,12 @@ use adw::prelude::PreferencesRowExt;
 use re_set_lib::audio::audio_structures::Card;
 use re_set_lib::audio::audio_structures::InputStream;
 use re_set_lib::audio::audio_structures::Sink;
+use re_set_lib::signals::InputStreamAdded;
+use re_set_lib::signals::InputStreamChanged;
+use re_set_lib::signals::InputStreamRemoved;
+use re_set_lib::signals::SinkAdded;
+use re_set_lib::signals::SinkChanged;
+use re_set_lib::signals::SinkRemoved;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
@@ -19,9 +25,6 @@ use gtk::{gio, StringObject};
 
 use crate::components::base::card_entry::CardEntry;
 use crate::components::base::list_entry::ListEntry;
-use crate::components::base::utils::{
-    InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
-};
 use crate::components::output::sink_entry::set_sink_volume;
 use crate::components::utils::AUDIO;
 use crate::components::utils::BASE;
@@ -312,13 +315,8 @@ pub fn populate_cards(output_box: Arc<SinkBox>) {
 
 fn get_input_streams() -> Vec<InputStream> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Vec<InputStream>,), Error> =
-        proxy.method_call(AUDIO, "ListInputStreams", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Vec<InputStream>,), Error> = proxy.method_call(AUDIO, "ListInputStreams", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -327,13 +325,8 @@ fn get_input_streams() -> Vec<InputStream> {
 
 fn get_sinks() -> Vec<Sink> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Vec<Sink>,), Error> =
-        proxy.method_call(AUDIO, "ListSinks", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Vec<Sink>,), Error> = proxy.method_call(AUDIO, "ListSinks", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -342,13 +335,8 @@ fn get_sinks() -> Vec<Sink> {
 
 fn get_cards() -> Vec<Card> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Vec<Card>,), Error> =
-        proxy.method_call(AUDIO, "ListCards", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Vec<Card>,), Error> = proxy.method_call(AUDIO, "ListCards", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -357,13 +345,8 @@ fn get_cards() -> Vec<Card> {
 
 fn get_default_sink_name() -> String {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(String,), Error> =
-        proxy.method_call(AUDIO, "GetDefaultSinkName", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(String,), Error> = proxy.method_call(AUDIO, "GetDefaultSinkName", ());
     if res.is_err() {
         return String::from("");
     }
@@ -372,13 +355,8 @@ fn get_default_sink_name() -> String {
 
 fn get_default_sink() -> Sink {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Sink,), Error> =
-        proxy.method_call(AUDIO, "GetDefaultSink", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Sink,), Error> = proxy.method_call(AUDIO, "GetDefaultSink", ());
     if res.is_err() {
         return Sink::default();
     }
@@ -386,36 +364,21 @@ fn get_default_sink() -> Sink {
 }
 
 pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Connection {
-    let sink_added = SinkAdded::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let sink_removed = SinkRemoved::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let sink_changed = SinkChanged::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let input_stream_added = InputStreamAdded::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let input_stream_removed = InputStreamRemoved::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let input_stream_changed = InputStreamChanged::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
+    let sink_added =
+        SinkAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
+    let sink_removed =
+        SinkRemoved::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
+    let sink_changed =
+        SinkChanged::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
+    let input_stream_added =
+        InputStreamAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
+            .static_clone();
+    let input_stream_removed =
+        InputStreamRemoved::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
+            .static_clone();
+    let input_stream_changed =
+        InputStreamChanged::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
+            .static_clone();
 
     let sink_added_box = sink_box.clone();
     let sink_removed_box = sink_box.clone();
