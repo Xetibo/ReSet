@@ -399,7 +399,6 @@
 	(6,2,"GtkWidget","margin-start","10",None,None,None,None,None,None,None,None,None),
 	(6,2,"GtkWidget","margin-top","10",None,None,None,None,None,None,None,None,None),
 	(6,6,"GtkWidget","margin-end","10",None,None,None,None,None,None,None,None,None),
-	(7,14,"GtkWidget","margin-bottom","10",None,None,None,None,None,None,None,None,None),
 	(7,15,"AdwComboRow","use-subtitle","True",None,None,None,None,None,None,None,None,None),
 	(7,15,"AdwPreferencesRow","title","asadf",None,None,None,None,None,None,None,None,None),
 	(7,15,"GtkWidget","css-classes","audioRow",None,None,None,None,None,None,None,None,None),
