@@ -34,8 +34,9 @@
     </child>
     <child>
       <object class="GtkButton" id="reset_address_remove">
-        <property name="height-request">55</property>
         <property name="icon-name">edit-delete-symbolic</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
         <property name="valign">start</property>
       </object>
     </child>

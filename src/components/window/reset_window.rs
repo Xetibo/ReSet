@@ -322,12 +322,17 @@ impl ReSetWindow {
                 .margin_bottom(3)
                 .margin_top(3)
                 .orientation(Orientation::Horizontal)
+                .accessible_role(AccessibleRole::Separator)
+                .can_focus(false)
                 .build();
-            let separator_row = ListBoxRow::new();
-            separator_row.set_child(Some(&separator));
-            separator_row.set_selectable(false);
-            separator_row.set_activatable(false);
-            separator_row.set_can_target(false);
+            let separator_row = ListBoxRow::builder()
+                .child(&separator)
+                .selectable(false)
+                .activatable(false)
+                .can_target(false)
+                .focusable(false)
+                .accessible_role(AccessibleRole::Separator)
+                .build();
             // TODO how to simply skip this ?
             self_imp.reset_sidebar_list.append(&separator_row);
         }
