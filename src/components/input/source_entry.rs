@@ -10,6 +10,7 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
 use re_set_lib::audio::audio_structures::Source;
+use crate::components::utils::set_action_row_ellipsis;
 
 use crate::components::utils::{BASE, DBUS_PATH, AUDIO};
 
@@ -98,6 +99,7 @@ impl SourceEntry {
                     }
                     toggle_source_mute(source.index, source.muted);
                 }));
+            set_action_row_ellipsis(imp.reset_source_name.get());
         }
         obj
     }

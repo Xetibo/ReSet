@@ -26,7 +26,8 @@
             <child>
               <object class="GtkBox">
                 <property name="margin-bottom">5</property>
-                <property name="margin-top">5</property>
+                <property name="margin-end">10</property>
+                <property name="margin-start">10</property>
                 <child>
                   <object class="GtkButton" id="reset_sink_mute">
                     <property name="icon-name">audio-input-microphone-symbolic</property>
@@ -44,6 +45,7 @@
                       </object>
                     </property>
                     <property name="hexpand">True</property>
+                    <property name="margin-top">15</property>
                     <property name="valign">center</property>
                     <property name="value-pos">bottom</property>
                     <marks>
@@ -68,8 +70,8 @@
     </child>
     <child>
       <object class="GtkSeparator">
-        <property name="margin-bottom">5</property>
-        <property name="margin-top">5</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-top">10</property>
       </object>
     </child>
   </template>

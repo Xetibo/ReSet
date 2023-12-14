@@ -3,7 +3,7 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use adw::BreakpointCondition;
 use glib::Object;
 use gtk::gio::ActionEntry;
-use gtk::{gio, glib, Application, ListBoxRow, Orientation};
+use gtk::{gio, glib, Application, ListBoxRow, Orientation, AccessibleRole};
 use gtk::{prelude::*, DirectionType};
 
 use crate::components::window::handle_sidebar_click::*;

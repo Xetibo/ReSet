@@ -5,37 +5,41 @@
   <requires lib="libadwaita" version="1.2"/>
   <template class="resetWifiRouteEntry" parent="GtkBox">
     <child>
-      <object class="AdwExpanderRow" id="reset_route_row">
-        <property name="hexpand">True</property>
-        <property name="title">Add new Route</property>
+      <object class="AdwPreferencesGroup" id="reset_route_group">
         <child>
-          <object class="GtkBox">
+          <object class="AdwExpanderRow" id="reset_route_row">
+            <property name="hexpand">True</property>
+            <property name="title">Add new Route</property>
             <child>
-              <object class="AdwEntryRow" id="reset_route_address">
-                <property name="hexpand">True</property>
-                <property name="title">Address</property>
+              <object class="GtkBox">
+                <child>
+                  <object class="AdwEntryRow" id="reset_route_address">
+                    <property name="hexpand">True</property>
+                    <property name="title">Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="reset_route_prefix">
+                    <property name="max-width-chars">5</property>
+                    <property name="title">Prefix</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
-              <object class="AdwEntryRow" id="reset_route_prefix">
-                <property name="max-width-chars">5</property>
-                <property name="title">Prefix</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <child>
-              <object class="AdwEntryRow" id="reset_route_gateway">
-                <property name="hexpand">True</property>
-                <property name="title">Gateway</property>
-              </object>
-            </child>
-            <child>
-              <object class="AdwEntryRow" id="reset_route_metric">
-                <property name="max-width-chars">5</property>
-                <property name="title">Metric</property>
+              <object class="GtkBox">
+                <child>
+                  <object class="AdwEntryRow" id="reset_route_gateway">
+                    <property name="hexpand">True</property>
+                    <property name="title">Gateway</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="reset_route_metric">
+                    <property name="max-width-chars">5</property>
+                    <property name="title">Metric</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

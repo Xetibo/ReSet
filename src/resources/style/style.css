@@ -25,3 +25,6 @@ row.audioRow  {
     border-color: transparent;
 }
 
+notebook > stack > box, notebook > stack {
+    background-color: @window_bg_color;
+}

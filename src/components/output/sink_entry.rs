@@ -10,6 +10,7 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
 use re_set_lib::audio::audio_structures::Sink;
+use crate::components::utils::set_action_row_ellipsis;
 
 use crate::components::utils::{AUDIO, DBUS_PATH, BASE};
 
@@ -96,6 +97,7 @@ impl SinkEntry {
                     }
                     toggle_sink_mute(stream.index, stream.muted);
                 }));
+            set_action_row_ellipsis(imp.reset_sink_name.get());
         }
         obj
     }
