@@ -11,6 +11,7 @@
         <property name="css-classes">resetSettingLabel</property>
         <property name="halign">start</property>
         <property name="label">Input</property>
+        <property name="margin-bottom">10</property>
         <property name="margin-start">5</property>
       </object>
     </child>
@@ -25,6 +26,7 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">10</property>
                     <child>
                       <object class="AdwActionRow" id="reset_source_row">
                         <property name="title">Input Devices</property>
@@ -47,54 +49,52 @@
                     </child>
                     <child>
                       <object class="AdwComboRow" id="reset_source_dropdown">
+                        <property name="css-classes">audioRow</property>
                         <property name="title">Default Input Device</property>
                         <property name="use-subtitle">True</property>
                       </object>
                     </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-end">5</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-top">10</property>
-                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkBox">
-                        <property name="margin-bottom">5</property>
-                        <property name="margin-top">5</property>
-                        <child>
-                          <object class="GtkButton" id="reset_source_mute">
-                            <property name="icon-name">audio-input-microphone-symbolic</property>
-                            <property name="margin-end">5</property>
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkScale" id="reset_volume_slider">
-                            <property name="adjustment">
-                              <object class="GtkAdjustment">
-                                <property name="page-increment">2005.4016</property>
-                                <property name="step-increment">2005.4016</property>
-                                <property name="upper">100270.08</property>
+                      <object class="AdwActionRow">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="margin-bottom">5</property>
+                            <property name="margin-end">10</property>
+                            <property name="margin-start">10</property>
+                            <child>
+                              <object class="GtkButton" id="reset_source_mute">
+                                <property name="icon-name">audio-input-microphone-symbolic</property>
+                                <property name="margin-end">5</property>
+                                <property name="valign">center</property>
                               </object>
-                            </property>
-                            <property name="hexpand">True</property>
-                            <property name="valign">center</property>
-                            <property name="value-pos">bottom</property>
-                            <marks>
-                              <mark position="bottom" value="65536.0">100%</mark>
-                            </marks>
+                            </child>
+                            <child>
+                              <object class="GtkScale" id="reset_volume_slider">
+                                <property name="adjustment">
+                                  <object class="GtkAdjustment">
+                                    <property name="page-increment">2005.4016</property>
+                                    <property name="step-increment">2005.4016</property>
+                                    <property name="upper">100270.08</property>
+                                  </object>
+                                </property>
+                                <property name="hexpand">True</property>
+                                <property name="margin-top">15</property>
+                                <property name="valign">center</property>
+                                <property name="value-pos">bottom</property>
+                                <marks>
+                                  <mark position="bottom" value="65536.0">100%</mark>
+                                </marks>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="reset_volume_percentage">
+                                <property name="label">100%</property>
+                                <property name="lines">1</property>
+                                <property name="width-request">40</property>
+                              </object>
+                            </child>
                           </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="reset_volume_percentage">
-                            <property name="label">100%</property>
-                            <property name="lines">1</property>
-                            <property name="width-request">40</property>
-                          </object>
-                        </child>
+                        </property>
                       </object>
                     </child>
                   </object>
@@ -108,8 +108,10 @@
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel">
+                        <property name="css-classes">heading</property>
                         <property name="halign">start</property>
                         <property name="label">Input Streams</property>
+                        <property name="margin-bottom">15</property>
                       </object>
                     </child>
                   </object>
@@ -150,8 +152,10 @@
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel">
+                        <property name="css-classes">heading</property>
                         <property name="halign">start</property>
                         <property name="label">Input Devices</property>
+                        <property name="margin-bottom">15</property>
                       </object>
                     </child>
                   </object>

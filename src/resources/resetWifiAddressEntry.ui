@@ -7,21 +7,25 @@
     <property name="margin-bottom">2</property>
     <property name="margin-top">2</property>
     <child>
-      <object class="AdwExpanderRow" id="reset_address_row">
-        <property name="hexpand">True</property>
-        <property name="title">Add new Address</property>
+      <object class="AdwPreferencesGroup" id="reset_address_group">
         <child>
-          <object class="GtkBox">
+          <object class="AdwExpanderRow" id="reset_address_row">
+            <property name="hexpand">True</property>
+            <property name="title">Add new Address</property>
             <child>
-              <object class="AdwEntryRow" id="reset_address_address">
-                <property name="hexpand">True</property>
-                <property name="title">Address</property>
-              </object>
-            </child>
-            <child>
-              <object class="AdwEntryRow" id="reset_address_prefix">
-                <property name="max-width-chars">5</property>
-                <property name="title">Prefix</property>
+              <object class="GtkBox">
+                <child>
+                  <object class="AdwEntryRow" id="reset_address_address">
+                    <property name="hexpand">True</property>
+                    <property name="title">Address</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="reset_address_prefix">
+                    <property name="max-width-chars">5</property>
+                    <property name="title">Prefix</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -30,8 +34,9 @@
     </child>
     <child>
       <object class="GtkButton" id="reset_address_remove">
-        <property name="height-request">55</property>
         <property name="icon-name">edit-delete-symbolic</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
         <property name="valign">start</property>
       </object>
     </child>
