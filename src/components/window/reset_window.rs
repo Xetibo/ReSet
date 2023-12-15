@@ -38,6 +38,10 @@ impl ReSetWindow {
     pub fn setup_shortcuts(&self) {
         let search_action = ActionEntry::builder("search")
             .activate(move |window: &Self, _, _| {
+                let imp = window.imp();
+                if !imp.reset_overlay_split_view.shows_sidebar() {
+                    imp.reset_overlay_split_view.set_show_sidebar(true);
+                }
                 window.imp().reset_search_entry.grab_focus();
             })
             .build();
