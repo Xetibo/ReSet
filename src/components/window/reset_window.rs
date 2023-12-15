@@ -26,7 +26,7 @@ impl ReSetWindow {
     pub fn new(app: &Application) -> Self {
         app.set_accels_for_action("win.search", &["<Ctrl>F"]);
         app.set_accels_for_action("win.close", &["<Ctrl>Q"]);
-        app.set_accels_for_action("win.about", &["<Ctrl>A"]);
+        app.set_accels_for_action("win.about", &["<Ctrl>H"]);
         // implemented when a proper movement method is found
         // app.set_accels_for_action("win.up", &["<Ctrl>K"]);
         // app.set_accels_for_action("win.right", &["<Ctrl>L"]);
