@@ -162,7 +162,6 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     }
                     let list = output_box_imp.reset_model_list.read().unwrap();
                     output_box_imp.reset_sink_dropdown.set_model(Some(&*list));
-                    let map = output_box_imp.reset_sink_map.read().unwrap();
                     let name = output_box_imp.reset_default_sink.borrow();
 
                     let index = output_box_imp.reset_model_index.read().unwrap();
