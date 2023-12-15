@@ -4,6 +4,10 @@
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetOutputStreamEntry" parent="AdwPreferencesGroup">
+    <property name="margin-bottom">5</property>
+    <property name="margin-end">5</property>
+    <property name="margin-start">5</property>
+    <property name="margin-top">5</property>
     <child>
       <object class="GtkSeparator">
         <property name="margin-top">10</property>

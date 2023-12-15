@@ -1,6 +1,9 @@
 use adw::prelude::PreferencesRowExt;
 use re_set_lib::audio::audio_structures::{Card, OutputStream, Source};
-use re_set_lib::signals::{OutputStreamChanged, OutputStreamRemoved, OutputStreamAdded, SourceChanged, SourceRemoved, SourceAdded};
+use re_set_lib::signals::{
+    OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
+    SourceRemoved,
+};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
@@ -21,7 +24,9 @@ use crate::components::base::card_entry::CardEntry;
 use crate::components::base::list_entry::ListEntry;
 use crate::components::input::source_box_impl;
 use crate::components::input::source_entry::set_source_volume;
-use crate::components::utils::{create_dropdown_label_factory, set_combo_row_ellipsis, BASE, DBUS_PATH, AUDIO};
+use crate::components::utils::{
+    create_dropdown_label_factory, set_combo_row_ellipsis, AUDIO, BASE, DBUS_PATH,
+};
 
 use super::output_stream_entry::OutputStreamEntry;
 use super::source_entry::{set_default_source, toggle_source_mute, SourceEntry};
@@ -97,9 +102,9 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
             input_box_imp
                 .reset_default_source
                 .replace(get_default_source());
-            for (i, source) in (0_u32..).zip(sources.iter()) {
+            for source in sources.iter() {
                 list.append(&source.alias);
-                map.insert(source.alias.clone(), (source.index, i, source.name.clone()));
+                map.insert(source.alias.clone(), (source.index, source.name.clone()));
                 *model_index += 1;
             }
         }
@@ -154,10 +159,14 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     }
                     let list = input_box_imp.reset_model_list.read().unwrap();
                     input_box_imp.reset_source_dropdown.set_model(Some(&*list));
-                    let map = input_box_imp.reset_source_map.read().unwrap();
                     let name = input_box_imp.reset_default_source.borrow();
-                    if let Some(index) = map.get(&name.alias) {
-                        input_box_imp.reset_source_dropdown.set_selected(index.1);
+
+                    let index = input_box_imp.reset_model_index.read().unwrap();
+                    let model_list = input_box_imp.reset_model_list.read().unwrap();
+                    for entry in 0..*index {
+                        if model_list.string(entry) == Some(name.alias.clone().into()) {
+                            input_box_imp.reset_source_dropdown.set_selected(entry);
+                        } 
                     }
                     input_box_imp.reset_source_dropdown.connect_selected_notify(
                         clone!(@weak input_box_imp => move |dropdown| {
@@ -175,7 +184,7 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                             if source.is_none() {
                                 return;
                             }
-                            let source = Arc::new(source.unwrap().2.clone());
+                            let source = Arc::new(source.unwrap().1.clone());
                             gio::spawn_blocking(move || {
                                 let result = set_default_source(source);
                                 if result.is_none(){
@@ -247,12 +256,12 @@ pub fn refresh_default_source(new_source: Source, input_box: Arc<SourceBox>, ent
                 let entry_imp = entry.unwrap().1.imp();
                 entry_imp.reset_selected_source.set_active(true);
             } else {
-                let map = imp.reset_source_map.read().unwrap();
-                let entry = map.get(&new_source.alias);
-                if entry.is_none() {
-                    return;
+                let model_list = imp.reset_model_list.read().unwrap();
+                for entry in 0..*imp.reset_model_index.read().unwrap() {
+                    if model_list.string(entry) == Some(new_source.alias.clone().into()) {
+                        imp.reset_source_dropdown.set_selected(entry);
+                    }
                 }
-                imp.reset_source_dropdown.set_selected(entry.unwrap().1);
             }
             imp.reset_volume_percentage.set_text(&percentage);
             imp.reset_volume_slider.set_value(volume as f64);
@@ -308,11 +317,7 @@ pub fn populate_cards(input_box: Arc<SourceBox>) {
 
 fn get_output_streams() -> Vec<OutputStream> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Vec<OutputStream>,), Error> =
         proxy.method_call(AUDIO, "ListOutputStreams", ());
     if res.is_err() {
@@ -323,13 +328,8 @@ fn get_output_streams() -> Vec<OutputStream> {
 
 fn get_sources() -> Vec<Source> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Vec<Source>,), Error> =
-        proxy.method_call(AUDIO, "ListSources", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Vec<Source>,), Error> = proxy.method_call(AUDIO, "ListSources", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -338,13 +338,8 @@ fn get_sources() -> Vec<Source> {
 
 fn get_cards() -> Vec<Card> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Vec<Card>,), Error> =
-        proxy.method_call(AUDIO, "ListCards", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Vec<Card>,), Error> = proxy.method_call(AUDIO, "ListCards", ());
     if res.is_err() {
         return Vec::new();
     }
@@ -353,13 +348,8 @@ fn get_cards() -> Vec<Card> {
 
 fn get_default_source_name() -> String {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(String,), Error> =
-        proxy.method_call(AUDIO, "GetDefaultSourceName", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(String,), Error> = proxy.method_call(AUDIO, "GetDefaultSourceName", ());
     if res.is_err() {
         return String::from("");
     }
@@ -368,13 +358,8 @@ fn get_default_source_name() -> String {
 
 fn get_default_source() -> Source {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Source,), Error> =
-        proxy.method_call(AUDIO, "GetDefaultSource", ());
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Source,), Error> = proxy.method_call(AUDIO, "GetDefaultSource", ());
     if res.is_err() {
         return Source::default();
     }
@@ -382,36 +367,21 @@ fn get_default_source() -> Source {
 }
 
 pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) -> Connection {
-    let source_added = SourceAdded::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let source_removed = SourceRemoved::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let source_changed = SourceChanged::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let output_stream_added = OutputStreamAdded::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let output_stream_removed = OutputStreamRemoved::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
-    let output_stream_changed = OutputStreamChanged::match_rule(
-        Some(&BASE.into()),
-        Some(&Path::from(DBUS_PATH)),
-    )
-    .static_clone();
+    let source_added =
+        SourceAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
+    let source_removed =
+        SourceRemoved::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
+    let source_changed =
+        SourceChanged::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
+    let output_stream_added =
+        OutputStreamAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
+            .static_clone();
+    let output_stream_removed =
+        OutputStreamRemoved::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
+            .static_clone();
+    let output_stream_changed =
+        OutputStreamChanged::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
+            .static_clone();
 
     let source_added_box = source_box.clone();
     let source_removed_box = source_box.clone();
@@ -426,7 +396,6 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
             glib::idle_add_once(move || {
                 let input_box = source_box.clone();
                 let input_box_imp = input_box.imp();
-                let mut list = input_box_imp.reset_source_list.write().unwrap();
                 let source_index = ir.source.index;
                 let alias = ir.source.alias.clone();
                 let name = ir.source.name.clone();
@@ -443,17 +412,25 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 let source_clone = source_entry.clone();
                 let entry = Arc::new(ListEntry::new(&*source_entry));
                 entry.set_activatable(false);
+                let mut list = input_box_imp.reset_source_list.write().unwrap();
                 list.insert(source_index, (entry.clone(), source_clone, alias.clone()));
                 input_box_imp.reset_sources.append(&*entry);
                 let mut map = input_box_imp.reset_source_map.write().unwrap();
                 let mut index = input_box_imp.reset_model_index.write().unwrap();
-                input_box_imp
-                    .reset_model_list
-                    .write()
-                    .unwrap()
-                    .append(&alias);
-                map.insert(alias, (source_index, *index, name));
-                *index += 1;
+                let model_list = input_box_imp.reset_model_list.write().unwrap();
+                model_list.append(&alias);
+                if model_list.string(*index - 1) == Some("Monitor of Dummy Output".into()) {
+                    if alias == "Monitor of Dummy Output" {
+                        return;
+                    }
+                    model_list.append(&alias);
+                    model_list.remove(*index - 1);
+                    map.insert(alias, (source_index, name));
+                } else {
+                    model_list.append(&alias);
+                    map.insert(alias, (source_index, name));
+                    *index += 1;
+                }
             });
         });
         true
@@ -469,25 +446,32 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
             glib::idle_add_once(move || {
                 let input_box = source_box.clone();
                 let input_box_imp = input_box.imp();
-                let mut list = input_box_imp.reset_source_list.write().unwrap();
-                let entry = list.remove(&ir.index);
-                if entry.is_none() {
-                    return;
+                let entry: Option<(Arc<ListEntry>, Arc<SourceEntry>, String)>;
+                {
+                    let mut list = input_box_imp.reset_source_list.write().unwrap();
+                    entry = list.remove(&ir.index);
+                    if entry.is_none() {
+                        return;
+                    }
                 }
                 input_box_imp
                     .reset_sources
                     .remove(&*entry.clone().unwrap().0);
                 let mut map = input_box_imp.reset_source_map.write().unwrap();
-                let entry_index = map.remove(&entry.unwrap().2);
-                if let Some(entry_index) = entry_index {
-                    input_box_imp
-                        .reset_model_list
-                        .write()
-                        .unwrap()
-                        .remove(entry_index.1);
-                }
+                let alias = entry.unwrap().2;
+                map.remove(&alias);
                 let mut index = input_box_imp.reset_model_index.write().unwrap();
-                if *index != 0 {
+                let model_list = input_box_imp.reset_model_list.write().unwrap();
+
+                if *index == 1 {
+                    model_list.append("Monitor of Dummy Output");
+                }
+                for entry in 0..*index {
+                    if model_list.string(entry) == Some(alias.clone().into()) {
+                        model_list.remove(entry);
+                    }
+                }
+                if *index > 1 {
                     *index -= 1;
                 }
             });
@@ -620,9 +604,12 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     let percentage = (fraction).to_string() + "%";
                     imp.reset_volume_percentage.set_text(&percentage);
                     imp.reset_volume_slider.set_value(*volume as f64);
-                    let map = input_box_imp.reset_source_map.read().unwrap();
-                    if let Some(index) = map.get(&alias) {
-                        imp.reset_source_selection.set_selected(index.1);
+                    let index = input_box_imp.reset_model_index.read().unwrap();
+                    let model_list = input_box_imp.reset_model_list.read().unwrap();
+                    for entry in 0..*index {
+                        if model_list.string(entry) == Some(alias.clone().into()) {
+                            imp.reset_source_selection.set_selected(entry);
+                        } 
                     }
                 });
             });

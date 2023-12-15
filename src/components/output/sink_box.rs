@@ -106,9 +106,9 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
             output_box_imp
                 .reset_default_sink
                 .replace(get_default_sink());
-            for (i, sink) in (0_u32..).zip(sinks.iter()) {
+            for sink in sinks.iter() {
                 list.append(&sink.alias);
-                map.insert(sink.alias.clone(), (sink.index, i, sink.name.clone()));
+                map.insert(sink.alias.clone(), (sink.index, sink.name.clone()));
                 *model_index += 1;
             }
         }
@@ -164,8 +164,13 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     output_box_imp.reset_sink_dropdown.set_model(Some(&*list));
                     let map = output_box_imp.reset_sink_map.read().unwrap();
                     let name = output_box_imp.reset_default_sink.borrow();
-                    if let Some(index) = map.get(&name.alias) {
-                        output_box_imp.reset_sink_dropdown.set_selected(index.1);
+
+                    let index = output_box_imp.reset_model_index.read().unwrap();
+                    let model_list = output_box_imp.reset_model_list.read().unwrap();
+                    for entry in 0..*index {
+                        if model_list.string(entry) == Some(name.alias.clone().into()) {
+                            output_box_imp.reset_sink_dropdown.set_selected(entry);
+                        }
                     }
                     output_box_imp.reset_sink_dropdown.connect_selected_notify(
                         clone!(@weak output_box_imp => move |dropdown| {
@@ -183,7 +188,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                             if sink.is_none() {
                                 return;
                             }
-                            let new_sink_name = Arc::new(sink.unwrap().2.clone());
+                            let new_sink_name = Arc::new(sink.unwrap().1.clone());
                             gio::spawn_blocking(move || {
                                 let result = set_default_sink(new_sink_name);
                                 if result.is_none() {
@@ -255,12 +260,13 @@ pub fn refresh_default_sink(new_sink: Sink, output_box: Arc<SinkBox>, entry: boo
                 let entry_imp = entry.unwrap().1.imp();
                 entry_imp.reset_selected_sink.set_active(true);
             } else {
-                let map = imp.reset_sink_map.read().unwrap();
-                let entry = map.get(&new_sink.alias);
-                if entry.is_none() {
-                    return;
+                let index = imp.reset_model_index.read().unwrap();
+                let model_list = imp.reset_model_list.read().unwrap();
+                for entry in 0..*index {
+                    if model_list.string(entry) == Some(new_sink.alias.clone().into()) {
+                        imp.reset_sink_dropdown.set_selected(entry);
+                    }
                 }
-                imp.reset_sink_dropdown.set_selected(entry.unwrap().1);
             }
             imp.reset_volume_percentage.set_text(&percentage);
             imp.reset_volume_slider.set_value(volume as f64);
@@ -388,12 +394,12 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
     let input_stream_changed_box = sink_box.clone();
 
     let res = conn.add_match(sink_added, move |ir: SinkAdded, _, _| {
+        println!("sink added {}", ir.sink.alias);
         let sink_box = sink_added_box.clone();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
-                let mut list = output_box_imp.reset_sink_list.write().unwrap();
                 let sink_index = ir.sink.index;
                 let alias = ir.sink.alias.clone();
                 let name = ir.sink.name.clone();
@@ -410,17 +416,24 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let sink_clone = sink_entry.clone();
                 let entry = Arc::new(ListEntry::new(&*sink_entry));
                 entry.set_activatable(false);
+                let mut list = output_box_imp.reset_sink_list.write().unwrap();
                 list.insert(sink_index, (entry.clone(), sink_clone, alias.clone()));
                 output_box_imp.reset_sinks.append(&*entry);
                 let mut map = output_box_imp.reset_sink_map.write().unwrap();
                 let mut index = output_box_imp.reset_model_index.write().unwrap();
-                output_box_imp
-                    .reset_model_list
-                    .write()
-                    .unwrap()
-                    .append(&alias);
-                map.insert(alias, (sink_index, *index, name));
-                *index += 1;
+                let model_list = output_box_imp.reset_model_list.write().unwrap();
+                if model_list.string(*index - 1) == Some("Dummy Output".into()) {
+                    if alias == "Dummy Output" {
+                        return;
+                    }
+                    model_list.append(&alias);
+                    model_list.remove(*index - 1);
+                    map.insert(alias, (sink_index, name));
+                } else {
+                    model_list.append(&alias);
+                    map.insert(alias, (sink_index, name));
+                    *index += 1;
+                }
             });
         });
         true
@@ -436,25 +449,33 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
             glib::idle_add_once(move || {
                 let output_box = sink_box.clone();
                 let output_box_imp = output_box.imp();
-                let mut list = output_box_imp.reset_sink_list.write().unwrap();
-                let entry = list.remove(&ir.index);
-                if entry.is_none() {
-                    return;
+
+                let entry: Option<(Arc<ListEntry>, Arc<SinkEntry>, String)>;
+                {
+                    let mut list = output_box_imp.reset_sink_list.write().unwrap();
+                    entry = list.remove(&ir.index);
+                    if entry.is_none() {
+                        return;
+                    }
                 }
                 output_box_imp
                     .reset_sinks
                     .remove(&*entry.clone().unwrap().0);
                 let mut map = output_box_imp.reset_sink_map.write().unwrap();
-                let entry_index = map.remove(&entry.unwrap().2);
-                if let Some(entry_index) = entry_index {
-                    output_box_imp
-                        .reset_model_list
-                        .write()
-                        .unwrap()
-                        .remove(entry_index.1);
-                }
+                let alias = entry.unwrap().2;
+                map.remove(&alias);
                 let mut index = output_box_imp.reset_model_index.write().unwrap();
-                if *index != 0 {
+                let model_list = output_box_imp.reset_model_list.write().unwrap();
+
+                if *index == 1 {
+                    model_list.append("Dummy Output");
+                }
+                for entry in 0..*index {
+                    if model_list.string(entry) == Some(alias.clone().into()) {
+                        model_list.remove(entry);
+                    }
+                }
+                if *index > 1 {
                     *index -= 1;
                 }
             });
@@ -583,9 +604,12 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let percentage = (fraction).to_string() + "%";
                 imp.reset_volume_percentage.set_text(&percentage);
                 imp.reset_volume_slider.set_value(*volume as f64);
-                let map = output_box_imp.reset_sink_map.read().unwrap();
-                if let Some(index) = map.get(&alias) {
-                    imp.reset_sink_selection.set_selected(index.1);
+                let index = output_box_imp.reset_model_index.read().unwrap();
+                let model_list = output_box_imp.reset_model_list.read().unwrap();
+                for entry in 0..*index {
+                    if model_list.string(entry) == Some(alias.clone().into()) {
+                        imp.reset_sink_selection.set_selected(entry);
+                    }
                 }
             });
         });

@@ -1,7 +1,9 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use crate::components::utils::{create_dropdown_label_factory, set_combo_row_ellipsis, BASE, DBUS_PATH, AUDIO};
+use crate::components::utils::{
+    create_dropdown_label_factory, set_combo_row_ellipsis, AUDIO, BASE, DBUS_PATH,
+};
 use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
@@ -29,6 +31,7 @@ impl OutputStreamEntry {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
         {
+            let index = stream.index;
             let box_imp = source_box.imp();
             let imp = obj.imp();
             let name = stream.application_name.clone() + ": " + stream.name.as_str();
@@ -70,16 +73,27 @@ impl OutputStreamEntry {
             {
                 let list = box_imp.reset_model_list.read().unwrap();
                 imp.reset_source_selection.set_model(Some(&*list));
-                let map = box_imp.reset_source_map.write().unwrap();
-                let mut name = box_imp.reset_default_source.try_borrow();
-                while name.is_err() {
-                    name = box_imp.reset_default_source.try_borrow();
-                }
-                let name = name.unwrap();
-                let name = &name.alias;
-                let index = map.get(name);
-                if let Some(index) = index {
-                    imp.reset_source_selection.set_selected(index.1);
+                let source_list = box_imp.reset_source_list.read().unwrap();
+                let name = source_list.get(&index);
+                let index = box_imp.reset_model_index.read().unwrap();
+                let model_list = box_imp.reset_model_list.read().unwrap();
+                if let Some(name) = name {
+                    for entry in 0..*index {
+                        if model_list.string(entry) == Some(name.2.clone().into()) {
+                            imp.reset_source_selection.set_selected(entry);
+                        }
+                    }
+                } else {
+                    let mut name = box_imp.reset_default_source.try_borrow();
+                    while name.is_err() {
+                        name = box_imp.reset_default_source.try_borrow();
+                    }
+                    let name = name.unwrap();
+                    for entry in 0..*index {
+                        if model_list.string(entry) == Some(name.alias.clone().into()) {
+                            imp.reset_source_selection.set_selected(entry);
+                        }
+                    }
                 }
             }
             imp.reset_source_selection.connect_selected_notify(
@@ -133,11 +147,7 @@ impl OutputStreamEntry {
 fn set_outputstream_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
         let _: Result<(), Error> = proxy.method_call(
             AUDIO,
             "SetOutputStreamVolume",
@@ -154,16 +164,8 @@ fn set_outputstream_volume(value: f64, index: u32, channels: u16) -> bool {
 fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> = proxy.method_call(
-            AUDIO,
-            "SetOutputStreamMute",
-            (index, muted),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let _: Result<(), Error> = proxy.method_call(AUDIO, "SetOutputStreamMute", (index, muted));
         // if res.is_err() {
         //     return false;
         // }
@@ -175,16 +177,9 @@ fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
 fn set_source_of_output_stream(stream: u32, source: u32) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(bool,), Error> = proxy.method_call(
-            AUDIO,
-            "SetSourceOfOutputStream",
-            (stream, source),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let _: Result<(bool,), Error> =
+            proxy.method_call(AUDIO, "SetSourceOfOutputStream", (stream, source));
         // if res.is_err() {
         //     return false;
         // }

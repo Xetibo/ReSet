@@ -16,7 +16,8 @@ use super::source_entry::SourceEntry;
 
 type SourceEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SourceEntry>, String)>>>;
 type OutputStreamEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<OutputStreamEntry>)>>>;
-type SourceMap = Arc<RwLock<HashMap<String, (u32, u32, String)>>>;
+// the key is the alias, the first value u32 is the index of the source, the second is the technical name
+type SourceMap = Arc<RwLock<HashMap<String, (u32, String)>>>;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetAudioInput.ui")]
@@ -50,8 +51,6 @@ pub struct SourceBox {
     pub reset_output_stream_list: OutputStreamEntryMap,
     pub reset_model_list: Arc<RwLock<StringList>>,
     pub reset_model_index: Arc<RwLock<u32>>,
-    // first u32 is the index of the source, the second the index in the model list and the third is
-    // the full name
     pub reset_source_map: SourceMap,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }

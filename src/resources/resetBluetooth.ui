@@ -39,6 +39,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup" id="reset_bluetooth_details">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwComboRow" id="reset_bluetooth_adapter">
                         <property name="title">Bluetooth Adapter</property>
@@ -60,6 +64,15 @@
                   </object>
                 </child>
                 <child>
+                  <object class="AdwPreferencesGroup" id="reset_bluetooth_connected_devices">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="title">Connected Devices</property>
+                  </object>
+                </child>
+                <child>
                   <object class="AdwPreferencesGroup" id="reset_bluetooth_available_devices">
                     <property name="header-suffix">
                       <object class="GtkButton" id="reset_bluetooth_refresh_button">
@@ -67,15 +80,11 @@
                         <property name="margin-end">15</property>
                       </object>
                     </property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
                     <property name="title">Available Devices</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwPreferencesGroup" id="reset_bluetooth_connected_devices">
-                    <property name="margin-end">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="title">Connected Devices</property>
                   </object>
                 </child>
               </object>
@@ -91,6 +100,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwActionRow" id="reset_bluetooth_main_tab">
                         <property name="title">Available Networks</property>
@@ -108,6 +121,10 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <property name="title">Visibility Settings</property>
                     <child>
                       <object class="AdwSwitchRow" id="reset_bluetooth_pairable_switch">

@@ -27,6 +27,9 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <property name="margin-bottom">10</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwActionRow" id="reset_source_row">
                         <property name="title">Input Devices</property>
@@ -129,6 +132,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwActionRow" id="reset_output_stream_button">
                         <property name="title">Input Streams</property>
@@ -173,6 +180,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwActionRow" id="reset_input_cards_back_button">
                         <property name="title">Input Streams</property>
@@ -193,6 +204,10 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup" id="reset_cards">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <property name="title">Devices</property>
                   </object>
                 </child>

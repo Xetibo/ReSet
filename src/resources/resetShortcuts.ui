@@ -25,7 +25,7 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="accelerator">&lt;Ctrl&gt;A</property>
+                <property name="accelerator">&lt;Ctrl&gt;H</property>
                 <property name="action-name">win.about</property>
                 <property name="icon-set">True</property>
                 <property name="title">Show about window</property>

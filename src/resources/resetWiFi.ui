@@ -41,6 +41,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup" id="reset_wifi_details">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwComboRow" id="reset_wifi_device">
                         <property name="title">WiFi Device</property>
@@ -63,6 +67,9 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup" id="reset_wifi_list">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
                     <property name="title">Available networks</property>
                   </object>
@@ -80,6 +87,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwActionRow" id="reset_available_networks">
                         <property name="title">Available Networks</property>
@@ -97,6 +108,10 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup" id="reset_stored_wifi_list">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <property name="title">Saved Networks</property>
                   </object>
                 </child>

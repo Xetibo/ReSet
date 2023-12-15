@@ -71,12 +71,12 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
                 imp.reset_wifi_devices.write().unwrap().clear();
                 *imp.reset_model_list.write().unwrap() = StringList::new(&[]);
                 *imp.reset_model_index.write().unwrap() = 0;
-                let mut map = imp.wifi_entries.lock().unwrap();
+                let mut map = imp.wifi_entries.write().unwrap();
                 for entry in map.iter() {
                     imp.reset_wifi_list.remove(&*(*entry.1));
                 }
                 map.clear();
-                imp.wifi_entries_path.lock().unwrap().clear();
+                imp.wifi_entries_path.write().unwrap().clear();
                 listeners.wifi_listener.store(false, Ordering::SeqCst);
             } else {
                 start_event_listener(listeners.clone(), wifibox_ref.clone());
@@ -96,8 +96,8 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
     let wifi_entries_path = wifi_box.imp().wifi_entries_path.clone();
 
     gio::spawn_blocking(move || {
-        let access_points = get_access_points();
         let devices = get_wifi_devices();
+        let access_points = get_access_points();
         {
             let imp = wifibox_ref.imp();
             let list = imp.reset_model_list.write().unwrap();
@@ -119,8 +119,8 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
         dbus_start_network_events();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                let mut wifi_entries = wifi_entries.lock().unwrap();
-                let mut wifi_entries_path = wifi_entries_path.lock().unwrap();
+                let mut wifi_entries = wifi_entries.write().unwrap();
+                let mut wifi_entries_path = wifi_entries_path.write().unwrap();
                 let imp = wifibox_ref.imp();
 
                 let list = imp.reset_model_list.read().unwrap();
@@ -286,8 +286,8 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
                     let imp = wifi_box.imp();
-                    let mut wifi_entries = imp.wifi_entries.lock().unwrap();
-                    let mut wifi_entries_path = imp.wifi_entries_path.lock().unwrap();
+                    let mut wifi_entries = imp.wifi_entries.write().unwrap();
+                    let mut wifi_entries_path = imp.wifi_entries_path.write().unwrap();
                     let ssid = ir.access_point.ssid.clone();
                     let path = ir.access_point.dbus_path.clone();
                     if wifi_entries.get(&ssid).is_some() || ssid.is_empty() {
@@ -312,8 +312,8 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             glib::spawn_future(async move {
                 glib::idle_add_once(move || {
                     let imp = wifi_box.imp();
-                    let mut wifi_entries = imp.wifi_entries.lock().unwrap();
-                    let mut wifi_entries_path = imp.wifi_entries_path.lock().unwrap();
+                    let mut wifi_entries = imp.wifi_entries.write().unwrap();
+                    let mut wifi_entries_path = imp.wifi_entries_path.write().unwrap();
                     let entry = wifi_entries_path.remove(&ir.access_point);
                     if entry.is_none() {
                         return;
@@ -335,7 +335,7 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             glib::spawn_future(async move {
                 glib::idle_add_local_once(move || {
                     let imp = wifi_box.imp();
-                    let wifi_entries = imp.wifi_entries.lock().unwrap();
+                    let wifi_entries = imp.wifi_entries.read().unwrap();
                     let entry = wifi_entries.get(&ir.access_point.ssid);
                     if entry.is_none() {
                         return;
@@ -399,7 +399,7 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
                     } else {
                         *current_device = ir.wifi_device;
                     }
-                    let mut wifi_entries = imp.wifi_entries.lock().unwrap();
+                    let mut wifi_entries = imp.wifi_entries.write().unwrap();
                     for entry in wifi_entries.iter_mut() {
                         let imp = entry.1.imp();
                         let mut connected = imp.connected.borrow_mut();

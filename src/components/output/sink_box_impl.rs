@@ -18,7 +18,7 @@ type SinkEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, Str
 type InputStreamEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<InputStreamEntry>)>>>;
 // key is model name -> alias, first u32 is the index of the sink, the second the index in the model list and the third is
 // the detailed name
-type SinkMap = Arc<RwLock<HashMap<String, (u32, u32, String)>>>;
+type SinkMap = Arc<RwLock<HashMap<String, (u32, String)>>>;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetAudioOutput.ui")]

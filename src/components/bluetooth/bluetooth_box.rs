@@ -296,11 +296,11 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                             list_entry.imp().bluetooth_device.borrow_mut();
                         if existing_bluetooth_device.connected != ir.bluetooth_device.connected {
                             if ir.bluetooth_device.connected {
-                                imp.reset_bluetooth_connected_devices.add(&**list_entry);
                                 imp.reset_bluetooth_available_devices.remove(&**list_entry);
+                                imp.reset_bluetooth_connected_devices.add(&**list_entry);
                             } else {
-                                imp.reset_bluetooth_available_devices.add(&**list_entry);
                                 imp.reset_bluetooth_connected_devices.remove(&**list_entry);
+                                imp.reset_bluetooth_available_devices.add(&**list_entry);
                             }
                         }
                         if existing_bluetooth_device.bonded != ir.bluetooth_device.bonded {

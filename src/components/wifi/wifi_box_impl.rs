@@ -7,7 +7,7 @@ use gtk::{prelude::*, StringList};
 use re_set_lib::network::network_structures::WifiDevice;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex, RwLock};
+use std::sync::{Arc, RwLock};
 
 use crate::components::base::list_entry::ListEntry;
 use crate::components::wifi::wifi_entry::WifiEntry;
@@ -31,8 +31,8 @@ pub struct WifiBox {
     pub reset_stored_wifi_list: TemplateChild<PreferencesGroup>,
     #[template_child]
     pub reset_available_networks: TemplateChild<ActionRow>,
-    pub wifi_entries: Arc<Mutex<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
-    pub wifi_entries_path: Arc<Mutex<HashMap<Path<'static>, Arc<WifiEntry>>>>,
+    pub wifi_entries: Arc<RwLock<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
+    pub wifi_entries_path: Arc<RwLock<HashMap<Path<'static>, Arc<WifiEntry>>>>,
     pub reset_wifi_devices: Arc<RwLock<HashMap<String, (WifiDevice, u32)>>>,
     pub reset_current_wifi_device: Arc<RefCell<WifiDevice>>,
     pub reset_model_list: Arc<RwLock<StringList>>,

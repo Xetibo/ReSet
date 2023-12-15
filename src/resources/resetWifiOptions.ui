@@ -9,6 +9,10 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="AdwPreferencesGroup">
+            <property name="margin-bottom">5</property>
+            <property name="margin-end">5</property>
+            <property name="margin-start">5</property>
+            <property name="margin-top">5</property>
             <child>
               <object class="AdwActionRow" id="reset_available_networks">
                 <property name="title">Available Networks</property>
@@ -35,6 +39,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwActionRow" id="reset_wifi_name">
                         <property name="css-classes">property</property>
@@ -108,6 +116,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwComboRow" id="reset_ip4_method">
                         <property name="model">
@@ -138,6 +150,9 @@
                         <property name="icon-name">list-add-symbolic</property>
                       </object>
                     </property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
                     <property name="title">Addresses</property>
                     <child>
@@ -170,6 +185,9 @@
                         </child>
                       </object>
                     </property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
                     <property name="title">Routes</property>
                   </object>
@@ -187,6 +205,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwComboRow" id="reset_ip6_method">
                         <property name="model">
@@ -223,6 +245,9 @@
                         <property name="icon-name">list-add-symbolic</property>
                       </object>
                     </property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
                     <property name="title">Addresses</property>
                   </object>
@@ -250,6 +275,9 @@
                         </child>
                       </object>
                     </property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
                     <property name="title">Routes</property>
                   </object>
@@ -267,6 +295,10 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="AdwPreferencesGroup">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="AdwComboRow" id="reset_wifi_security_dropdown">
                         <property name="model">

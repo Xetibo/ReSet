@@ -1,7 +1,9 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use crate::components::utils::{create_dropdown_label_factory, set_combo_row_ellipsis, BASE, DBUS_PATH, AUDIO};
+use crate::components::utils::{
+    create_dropdown_label_factory, set_combo_row_ellipsis, AUDIO, BASE, DBUS_PATH,
+};
 use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
@@ -79,29 +81,27 @@ impl InputStreamEntry {
             );
             {
                 let list = box_imp.reset_model_list.read().unwrap();
-                // while list.is_err() {
-                //     list = box_imp.resetModelList.try_borrow();
-                // }
-                // let list = list.unwrap();
                 imp.reset_sink_selection.set_model(Some(&*list));
-                let map = box_imp.reset_sink_map.read().unwrap();
                 let sink_list = box_imp.reset_sink_list.read().unwrap();
                 let name = sink_list.get(&index);
+                let index = box_imp.reset_model_index.read().unwrap();
+                let model_list = box_imp.reset_model_list.read().unwrap();
                 if let Some(name) = name {
-                    let name = &name.2;
-                    let index = map.get(name);
-                    if let Some(index) = index {
-                        imp.reset_sink_selection.set_selected(index.1);
+                    for entry in 0..*index {
+                        if model_list.string(entry) == Some(name.2.clone().into()) {
+                            imp.reset_sink_selection.set_selected(entry);
+                        }
                     }
                 } else {
                     let mut name = box_imp.reset_default_sink.try_borrow();
                     while name.is_err() {
                         name = box_imp.reset_default_sink.try_borrow();
                     }
-                    let name = &name.unwrap().alias;
-                    let index = map.get(name);
-                    if let Some(index) = index {
-                        imp.reset_sink_selection.set_selected(index.1);
+                    let name = name.unwrap();
+                    for entry in 0..*index {
+                        if model_list.string(entry) == Some(name.alias.clone().into()) {
+                            imp.reset_sink_selection.set_selected(entry);
+                        }
                     }
                 }
             }
@@ -160,11 +160,7 @@ impl InputStreamEntry {
 fn set_inputstream_volume(value: f64, index: u32, channels: u16) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
         let _: Result<(), Error> = proxy.method_call(
             AUDIO,
             "SetInputStreamVolume",
@@ -181,16 +177,8 @@ fn set_inputstream_volume(value: f64, index: u32, channels: u16) -> bool {
 fn toggle_input_stream_mute(index: u32, muted: bool) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> = proxy.method_call(
-            AUDIO,
-            "SetInputStreamMute",
-            (index, muted),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let _: Result<(), Error> = proxy.method_call(AUDIO, "SetInputStreamMute", (index, muted));
         // if res.is_err() {
         //     return false;
         // }
@@ -202,16 +190,8 @@ fn toggle_input_stream_mute(index: u32, muted: bool) -> bool {
 fn set_sink_of_input_stream(stream: u32, sink: u32) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> = proxy.method_call(
-            AUDIO,
-            "SetSinkOfInputStream",
-            (stream, sink),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let _: Result<(), Error> = proxy.method_call(AUDIO, "SetSinkOfInputStream", (stream, sink));
         // if res.is_err() {
         //     return false;
         // }
