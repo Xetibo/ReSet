@@ -418,7 +418,6 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 let mut map = input_box_imp.reset_source_map.write().unwrap();
                 let mut index = input_box_imp.reset_model_index.write().unwrap();
                 let model_list = input_box_imp.reset_model_list.write().unwrap();
-                model_list.append(&alias);
                 if model_list.string(*index - 1) == Some("Monitor of Dummy Output".into()) {
                     if alias == "Monitor of Dummy Output" {
                         return;
@@ -465,6 +464,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
 
                 if *index == 1 {
                     model_list.append("Monitor of Dummy Output");
+                    map.insert(String::from("Monitor of Dummy Output"), (0, String::from("Monitor of Dummy Output")));
                 }
                 for entry in 0..*index {
                     if model_list.string(entry) == Some(alias.clone().into()) {

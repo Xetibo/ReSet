@@ -393,7 +393,6 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
     let input_stream_changed_box = sink_box.clone();
 
     let res = conn.add_match(sink_added, move |ir: SinkAdded, _, _| {
-        println!("sink added {}", ir.sink.alias);
         let sink_box = sink_added_box.clone();
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
@@ -422,15 +421,16 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 let mut index = output_box_imp.reset_model_index.write().unwrap();
                 let model_list = output_box_imp.reset_model_list.write().unwrap();
                 if model_list.string(*index - 1) == Some("Dummy Output".into()) {
-                    if alias == "Dummy Output" {
-                        return;
-                    }
                     model_list.append(&alias);
                     model_list.remove(*index - 1);
-                    map.insert(alias, (sink_index, name));
+                    map.insert(alias.clone(), (sink_index, name));
+                    output_box_imp.reset_sink_dropdown.set_selected(0);
                 } else {
                     model_list.append(&alias);
-                    map.insert(alias, (sink_index, name));
+                    map.insert(alias.clone(), (sink_index, name));
+                    if alias == "Dummy Output" {
+                        output_box_imp.reset_sink_dropdown.set_selected(0);
+                    }
                     *index += 1;
                 }
             });
