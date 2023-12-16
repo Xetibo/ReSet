@@ -169,7 +169,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
                     for entry in 0..*index {
                         if model_list.string(entry) == Some(name.alias.clone().into()) {
                             output_box_imp.reset_sink_dropdown.set_selected(entry);
-                            return;
+                            break;
                         }
                     }
                     output_box_imp.reset_sink_dropdown.connect_selected_notify(
@@ -265,7 +265,7 @@ pub fn refresh_default_sink(new_sink: Sink, output_box: Arc<SinkBox>, entry: boo
                 for entry in 0..*index {
                     if model_list.string(entry) == Some(new_sink.alias.clone().into()) {
                         imp.reset_sink_dropdown.set_selected(entry);
-                        return;
+                        break;
                     }
                 }
             }
@@ -474,7 +474,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 for entry in 0..*index {
                     if model_list.string(entry) == Some(alias.clone().into()) {
                         model_list.remove(entry);
-                        return;
+                        break;
                     }
                 }
                 if *index > 1 {
@@ -611,7 +611,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 for entry in 0..*index {
                     if model_list.string(entry) == Some(alias.clone().into()) {
                         imp.reset_sink_selection.set_selected(entry);
-                        return;
+                        break;
                     }
                 }
             });

@@ -166,7 +166,7 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     for entry in 0..*index {
                         if model_list.string(entry) == Some(name.alias.clone().into()) {
                             input_box_imp.reset_source_dropdown.set_selected(entry);
-                            return;
+                            break;
                         }
                     }
                     input_box_imp.reset_source_dropdown.connect_selected_notify(
@@ -261,7 +261,7 @@ pub fn refresh_default_source(new_source: Source, input_box: Arc<SourceBox>, ent
                 for entry in 0..*imp.reset_model_index.read().unwrap() {
                     if model_list.string(entry) == Some(new_source.alias.clone().into()) {
                         imp.reset_source_dropdown.set_selected(entry);
-                        return;
+                        break;
                     }
                 }
             }
@@ -471,7 +471,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 for entry in 0..*index {
                     if model_list.string(entry) == Some(alias.clone().into()) {
                         model_list.remove(entry);
-                        return;
+                        break;
                     }
                 }
                 if *index > 1 {
@@ -612,6 +612,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     for entry in 0..*index {
                         if model_list.string(entry) == Some(alias.clone().into()) {
                             imp.reset_source_selection.set_selected(entry);
+                            break;
                         }
                     }
                 });

@@ -81,6 +81,7 @@ impl OutputStreamEntry {
                     for entry in 0..*index {
                         if model_list.string(entry) == Some(name.2.clone().into()) {
                             imp.reset_source_selection.set_selected(entry);
+                            break;
                         }
                     }
                 } else {
@@ -92,6 +93,7 @@ impl OutputStreamEntry {
                     for entry in 0..*index {
                         if model_list.string(entry) == Some(name.alias.clone().into()) {
                             imp.reset_source_selection.set_selected(entry);
+                            break;
                         }
                     }
                 }
