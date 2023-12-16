@@ -166,7 +166,8 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
                     for entry in 0..*index {
                         if model_list.string(entry) == Some(name.alias.clone().into()) {
                             input_box_imp.reset_source_dropdown.set_selected(entry);
-                        } 
+                            return;
+                        }
                     }
                     input_box_imp.reset_source_dropdown.connect_selected_notify(
                         clone!(@weak input_box_imp => move |dropdown| {
@@ -260,6 +261,7 @@ pub fn refresh_default_source(new_source: Source, input_box: Arc<SourceBox>, ent
                 for entry in 0..*imp.reset_model_index.read().unwrap() {
                     if model_list.string(entry) == Some(new_source.alias.clone().into()) {
                         imp.reset_source_dropdown.set_selected(entry);
+                        return;
                     }
                 }
             }
@@ -419,15 +421,16 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 let mut index = input_box_imp.reset_model_index.write().unwrap();
                 let model_list = input_box_imp.reset_model_list.write().unwrap();
                 if model_list.string(*index - 1) == Some("Monitor of Dummy Output".into()) {
-                    if alias == "Monitor of Dummy Output" {
-                        return;
-                    }
                     model_list.append(&alias);
                     model_list.remove(*index - 1);
                     map.insert(alias, (source_index, name));
+                    input_box_imp.reset_source_dropdown.set_selected(0);
                 } else {
                     model_list.append(&alias);
-                    map.insert(alias, (source_index, name));
+                    map.insert(alias.clone(), (source_index, name));
+                    if alias == "Monitor of Dummy Output" {
+                        input_box_imp.reset_source_dropdown.set_selected(0);
+                    }
                     *index += 1;
                 }
             });
@@ -464,11 +467,11 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
 
                 if *index == 1 {
                     model_list.append("Monitor of Dummy Output");
-                    map.insert(String::from("Monitor of Dummy Output"), (0, String::from("Monitor of Dummy Output")));
                 }
                 for entry in 0..*index {
                     if model_list.string(entry) == Some(alias.clone().into()) {
                         model_list.remove(entry);
+                        return;
                     }
                 }
                 if *index > 1 {
@@ -609,7 +612,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                     for entry in 0..*index {
                         if model_list.string(entry) == Some(alias.clone().into()) {
                             imp.reset_source_selection.set_selected(entry);
-                        } 
+                        }
                     }
                 });
             });

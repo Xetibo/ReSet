@@ -2,7 +2,7 @@ use std::ops::Deref;
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::components::utils::{WIRELESS, DBUS_PATH, BASE};
+use crate::components::utils::{BASE, DBUS_PATH, WIRELESS};
 use crate::components::wifi::utils::get_connection_settings;
 use adw::glib;
 use adw::glib::{Object, PropertySet};
@@ -119,20 +119,18 @@ impl WifiEntry {
 
 pub fn click_disconnect(entry: Arc<WifiEntry>) {
     let entry_ref = entry.clone();
+    entry_ref
+        .imp()
+        .reset_wifi_connected
+        .borrow()
+        .set_text("Disconnecting...");
     entry.set_activatable(false);
     gio::spawn_blocking(move || {
         let imp = entry_ref.imp();
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(10000),
-        );
-        let res: Result<(bool,), Error> = proxy.method_call(
-            WIRELESS,
-            "DisconnectFromCurrentAccessPoint",
-            (),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(10000));
+        let res: Result<(bool,), Error> =
+            proxy.method_call(WIRELESS, "DisconnectFromCurrentAccessPoint", ());
         if res.is_err() {
             imp.connected.replace(false);
             return;
@@ -151,22 +149,19 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
     let entry_imp = entry.imp();
     let access_point = entry_imp.access_point.borrow().clone();
     let entry_ref = entry.clone();
-    entry.set_activatable(false);
+    entry.set_sensitive(false);
+    entry_imp
+        .reset_wifi_connected
+        .borrow()
+        .set_text("Connecting...");
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(10000),
-        );
-        let res: Result<(bool,), Error> = proxy.method_call(
-            WIRELESS,
-            "ConnectToKnownAccessPoint",
-            (access_point,),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(10000));
+        let res: Result<(bool,), Error> =
+            proxy.method_call(WIRELESS, "ConnectToKnownAccessPoint", (access_point,));
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
-                entry.set_activatable(true);
+                entry.set_sensitive(true);
                 let imp = entry_ref.imp();
                 if res.is_err() {
                     imp.connected.replace(false);
@@ -194,14 +189,11 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
             popup.reset_popup_label.set_visible(true);
             popup.reset_popup_entry.set_sensitive(false);
             popup.reset_popup_button.set_sensitive(false);
+            entry.set_sensitive(false);
 
             gio::spawn_blocking(move || {
                 let conn = Connection::new_session().unwrap();
-                let proxy = conn.with_proxy(
-                    BASE,
-                    DBUS_PATH,
-                    Duration::from_millis(10000),
-                );
+                let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(10000));
                 let res: Result<(bool,), Error> = proxy.method_call(
                     WIRELESS,
                     "ConnectToNewAccessPoint",
@@ -209,6 +201,7 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
                 );
                 glib::spawn_future(async move {
                     glib::idle_add_once(move || {
+                        entry.set_sensitive(false);
                         if res.is_err() {
                             let imp = entry_ref.imp();
                             imp.reset_wifi_popup

@@ -158,7 +158,7 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                     let ssid = access_point.ssid.clone();
                     let path = access_point.dbus_path.clone();
                     let connected =
-                        imp.reset_current_wifi_device.borrow().active_access_point == ssid;
+                        imp.reset_current_wifi_device.borrow().active_access_point == path;
                     let entry = WifiEntry::new(connected, access_point, imp);
                     wifi_entries.insert(ssid, entry.clone());
                     wifi_entries_path.insert(path, entry.clone());

@@ -221,9 +221,18 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
             return;
         }
 
+        let device_added_box = bluetooth_box.clone();
+        let device_removed_box = bluetooth_box.clone();
+        let device_changed_box = bluetooth_box.clone();
+        let loop_box = bluetooth_box.clone();
+
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
         let _: Result<(), Error> = proxy.method_call(BLUETOOTH, "StartBluetoothListener", ());
+        loop_box
+            .imp()
+            .reset_bluetooth_available_devices
+            .set_description(Some("Scanning..."));
         let device_added =
             BluetoothDeviceAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
                 .static_clone();
@@ -233,10 +242,6 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
         let device_changed =
             BluetoothDeviceChanged::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
                 .static_clone();
-        let device_added_box = bluetooth_box.clone();
-        let device_removed_box = bluetooth_box.clone();
-        let device_changed_box = bluetooth_box.clone();
-        let loop_box = bluetooth_box.clone();
 
         let res = conn.add_match(device_added, move |ir: BluetoothDeviceAdded, _, _| {
             let bluetooth_box = device_added_box.clone();
@@ -338,6 +343,10 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
             if !listeners.bluetooth_listener.load(Ordering::SeqCst) {
                 let _: Result<(), Error> =
                     proxy.method_call(BLUETOOTH, "StopBluetoothListener", ());
+                loop_box
+                    .imp()
+                    .reset_bluetooth_available_devices
+                    .set_description(None);
                 break;
             }
             if listener_active && time.elapsed().unwrap() > Duration::from_millis(10000) {
@@ -352,6 +361,10 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     });
                 });
                 let _: Result<(), Error> = proxy.method_call(BLUETOOTH, "StopBluetoothScan", ());
+                loop_box
+                    .imp()
+                    .reset_bluetooth_available_devices
+                    .set_description(None);
             }
             if !listener_active && listeners.bluetooth_scan_requested.load(Ordering::SeqCst) {
                 listeners
@@ -360,6 +373,10 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                 listener_active = true;
                 let _: Result<(), Error> =
                     proxy.method_call(BLUETOOTH, "StartBluetoothListener", ());
+                loop_box
+                    .imp()
+                    .reset_bluetooth_available_devices
+                    .set_description(Some("Scanning..."));
                 time = SystemTime::now();
             }
             thread::sleep(Duration::from_millis(100));
