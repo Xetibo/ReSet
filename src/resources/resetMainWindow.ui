@@ -91,6 +91,7 @@
                 <property name="valign">start</property>
                 <child>
                   <object class="GtkSearchEntry" id="reset_search_entry">
+                    <property name="height-request">39</property>
                     <property name="placeholder-text">Search (Ctrl + F)</property>
                     <property name="valign">start</property>
                   </object>

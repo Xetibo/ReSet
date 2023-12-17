@@ -3,7 +3,7 @@ use adw::subclass::prelude::ObjectSubclassIsExt;
 use adw::BreakpointCondition;
 use glib::Object;
 use gtk::gio::ActionEntry;
-use gtk::{gio, glib, AccessibleRole, Application, ListBoxRow, Orientation};
+use gtk::{gio, glib, AccessibleRole, Application, ListBoxRow, Orientation, StateFlags};
 use gtk::{prelude::*, DirectionType};
 
 use crate::components::window::handle_sidebar_click::*;
@@ -242,14 +242,16 @@ impl ReSetWindow {
             connectivity_list,
         ));
 
+        let output = SidebarEntry::new(
+            "Output",
+            "audio-volume-high-symbolic",
+            Categories::Audio,
+            true,
+            HANDLE_VOLUME_CLICK,
+        );
+        output.set_receives_default(true);
         let audio_list = vec![
-            SidebarEntry::new(
-                "Output",
-                "audio-volume-high-symbolic",
-                Categories::Audio,
-                true,
-                HANDLE_VOLUME_CLICK,
-            ),
+            output,
             SidebarEntry::new(
                 "Input",
                 "audio-input-microphone-symbolic",
@@ -320,7 +322,15 @@ impl ReSetWindow {
         for (main_entry, sub_entries) in sidebar_entries.iter() {
             self_imp.reset_sidebar_list.append(main_entry);
             for sub_entry in sub_entries {
-                self_imp.reset_sidebar_list.append(sub_entry);
+                // TODO change this to home when home offers dynamic selection
+                // this is just a placeholder for now, hence hardcoded
+                if &*sub_entry.imp().name.borrow() == "Output" {
+                    self_imp.reset_sidebar_list.append(sub_entry);
+                    sub_entry.grab_focus();
+                    sub_entry.set_state_flags(StateFlags::SELECTED, true);
+                } else {
+                    self_imp.reset_sidebar_list.append(sub_entry);
+                }
             }
             let separator = gtk::Separator::builder()
                 .margin_bottom(3)
@@ -334,7 +344,7 @@ impl ReSetWindow {
                 .selectable(false)
                 .activatable(false)
                 .can_target(false)
-                .focusable(false)
+                // .focusable(false)
                 .accessible_role(AccessibleRole::Separator)
                 .build();
             // TODO how to simply skip this ?
