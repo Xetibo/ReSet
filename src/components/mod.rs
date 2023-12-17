@@ -1,4 +1,4 @@
-mod base;
+pub mod base;
 pub mod bluetooth;
 mod input;
 pub mod output;

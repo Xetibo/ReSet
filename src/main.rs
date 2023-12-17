@@ -10,8 +10,6 @@ use gtk::prelude::*;
 use gtk::{gio, Application, CssProvider};
 use reset_daemon::run_daemon;
 
-
-
 mod components;
 
 const APP_ID: &str = "org.Xetibo.ReSet";
@@ -55,13 +53,8 @@ fn build_ui(app: &Application) {
 fn shutdown(_: &Application) {
     thread::spawn(|| {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(100),
-        );
-        let res: Result<(), Error> =
-            proxy.method_call(BASE, "UnregisterClient", ("ReSet",));
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(100));
+        let res: Result<(), Error> = proxy.method_call(BASE, "UnregisterClient", ("ReSet",));
         res
     });
 }
@@ -69,17 +62,12 @@ fn shutdown(_: &Application) {
 async fn daemon_check() {
     let handle = thread::spawn(|| {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(100),
-        );
-        let res: Result<(), Error> =
-            proxy.method_call(BASE, "RegisterClient", ("ReSet",));
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(100));
+        let res: Result<(), Error> = proxy.method_call(BASE, "RegisterClient", ("ReSet",));
         res
     });
     let res = handle.join();
     if res.unwrap().is_err() {
         run_daemon().await;
-    } 
+    }
 }

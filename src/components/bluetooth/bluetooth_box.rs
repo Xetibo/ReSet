@@ -1,6 +1,5 @@
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use std::thread;
 use std::time::{Duration, SystemTime};
 
 use adw::glib;
@@ -379,7 +378,6 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     .set_description(Some("Scanning..."));
                 time = SystemTime::now();
             }
-            thread::sleep(Duration::from_millis(100));
         }
     });
 }

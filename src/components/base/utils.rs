@@ -13,7 +13,7 @@ use gtk::gio;
 use crate::components::{
     input::source_box::{start_input_box_listener, SourceBox},
     output::sink_box::{start_output_box_listener, SinkBox},
-    utils::{AUDIO, BASE, DBUS_PATH, WIRELESS},
+    utils::{BASE, DBUS_PATH, WIRELESS},
 };
 
 #[derive(Default, PartialEq, Eq)]
@@ -65,12 +65,10 @@ pub fn start_audio_listener(
     source_box: Option<Arc<SourceBox>>,
 ) {
     gio::spawn_blocking(move || {
-        let conn = Connection::new_session().unwrap();
+        let mut conn = Connection::new_session().unwrap();
         if listeners.pulse_listener.load(Ordering::SeqCst) {
             return;
         }
-
-        let mut conn = start_dbus_audio_listener(conn);
 
         if let Some(sink_box) = sink_box {
             conn = start_output_box_listener(conn, sink_box);
@@ -84,22 +82,8 @@ pub fn start_audio_listener(
         loop {
             let _ = conn.process(Duration::from_millis(1000));
             if !listeners.pulse_listener.load(Ordering::SeqCst) {
-                stop_dbus_audio_listener(conn);
                 break;
             }
-            // thread::sleep(Duration::from_millis(1000));
-            // TODO is this really how we should do this?
         }
     });
-}
-
-fn start_dbus_audio_listener(conn: Connection) -> Connection {
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let _: Result<(), Error> = proxy.method_call(AUDIO, "StartAudioListener", ());
-    conn
-}
-
-fn stop_dbus_audio_listener(conn: Connection) {
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let _: Result<(), Error> = proxy.method_call(AUDIO, "StopAudioListener", ());
 }
