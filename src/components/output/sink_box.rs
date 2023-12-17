@@ -462,21 +462,26 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
                 output_box_imp
                     .reset_sinks
                     .remove(&*entry.clone().unwrap().0);
-                let mut map = output_box_imp.reset_sink_map.write().unwrap();
                 let alias = entry.unwrap().2;
-                map.remove(&alias);
                 let mut index = output_box_imp.reset_model_index.write().unwrap();
                 let model_list = output_box_imp.reset_model_list.write().unwrap();
 
+                // add dummy entry when no other devices are available
                 if *index == 1 {
                     model_list.append("Dummy Output");
                 }
+
+                let mut map = output_box_imp.reset_sink_map.write().unwrap();
+                map.remove(&alias);
+
                 for entry in 0..*index {
                     if model_list.string(entry) == Some(alias.clone().into()) {
-                        model_list.remove(entry);
+                        model_list.splice(entry, 1, &[]);
                         break;
                     }
                 }
+
+                // dummy enforces a minimum of 1
                 if *index > 1 {
                     *index -= 1;
                 }

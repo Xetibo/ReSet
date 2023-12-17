@@ -470,7 +470,7 @@ pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) ->
                 }
                 for entry in 0..*index {
                     if model_list.string(entry) == Some(alias.clone().into()) {
-                        model_list.remove(entry);
+                        model_list.splice(entry, 1, &[]);
                         break;
                     }
                 }
