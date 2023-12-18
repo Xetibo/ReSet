@@ -66,6 +66,12 @@ cargo install reset
 ### Compiled Binary
 
 The compiled binary is provided in the releases.
+
+## Usage
+Besides starting the application itself, a standalone daemon version ([ReSet-Daemon](https://github.com/Xetibo/ReSet-Daemon)) also exists, which is what provides the functionality for ReSet.\
+It is therefore possible to use a different application as well for interacting with the daemon.
+
+By default, the daemon is integrated into ReSet and is started automatically if no other daemon is found.
 ## Roadmap
 
 This application was developed as a semester project for the Eastern Switzerland University of Applied Sciences.
