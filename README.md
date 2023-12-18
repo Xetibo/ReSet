@@ -1,4 +1,4 @@
-<div style="text-align:center">
+<div align = center>
 
 # ReSet
 
@@ -16,7 +16,7 @@ A window manager/compositor agnostic settings application for Linux written in r
 
 ## Screenshots
 
-<div style="text-align:center">
+<div align = center>
 
 ### Audio
 
