@@ -1,12 +1,11 @@
-# <center>ReSet</center>
+<div style="text-align:center">
 
-<center>
+# ReSet
 
 ![Logo of ReSet](./assets/ReSet.png)
 
-</center>
-
-<center>A window manager/compositor agnostic settings application for Linux written in rust and gtk4.</center>
+A window manager/compositor agnostic settings application for Linux written in rust and gtk4.
+</div>
 
 
 
@@ -17,7 +16,7 @@
 
 ## Screenshots
 
-<center>
+<div style="text-align:center">
 
 ### Audio
 
@@ -28,7 +27,7 @@
 
 ### Bluetooth
 <img alt="Bluetooth Screenshot of ReSet" src="./assets/reset_bluetooth.png"  width="80%">
-</center>
+</div>
 
 ## Packaging
 ReSet is available with the following packaging solutions:
@@ -50,14 +49,20 @@ flatpak install --user reset.flatpak
 Manually:
 Download the package from the releases tab and install it with pacman.
 
-```sudo pacman -U /path/to/reset```
+```
+sudo pacman -U /path/to/reset
+```
 
 ### Debian Package(Ubuntu 23.04 dependencies)
 
 Download the package from the releases tab and install it with apt.
-```sudo apt install ./path/to/reset```
+```
+sudo apt install ./path/to/reset
+```
 ### crates
-```cargo install ReSet```
+```
+cargo install reset
+```
 ### Compiled Binary
 
 The compiled binary is provided in the releases.
