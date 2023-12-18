@@ -8,9 +8,7 @@
   ],
   "command": "reset",
   "finish-args": [
-    "--talk-name=org.Xetibo.ReSetDaemon",
     "--system-talk-name=org.freedesktop.NetworkManager",
-    "--system-talk-name=org.freedesktop.DBus",
     "--system-talk-name=org.bluez",
     "--socket=pulseaudio",
     "--share=network",
