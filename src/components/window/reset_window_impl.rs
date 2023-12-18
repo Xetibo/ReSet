@@ -15,6 +15,8 @@ use crate::components::wifi::wifi_box::WifiBox;
 use crate::components::window::reset_window;
 use crate::components::window::sidebar_entry::SidebarEntry;
 
+type SidebarEntries = RefCell<Vec<(Rc<SidebarEntry>, Vec<Rc<SidebarEntry>>)>>;
+
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/org/Xetibo/ReSet/resetMainWindow.ui")]
 pub struct ReSetWindow {
@@ -32,7 +34,8 @@ pub struct ReSetWindow {
     pub reset_sidebar_toggle: TemplateChild<Button>,
     #[template_child]
     pub reset_close: TemplateChild<Button>,
-    pub sidebar_entries: RefCell<Vec<(SidebarEntry, Vec<SidebarEntry>)>>,
+    pub sidebar_entries: SidebarEntries,
+    pub default_entry: RefCell<Option<Rc<SidebarEntry>>>,
     pub listeners: Arc<Listeners>,
     pub position: Rc<RefCell<Position>>,
 }
@@ -63,7 +66,6 @@ impl ObjectImpl for ReSetWindow {
 
         let obj = self.obj();
         obj.setup_shortcuts();
-        obj.setup_callback();
         obj.handle_dynamic_sidebar();
         obj.setup_sidebar_entries();
     }

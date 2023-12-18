@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use adw::BreakpointCondition;
@@ -23,7 +25,7 @@ unsafe impl Send for ReSetWindow {}
 unsafe impl Sync for ReSetWindow {}
 
 impl ReSetWindow {
-    pub fn new(app: &Application) -> Self {
+    pub fn new(app: &Application) -> Rc<Self> {
         app.set_accels_for_action("win.search", &["<Ctrl>F"]);
         app.set_accels_for_action("win.close", &["<Ctrl>Q"]);
         app.set_accels_for_action("win.about", &["<Ctrl>H"]);
@@ -32,7 +34,9 @@ impl ReSetWindow {
         // app.set_accels_for_action("win.right", &["<Ctrl>L"]);
         // app.set_accels_for_action("win.down", &["<Ctrl>J"]);
         // app.set_accels_for_action("win.left", &["<Ctrl>H"]);
-        Object::builder().property("application", app).build()
+        let mut window: Rc<Self> = Rc::new(Object::builder().property("application", app).build());
+        window = setup_callback(window);
+        window
     }
 
     pub fn setup_shortcuts(&self) {
@@ -76,6 +80,19 @@ impl ReSetWindow {
             })
             .build();
 
+        // let clear_initial = ActionEntry::builder("clear_initial")
+        //     .activate(move |window: &Self, _, _| {
+        //         let imp = window.imp();
+        //         for (_, subentries) in imp.sidebar_entries.borrow().iter() {
+        //             for subentry in subentries {
+        //                 if &*subentry.imp().name.borrow() == "Output" {
+        //                     subentry.set_state_flags(StateFlags::SELECTED, false);
+        //                 }
+        //             }
+        //         }
+        //     })
+        //     .build();
+
         let about_action = ActionEntry::builder("about")
             .activate(move |window: &ReSetWindow, _, _| {
                 let dialog = adw::AboutWindow::builder()
@@ -106,37 +123,8 @@ impl ReSetWindow {
             vim_right,
             vim_down,
             vim_left,
+            // clear_initial,
         ]);
-    }
-
-    pub fn setup_callback(&self) {
-        let self_imp = self.imp();
-
-        self_imp.reset_search_entry.connect_search_changed(
-            clone!(@ weak self as window => move |_| {
-                window.filter_list();
-            }),
-        );
-
-        self_imp
-            .reset_sidebar_toggle
-            .connect_clicked(clone!(@ weak self as window => move |_| {
-                window.toggle_sidebar();
-            }));
-
-        self_imp.reset_sidebar_list.connect_row_activated(
-            clone!(@ weak self_imp as flowbox => move |_, y| {
-                let result = y.downcast_ref::<SidebarEntry>().unwrap();
-                let click_event = result.imp().on_click_event.borrow().on_click_event;
-                (click_event)(flowbox.listeners.clone(), flowbox.reset_main.get(), flowbox.position.clone());
-            }),
-        );
-
-        self_imp
-            .reset_close
-            .connect_clicked(clone!(@ weak self as window => move |_| {
-                window.close();
-            }));
     }
 
     pub fn handle_dynamic_sidebar(&self) {
@@ -207,20 +195,20 @@ impl ReSetWindow {
         let mut sidebar_entries = self_imp.sidebar_entries.borrow_mut();
 
         let connectivity_list = vec![
-            SidebarEntry::new(
+            Rc::new(SidebarEntry::new(
                 "WiFi",
                 "network-wireless-symbolic",
                 Categories::Connectivity,
                 true,
                 HANDLE_WIFI_CLICK,
-            ),
-            SidebarEntry::new(
+            )),
+            Rc::new(SidebarEntry::new(
                 "Bluetooth",
                 "bluetooth-symbolic",
                 Categories::Connectivity,
                 true,
                 HANDLE_BLUETOOTH_CLICK,
-            ),
+            )),
             // uncommented when VPN is implemented
             // SidebarEntry::new(
             //     "VPN",
@@ -232,43 +220,43 @@ impl ReSetWindow {
         ];
 
         sidebar_entries.push((
-            SidebarEntry::new(
+            Rc::new(SidebarEntry::new(
                 "Connectivity",
                 "network-wired-symbolic",
                 Categories::Connectivity,
                 false,
                 HANDLE_CONNECTIVITY_CLICK,
-            ),
+            )),
             connectivity_list,
         ));
 
-        let output = SidebarEntry::new(
+        let output = Rc::new(SidebarEntry::new(
             "Output",
             "audio-volume-high-symbolic",
             Categories::Audio,
             true,
             HANDLE_VOLUME_CLICK,
-        );
+        ));
         output.set_receives_default(true);
         let audio_list = vec![
             output,
-            SidebarEntry::new(
+            Rc::new(SidebarEntry::new(
                 "Input",
                 "audio-input-microphone-symbolic",
                 Categories::Audio,
                 true,
                 HANDLE_MICROPHONE_CLICK,
-            ),
+            )),
         ];
 
         sidebar_entries.push((
-            SidebarEntry::new(
+            Rc::new(SidebarEntry::new(
                 "Audio",
                 "audio-headset-symbolic",
                 Categories::Audio,
                 false,
                 HANDLE_AUDIO_CLICK,
-            ),
+            )),
             audio_list,
         ));
 
@@ -320,16 +308,17 @@ impl ReSetWindow {
             }));
 
         for (main_entry, sub_entries) in sidebar_entries.iter() {
-            self_imp.reset_sidebar_list.append(main_entry);
+            self_imp.reset_sidebar_list.append(&**main_entry);
             for sub_entry in sub_entries {
                 // TODO change this to home when home offers dynamic selection
                 // this is just a placeholder for now, hence hardcoded
                 if &*sub_entry.imp().name.borrow() == "Output" {
-                    self_imp.reset_sidebar_list.append(sub_entry);
+                    self_imp.reset_sidebar_list.append(&**sub_entry);
+                    self_imp.default_entry.replace(Some(sub_entry.clone()));
                     sub_entry.grab_focus();
-                    sub_entry.set_state_flags(StateFlags::SELECTED, true);
+                    sub_entry.set_state_flags(StateFlags::SELECTED, false);
                 } else {
-                    self_imp.reset_sidebar_list.append(sub_entry);
+                    self_imp.reset_sidebar_list.append(&**sub_entry);
                 }
             }
             let separator = gtk::Separator::builder()
@@ -351,4 +340,49 @@ impl ReSetWindow {
             self_imp.reset_sidebar_list.append(&separator_row);
         }
     }
+}
+fn setup_callback(window: Rc<ReSetWindow>) -> Rc<ReSetWindow> {
+    let self_imp = window.imp();
+    let activated_ref = window.clone();
+    let search_ref = window.clone();
+    let toggle_ref = window.clone();
+    let close_ref = window.clone();
+
+    self_imp
+        .reset_search_entry
+        .connect_search_changed(move |_| {
+            search_ref.filter_list();
+        });
+
+    self_imp.reset_sidebar_toggle.connect_clicked(move |_| {
+        toggle_ref.toggle_sidebar();
+    });
+
+    self_imp
+        .reset_sidebar_list
+        .connect_row_activated(move |_, y| {
+            let imp = activated_ref.imp();
+            let result = y.downcast_ref::<SidebarEntry>().unwrap();
+            {
+                let mut default_entry = imp.default_entry.borrow_mut();
+                if default_entry.is_some() {
+                    default_entry
+                        .clone()
+                        .unwrap()
+                        .set_state_flags(StateFlags::NORMAL, true);
+                    *default_entry = None;
+                }
+            }
+            let click_event = result.imp().on_click_event.borrow().on_click_event;
+            (click_event)(
+                imp.listeners.clone(),
+                imp.reset_main.get(),
+                imp.position.clone(),
+            );
+        });
+
+    self_imp.reset_close.connect_clicked(move |_| {
+        close_ref.close();
+    });
+    window
 }
