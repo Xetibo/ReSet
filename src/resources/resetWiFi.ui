@@ -21,7 +21,6 @@
         </child>
         <child>
           <object class="GtkSwitch" id="reset_wifi_switch">
-            <property name="active">True</property>
             <property name="halign">end</property>
             <property name="hexpand">True</property>
             <property name="margin-end">5</property>

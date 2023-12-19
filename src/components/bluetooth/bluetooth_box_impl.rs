@@ -6,6 +6,7 @@ use gtk::{prelude::*, StringList};
 use re_set_lib::bluetooth::bluetooth_structures::BluetoothAdapter;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, RwLock};
 
 use crate::components::base::list_entry::ListEntry;
@@ -41,6 +42,7 @@ pub struct BluetoothBox {
     pub reset_current_bluetooth_adapter: Arc<RefCell<BluetoothAdapter>>,
     pub reset_model_list: Arc<RwLock<StringList>>,
     pub reset_model_index: Arc<RwLock<u32>>,
+    pub reset_switch_initial: AtomicBool,
 }
 
 #[glib::object_subclass]

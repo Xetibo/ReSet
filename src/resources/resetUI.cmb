@@ -373,7 +373,6 @@
 	(4,183,"GtkLabel","label","WiFi",None,None,None,None,None,None,None,None,None),
 	(4,183,"GtkWidget","css-classes","resetSettingLabel",None,None,None,None,None,None,None,None,None),
 	(4,183,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
-	(4,184,"GtkSwitch","active","True",None,None,None,None,None,None,None,None,None),
 	(4,184,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
 	(4,184,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
 	(4,184,"GtkWidget","margin-end","5",None,None,None,None,None,None,None,None,None),

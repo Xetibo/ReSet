@@ -7,6 +7,7 @@ use gtk::{prelude::*, StringList};
 use re_set_lib::network::network_structures::WifiDevice;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, RwLock};
 
 use crate::components::base::list_entry::ListEntry;
@@ -37,6 +38,7 @@ pub struct WifiBox {
     pub reset_current_wifi_device: Arc<RefCell<WifiDevice>>,
     pub reset_model_list: Arc<RwLock<StringList>>,
     pub reset_model_index: Arc<RwLock<u32>>,
+    pub reset_switch_initial: AtomicBool,
 }
 
 unsafe impl Send for WifiBox {}

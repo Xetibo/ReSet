@@ -50,6 +50,7 @@ impl WifiBox {
 fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<WifiBox> {
     let imp = wifi_box.imp();
     let wifibox_ref = wifi_box.clone();
+    imp.reset_switch_initial.set(true);
     imp.reset_saved_networks.set_activatable(true);
     imp.reset_saved_networks
         .set_action_name(Some("navigation.push"));
@@ -62,6 +63,9 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
     set_combo_row_ellipsis(imp.reset_wifi_device.get());
     imp.reset_wifi_switch.connect_state_set(
         clone!(@weak imp => @default-return glib::Propagation::Proceed, move |_, value| {
+            if imp.reset_switch_initial.load(Ordering::SeqCst) {
+                return glib::Propagation::Proceed;
+            }
             set_wifi_enabled(value);
             if !value {
                 imp.reset_wifi_devices.write().unwrap().clear();
@@ -93,17 +97,17 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
     let wifi_entries_path = wifi_box.imp().wifi_entries_path.clone();
 
     gio::spawn_blocking(move || {
-        let devices = get_wifi_devices();
-        let access_points = get_access_points();
         let wifi_status = get_wifi_status();
+        let devices = get_wifi_devices();
+        if devices.is_empty() {
+            return;
+        }
+        let access_points = get_access_points();
         {
             let imp = wifibox_ref.imp();
             let list = imp.reset_model_list.write().unwrap();
             let mut model_index = imp.reset_model_index.write().unwrap();
             let mut map = imp.reset_wifi_devices.write().unwrap();
-            if devices.is_empty() {
-                return;
-            }
             imp.reset_current_wifi_device
                 .replace(devices.last().unwrap().clone());
             for (index, device) in devices.into_iter().enumerate() {
@@ -121,8 +125,9 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                 let mut wifi_entries_path = wifi_entries_path.write().unwrap();
                 let imp = wifibox_ref.imp();
 
-                imp.reset_wifi_switch.set_active(wifi_status);
                 imp.reset_wifi_switch.set_state(wifi_status);
+                imp.reset_wifi_switch.set_active(wifi_status);
+                imp.reset_switch_initial.set(false);
 
                 let list = imp.reset_model_list.read().unwrap();
                 imp.reset_wifi_device.set_model(Some(&*list));
