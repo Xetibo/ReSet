@@ -103,7 +103,7 @@ impl ReSetWindow {
                     .license_type(gtk::License::Gpl30)
                     .website("https://github.com/Xetibo/ReSet")
                     .issue_url("https://github.com/Xetibo/ReSet/issues")
-                    .version("0.0.1")
+                    .version("0.1.6")
                     .transient_for(window)
                     .modal(true)
                     .copyright("© 2022-2023 Xetibo")

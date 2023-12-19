@@ -1,6 +1,6 @@
 [package]
 name = "reset"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 description = "A wip universal Linux settings application."
 repository = "https://github.com/Xetibo/ReSet"
