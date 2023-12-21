@@ -7,7 +7,7 @@ repository = "https://github.com/Xetibo/ReSet"
 license = "GPL-3.0-only"
 
 [dependencies]
-reset_daemon = "1.0.0"
+reset_daemon = "1.0.1"
 re_set-lib = "1.0.0"
 adw = { version = "0.5.3", package = "libadwaita", features = ["v1_4"] }
 dbus = "0.9.7"
