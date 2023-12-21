@@ -1,14 +1,14 @@
 [package]
 name = "reset"
-version = "0.1.8"
+version = "1.0.0"
 edition = "2021"
 description = "A wip universal Linux settings application."
 repository = "https://github.com/Xetibo/ReSet"
 license = "GPL-3.0-only"
 
 [dependencies]
-reset_daemon = "0.7.2"
-re_set-lib = "0.8.7"
+reset_daemon = "1.0.0"
+re_set-lib = "1.0.0"
 adw = { version = "0.5.3", package = "libadwaita", features = ["v1_4"] }
 dbus = "0.9.7"
 gtk = { version = "0.7.3", package = "gtk4", features = ["v4_12"] }
