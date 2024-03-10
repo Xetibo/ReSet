@@ -19,7 +19,7 @@ use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::{Error, Path};
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::{Cast, Propagation, Variant};
+use glib::{clone, Cast, Propagation, Variant};
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
 
@@ -124,9 +124,8 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
     });
 }
 
-fn drop_down_handler(output_box: Arc<SinkBox>, dropdown: &ComboRow) {
-    let output_box_ref = output_box.clone();
-    let output_box_imp = output_box.imp();
+fn drop_down_handler(output_box_ref: Arc<SinkBox>, dropdown: &ComboRow) {
+    let output_box_imp = output_box_ref.imp();
     let selected = dropdown.selected_item();
     if selected.is_none() {
         return;
@@ -149,39 +148,6 @@ fn drop_down_handler(output_box: Arc<SinkBox>, dropdown: &ComboRow) {
         let new_sink = result.unwrap();
         refresh_default_sink(new_sink, output_box_ref, false);
     });
-}
-
-fn volume_slider_handler(output_box_ref_slider: Arc<SinkBox>, value: f64) -> glib::Propagation {
-    let imp = output_box_ref_slider.imp();
-    let fraction = (value / 655.36).round();
-    let percentage = (fraction).to_string() + "%";
-    imp.reset_volume_percentage.set_text(&percentage);
-    let sink = imp.reset_default_sink.borrow();
-    let index = sink.index;
-    let channels = sink.channels;
-    {
-        let mut time = imp.volume_time_stamp.borrow_mut();
-        if time.is_some() && time.unwrap().elapsed().unwrap() < Duration::from_millis(50) {
-            return Propagation::Proceed;
-        }
-        *time = Some(SystemTime::now());
-    }
-    set_sink_volume(value, index, channels);
-    Propagation::Proceed
-}
-
-fn mute_handler(output_box_ref_mute: Arc<SinkBox>) {
-    let imp = output_box_ref_mute.imp();
-    let mut stream = imp.reset_default_sink.borrow_mut();
-    stream.muted = !stream.muted;
-    if stream.muted {
-        imp.reset_sink_mute
-            .set_icon_name("audio-volume-muted-symbolic");
-    } else {
-        imp.reset_sink_mute
-            .set_icon_name("audio-volume-high-symbolic");
-    }
-    toggle_sink_mute(stream.index, stream.muted);
 }
 
 fn initialize(output_box: Arc<SinkBox>, sinks: Vec<Sink>) {
@@ -245,21 +211,47 @@ fn initialize(output_box: Arc<SinkBox>, sinks: Vec<Sink>) {
                 }
                 output_box_imp
                     .reset_sink_dropdown
-                    .connect_selected_notify(move |dropdown| {
-                        drop_down_handler(output_box_ref_select.clone(), dropdown);
-                    });
+                    .connect_selected_notify(clone!(@weak output_box_imp => move |dropdown| {
+                    }));
             }
             output_box_ref
                 .imp()
                 .reset_volume_slider
                 .connect_change_value(move |_, _, value| {
-                    volume_slider_handler(output_box_ref_slider.clone(), value)
+                    let imp = output_box_ref_slider.imp();
+                    let fraction = (value / 655.36).round();
+                    let percentage = (fraction).to_string() + "%";
+                    imp.reset_volume_percentage.set_text(&percentage);
+                    let sink = imp.reset_default_sink.borrow();
+                    let index = sink.index;
+                    let channels = sink.channels;
+                    {
+                        let mut time = imp.volume_time_stamp.borrow_mut();
+                        if time.is_some()
+                            && time.unwrap().elapsed().unwrap() < Duration::from_millis(50)
+                        {
+                            return Propagation::Proceed;
+                        }
+                        *time = Some(SystemTime::now());
+                    }
+                    set_sink_volume(value, index, channels);
+                    Propagation::Proceed
                 });
             output_box_ref
                 .imp()
                 .reset_sink_mute
                 .connect_clicked(move |_| {
-                    mute_handler(output_box_ref_mute.clone());
+                    let imp = output_box_ref_mute.imp();
+                    let mut stream = imp.reset_default_sink.borrow_mut();
+                    stream.muted = !stream.muted;
+                    if stream.muted {
+                        imp.reset_sink_mute
+                            .set_icon_name("audio-volume-muted-symbolic");
+                    } else {
+                        imp.reset_sink_mute
+                            .set_icon_name("audio-volume-high-symbolic");
+                    }
+                    toggle_sink_mute(stream.index, stream.muted);
                 });
         });
     });
