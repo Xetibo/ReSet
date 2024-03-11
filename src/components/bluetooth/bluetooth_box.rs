@@ -97,69 +97,73 @@ fn setup_callbacks(
             );
         }));
 
-    imp.reset_bluetooth_switch.connect_state_set(
-        clone!(@weak imp => @default-return glib::Propagation::Proceed, move |_, state| {
-            if imp.reset_switch_initial.load(Ordering::SeqCst) {
-                return glib::Propagation::Proceed;
-            }
-            if !state {
-                let imp = bluetooth_box_ref.imp();
-                let mut available_devices = imp.available_devices.borrow_mut();
-                let mut current_adapter = imp.reset_current_bluetooth_adapter.borrow_mut();
-                for entry in available_devices.iter() {
-                    imp.reset_bluetooth_available_devices.remove(&**entry.1);
-                }
-                available_devices.clear();
-
-                let mut connected_devices = imp.connected_devices.borrow_mut();
-                for entry in connected_devices.iter() {
-                    imp.reset_bluetooth_connected_devices.remove(&**entry.1);
-                }
-                connected_devices.clear();
-
-                imp.reset_bluetooth_pairable_switch.set_active(false);
-                imp.reset_bluetooth_pairable_switch.set_sensitive(false);
-                imp.reset_bluetooth_discoverable_switch.set_active(false);
-                imp.reset_bluetooth_discoverable_switch.set_sensitive(false);
-                imp.reset_bluetooth_refresh_button.set_sensitive(false);
-
-                listeners_ref
-                    .bluetooth_listener
-                    .store(false, Ordering::SeqCst);
-                let res = set_adapter_enabled(
-                    current_adapter.path.clone(),
-                    false,
-                    bluetooth_box_ref.clone()
-                );
-                if res {
-                    current_adapter.powered = false;
-                }
-            } else {
-                let restart_ref = bluetooth_box_ref.clone();
-                let restart_listener_ref = listeners_ref.clone();
-                {
-                    let imp = bluetooth_box_ref.imp();
-                    imp.reset_bluetooth_discoverable_switch.set_sensitive(true);
-                    imp.reset_bluetooth_pairable_switch.set_sensitive(true);
-                }
-                gio::spawn_blocking(move || {
-                    let mut current_adapter = restart_ref.imp().reset_current_bluetooth_adapter.borrow_mut();
-                    if set_adapter_enabled(
-                        current_adapter
-                            .path
-                            .clone(),
-                        true,
-                        restart_ref.clone()
-                    ) {
-                        current_adapter.powered = true;
-                        start_bluetooth_listener(restart_listener_ref.clone(), restart_ref.clone());
-                    }
-                });
-            }
-            glib::Propagation::Proceed
-        }),
-    );
+    imp.reset_bluetooth_switch
+        .connect_state_set(move |_, state| {
+            bluetooth_enabled_switch_handler(state, bluetooth_box_ref.clone(), listeners_ref.clone())
+        });
     bluetooth_box
+}
+
+fn bluetooth_enabled_switch_handler(
+    state: bool,
+    bluetooth_box_ref: Arc<BluetoothBox>,
+    listeners_ref: Arc<Listeners>,
+) -> glib::Propagation {
+    let imp = bluetooth_box_ref.imp();
+    if imp.reset_switch_initial.load(Ordering::SeqCst) {
+        return glib::Propagation::Proceed;
+    }
+    if !state {
+        let mut available_devices = imp.available_devices.borrow_mut();
+        let mut current_adapter = imp.reset_current_bluetooth_adapter.borrow_mut();
+        for entry in available_devices.iter() {
+            imp.reset_bluetooth_available_devices.remove(&**entry.1);
+        }
+        available_devices.clear();
+
+        let mut connected_devices = imp.connected_devices.borrow_mut();
+        for entry in connected_devices.iter() {
+            imp.reset_bluetooth_connected_devices.remove(&**entry.1);
+        }
+        connected_devices.clear();
+
+        imp.reset_bluetooth_pairable_switch.set_active(false);
+        imp.reset_bluetooth_pairable_switch.set_sensitive(false);
+        imp.reset_bluetooth_discoverable_switch.set_active(false);
+        imp.reset_bluetooth_discoverable_switch.set_sensitive(false);
+        imp.reset_bluetooth_refresh_button.set_sensitive(false);
+
+        listeners_ref
+            .bluetooth_listener
+            .store(false, Ordering::SeqCst);
+        let res = set_adapter_enabled(
+            current_adapter.path.clone(),
+            false,
+            bluetooth_box_ref.clone(),
+        );
+        if res {
+            current_adapter.powered = false;
+        }
+    } else {
+        let restart_ref = bluetooth_box_ref.clone();
+        let restart_listener_ref = listeners_ref.clone();
+        {
+            let imp = bluetooth_box_ref.imp();
+            imp.reset_bluetooth_discoverable_switch.set_sensitive(true);
+            imp.reset_bluetooth_pairable_switch.set_sensitive(true);
+        }
+        gio::spawn_blocking(move || {
+            let mut current_adapter = restart_ref
+                .imp()
+                .reset_current_bluetooth_adapter
+                .borrow_mut();
+            if set_adapter_enabled(current_adapter.path.clone(), true, restart_ref.clone()) {
+                current_adapter.powered = true;
+                start_bluetooth_listener(restart_listener_ref.clone(), restart_ref.clone());
+            }
+        });
+    }
+    glib::Propagation::Proceed
 }
 
 pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {

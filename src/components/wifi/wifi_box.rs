@@ -15,7 +15,7 @@ use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::Error;
 use dbus::Path;
-use glib::{clone, Cast, PropertySet};
+use glib::{clone, Cast, ControlFlow, PropertySet};
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, WidgetExt};
 use gtk::{gio, StringList, StringObject};
@@ -27,6 +27,10 @@ use crate::components::wifi::wifi_box_impl;
 use crate::components::wifi::wifi_entry::WifiEntry;
 
 use super::saved_wifi_entry::SavedWifiEntry;
+use super::wifi_event_handlers::{
+    access_point_added_handler, access_point_changed_handler, access_point_removed_handler,
+    wifi_device_changed_handler, wifi_device_reset_handler,
+};
 
 glib::wrapper! {
     pub struct WifiBox(ObjectSubclass<wifi_box_impl::WifiBox>)
@@ -149,24 +153,10 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                 }
 
                 let device_changed_ref = wifibox_ref.clone();
-                imp.reset_wifi_device.connect_selected_notify(
-                    clone!(@weak imp => move |dropdown| {
-                        let selected = dropdown.selected_item();
-                        if selected.is_none() {
-                            return;
-                        }
-                        let selected = selected.unwrap();
-                        let selected = selected.downcast_ref::<StringObject>().unwrap();
-                        let selected = selected.string().to_string();
-
-                        let device = imp.reset_wifi_devices.read().unwrap();
-                        let device = device.get(&selected);
-                        if device.is_none() {
-                            return;
-                        }
-                        set_wifi_device(device.unwrap().0.path.clone(), device_changed_ref.clone());
-                    }),
-                );
+                imp.reset_wifi_device
+                    .connect_selected_notify(move |dropdown| {
+                        select_wifi_device_handler(dropdown, device_changed_ref.clone());
+                    });
                 for access_point in access_points {
                     if access_point.ssid.is_empty() {
                         continue;
@@ -183,6 +173,25 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
             });
         });
     });
+}
+
+fn select_wifi_device_handler(dropdown: &adw::ComboRow, wifi_box: Arc<WifiBox>) -> ControlFlow {
+    let selected = dropdown.selected_item();
+    if selected.is_none() {
+        return ControlFlow::Break;
+    }
+    let selected = selected.unwrap();
+    let selected = selected.downcast_ref::<StringObject>().unwrap();
+    let selected = selected.string().to_string();
+    let imp = wifi_box.imp();
+    let device = imp.reset_wifi_devices.read().unwrap();
+    let device = device.get(&selected);
+    if device.is_none() {
+        return ControlFlow::Break;
+    }
+    set_wifi_device(device.unwrap().0.path.clone(), wifi_box.clone());
+
+    ControlFlow::Continue
 }
 
 pub fn show_stored_connections(wifi_box: Arc<WifiBox>) {
@@ -311,176 +320,35 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             WifiDeviceReset::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH)))
                 .static_clone();
         let res = conn.add_match(access_point_added, move |ir: AccessPointAdded, _, _| {
-            let wifi_box = added_ref.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let imp = wifi_box.imp();
-                    let mut wifi_entries = imp.wifi_entries.write().unwrap();
-                    let mut wifi_entries_path = imp.wifi_entries_path.write().unwrap();
-                    let ssid = ir.access_point.ssid.clone();
-                    let path = ir.access_point.dbus_path.clone();
-                    if wifi_entries.get(&ssid).is_some() || ssid.is_empty() {
-                        return;
-                    }
-                    let connected = imp.reset_current_wifi_device.borrow().active_access_point
-                        == ir.access_point.ssid;
-                    let entry = WifiEntry::new(connected, ir.access_point, imp);
-                    wifi_entries.insert(ssid, entry.clone());
-                    wifi_entries_path.insert(path, entry.clone());
-                    imp.reset_wifi_list.add(&*entry);
-                });
-            });
-            true
+            access_point_added_handler(added_ref.clone(), ir)
         });
         if res.is_err() {
             println!("fail on access point add event");
             return;
         }
         let res = conn.add_match(access_point_removed, move |ir: AccessPointRemoved, _, _| {
-            let wifi_box = removed_ref.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let imp = wifi_box.imp();
-                    let mut wifi_entries = imp.wifi_entries.write().unwrap();
-                    let mut wifi_entries_path = imp.wifi_entries_path.write().unwrap();
-                    let entry = wifi_entries_path.remove(&ir.access_point);
-                    if entry.is_none() {
-                        return;
-                    }
-                    let entry = entry.unwrap();
-                    let ssid = entry.imp().access_point.borrow().ssid.clone();
-                    wifi_entries.remove(&ssid);
-                    imp.reset_wifi_list.remove(&*entry);
-                });
-            });
-            true
+            access_point_removed_handler(removed_ref.clone(), ir)
         });
         if res.is_err() {
             println!("fail on access point remove event");
             return;
         }
         let res = conn.add_match(access_point_changed, move |ir: AccessPointChanged, _, _| {
-            let wifi_box = changed_ref.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_local_once(move || {
-                    let imp = wifi_box.imp();
-                    let wifi_entries = imp.wifi_entries.read().unwrap();
-                    let entry = wifi_entries.get(&ir.access_point.ssid);
-                    if entry.is_none() {
-                        return;
-                    }
-                    let entry = entry.unwrap();
-                    let entry_imp = entry.imp();
-                    let strength = WifiStrength::from_u8(ir.access_point.strength);
-                    let ssid = ir.access_point.ssid.clone();
-                    let name_opt = String::from_utf8(ssid).unwrap_or_else(|_| String::from(""));
-                    let name = name_opt.as_str();
-                    entry_imp.wifi_strength.set(strength);
-                    entry.set_title(name);
-                    // TODO handle encryption thing
-                    entry_imp
-                        .reset_wifi_strength
-                        .borrow()
-                        .set_from_icon_name(match strength {
-                            WifiStrength::Excellent => {
-                                Some("network-wireless-signal-excellent-symbolic")
-                            }
-                            WifiStrength::Ok => Some("network-wireless-signal-ok-symbolic"),
-                            WifiStrength::Weak => Some("network-wireless-signal-weak-symbolic"),
-                            WifiStrength::None => Some("network-wireless-signal-none-symbolic"),
-                        });
-                    if !ir.access_point.stored {
-                        entry_imp
-                            .reset_wifi_edit_button
-                            .borrow()
-                            .set_sensitive(false);
-                    }
-                    if ir.access_point.ssid
-                        == imp.reset_current_wifi_device.borrow().active_access_point
-                    {
-                        entry_imp
-                            .reset_wifi_connected
-                            .borrow()
-                            .set_text("Connected");
-                    } else {
-                        entry_imp.reset_wifi_connected.borrow().set_text("");
-                    }
-                    {
-                        let mut wifi_name = entry_imp.wifi_name.borrow_mut();
-                        *wifi_name = String::from(name);
-                    }
-                });
-            });
-            true
+            access_point_changed_handler(changed_ref.clone(), ir)
         });
         if res.is_err() {
             println!("fail on access point change event");
             return;
         }
         let res = conn.add_match(device_changed, move |ir: WifiDeviceChanged, _, _| {
-            let wifi_box = wifi_changed_ref.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let imp = wifi_box.imp();
-                    let mut current_device = imp.reset_current_wifi_device.borrow_mut();
-                    if current_device.path == ir.wifi_device.path {
-                        current_device.active_access_point = ir.wifi_device.active_access_point;
-                    } else {
-                        *current_device = ir.wifi_device;
-                    }
-                    let mut wifi_entries = imp.wifi_entries.write().unwrap();
-                    for entry in wifi_entries.iter_mut() {
-                        let imp = entry.1.imp();
-                        let mut connected = imp.connected.borrow_mut();
-                        *connected =
-                            imp.access_point.borrow().ssid == current_device.active_access_point;
-                        if *connected {
-                            imp.reset_wifi_connected.borrow().set_text("Connected");
-                        } else {
-                            imp.reset_wifi_connected.borrow().set_text("");
-                        }
-                    }
-                });
-            });
-            true
+            wifi_device_changed_handler(wifi_changed_ref.clone(), ir)
         });
         if res.is_err() {
             println!("fail on wifi device change event");
             return;
         }
         let res = conn.add_match(devices_reset, move |ir: WifiDeviceReset, _, _| {
-            if ir.devices.is_empty() {
-                return true;
-            }
-            {
-                let imp = wifi_reset_ref.imp();
-                let list = imp.reset_model_list.write().unwrap();
-                let mut model_index = imp.reset_model_index.write().unwrap();
-                let mut map = imp.reset_wifi_devices.write().unwrap();
-                imp.reset_current_wifi_device
-                    .replace(ir.devices.last().unwrap().clone());
-                for (index, device) in ir.devices.into_iter().enumerate() {
-                    list.append(&device.name);
-                    map.insert(device.name.clone(), (device, index as u32));
-                    *model_index += 1;
-                }
-            }
-            let wifi_box = wifi_reset_ref.clone();
-            glib::spawn_future(async move {
-                glib::idle_add_once(move || {
-                    let imp = wifi_box.imp();
-                    let list = imp.reset_model_list.read().unwrap();
-                    imp.reset_wifi_device.set_model(Some(&*list));
-                    let map = imp.reset_wifi_devices.read().unwrap();
-                    {
-                        let device = imp.reset_current_wifi_device.borrow();
-                        if let Some(index) = map.get(&device.name) {
-                            imp.reset_wifi_device.set_selected(index.1);
-                        }
-                    }
-                });
-            });
-            true
+            wifi_device_reset_handler(wifi_reset_ref.clone(), ir)
         });
         if res.is_err() {
             println!("fail on wifi device change event");
