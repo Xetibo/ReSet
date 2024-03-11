@@ -16,6 +16,7 @@ use gtk::{gio, StringObject};
 use re_set_lib::bluetooth::bluetooth_structures::{BluetoothAdapter, BluetoothDevice};
 use re_set_lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
 
+use crate::components::base::error_impl::{show_error, ReSetErrorImpl};
 use crate::components::base::utils::Listeners;
 use crate::components::bluetooth::bluetooth_box_impl;
 use crate::components::bluetooth::bluetooth_entry::BluetoothEntry;
@@ -29,6 +30,14 @@ glib::wrapper! {
 
 unsafe impl Send for BluetoothBox {}
 unsafe impl Sync for BluetoothBox {}
+
+impl ReSetErrorImpl for BluetoothBox {
+    fn error(
+        &self,
+    ) -> &gtk::subclass::prelude::TemplateChild<crate::components::base::error::ReSetError> {
+        &self.imp().error
+    }
+}
 
 impl BluetoothBox {
     pub fn new(listeners: Arc<Listeners>) -> Arc<Self> {
@@ -68,14 +77,24 @@ fn setup_callbacks(
                 .store(true, Ordering::SeqCst);
         });
 
+    let bluetooth_box_discover = bluetooth_box.clone();
     imp.reset_bluetooth_discoverable_switch
         .connect_active_notify(clone!(@weak imp => move |state| {
-            set_bluetooth_adapter_visibility(imp.reset_current_bluetooth_adapter.borrow().path.clone(), state.is_active());
+            set_bluetooth_adapter_visibility(
+                imp.reset_current_bluetooth_adapter.borrow().path.clone(),
+                state.is_active(),
+                bluetooth_box_discover.clone()
+            );
         }));
 
+    let bluetooth_box_pairable = bluetooth_box.clone();
     imp.reset_bluetooth_pairable_switch
         .connect_active_notify(clone!(@weak imp => move |state| {
-            set_bluetooth_adapter_pairability(imp.reset_current_bluetooth_adapter.borrow().path.clone(), state.is_active());
+            set_bluetooth_adapter_pairability(
+                imp.reset_current_bluetooth_adapter.borrow().path.clone(),
+                state.is_active(),
+                bluetooth_box_pairable.clone()
+            );
         }));
 
     imp.reset_bluetooth_switch.connect_state_set(
@@ -110,6 +129,7 @@ fn setup_callbacks(
                 let res = set_adapter_enabled(
                     current_adapter.path.clone(),
                     false,
+                    bluetooth_box_ref.clone()
                 );
                 if res {
                     current_adapter.powered = false;
@@ -129,6 +149,7 @@ fn setup_callbacks(
                             .path
                             .clone(),
                         true,
+                        restart_ref.clone()
                     ) {
                         current_adapter.powered = true;
                         start_bluetooth_listener(restart_listener_ref.clone(), restart_ref.clone());
@@ -145,8 +166,8 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
     // TODO handle saved devices -> they also exist
     gio::spawn_blocking(move || {
         let ref_box = bluetooth_box.clone();
-        let devices = get_connected_devices();
-        let adapters = get_bluetooth_adapters();
+        let devices = get_connected_devices(ref_box.clone());
+        let adapters = get_bluetooth_adapters(ref_box.clone());
         {
             let imp = bluetooth_box.imp();
             let list = imp.reset_model_list.write().unwrap();
@@ -165,6 +186,7 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
         }
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
+                let new_adapter_ref = ref_box.clone();
                 let imp = ref_box.imp();
 
                 let list = imp.reset_model_list.read().unwrap();
@@ -202,14 +224,14 @@ pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
                         if device.is_none() {
                             return;
                         }
-                        set_bluetooth_adapter(device.unwrap().0.path.clone());
+                        set_bluetooth_adapter(device.unwrap().0.path.clone(), new_adapter_ref.clone());
                     }),
                 );
 
                 for device in devices {
                     let path = device.path.clone();
                     let connected = device.connected;
-                    let bluetooth_entry = BluetoothEntry::new(device);
+                    let bluetooth_entry = BluetoothEntry::new(device, ref_box.clone());
                     imp.available_devices
                         .borrow_mut()
                         .insert(path, bluetooth_entry.clone());
@@ -242,7 +264,10 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
 
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let _: Result<(), Error> = proxy.method_call(BLUETOOTH, "StartBluetoothListener", ());
+        let res: Result<(), Error> = proxy.method_call(BLUETOOTH, "StartBluetoothListener", ());
+        if res.is_err() {
+            show_error::<BluetoothBox>(bluetooth_box.clone(), "Failed to start bluetooth listener");
+        }
         imp.reset_bluetooth_available_devices
             .set_description(Some("Scanning..."));
         let device_added =
@@ -262,7 +287,8 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     let imp = bluetooth_box.imp();
                     let path = ir.bluetooth_device.path.clone();
                     let connected = ir.bluetooth_device.connected;
-                    let bluetooth_entry = BluetoothEntry::new(ir.bluetooth_device);
+                    let bluetooth_entry =
+                        BluetoothEntry::new(ir.bluetooth_device, bluetooth_box.clone());
                     imp.available_devices
                         .borrow_mut()
                         .insert(path, bluetooth_entry.clone());
@@ -353,8 +379,14 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
         loop {
             let _ = conn.process(Duration::from_millis(1000));
             if !listeners.bluetooth_listener.load(Ordering::SeqCst) {
-                let _: Result<(), Error> =
+                let res: Result<(), Error> =
                     proxy.method_call(BLUETOOTH, "StopBluetoothListener", ());
+                if res.is_err() {
+                    show_error::<BluetoothBox>(
+                        bluetooth_box.clone(),
+                        "Failed to stop bluetooth listener",
+                    );
+                }
                 loop_box
                     .imp()
                     .reset_bluetooth_available_devices
@@ -372,7 +404,13 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                             .set_sensitive(true);
                     });
                 });
-                let _: Result<(), Error> = proxy.method_call(BLUETOOTH, "StopBluetoothScan", ());
+                let res: Result<(), Error> = proxy.method_call(BLUETOOTH, "StopBluetoothScan", ());
+                if res.is_err() {
+                    show_error::<BluetoothBox>(
+                        bluetooth_box.clone(),
+                        "Failed to stop bluetooth listener",
+                    );
+                }
                 loop_box
                     .imp()
                     .reset_bluetooth_available_devices
@@ -383,8 +421,14 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
                     .bluetooth_scan_requested
                     .store(false, Ordering::SeqCst);
                 listener_active = true;
-                let _: Result<(), Error> =
+                let res: Result<(), Error> =
                     proxy.method_call(BLUETOOTH, "StartBluetoothListener", ());
+                if res.is_err() {
+                    show_error::<BluetoothBox>(
+                        bluetooth_box.clone(),
+                        "Failed to start bluetooth listener",
+                    );
+                }
                 loop_box
                     .imp()
                     .reset_bluetooth_available_devices
@@ -395,58 +439,91 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
     });
 }
 
-fn get_connected_devices() -> Vec<BluetoothDevice> {
+fn get_connected_devices(bluetooth_box: Arc<BluetoothBox>) -> Vec<BluetoothDevice> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Vec<BluetoothDevice>,), Error> =
         proxy.method_call(BLUETOOTH, "GetConnectedBluetoothDevices", ());
     if res.is_err() {
+        show_error::<BluetoothBox>(
+            bluetooth_box.clone(),
+            "Failed to get connected bluetooth devices",
+        );
         return Vec::new();
     }
     res.unwrap().0
 }
 
-fn get_bluetooth_adapters() -> Vec<BluetoothAdapter> {
+fn get_bluetooth_adapters(bluetooth_box: Arc<BluetoothBox>) -> Vec<BluetoothAdapter> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Vec<BluetoothAdapter>,), Error> =
         proxy.method_call(BLUETOOTH, "GetBluetoothAdapters", ());
     if res.is_err() {
+        show_error::<BluetoothBox>(bluetooth_box.clone(), "Failed to get bluetooth adapters");
         return Vec::new();
     }
     res.unwrap().0
 }
 
-fn set_bluetooth_adapter(path: Path<'static>) {
+fn set_bluetooth_adapter(path: Path<'static>, bluetooth_box: Arc<BluetoothBox>) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let _: Result<(Path<'static>,), Error> =
+    let res: Result<(Path<'static>,), Error> =
         proxy.method_call(BLUETOOTH, "SetBluetoothAdapter", (path,));
+    if res.is_err() {
+        show_error::<BluetoothBox>(bluetooth_box.clone(), "Failed to set bluetooth adapter");
+    }
 }
 
-fn set_bluetooth_adapter_visibility(path: Path<'static>, visible: bool) {
+fn set_bluetooth_adapter_visibility(
+    path: Path<'static>,
+    visible: bool,
+    bluetooth_box: Arc<BluetoothBox>,
+) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let _: Result<(bool,), Error> = proxy.method_call(
+    let res: Result<(bool,), Error> = proxy.method_call(
         BLUETOOTH,
         "SetBluetoothAdapterDiscoverability",
         (path, visible),
     );
+    if res.is_err() {
+        show_error::<BluetoothBox>(
+            bluetooth_box.clone(),
+            "Failed to set bluetooth adapter visibility",
+        );
+    }
 }
 
-fn set_bluetooth_adapter_pairability(path: Path<'static>, visible: bool) {
+fn set_bluetooth_adapter_pairability(
+    path: Path<'static>,
+    visible: bool,
+    bluetooth_box: Arc<BluetoothBox>,
+) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let _: Result<(bool,), Error> =
+    let res: Result<(bool,), Error> =
         proxy.method_call(BLUETOOTH, "SetBluetoothAdapterPairability", (path, visible));
+    if res.is_err() {
+        show_error::<BluetoothBox>(
+            bluetooth_box.clone(),
+            "Failed to set bluetooth adapter pairability",
+        );
+    }
 }
 
-fn set_adapter_enabled(path: Path<'static>, enabled: bool) -> bool {
+fn set_adapter_enabled(
+    path: Path<'static>,
+    enabled: bool,
+    bluetooth_box: Arc<BluetoothBox>,
+) -> bool {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let result: Result<(bool,), Error> =
         proxy.method_call(BLUETOOTH, "SetBluetoothAdapterEnabled", (path, enabled));
     if result.is_err() {
+        show_error::<BluetoothBox>(bluetooth_box.clone(), "Failed to enable bluetooth adapter");
         return false;
     }
     result.unwrap().0

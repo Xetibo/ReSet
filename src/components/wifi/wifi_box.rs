@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use std::time::Duration;
 
+use crate::components::base::error_impl::{show_error, ReSetErrorImpl};
 use crate::components::base::utils::Listeners;
 use crate::components::utils::{set_combo_row_ellipsis, BASE, DBUS_PATH, WIRELESS};
 use adw::glib;
@@ -38,6 +39,14 @@ type ResultMap = Result<(Vec<(Path<'static>, Vec<u8>)>,), Error>;
 unsafe impl Send for WifiBox {}
 unsafe impl Sync for WifiBox {}
 
+impl ReSetErrorImpl for WifiBox {
+    fn error(
+        &self,
+    ) -> &gtk::subclass::prelude::TemplateChild<crate::components::base::error::ReSetError> {
+        &self.imp().error
+    }
+}
+
 impl WifiBox {
     pub fn new(listeners: Arc<Listeners>) -> Arc<Self> {
         let obj: Arc<WifiBox> = Arc::new(Object::builder().build());
@@ -50,6 +59,7 @@ impl WifiBox {
 fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<WifiBox> {
     let imp = wifi_box.imp();
     let wifibox_ref = wifi_box.clone();
+    let wifibox_ref_switch = wifi_box.clone();
     imp.reset_switch_initial.set(true);
     imp.reset_saved_networks.set_activatable(true);
     imp.reset_saved_networks
@@ -66,7 +76,7 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
             if imp.reset_switch_initial.load(Ordering::SeqCst) {
                 return glib::Propagation::Proceed;
             }
-            set_wifi_enabled(value);
+            set_wifi_enabled(value, wifibox_ref_switch.clone());
             if !value {
                 imp.reset_wifi_devices.write().unwrap().clear();
                 *imp.reset_model_list.write().unwrap() = StringList::new(&[]);
@@ -92,17 +102,16 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
 
 pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
     let wifibox_ref = wifi_box.clone();
-    let _wifibox_ref_listener = wifi_box.clone();
     let wifi_entries = wifi_box.imp().wifi_entries.clone();
     let wifi_entries_path = wifi_box.imp().wifi_entries_path.clone();
 
     gio::spawn_blocking(move || {
-        let wifi_status = get_wifi_status();
-        let devices = get_wifi_devices();
+        let wifi_status = get_wifi_status(wifibox_ref.clone());
+        let devices = get_wifi_devices(wifibox_ref.clone());
         if devices.is_empty() {
             return;
         }
-        let access_points = get_access_points();
+        let access_points = get_access_points(wifibox_ref.clone());
         {
             let imp = wifibox_ref.imp();
             let list = imp.reset_model_list.write().unwrap();
@@ -118,7 +127,7 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
         }
         let wifi_entries = wifi_entries.clone();
         let wifi_entries_path = wifi_entries_path.clone();
-        dbus_start_network_events();
+        dbus_start_network_events(wifibox_ref.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let mut wifi_entries = wifi_entries.write().unwrap();
@@ -139,6 +148,7 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                     }
                 }
 
+                let device_changed_ref = wifibox_ref.clone();
                 imp.reset_wifi_device.connect_selected_notify(
                     clone!(@weak imp => move |dropdown| {
                         let selected = dropdown.selected_item();
@@ -154,7 +164,7 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
                         if device.is_none() {
                             return;
                         }
-                        set_wifi_device(device.unwrap().0.path.clone());
+                        set_wifi_device(device.unwrap().0.path.clone(), device_changed_ref.clone());
                     }),
                 );
                 for access_point in access_points {
@@ -178,7 +188,7 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
 pub fn show_stored_connections(wifi_box: Arc<WifiBox>) {
     let wifibox_ref = wifi_box.clone();
     gio::spawn_blocking(move || {
-        let connections = get_stored_connections();
+        let connections = get_stored_connections(wifi_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let self_imp = wifibox_ref.imp();
@@ -194,67 +204,80 @@ pub fn show_stored_connections(wifi_box: Arc<WifiBox>) {
     });
 }
 
-pub fn dbus_start_network_events() {
+pub fn dbus_start_network_events(wifi_box: Arc<WifiBox>) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let _: Result<(), Error> = proxy.method_call(WIRELESS, "StartNetworkListener", ());
+    let res: Result<(), Error> = proxy.method_call(WIRELESS, "StartNetworkListener", ());
+    if res.is_err() {
+        show_error::<WifiBox>(wifi_box.clone(), "Failed to start Network listener");
+    }
 }
 
-pub fn get_access_points() -> Vec<AccessPoint> {
+pub fn get_access_points(wifi_box: Arc<WifiBox>) -> Vec<AccessPoint> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Vec<AccessPoint>,), Error> =
         proxy.method_call(WIRELESS, "ListAccessPoints", ());
     if res.is_err() {
+        show_error::<WifiBox>(wifi_box.clone(), "Failed to list access points");
         return Vec::new();
     }
     let (access_points,) = res.unwrap();
     access_points
 }
 
-pub fn set_wifi_device(path: Path<'static>) {
+pub fn set_wifi_device(path: Path<'static>, wifi_box: Arc<WifiBox>) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let _: Result<(bool,), Error> = proxy.method_call(WIRELESS, "SetWifiDevice", (path,));
+    let res: Result<(bool,), Error> = proxy.method_call(WIRELESS, "SetWifiDevice", (path,));
+    if res.is_err() {
+        show_error::<WifiBox>(wifi_box.clone(), "Failed to set WiFi devices");
+    }
 }
 
-pub fn get_wifi_devices() -> Vec<WifiDevice> {
+pub fn get_wifi_devices(wifi_box: Arc<WifiBox>) -> Vec<WifiDevice> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Vec<WifiDevice>,), Error> =
         proxy.method_call(WIRELESS, "GetAllWifiDevices", ());
     if res.is_err() {
+        show_error::<WifiBox>(wifi_box.clone(), "Failed to get WiFi devices");
         return Vec::new();
     }
     let (devices,) = res.unwrap();
     devices
 }
 
-pub fn get_wifi_status() -> bool {
+pub fn get_wifi_status(wifi_box: Arc<WifiBox>) -> bool {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(bool,), Error> = proxy.method_call(WIRELESS, "GetWifiStatus", ());
     if res.is_err() {
+        show_error::<WifiBox>(wifi_box.clone(), "Failed to get WiFi status");
         return false;
     }
     res.unwrap().0
 }
 
-pub fn get_stored_connections() -> Vec<(Path<'static>, Vec<u8>)> {
+pub fn get_stored_connections(wifi_box: Arc<WifiBox>) -> Vec<(Path<'static>, Vec<u8>)> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: ResultMap = proxy.method_call(WIRELESS, "ListStoredConnections", ());
     if res.is_err() {
+        show_error::<WifiBox>(wifi_box.clone(), "Failed to list stored connections");
         return Vec::new();
     }
     let (connections,) = res.unwrap();
     connections
 }
 
-pub fn set_wifi_enabled(enabled: bool) {
+pub fn set_wifi_enabled(enabled: bool, wifi_box: Arc<WifiBox>) {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let _: Result<(bool,), Error> = proxy.method_call(WIRELESS, "SetWifiEnabled", (enabled,));
+    let res: Result<(bool,), Error> = proxy.method_call(WIRELESS, "SetWifiEnabled", (enabled,));
+    if res.is_err() {
+        show_error::<WifiBox>(wifi_box.clone(), "Failed to enable WiFi");
+    }
 }
 
 pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {

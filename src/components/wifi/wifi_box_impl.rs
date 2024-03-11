@@ -1,3 +1,4 @@
+use crate::components::base::error::ReSetError;
 use crate::components::wifi::wifi_box;
 use adw::{ActionRow, ComboRow, NavigationView, PreferencesGroup};
 use dbus::Path;
@@ -32,6 +33,8 @@ pub struct WifiBox {
     pub reset_stored_wifi_list: TemplateChild<PreferencesGroup>,
     #[template_child]
     pub reset_available_networks: TemplateChild<ActionRow>,
+    #[template_child]
+    pub error: TemplateChild<ReSetError>,
     pub wifi_entries: Arc<RwLock<HashMap<Vec<u8>, Arc<WifiEntry>>>>,
     pub wifi_entries_path: Arc<RwLock<HashMap<Path<'static>, Arc<WifiEntry>>>>,
     pub reset_wifi_devices: Arc<RwLock<HashMap<String, (WifiDevice, u32)>>>,

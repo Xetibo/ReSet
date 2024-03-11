@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use crate::components::base::error_impl::show_error;
 use crate::components::utils::{
     create_dropdown_label_factory, set_combo_row_ellipsis, AUDIO, BASE, DBUS_PATH,
 };
@@ -30,6 +31,9 @@ impl InputStreamEntry {
     pub fn new(sink_box: Arc<SinkBox>, stream: InputStream) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
+        let output_box_mute_ref = sink_box.clone();
+        let output_box_volume_ref = sink_box.clone();
+        let output_box_sink_ref = sink_box.clone();
         {
             let index = stream.sink_index;
             let box_imp = sink_box.imp();
@@ -75,7 +79,7 @@ impl InputStreamEntry {
                         }
                         *time = Some(SystemTime::now());
                     }
-                    set_inputstream_volume(value, index, channels);
+                    set_inputstream_volume(value, index, channels, output_box_volume_ref.clone());
                     Propagation::Proceed
                 }),
             );
@@ -131,7 +135,7 @@ impl InputStreamEntry {
                     }
                     let stream = stream.unwrap();
                 let sink = sink.unwrap().0;
-                    set_sink_of_input_stream(stream.index, sink);
+                    set_sink_of_input_stream(stream.index, sink, output_box_sink_ref.clone());
                 }),
             );
             imp.reset_sink_mute
@@ -152,54 +156,55 @@ impl InputStreamEntry {
                         imp.reset_sink_mute
                            .set_icon_name("audio-volume-high-symbolic");
                     }
-                    toggle_input_stream_mute(index, muted);
+                    toggle_input_stream_mute(index, muted, output_box_mute_ref.clone());
                 }));
         }
         obj
     }
 }
 
-fn set_inputstream_volume(value: f64, index: u32, channels: u16) -> bool {
+fn set_inputstream_volume(
+    value: f64,
+    index: u32,
+    channels: u16,
+    output_box: Arc<SinkBox>,
+) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let _: Result<(), Error> = proxy.method_call(
+        let res: Result<(), Error> = proxy.method_call(
             AUDIO,
             "SetInputStreamVolume",
             (index, channels, value as u32),
         );
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        if res.is_err() {
+            show_error::<SinkBox>(output_box.clone(), "Failed to set input stream volume");
+        }
     });
     true
 }
 
-fn toggle_input_stream_mute(index: u32, muted: bool) -> bool {
+fn toggle_input_stream_mute(index: u32, muted: bool, output_box: Arc<SinkBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let _: Result<(), Error> = proxy.method_call(AUDIO, "SetInputStreamMute", (index, muted));
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        let res: Result<(), Error> = proxy.method_call(AUDIO, "SetInputStreamMute", (index, muted));
+        if res.is_err() {
+            show_error::<SinkBox>(output_box.clone(), "Failed to mute input stream");
+        }
     });
     true
 }
 
-fn set_sink_of_input_stream(stream: u32, sink: u32) -> bool {
+fn set_sink_of_input_stream(stream: u32, sink: u32, output_box: Arc<SinkBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let _: Result<(), Error> = proxy.method_call(AUDIO, "SetSinkOfInputStream", (stream, sink));
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        let res: Result<(), Error> =
+            proxy.method_call(AUDIO, "SetSinkOfInputStream", (stream, sink));
+        if res.is_err() {
+            show_error::<SinkBox>(output_box.clone(), "Failed to set sink of input stream");
+        }
     });
     true
 }
-
-// TODO propagate error from dbus

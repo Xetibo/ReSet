@@ -2,8 +2,10 @@ use std::ops::Deref;
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::components::base::error_impl::show_error;
 use crate::components::bluetooth::bluetooth_entry_impl;
 use crate::components::utils::{BASE, BLUETOOTH, DBUS_PATH};
+use crate::components::wifi::wifi_box_impl::WifiBox;
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, PreferencesRowExt};
 use adw::{glib, ActionRow};
@@ -13,6 +15,8 @@ use glib::subclass::prelude::ObjectSubclassIsExt;
 use gtk::prelude::{ButtonExt, ListBoxRowExt, WidgetExt};
 use gtk::{gio, Align, Button, GestureClick, Image, Label};
 use re_set_lib::bluetooth::bluetooth_structures::BluetoothDevice;
+
+use super::bluetooth_box::BluetoothBox;
 
 glib::wrapper! {
     pub struct BluetoothEntry(ObjectSubclass<bluetooth_entry_impl::BluetoothEntry>)
@@ -24,7 +28,7 @@ unsafe impl Send for BluetoothEntry {}
 unsafe impl Sync for BluetoothEntry {}
 
 impl BluetoothEntry {
-    pub fn new(device: BluetoothDevice) -> Arc<Self> {
+    pub fn new(device: BluetoothDevice, bluetooth_box: Arc<BluetoothBox>) -> Arc<Self> {
         let entry: Arc<BluetoothEntry> = Arc::new(Object::builder().build());
         let entry_imp = entry.imp();
         let entry_ref = entry.clone();
@@ -60,7 +64,7 @@ impl BluetoothEntry {
             .borrow()
             .connect_clicked(move |_| {
                 let imp = entry_ref_remove.imp();
-                remove_device_pairing(imp.bluetooth_device.borrow().path.clone());
+                remove_device_pairing(imp.bluetooth_device.borrow().path.clone(), bluetooth_box.clone());
             });
         let gesture = GestureClick::new();
         // paired is not what we think
@@ -147,11 +151,14 @@ fn disconnect_from_device(entry: Arc<BluetoothEntry>, path: Path<'static>) {
     });
 }
 
-fn remove_device_pairing(path: Path<'static>) {
+fn remove_device_pairing(path: Path<'static>, wifi_box: Arc<BluetoothBox>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let _: Result<(bool,), Error> =
+        let res: Result<(bool,), Error> =
             proxy.method_call(BLUETOOTH, "RemoveDevicePairing", (path,));
+        if res.is_err() {
+            show_error::<BluetoothBox>(wifi_box.clone(), "Failed to remove device pairing");
+        }
     });
 }
