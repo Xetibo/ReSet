@@ -120,7 +120,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
         }
         populate_inputstreams(output_box.clone());
         populate_cards(output_box.clone());
-        initialize(output_box, sinks);
+        populate_sink_information(output_box, sinks);
     });
 }
 
@@ -184,7 +184,7 @@ fn mute_handler(output_box_ref_mute: Arc<SinkBox>) {
     toggle_sink_mute(stream.index, stream.muted);
 }
 
-fn initialize(output_box: Arc<SinkBox>, sinks: Vec<Sink>) {
+fn populate_sink_information(output_box: Arc<SinkBox>, sinks: Vec<Sink>) {
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
             let output_box_ref_select = output_box.clone();
