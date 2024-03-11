@@ -163,12 +163,7 @@ impl InputStreamEntry {
     }
 }
 
-fn set_inputstream_volume(
-    value: f64,
-    index: u32,
-    channels: u16,
-    output_box: Arc<SinkBox>,
-) -> bool {
+fn set_inputstream_volume(value: f64, index: u32, channels: u16, output_box: Arc<SinkBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));

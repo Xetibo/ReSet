@@ -389,15 +389,8 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
 fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) {
     gio::spawn_blocking(move || {
         let conn = dbus::blocking::Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(bool,), Error> = proxy.method_call(
-            WIRELESS,
-            "SetConnectionSettings",
-            (path, prop),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let _: Result<(bool,), Error> =
+            proxy.method_call(WIRELESS, "SetConnectionSettings", (path, prop));
     });
 }

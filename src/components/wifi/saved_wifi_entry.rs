@@ -66,12 +66,7 @@ impl SavedWifiEntry {
 fn delete_connection(path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> =
-            proxy.method_call(WIRELESS, "DeleteConnection", (path,));
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let _: Result<(), Error> = proxy.method_call(WIRELESS, "DeleteConnection", (path,));
     });
 }

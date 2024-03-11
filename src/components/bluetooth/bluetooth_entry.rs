@@ -64,7 +64,10 @@ impl BluetoothEntry {
             .borrow()
             .connect_clicked(move |_| {
                 let imp = entry_ref_remove.imp();
-                remove_device_pairing(imp.bluetooth_device.borrow().path.clone(), bluetooth_box.clone());
+                remove_device_pairing(
+                    imp.bluetooth_device.borrow().path.clone(),
+                    bluetooth_box.clone(),
+                );
             });
         let gesture = GestureClick::new();
         // paired is not what we think

@@ -22,13 +22,8 @@ type ResultType =
 
 pub fn get_connection_settings(path: Path<'static>) -> ResetConnection {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: ResultType =
-        proxy.method_call(WIRELESS, "GetConnectionSettings", (path,));
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: ResultType = proxy.method_call(WIRELESS, "GetConnectionSettings", (path,));
     if res.is_err() {
         ResetConnection::default();
     }

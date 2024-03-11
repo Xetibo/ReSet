@@ -1,9 +1,9 @@
-use adw::{ActionRow, ComboRow};
 use adw::gdk::pango::EllipsizeMode;
 use adw::prelude::ListModelExtManual;
+use adw::{ActionRow, ComboRow};
 use glib::{Cast, Object};
-use gtk::{Align, SignalListItemFactory, StringObject};
 use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, WidgetExt};
+use gtk::{Align, SignalListItemFactory, StringObject};
 
 pub const DBUS_PATH: &str = "/org/Xetibo/ReSet/Daemon";
 pub const WIRELESS: &str = "org.Xetibo.ReSet.Wireless";
@@ -17,14 +17,22 @@ pub fn create_dropdown_label_factory() -> SignalListItemFactory {
         let item = item.downcast_ref::<gtk::ListItem>().unwrap();
         let label = gtk::Label::new(None);
         label.set_halign(Align::Start);
-        item.property_expression("item").chain_property::<StringObject>("string").bind(&label, "label", gtk::Widget::NONE);
+        item.property_expression("item")
+            .chain_property::<StringObject>("string")
+            .bind(&label, "label", gtk::Widget::NONE);
         item.set_child(Some(&label));
     });
     factory
 }
 
 pub fn set_combo_row_ellipsis(element: ComboRow) {
-    for (i, child) in element.child().unwrap().observe_children().iter::<Object>().enumerate() {
+    for (i, child) in element
+        .child()
+        .unwrap()
+        .observe_children()
+        .iter::<Object>()
+        .enumerate()
+    {
         if i == 2 {
             if let Ok(object) = child {
                 if let Some(item) = object.downcast_ref::<gtk::Box>() {
