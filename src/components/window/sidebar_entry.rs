@@ -8,7 +8,7 @@ use crate::components::window::sidebar_entry_impl::{Categories, SidebarAction};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::prelude::*;
-use gtk::{glib, FlowBox};
+use gtk::FlowBox;
 
 glib::wrapper! {
     pub struct SidebarEntry(ObjectSubclass<sidebar_entry_impl::SidebarEntry>)

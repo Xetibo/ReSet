@@ -4,7 +4,6 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 use std::rc::Rc;
 use std::str::FromStr;
 
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::PreferencesRowExt;
 use glib::clone;

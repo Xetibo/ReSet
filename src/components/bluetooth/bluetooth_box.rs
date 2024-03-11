@@ -2,7 +2,6 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
@@ -325,8 +324,8 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
         }
 
         listeners.bluetooth_listener.store(true, Ordering::SeqCst);
-        let mut time = SystemTime::now();
-        let mut listener_active = true;
+        let time = SystemTime::now();
+        let listener_active = true;
 
         bluetooth_listener_loop(
             &conn,

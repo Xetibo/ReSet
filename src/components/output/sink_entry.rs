@@ -3,7 +3,6 @@ use std::time::{Duration, SystemTime};
 
 use crate::components::base::error_impl::show_error;
 use crate::components::utils::set_action_row_ellipsis;
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, CheckButtonExt, PreferencesRowExt, RangeExt};
 use dbus::blocking::Connection;

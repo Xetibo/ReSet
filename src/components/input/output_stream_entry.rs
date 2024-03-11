@@ -5,7 +5,6 @@ use crate::components::base::error_impl::show_error;
 use crate::components::utils::{
     create_dropdown_label_factory, set_combo_row_ellipsis, AUDIO, BASE, DBUS_PATH,
 };
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
 use dbus::blocking::Connection;

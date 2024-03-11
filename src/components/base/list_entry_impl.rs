@@ -1,6 +1,6 @@
 use crate::components::base::list_entry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate};
+use gtk::CompositeTemplate;
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetListBoxRow.ui")]

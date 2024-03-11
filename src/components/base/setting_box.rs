@@ -1,5 +1,4 @@
 use crate::components::base::setting_box_impl;
-use adw::glib;
 use adw::glib::{IsA, Object};
 use gtk::prelude::BoxExt;
 use gtk::Widget;

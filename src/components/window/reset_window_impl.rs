@@ -8,7 +8,7 @@ use adw::{Breakpoint, OverlaySplitView};
 use glib::subclass::InitializingObject;
 use gtk::prelude::WidgetExt;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
+use gtk::{Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
 
 use crate::components::base::error::ReSetError;
 use crate::components::base::utils::{Listeners, Position};

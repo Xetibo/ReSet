@@ -1,8 +1,8 @@
 use adw::{ActionRow, ComboRow, PreferencesGroup, SwitchRow};
 use dbus::Path;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Switch};
 use gtk::{prelude::*, StringList};
+use gtk::{Button, CompositeTemplate, Switch};
 use re_set_lib::bluetooth::bluetooth_structures::BluetoothAdapter;
 use std::cell::RefCell;
 use std::collections::HashMap;

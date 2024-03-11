@@ -1,5 +1,4 @@
 use crate::components::wifi::utils::IpProtocol;
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ExpanderRowExt, PreferencesRowExt};
 use glib::clone;

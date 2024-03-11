@@ -6,7 +6,6 @@ use crate::components::wifi::saved_wifi_entry_impl;
 use crate::components::wifi::utils::get_connection_settings;
 use crate::components::wifi::wifi_box_impl::WifiBox;
 use crate::components::wifi::wifi_options::WifiOptions;
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ButtonExt, PreferencesGroupExt, PreferencesRowExt};
 use dbus::blocking::Connection;

@@ -13,8 +13,8 @@ use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
 use adw::glib::Object;
+use adw::prelude::ListBoxRowExt;
 use adw::prelude::{BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, RangeExt};
-use adw::{glib, prelude::ListBoxRowExt};
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::{Error, Path};

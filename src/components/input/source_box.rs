@@ -1,4 +1,3 @@
-use adw::prelude::PreferencesRowExt;
 use re_set_lib::audio::audio_structures::{Card, OutputStream, Source};
 use re_set_lib::signals::{
     OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
@@ -7,7 +6,6 @@ use re_set_lib::signals::{
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{
     BoxExt, ButtonExt, CheckButtonExt, ComboRowExt, ListBoxRowExt, PreferencesGroupExt, RangeExt,
@@ -16,12 +14,12 @@ use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::{Error, Path};
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::{clone, Cast, ControlFlow, Propagation, Variant};
+use glib::{Cast, ControlFlow, Propagation, Variant};
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
 
 use crate::components::base::card_entry::CardEntry;
-use crate::components::base::error::{self, ReSetError};
+use crate::components::base::error::{self};
 use crate::components::base::error_impl::{show_error, ReSetErrorImpl};
 use crate::components::base::list_entry::ListEntry;
 use crate::components::input::source_box_impl;
@@ -133,7 +131,6 @@ fn populate_source_information(input_box: Arc<SourceBox>, sources: Vec<Source>) 
             let input_box_ref_slider = input_box.clone();
             let input_box_ref_toggle = input_box.clone();
             let input_box_ref_mute = input_box.clone();
-            let input_box_ref = input_box.clone();
             let input_box_imp = input_box.imp();
             let default_sink = input_box_imp.reset_default_source.clone();
             let source = default_sink.borrow();
@@ -188,11 +185,7 @@ fn populate_source_information(input_box: Arc<SourceBox>, sources: Vec<Source>) 
             input_box_imp
                 .reset_source_dropdown
                 .connect_selected_notify(move |dropdown| {
-                    if let ControlFlow::Break =
-                        dropdown_handler(input_box_ref_toggle.clone(), dropdown)
-                    {
-                        return;
-                    }
+                    dropdown_handler(input_box_ref_toggle.clone(), dropdown);
                 });
             input_box_imp
                 .reset_volume_slider

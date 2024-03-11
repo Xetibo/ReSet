@@ -2,7 +2,7 @@ use crate::components::wifi::utils::IpProtocol;
 use crate::components::wifi::wifi_route_entry;
 use adw::{EntryRow, ExpanderRow};
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate};
+use gtk::{Button, CompositeTemplate};
 use std::cell::{Cell, RefCell};
 
 #[derive(Default, CompositeTemplate)]

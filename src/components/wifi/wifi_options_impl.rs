@@ -4,7 +4,7 @@ use adw::{
     ActionRow, ComboRow, EntryRow, NavigationPage, PasswordEntryRow, PreferencesGroup, SwitchRow,
 };
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label};
+use gtk::{Button, CompositeTemplate, Label};
 use re_set_lib::network::connection::Connection;
 use std::cell::RefCell;
 use std::rc::Rc;

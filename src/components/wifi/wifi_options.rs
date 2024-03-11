@@ -4,10 +4,10 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Duration;
 
+use adw::gio;
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::{gio, glib};
 use dbus::arg::PropMap;
 use dbus::{Error, Path};
 use glib::{clone, PropertySet};

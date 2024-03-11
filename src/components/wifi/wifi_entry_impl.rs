@@ -4,7 +4,7 @@ use adw::subclass::preferences_row::PreferencesRowImpl;
 use adw::subclass::prelude::ActionRowImpl;
 use adw::ActionRow;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Image, Label};
+use gtk::{Button, CompositeTemplate, Image, Label};
 use re_set_lib::network::network_structures::{AccessPoint, WifiStrength};
 use std::cell::RefCell;
 

@@ -5,12 +5,12 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
 
-use crate::components::base::error::{self, ReSetError};
+use crate::components::base::error::ReSetError;
 use crate::components::base::list_entry::ListEntry;
 use crate::components::input::source_box;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CheckButton, CompositeTemplate, StringList, TemplateChild};
 use gtk::{prelude::*, Button, Label, Scale};
+use gtk::{CheckButton, CompositeTemplate, StringList};
 
 use super::output_stream_entry::OutputStreamEntry;
 use super::source_entry::SourceEntry;

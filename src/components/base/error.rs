@@ -1,6 +1,3 @@
-use std::{rc::Rc, sync::Arc};
-
-use adw::glib;
 use adw::glib::Object;
 use glib::{clone, subclass::types::ObjectSubclassIsExt};
 use gtk::{

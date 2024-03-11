@@ -1,5 +1,4 @@
 use crate::components::base::list_entry_impl;
-use adw::glib;
 use adw::glib::{IsA, Object};
 use gtk::prelude::ListBoxRowExt;
 use gtk::Widget;

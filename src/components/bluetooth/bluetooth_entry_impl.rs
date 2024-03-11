@@ -3,7 +3,7 @@ use adw::subclass::action_row::ActionRowImpl;
 use adw::subclass::preferences_row::PreferencesRowImpl;
 use adw::ActionRow;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label};
+use gtk::{Button, CompositeTemplate, Label};
 use re_set_lib::bluetooth::bluetooth_structures::BluetoothDevice;
 use std::cell::RefCell;
 

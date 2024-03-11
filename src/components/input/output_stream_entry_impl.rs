@@ -7,7 +7,7 @@ use std::time::SystemTime;
 
 use crate::components::input::output_stream_entry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, Scale};
+use gtk::{Button, CompositeTemplate, Label, Scale};
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]

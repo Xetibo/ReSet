@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use glib::subclass::InitializingObject;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, FlowBox, Image, Label, ListBoxRow};
+use gtk::{CompositeTemplate, FlowBox, Image, Label, ListBoxRow};
 
 use crate::components::base::utils::{Listeners, Position};
 use crate::components::window::handle_sidebar_click::HANDLE_HOME;

@@ -1,6 +1,5 @@
 use std::time::Duration;
 
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::blocking::Connection;

@@ -1,12 +1,8 @@
-use std::cell::RefCell;
 use std::sync::Arc;
 
-use glib::clone;
 use gtk::prelude::{ButtonExt, PopoverExt};
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, PasswordEntry, PasswordEntryBuffer, Popover};
-
-use crate::components::input::source_box::SourceBox;
+use gtk::{Button, CompositeTemplate, Label, Popover};
 
 use super::error;
 
@@ -61,7 +57,7 @@ pub fn show_error<T: ReSetErrorImpl + Send + Sync + 'static>(
     // TODO: Add error to log
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
-            let mut error = parent.error();
+            let error = parent.error();
             let parent_ref = parent.clone();
             let imp = error.imp();
             imp.reset_error_label.set_text(message);
