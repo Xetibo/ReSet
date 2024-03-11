@@ -9,7 +9,11 @@ use re_set_lib::signals::{
 
 use crate::components::base::list_entry::ListEntry;
 
-use super::{input_stream_entry::InputStreamEntry, sink_box::SinkBox, sink_entry::SinkEntry};
+use super::{
+    input_stream_entry::InputStreamEntry,
+    sink_box::{get_default_sink_name, SinkBox},
+    sink_entry::SinkEntry,
+};
 
 pub fn sink_added_handler(output_box: Arc<SinkBox>, ir: SinkAdded) -> bool {
     glib::spawn_future(async move {
@@ -100,13 +104,10 @@ pub fn sink_removed_handler(output_box: Arc<SinkBox>, ir: SinkRemoved) -> bool {
     true
 }
 
-pub fn sink_changed_handler(
-    output_box: Arc<SinkBox>,
-    ir: SinkChanged,
-    default_sink: String,
-) -> bool {
+pub fn sink_changed_handler(output_box: Arc<SinkBox>, ir: SinkChanged) -> bool {
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
+            let default_sink = get_default_sink_name(output_box.clone());
             let output_box_imp = output_box.imp();
             let is_default = ir.sink.name == default_sink;
             let volume = ir.sink.volume.first().unwrap_or(&0_u32);

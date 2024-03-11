@@ -24,6 +24,8 @@ use gtk::prelude::ActionableExt;
 use gtk::{gio, StringObject};
 
 use crate::components::base::card_entry::CardEntry;
+use crate::components::base::error_impl::show_error;
+use crate::components::base::error_impl::ReSetErrorImpl;
 use crate::components::base::list_entry::ListEntry;
 use crate::components::output::sink_entry::set_sink_volume;
 use crate::components::utils::AUDIO;
@@ -49,6 +51,14 @@ glib::wrapper! {
 
 unsafe impl Send for SinkBox {}
 unsafe impl Sync for SinkBox {}
+
+impl ReSetErrorImpl for SinkBox {
+    fn error(
+        &self,
+    ) -> &gtk::subclass::prelude::TemplateChild<crate::components::base::error::ReSetError> {
+        &self.imp().error
+    }
+}
 
 impl SinkBox {
     pub fn new() -> Self {
@@ -103,7 +113,7 @@ impl Default for SinkBox {
 
 pub fn populate_sinks(output_box: Arc<SinkBox>) {
     gio::spawn_blocking(move || {
-        let sinks = get_sinks();
+        let sinks = get_sinks(output_box.clone());
         {
             let output_box_imp = output_box.imp();
             let list = output_box_imp.reset_model_list.write().unwrap();
@@ -111,7 +121,7 @@ pub fn populate_sinks(output_box: Arc<SinkBox>) {
             let mut model_index = output_box_imp.reset_model_index.write().unwrap();
             output_box_imp
                 .reset_default_sink
-                .replace(get_default_sink());
+                .replace(get_default_sink(output_box.clone()));
             for sink in sinks.iter() {
                 list.append(&sink.alias);
                 map.insert(sink.alias.clone(), (sink.index, sink.name.clone()));
@@ -142,7 +152,7 @@ fn drop_down_handler(output_box: Arc<SinkBox>, dropdown: &ComboRow) {
     }
     let new_sink_name = Arc::new(sink.unwrap().1.clone());
     gio::spawn_blocking(move || {
-        let result = set_default_sink(new_sink_name);
+        let result = set_default_sink(new_sink_name, output_box_ref.clone());
         if result.is_none() {
             return;
         }
@@ -151,8 +161,8 @@ fn drop_down_handler(output_box: Arc<SinkBox>, dropdown: &ComboRow) {
     });
 }
 
-fn volume_slider_handler(output_box_ref_slider: Arc<SinkBox>, value: f64) -> glib::Propagation {
-    let imp = output_box_ref_slider.imp();
+fn volume_slider_handler(output_box: Arc<SinkBox>, value: f64) -> glib::Propagation {
+    let imp = output_box.imp();
     let fraction = (value / 655.36).round();
     let percentage = (fraction).to_string() + "%";
     imp.reset_volume_percentage.set_text(&percentage);
@@ -166,12 +176,12 @@ fn volume_slider_handler(output_box_ref_slider: Arc<SinkBox>, value: f64) -> gli
         }
         *time = Some(SystemTime::now());
     }
-    set_sink_volume(value, index, channels);
+    set_sink_volume(value, index, channels, output_box.clone());
     Propagation::Proceed
 }
 
-fn mute_handler(output_box_ref_mute: Arc<SinkBox>) {
-    let imp = output_box_ref_mute.imp();
+fn mute_handler(output_box: Arc<SinkBox>) {
+    let imp = output_box.imp();
     let mut stream = imp.reset_default_sink.borrow_mut();
     stream.muted = !stream.muted;
     if stream.muted {
@@ -181,7 +191,7 @@ fn mute_handler(output_box_ref_mute: Arc<SinkBox>) {
         imp.reset_sink_mute
             .set_icon_name("audio-volume-high-symbolic");
     }
-    toggle_sink_mute(stream.index, stream.muted);
+    toggle_sink_mute(stream.index, stream.muted, output_box.clone());
 }
 
 fn populate_sink_information(output_box: Arc<SinkBox>, sinks: Vec<Sink>) {
@@ -308,7 +318,7 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
     let output_box_ref = output_box.clone();
 
     gio::spawn_blocking(move || {
-        let streams = get_input_streams();
+        let streams = get_input_streams(output_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let output_box_imp = output_box_ref.imp();
@@ -329,7 +339,7 @@ pub fn populate_inputstreams(output_box: Arc<SinkBox>) {
 pub fn populate_cards(output_box: Arc<SinkBox>) {
     gio::spawn_blocking(move || {
         let output_box_ref = output_box.clone();
-        let cards = get_cards();
+        let cards = get_cards(output_box.clone());
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let imp = output_box_ref.imp();
@@ -341,51 +351,56 @@ pub fn populate_cards(output_box: Arc<SinkBox>) {
     });
 }
 
-fn get_input_streams() -> Vec<InputStream> {
+fn get_input_streams(output_box: Arc<SinkBox>) -> Vec<InputStream> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Vec<InputStream>,), Error> = proxy.method_call(AUDIO, "ListInputStreams", ());
     if res.is_err() {
+        show_error::<SinkBox>(output_box.clone(), "Failed to list input streams");
         return Vec::new();
     }
     res.unwrap().0
 }
 
-fn get_sinks() -> Vec<Sink> {
+fn get_sinks(output_box: Arc<SinkBox>) -> Vec<Sink> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Vec<Sink>,), Error> = proxy.method_call(AUDIO, "ListSinks", ());
     if res.is_err() {
+        show_error::<SinkBox>(output_box.clone(), "Failed to list sinks");
         return Vec::new();
     }
     res.unwrap().0
 }
 
-fn get_cards() -> Vec<Card> {
+fn get_cards(output_box: Arc<SinkBox>) -> Vec<Card> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Vec<Card>,), Error> = proxy.method_call(AUDIO, "ListCards", ());
     if res.is_err() {
+        show_error::<SinkBox>(output_box.clone(), "Failed to list profiles");
         return Vec::new();
     }
     res.unwrap().0
 }
 
-fn get_default_sink_name() -> String {
+pub fn get_default_sink_name(output_box: Arc<SinkBox>) -> String {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(String,), Error> = proxy.method_call(AUDIO, "GetDefaultSinkName", ());
     if res.is_err() {
+        show_error::<SinkBox>(output_box.clone(), "Failed to get default sink name");
         return String::from("");
     }
     res.unwrap().0
 }
 
-fn get_default_sink() -> Sink {
+fn get_default_sink(output_box: Arc<SinkBox>) -> Sink {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
     let res: Result<(Sink,), Error> = proxy.method_call(AUDIO, "GetDefaultSink", ());
     if res.is_err() {
+        show_error::<SinkBox>(output_box.clone(), "Failed to get default sink");
         return Sink::default();
     }
     res.unwrap().0
@@ -433,8 +448,7 @@ pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Co
     }
 
     let res = conn.add_match(sink_changed, move |ir: SinkChanged, _, _| {
-        let default_sink = get_default_sink_name();
-        sink_changed_handler(sink_changed_box.clone(), ir, default_sink)
+        sink_changed_handler(sink_changed_box.clone(), ir)
     });
     if res.is_err() {
         println!("fail on sink change event");

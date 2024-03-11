@@ -27,6 +27,7 @@
     <file compressed="true" preprocess="xml-stripblanks">resetSourceEntry.ui</file>
     <!--Misc-->
     <file compressed="true" preprocess="xml-stripblanks">resetPopup.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">resetError.ui</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">resetShortcuts.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetMenu.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">resetCardEntry.ui</file>

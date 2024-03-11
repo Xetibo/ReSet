@@ -1,5 +1,7 @@
 pub mod card_entry;
 pub mod card_entry_impl;
+pub mod error;
+pub mod error_impl;
 pub mod list_entry;
 pub mod list_entry_impl;
 pub mod popup;

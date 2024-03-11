@@ -10,6 +10,7 @@ use gtk::prelude::WidgetExt;
 use gtk::subclass::prelude::*;
 use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
 
+use crate::components::base::error::ReSetError;
 use crate::components::base::utils::{Listeners, Position};
 use crate::components::wifi::wifi_box::WifiBox;
 use crate::components::window::reset_window;
@@ -38,6 +39,7 @@ pub struct ReSetWindow {
     pub default_entry: RefCell<Option<Rc<SidebarEntry>>>,
     pub listeners: Arc<Listeners>,
     pub position: Rc<RefCell<Position>>,
+    pub error_popup: ReSetError,
 }
 
 unsafe impl Send for ReSetWindow {}

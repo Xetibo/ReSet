@@ -1,11 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.17.0 -->
+<!-- Created with Cambalache 0.17.2 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
   <template class="resetAudioInput" parent="GtkBox">
     <property name="orientation">vertical</property>
     <property name="valign">start</property>
+    <child>
+      <object class="resetError" id="error"/>
+    </child>
     <child>
       <object class="GtkLabel">
         <property name="css-classes">resetSettingLabel</property>

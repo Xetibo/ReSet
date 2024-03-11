@@ -56,6 +56,18 @@ impl ReSetWindow {
             })
             .build();
 
+        let error_popup_action = ActionEntry::builder("show_error")
+            .activate(move |window: &Self, _, _| {
+                window.imp().error_popup.popup();
+            })
+            .build();
+
+        let error_popdown_action = ActionEntry::builder("hide_error")
+            .activate(move |window: &Self, _, _| {
+                window.imp().error_popup.popdown();
+            })
+            .build();
+
         let vim_up = ActionEntry::builder("up")
             .activate(move |window: &Self, _, _| {
                 window.child_focus(DirectionType::Up);
@@ -123,7 +135,8 @@ impl ReSetWindow {
             vim_right,
             vim_down,
             vim_left,
-            // clear_initial,
+            error_popup_action,
+            error_popdown_action,
         ]);
     }
 

@@ -3,7 +3,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use crate::components::bluetooth::bluetooth_entry_impl;
-use crate::components::utils::{BASE, DBUS_PATH, BLUETOOTH};
+use crate::components::utils::{BASE, BLUETOOTH, DBUS_PATH};
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, PreferencesRowExt};
 use adw::{glib, ActionRow};
@@ -87,16 +87,9 @@ impl BluetoothEntry {
 fn connect_to_device(entry: Arc<BluetoothEntry>, path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let res: Result<(bool,), Error> = proxy.method_call(
-            BLUETOOTH,
-            "ConnectToBluetoothDevice",
-            (path,),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let res: Result<(bool,), Error> =
+            proxy.method_call(BLUETOOTH, "ConnectToBluetoothDevice", (path,));
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 if res.is_err() {
@@ -134,16 +127,9 @@ fn connect_to_device(entry: Arc<BluetoothEntry>, path: Path<'static>) {
 fn disconnect_from_device(entry: Arc<BluetoothEntry>, path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let res: Result<(bool,), Error> = proxy.method_call(
-            BLUETOOTH,
-            "DisconnectFromBluetoothDevice",
-            (path,),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let res: Result<(bool,), Error> =
+            proxy.method_call(BLUETOOTH, "DisconnectFromBluetoothDevice", (path,));
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let imp = entry.imp();
@@ -164,11 +150,7 @@ fn disconnect_from_device(entry: Arc<BluetoothEntry>, path: Path<'static>) {
 fn remove_device_pairing(path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
         let _: Result<(bool,), Error> =
             proxy.method_call(BLUETOOTH, "RemoveDevicePairing", (path,));
     });

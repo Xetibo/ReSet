@@ -101,7 +101,7 @@ pub fn source_removed_handler(source_box: Arc<SourceBox>, ir: SourceRemoved) -> 
 }
 
 pub fn source_changed_handler(source_box: Arc<SourceBox>, ir: SourceChanged) -> bool {
-    let default_source = get_default_source_name();
+    let default_source = get_default_source_name(source_box.clone());
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
             let input_box = source_box.clone();
