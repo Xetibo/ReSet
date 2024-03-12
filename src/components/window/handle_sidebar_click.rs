@@ -10,8 +10,8 @@ use crate::components::base::utils::{start_audio_listener, Listeners, Position};
 use crate::components::bluetooth::bluetooth_box::{
     populate_connected_bluetooth_devices, start_bluetooth_listener, BluetoothBox,
 };
-use crate::components::input::source_box::{populate_sources, SourceBox};
-use crate::components::output::sink_box::{populate_sinks, SinkBox};
+use crate::components::audio::input::source_box::{populate_sources, SourceBox};
+use crate::components::audio::output::sink_box::{populate_sinks, SinkBox};
 use crate::components::wifi::wifi_box::{
     scan_for_wifi, show_stored_connections, start_event_listener, WifiBox,
 };

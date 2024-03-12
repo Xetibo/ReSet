@@ -11,8 +11,8 @@ use dbus::{blocking::Connection, Error};
 use gtk::gio;
 
 use crate::components::{
-    input::source_box::{start_source_box_listener, SourceBox},
-    output::sink_box::{start_sink_box_listener, SinkBox},
+    audio::input::source_box::{start_source_box_listener, SourceBox},
+    audio::output::sink_box::{start_sink_box_listener, SinkBox},
     utils::{BASE, DBUS_PATH, WIRELESS},
 };
 

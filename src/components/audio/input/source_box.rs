@@ -16,7 +16,7 @@ use gtk::prelude::ActionableExt;
 
 use crate::components::base::error::{self};
 use crate::components::base::error_impl::ReSetErrorImpl;
-use crate::components::input::source_box_impl;
+use crate::components::audio::input::source_box_impl;
 use crate::components::utils::{
     create_dropdown_label_factory, set_combo_row_ellipsis, BASE, DBUS_PATH,
 };

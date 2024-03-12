@@ -5,7 +5,7 @@ use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::components::output::sink_entry;
+use crate::components::audio::output::sink_entry;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CheckButton, CompositeTemplate, Label, Scale};
 
