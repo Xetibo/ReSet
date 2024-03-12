@@ -5,9 +5,9 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
 
+use crate::components::audio::output::input_stream_entry::InputStreamEntry;
 use crate::components::base::error::ReSetError;
 use crate::components::base::list_entry::ListEntry;
-use crate::components::audio::output::input_stream_entry::InputStreamEntry;
 use gtk::subclass::prelude::*;
 use gtk::{prelude::*, Scale};
 use gtk::{Box, Button, CheckButton, CompositeTemplate, Label, StringList};
