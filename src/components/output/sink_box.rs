@@ -103,30 +103,30 @@ impl Default for SinkBox {
     }
 }
 
-pub fn populate_sinks(output_box: Arc<SinkBox>) {
+pub fn populate_sinks(sink_box: Arc<SinkBox>) {
     gio::spawn_blocking(move || {
-        let sinks = get_sinks(output_box.clone());
+        let sinks = get_sinks(sink_box.clone());
         {
-            let output_box_imp = output_box.imp();
-            let list = output_box_imp.reset_model_list.write().unwrap();
-            let mut map = output_box_imp.reset_sink_map.write().unwrap();
-            let mut model_index = output_box_imp.reset_model_index.write().unwrap();
-            output_box_imp
+            let sink_box_imp = sink_box.imp();
+            let list = sink_box_imp.reset_model_list.write().unwrap();
+            let mut map = sink_box_imp.reset_sink_map.write().unwrap();
+            let mut model_index = sink_box_imp.reset_model_index.write().unwrap();
+            sink_box_imp
                 .reset_default_sink
-                .replace(get_default_sink(output_box.clone()));
+                .replace(get_default_sink(sink_box.clone()));
             for sink in sinks.iter() {
                 list.append(&sink.alias);
                 map.insert(sink.alias.clone(), (sink.index, sink.name.clone()));
                 *model_index += 1;
             }
         }
-        populate_inputstreams(output_box.clone());
-        populate_cards(output_box.clone());
-        populate_sink_information(output_box, sinks);
+        populate_inputstreams(sink_box.clone());
+        populate_cards(sink_box.clone());
+        populate_sink_information(sink_box, sinks);
     });
 }
 
-pub fn start_output_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Connection {
+pub fn start_sink_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Connection {
     let sink_added =
         SinkAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
     let sink_removed =

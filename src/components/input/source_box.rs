@@ -96,17 +96,17 @@ impl Default for SourceBox {
     }
 }
 
-pub fn populate_sources(input_box: Arc<SourceBox>) {
+pub fn populate_sources(source_box: Arc<SourceBox>) {
     gio::spawn_blocking(move || {
-        let sources = get_sources(input_box.clone());
+        let sources = get_sources(source_box.clone());
         {
-            let input_box_imp = input_box.imp();
-            let list = input_box_imp.reset_model_list.write().unwrap();
-            let mut map = input_box_imp.reset_source_map.write().unwrap();
-            let mut model_index = input_box_imp.reset_model_index.write().unwrap();
-            input_box_imp
+            let source_box_imp = source_box.imp();
+            let list = source_box_imp.reset_model_list.write().unwrap();
+            let mut map = source_box_imp.reset_source_map.write().unwrap();
+            let mut model_index = source_box_imp.reset_model_index.write().unwrap();
+            source_box_imp
                 .reset_default_source
-                .replace(get_default_source(input_box.clone()));
+                .replace(get_default_source(source_box.clone()));
             for source in sources.iter() {
                 list.append(&source.alias);
                 map.insert(source.alias.clone(), (source.index, source.name.clone()));
@@ -114,13 +114,13 @@ pub fn populate_sources(input_box: Arc<SourceBox>) {
             }
         }
 
-        populate_outputstreams(input_box.clone());
-        populate_cards(input_box.clone());
-        populate_source_information(input_box, sources);
+        populate_outputstreams(source_box.clone());
+        populate_cards(source_box.clone());
+        populate_source_information(source_box, sources);
     });
 }
 
-pub fn start_input_box_listener(conn: Connection, source_box: Arc<SourceBox>) -> Connection {
+pub fn start_source_box_listener(conn: Connection, source_box: Arc<SourceBox>) -> Connection {
     let source_added =
         SourceAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
     let source_removed =
