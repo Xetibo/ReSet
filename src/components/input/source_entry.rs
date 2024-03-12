@@ -14,7 +14,8 @@ use re_set_lib::audio::audio_structures::Source;
 
 use crate::components::utils::{AUDIO, BASE, DBUS_PATH};
 
-use super::source_box::{refresh_default_source, SourceBox};
+use super::source_box::SourceBox;
+use super::source_box_utils::refresh_default_source;
 use super::source_entry_impl;
 
 glib::wrapper! {

@@ -1,8 +1,18 @@
-use std::sync::Arc;
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime},
+};
 
-use adw::prelude::{ComboRowExt, PreferencesRowExt};
-use glib::subclass::types::ObjectSubclassIsExt;
-use gtk::prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt};
+use adw::{
+    prelude::{ComboRowExt, PreferencesRowExt},
+    ComboRow,
+};
+use glib::{subclass::types::ObjectSubclassIsExt, Cast, Propagation};
+use gtk::{
+    gio,
+    prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt},
+    StringObject,
+};
 use re_set_lib::signals::{
     InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
 };
@@ -11,9 +21,70 @@ use crate::components::base::list_entry::ListEntry;
 
 use super::{
     input_stream_entry::InputStreamEntry,
-    sink_box::{get_default_sink_name, SinkBox},
-    sink_entry::SinkEntry,
+    sink_box::SinkBox,
+    sink_box_utils::{get_default_sink_name, refresh_default_sink},
+    sink_entry::{set_default_sink, set_sink_volume, toggle_sink_mute, SinkEntry},
 };
+
+pub fn drop_down_handler(output_box: Arc<SinkBox>, dropdown: &ComboRow) {
+    let output_box_ref = output_box.clone();
+    let output_box_imp = output_box.imp();
+    let selected = dropdown.selected_item();
+    if selected.is_none() {
+        return;
+    }
+    let selected = selected.unwrap();
+    let selected = selected.downcast_ref::<StringObject>().unwrap();
+    let selected = selected.string().to_string();
+
+    let sink = output_box_imp.reset_sink_map.read().unwrap();
+    let sink = sink.get(&selected);
+    if sink.is_none() {
+        return;
+    }
+    let new_sink_name = Arc::new(sink.unwrap().1.clone());
+    gio::spawn_blocking(move || {
+        let result = set_default_sink(new_sink_name, output_box_ref.clone());
+        if result.is_none() {
+            return;
+        }
+        let new_sink = result.unwrap();
+        refresh_default_sink(new_sink, output_box_ref, false);
+    });
+}
+
+pub fn volume_slider_handler(output_box: Arc<SinkBox>, value: f64) -> glib::Propagation {
+    let imp = output_box.imp();
+    let fraction = (value / 655.36).round();
+    let percentage = (fraction).to_string() + "%";
+    imp.reset_volume_percentage.set_text(&percentage);
+    let sink = imp.reset_default_sink.borrow();
+    let index = sink.index;
+    let channels = sink.channels;
+    {
+        let mut time = imp.volume_time_stamp.borrow_mut();
+        if time.is_some() && time.unwrap().elapsed().unwrap() < Duration::from_millis(50) {
+            return Propagation::Proceed;
+        }
+        *time = Some(SystemTime::now());
+    }
+    set_sink_volume(value, index, channels, output_box.clone());
+    Propagation::Proceed
+}
+
+pub fn mute_handler(output_box: Arc<SinkBox>) {
+    let imp = output_box.imp();
+    let mut stream = imp.reset_default_sink.borrow_mut();
+    stream.muted = !stream.muted;
+    if stream.muted {
+        imp.reset_sink_mute
+            .set_icon_name("audio-volume-muted-symbolic");
+    } else {
+        imp.reset_sink_mute
+            .set_icon_name("audio-volume-high-symbolic");
+    }
+    toggle_sink_mute(stream.index, stream.muted, output_box.clone());
+}
 
 pub fn sink_added_handler(output_box: Arc<SinkBox>, ir: SinkAdded) -> bool {
     glib::spawn_future(async move {

@@ -1,8 +1,15 @@
-use std::sync::Arc;
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime},
+};
 
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
-use glib::subclass::types::ObjectSubclassIsExt;
-use gtk::prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt};
+use glib::{subclass::types::ObjectSubclassIsExt, Cast, ControlFlow, Propagation};
+use gtk::{
+    gio,
+    prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt},
+    StringObject,
+};
 use re_set_lib::signals::{
     OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
     SourceRemoved,
@@ -12,8 +19,9 @@ use crate::components::base::list_entry::ListEntry;
 
 use super::{
     output_stream_entry::OutputStreamEntry,
-    source_box::{get_default_source_name, SourceBox},
-    source_entry::SourceEntry,
+    source_box::SourceBox,
+    source_box_utils::{get_default_source_name, refresh_default_source},
+    source_entry::{set_default_source, set_source_volume, toggle_source_mute, SourceEntry},
 };
 
 pub fn source_added_handler(source_box: Arc<SourceBox>, ir: SourceAdded) -> bool {
@@ -237,4 +245,64 @@ pub fn output_stream_removed_handler(source_box: Arc<SourceBox>, ir: OutputStrea
         });
     });
     true
+}
+
+pub fn dropdown_handler(input_box: Arc<SourceBox>, dropdown: &adw::ComboRow) -> ControlFlow {
+    let input_box_imp = input_box.imp();
+    let input_box_ref = input_box.clone();
+    let selected = dropdown.selected_item();
+    if selected.is_none() {
+        return ControlFlow::Break;
+    }
+    let selected = selected.unwrap();
+    let selected = selected.downcast_ref::<StringObject>().unwrap();
+    let selected = selected.string().to_string();
+    let source = input_box_imp.reset_source_map.read().unwrap();
+    let source = source.get(&selected);
+    if source.is_none() {
+        return ControlFlow::Break;
+    }
+    let source = Arc::new(source.unwrap().1.clone());
+    gio::spawn_blocking(move || {
+        let result = set_default_source(source, input_box_ref.clone());
+        if result.is_none() {
+            return ControlFlow::Break;
+        }
+        refresh_default_source(result.unwrap(), input_box_ref.clone(), false);
+        ControlFlow::Continue
+    });
+    ControlFlow::Continue
+}
+
+pub fn volume_slider_handler(input_box: Arc<SourceBox>, value: f64) -> Propagation {
+    let imp = input_box.imp();
+    let fraction = (value / 655.36).round();
+    let percentage = (fraction).to_string() + "%";
+    imp.reset_volume_percentage.set_text(&percentage);
+    let source = imp.reset_default_source.borrow();
+    let index = source.index;
+    let channels = source.channels;
+    {
+        let mut time = imp.volume_time_stamp.borrow_mut();
+        if time.is_some() && time.unwrap().elapsed().unwrap() < Duration::from_millis(50) {
+            return Propagation::Proceed;
+        }
+        *time = Some(SystemTime::now());
+    }
+    set_source_volume(value, index, channels, input_box.clone());
+    Propagation::Proceed
+}
+
+pub fn mute_clicked_handler(input_box_ref_mute: Arc<SourceBox>) {
+    let imp = input_box_ref_mute.imp();
+    let mut source = imp.reset_default_source.borrow_mut();
+    source.muted = !source.muted;
+    if source.muted {
+        imp.reset_source_mute
+            .set_icon_name("microphone-disabled-symbolic");
+    } else {
+        imp.reset_source_mute
+            .set_icon_name("audio-input-microphone-symbolic");
+    }
+    toggle_source_mute(source.index, source.muted, input_box_ref_mute.clone());
 }

@@ -14,7 +14,8 @@ use re_set_lib::audio::audio_structures::Sink;
 
 use crate::components::utils::{AUDIO, BASE, DBUS_PATH};
 
-use super::sink_box::{refresh_default_sink, SinkBox};
+use super::sink_box::SinkBox;
+use super::sink_box_utils::refresh_default_sink;
 use super::sink_entry_impl;
 
 glib::wrapper! {
