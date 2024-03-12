@@ -173,7 +173,7 @@ fn bluetooth_enabled_switch_handler(
     glib::Propagation::Proceed
 }
 
-pub fn populate_conntected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
+pub fn populate_connected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
     // TODO handle saved devices -> they also exist
     gio::spawn_blocking(move || {
         let ref_box = bluetooth_box.clone();

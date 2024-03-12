@@ -144,9 +144,7 @@ pub fn sink_removed_handler(sink_box: Arc<SinkBox>, ir: SinkRemoved) -> bool {
                     return;
                 }
             }
-            sink_box_imp
-                .reset_sinks
-                .remove(&*entry.clone().unwrap().0);
+            sink_box_imp.reset_sinks.remove(&*entry.clone().unwrap().0);
             let alias = entry.unwrap().2;
             let mut index = sink_box_imp.reset_model_index.write().unwrap();
             let model_list = sink_box_imp.reset_model_list.write().unwrap();
@@ -249,9 +247,7 @@ pub fn input_stream_removed_handler(sink_box: Arc<SinkBox>, ir: InputStreamRemov
             if entry.is_none() {
                 return;
             }
-            sink_box_imp
-                .reset_input_streams
-                .remove(&*entry.unwrap().0);
+            sink_box_imp.reset_input_streams.remove(&*entry.unwrap().0);
         });
     });
     true
