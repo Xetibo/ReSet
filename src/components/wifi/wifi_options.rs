@@ -10,7 +10,8 @@ use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::arg::PropMap;
 use dbus::{Error, Path};
-use glib::{clone, PropertySet};
+use glib::{clone};
+use glib::property::PropertySet;
 use gtk::prelude::{ActionableExt, ButtonExt, EditableExt, ListBoxRowExt, WidgetExt};
 use re_set_lib::network::connection::{
     Connection, DNSMethod4, DNSMethod6, Enum, KeyManagement, TypeSettings,

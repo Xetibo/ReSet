@@ -7,7 +7,8 @@ use adw::{
     prelude::{ComboRowExt, PreferencesRowExt},
     ComboRow,
 };
-use glib::{subclass::types::ObjectSubclassIsExt, Cast, Propagation};
+use glib::{subclass::types::ObjectSubclassIsExt, Propagation};
+use glib::prelude::Cast;
 use gtk::{
     gio,
     prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt},

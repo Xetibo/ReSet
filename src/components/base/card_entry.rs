@@ -5,7 +5,8 @@ use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
-use glib::{clone, Cast};
+use glib::{clone};
+use glib::prelude::Cast;
 use gtk::{gio, StringList, StringObject};
 
 use components::utils::create_dropdown_label_factory;

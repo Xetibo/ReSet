@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
 use adw::prelude::{ComboRowExt, PreferencesGroupExt, PreferencesRowExt};
-use glib::{subclass::types::ObjectSubclassIsExt, PropertySet};
+use glib::{subclass::types::ObjectSubclassIsExt};
+use glib::property::PropertySet;
 use gtk::prelude::WidgetExt;
 use re_set_lib::{
     network::network_structures::WifiStrength,
