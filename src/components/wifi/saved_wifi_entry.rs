@@ -11,7 +11,8 @@ use adw::prelude::{ActionRowExt, ButtonExt, PreferencesGroupExt, PreferencesRowE
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
 use glib::subclass::types::ObjectSubclassIsExt;
-use glib::{clone, PropertySet};
+use glib::{clone};
+use glib::property::PropertySet;
 use gtk::prelude::{BoxExt, ListBoxRowExt};
 use gtk::{gio, Align, Button, Orientation};
 

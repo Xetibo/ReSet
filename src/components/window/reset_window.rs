@@ -1,17 +1,22 @@
+use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::Arc;
 
+use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::BreakpointCondition;
 use glib::Object;
+use gtk::{AccessibleRole, Align, Application, FlowBox, FlowBoxChild, Frame, gio, ListBoxRow, Orientation, StateFlags};
+use gtk::{DirectionType, prelude::*};
 use gtk::gio::ActionEntry;
-use gtk::{gio, AccessibleRole, Application, ListBoxRow, Orientation, StateFlags};
-use gtk::{prelude::*, DirectionType};
+use re_set_lib::utils::plugin_setup::FRONTEND_PLUGINS;
 
+use crate::components::base::setting_box::SettingBox;
+use crate::components::base::utils::{Listeners, Position};
+use crate::components::plugin::function::{PluginSidebarInfo, ReSetSidebarInfo};
 use crate::components::window::handle_sidebar_click::*;
 use crate::components::window::reset_window_impl;
 use crate::components::window::sidebar_entry::SidebarEntry;
-use crate::components::window::sidebar_entry_impl::Categories;
 
 glib::wrapper! {
     pub struct ReSetWindow(ObjectSubclass<reset_window_impl::ReSetWindow>)
@@ -37,6 +42,176 @@ impl ReSetWindow {
         let mut window: Rc<Self> = Rc::new(Object::builder().property("application", app).build());
         window = setup_callback(window);
         window
+    }
+
+    pub fn handle_dynamic_sidebar(&self) {
+        let self_imp = self.imp();
+        self_imp
+            .reset_sidebar_breakpoint
+            .set_condition(BreakpointCondition::parse("max-width: 860sp").as_ref().ok());
+        self_imp.reset_sidebar_breakpoint.add_setter(
+            &Object::from(self_imp.reset_overlay_split_view.get()),
+            "collapsed",
+            &true.to_value(),
+        );
+        self_imp.reset_sidebar_breakpoint.add_setter(
+            &Object::from(self_imp.reset_sidebar_toggle.get()),
+            "visible",
+            &true.to_value(),
+        );
+    }
+
+    pub fn filter_list(&self) {
+        let text = self.imp().reset_search_entry.text().to_string();
+        for (main_entry, sub_entriess) in self.imp().sidebar_entries.borrow().iter() {
+            if text.is_empty() {
+                main_entry.set_visible(true);
+                for sub_entry in sub_entriess {
+                    sub_entry.set_visible(true);
+                }
+                continue;
+            }
+            if main_entry
+                .imp()
+                .name
+                .borrow()
+                .to_lowercase()
+                .contains(&text.to_lowercase())
+            {
+                main_entry.set_visible(true);
+            } else {
+                main_entry.set_visible(false);
+            }
+            for sub_entry in sub_entriess {
+                if sub_entry
+                    .imp()
+                    .name
+                    .borrow()
+                    .to_lowercase()
+                    .contains(&text.to_lowercase())
+                {
+                    sub_entry.set_visible(true);
+                    main_entry.set_visible(true);
+                } else {
+                    sub_entry.set_visible(false);
+                }
+            }
+        }
+    }
+
+    pub fn toggle_sidebar(&self) {
+        if self.imp().reset_overlay_split_view.shows_sidebar() {
+            self.imp().reset_overlay_split_view.set_show_sidebar(false);
+        } else {
+            self.imp().reset_overlay_split_view.set_show_sidebar(true);
+        }
+    }
+
+    pub fn setup_sidebar_entries(&self) {
+        let self_imp = self.imp();
+
+        let sidebar_list = vec![
+            ReSetSidebarInfo {
+                name: "Connectivity",
+                icon_name: "network-wired-symbolic",
+                parent: None,
+                click_event: HANDLE_CONNECTIVITY_CLICK,
+            },
+            ReSetSidebarInfo {
+                name: "WiFi",
+                icon_name: "network-wireless-symbolic",
+                parent: Some("Connectivity"),
+                click_event: HANDLE_WIFI_CLICK,
+            },
+            ReSetSidebarInfo {
+                name: "Bluetooth",
+                icon_name: "bluetooth-symbolic",
+                parent: Some("Connectivity"),
+                click_event: HANDLE_BLUETOOTH_CLICK,
+            },
+            ReSetSidebarInfo {
+                name: "Audio",
+                icon_name: "audio-headset-symbolic",
+                parent: None,
+                click_event: HANDLE_AUDIO_CLICK,
+            },
+            ReSetSidebarInfo {
+                name: "Output",
+                icon_name: "audio-volume-high-symbolic",
+                parent: Some("Audio"),
+                click_event: HANDLE_VOLUME_CLICK,
+            },
+            ReSetSidebarInfo {
+                name: "Input",
+                icon_name: "audio-input-microphone-symbolic",
+                parent: Some("Audio"),
+                click_event: HANDLE_MICROPHONE_CLICK,
+            },
+        ];
+
+        let mut plugin_sidebar_list = vec![];
+        unsafe {
+            for plugin in FRONTEND_PLUGINS.iter() {
+                let (sidebar_info, plugin_boxes) = (plugin.frontend_data)();
+                let listeners = self_imp.listeners.clone();
+                (plugin.frontend_startup)();
+
+                let event = Rc::new(
+                    move |reset_main: FlowBox, position: Rc<RefCell<Position>>, boxes: Vec<gtk::Box>| {
+                        if handle_init(listeners.clone(), position, Position::Custom(String::from(sidebar_info.name))) {
+                            return;
+                        }
+                        reset_main.remove_all();
+                        for plugin_box in &boxes {
+                            let frame = wrap_in_flow_box_child(SettingBox::new(&plugin_box.clone()));
+                            reset_main.insert(&frame, -1);
+                        }
+                        reset_main.set_max_children_per_line(boxes.len() as u32);
+                    }
+                );
+
+                plugin_sidebar_list.push(PluginSidebarInfo {
+                    name: sidebar_info.name,
+                    icon_name: sidebar_info.icon_name,
+                    parent: sidebar_info.parent,
+                    click_event: event,
+                    plugin_boxes,
+                });
+            }
+        }
+
+        HANDLE_VOLUME_CLICK(
+            self_imp.listeners.clone(),
+            self_imp.reset_main.clone(),
+            self_imp.position.clone(),
+        );
+
+        self_imp
+            .reset_sidebar_list
+            .connect_row_activated(clone!(@ weak self_imp => move |_, _| {
+                self_imp.reset_search_entry.set_text("");
+            }));
+
+        let mut i = 0;
+        for info in sidebar_list {
+            if info.parent.is_none() && i != 0 {
+                self_imp.reset_sidebar_list.insert(&create_separator(), i);
+                i += 1;
+            }
+            let entry = SidebarEntry::new(&info);
+            self_imp.reset_sidebar_list.insert(&entry, i);
+            i += 1;
+        }
+
+        for info in plugin_sidebar_list {
+            if info.parent.is_none() && i != 0 {
+                self_imp.reset_sidebar_list.insert(&create_separator(), i);
+                i += 1;
+            }
+            let entry = SidebarEntry::new_plugin(&info);
+            self_imp.reset_sidebar_list.insert(&entry, i);
+            i += 1;
+        }
     }
 
     pub fn setup_shortcuts(&self) {
@@ -139,221 +314,8 @@ impl ReSetWindow {
             error_popdown_action,
         ]);
     }
-
-    pub fn handle_dynamic_sidebar(&self) {
-        let self_imp = self.imp();
-        self_imp
-            .reset_sidebar_breakpoint
-            .set_condition(BreakpointCondition::parse("max-width: 860sp").as_ref().ok());
-        self_imp.reset_sidebar_breakpoint.add_setter(
-            &Object::from(self_imp.reset_overlay_split_view.get()),
-            "collapsed",
-            &true.to_value(),
-        );
-        self_imp.reset_sidebar_breakpoint.add_setter(
-            &Object::from(self_imp.reset_sidebar_toggle.get()),
-            "visible",
-            &true.to_value(),
-        );
-    }
-
-    pub fn filter_list(&self) {
-        let text = self.imp().reset_search_entry.text().to_string();
-        for (main_entry, sub_entriess) in self.imp().sidebar_entries.borrow().iter() {
-            if text.is_empty() {
-                main_entry.set_visible(true);
-                for sub_entry in sub_entriess {
-                    sub_entry.set_visible(true);
-                }
-                continue;
-            }
-            if main_entry
-                .imp()
-                .name
-                .borrow()
-                .to_lowercase()
-                .contains(&text.to_lowercase())
-            {
-                main_entry.set_visible(true);
-            } else {
-                main_entry.set_visible(false);
-            }
-            for sub_entry in sub_entriess {
-                if sub_entry
-                    .imp()
-                    .name
-                    .borrow()
-                    .to_lowercase()
-                    .contains(&text.to_lowercase())
-                {
-                    sub_entry.set_visible(true);
-                    main_entry.set_visible(true);
-                } else {
-                    sub_entry.set_visible(false);
-                }
-            }
-        }
-    }
-
-    pub fn toggle_sidebar(&self) {
-        if self.imp().reset_overlay_split_view.shows_sidebar() {
-            self.imp().reset_overlay_split_view.set_show_sidebar(false);
-        } else {
-            self.imp().reset_overlay_split_view.set_show_sidebar(true);
-        }
-    }
-
-    pub fn setup_sidebar_entries(&self) {
-        let self_imp = self.imp();
-        let mut sidebar_entries = self_imp.sidebar_entries.borrow_mut();
-
-        let connectivity_list = vec![
-            Rc::new(SidebarEntry::new(
-                "WiFi",
-                "network-wireless-symbolic",
-                Categories::Connectivity,
-                true,
-                HANDLE_WIFI_CLICK,
-            )),
-            Rc::new(SidebarEntry::new(
-                "Bluetooth",
-                "bluetooth-symbolic",
-                Categories::Connectivity,
-                true,
-                HANDLE_BLUETOOTH_CLICK,
-            )),
-            // uncommented when VPN is implemented
-            // SidebarEntry::new(
-            //     "VPN",
-            //     "network-vpn-symbolic",
-            //     Categories::Connectivity,
-            //     true,
-            //     HANDLE_VPN_CLICK,
-            // ),
-        ];
-
-        sidebar_entries.push((
-            Rc::new(SidebarEntry::new(
-                "Connectivity",
-                "network-wired-symbolic",
-                Categories::Connectivity,
-                false,
-                HANDLE_CONNECTIVITY_CLICK,
-            )),
-            connectivity_list,
-        ));
-
-        let output = Rc::new(SidebarEntry::new(
-            "Output",
-            "audio-volume-high-symbolic",
-            Categories::Audio,
-            true,
-            HANDLE_VOLUME_CLICK,
-        ));
-        output.set_receives_default(true);
-        let audio_list = vec![
-            output,
-            Rc::new(SidebarEntry::new(
-                "Input",
-                "audio-input-microphone-symbolic",
-                Categories::Audio,
-                true,
-                HANDLE_MICROPHONE_CLICK,
-            )),
-        ];
-
-        sidebar_entries.push((
-            Rc::new(SidebarEntry::new(
-                "Audio",
-                "audio-headset-symbolic",
-                Categories::Audio,
-                false,
-                HANDLE_AUDIO_CLICK,
-            )),
-            audio_list,
-        ));
-
-        // uncommented when implemented
-        // let peripheralsList = vec![
-        //     SidebarEntry::new(
-        //         "Displays",
-        //         "video-display-symbolic",
-        //         Categories::Peripherals,
-        //         true,
-        //         HANDLE_MONITOR_CLICK,
-        //     ),
-        //     SidebarEntry::new(
-        //         "Mouse",
-        //         "input-mouse-symbolic",
-        //         Categories::Peripherals,
-        //         true,
-        //         HANDLE_MOUSE_CLICK,
-        //     ),
-        //     SidebarEntry::new(
-        //         "Keyboard",
-        //         "input-keyboard-symbolic",
-        //         Categories::Peripherals,
-        //         true,
-        //         HANDLE_KEYBOARD_CLICK,
-        //     ),
-        // ];
-
-        // let home = SidebarEntry::new(
-        //     "Home",
-        //     "preferences-system-devices-symbolic",
-        //     Categories::Peripherals,
-        //     false,
-        //     HANDLE_VOLUME_CLICK,
-        // );
-        //
-        // sidebar_entries.push((home, Vec::new()));
-
-        (HANDLE_VOLUME_CLICK)(
-            self_imp.listeners.clone(),
-            self_imp.reset_main.clone(),
-            self_imp.position.clone(),
-        );
-
-        self_imp
-            .reset_sidebar_list
-            .connect_row_activated(clone!(@ weak self_imp => move |_, _| {
-                self_imp.reset_search_entry.set_text("");
-            }));
-
-        for (main_entry, sub_entries) in sidebar_entries.iter() {
-            self_imp.reset_sidebar_list.append(&**main_entry);
-            for sub_entry in sub_entries {
-                // TODO change this to home when home offers dynamic selection
-                // this is just a placeholder for now, hence hardcoded
-                if &*sub_entry.imp().name.borrow() == "Output" {
-                    self_imp.reset_sidebar_list.append(&**sub_entry);
-                    self_imp.default_entry.replace(Some(sub_entry.clone()));
-                    sub_entry.grab_focus();
-                    sub_entry.set_state_flags(StateFlags::SELECTED, false);
-                } else {
-                    self_imp.reset_sidebar_list.append(&**sub_entry);
-                }
-            }
-            let separator = gtk::Separator::builder()
-                .margin_bottom(3)
-                .margin_top(3)
-                .orientation(Orientation::Horizontal)
-                .accessible_role(AccessibleRole::Separator)
-                .can_focus(false)
-                .build();
-            let separator_row = ListBoxRow::builder()
-                .child(&separator)
-                .selectable(false)
-                .activatable(false)
-                .can_target(false)
-                // .focusable(false)
-                .accessible_role(AccessibleRole::Separator)
-                .build();
-            // TODO how to simply skip this ?
-            self_imp.reset_sidebar_list.append(&separator_row);
-        }
-    }
 }
+
 fn setup_callback(window: Rc<ReSetWindow>) -> Rc<ReSetWindow> {
     let self_imp = window.imp();
     let activated_ref = window.clone();
@@ -386,16 +348,71 @@ fn setup_callback(window: Rc<ReSetWindow>) -> Rc<ReSetWindow> {
                     *default_entry = None;
                 }
             }
-            let click_event = result.imp().on_click_event.borrow().on_click_event;
-            (click_event)(
-                imp.listeners.clone(),
-                imp.reset_main.get(),
-                imp.position.clone(),
-            );
+            let click_event = result.imp().on_click_event.borrow();
+            if let Some(event) = click_event.on_click_event {
+                event(
+                    imp.listeners.clone(),
+                    imp.reset_main.get(),
+                    imp.position.clone(),
+                );
+            } else {
+                let event = click_event.on_plugin_click_event.clone();
+                event(
+                    imp.reset_main.get(),
+                    imp.position.clone(),
+                    result.imp().plugin_boxes.borrow().clone(),
+                );
+            }
         });
 
     self_imp.reset_close.connect_clicked(move |_| {
         close_ref.close();
     });
     window
+}
+
+pub fn create_separator() -> ListBoxRow {
+    let separator: gtk::Separator = gtk::Separator::builder()
+        .margin_bottom(3)
+        .margin_top(3)
+        .orientation(Orientation::Horizontal)
+        .accessible_role(AccessibleRole::Separator)
+        .can_focus(false)
+        .build();
+    ListBoxRow::builder()
+        .child(&separator)
+        .selectable(false)
+        .activatable(false)
+        .can_target(false)
+        .accessible_role(AccessibleRole::Separator)
+        .build()
+}
+
+fn handle_init(
+    listeners: Arc<Listeners>,
+    position: Rc<RefCell<Position>>,
+    clicked_position: Position,
+) -> bool {
+    {
+        let mut pos_borrow = position.borrow_mut();
+        if *pos_borrow == clicked_position {
+            return true;
+        }
+        *pos_borrow = clicked_position;
+    }
+    listeners.stop_network_listener();
+    listeners.stop_audio_listener();
+    listeners.stop_bluetooth_listener();
+    false
+}
+
+fn wrap_in_flow_box_child(widget: SettingBox) -> FlowBoxChild {
+    let frame = Frame::new(None);
+    frame.set_child(Some(&widget));
+    frame.add_css_class("resetSettingFrame");
+    FlowBoxChild::builder()
+        .child(&frame)
+        .halign(Align::Fill)
+        .valign(Align::Start)
+        .build()
 }

@@ -1,7 +1,8 @@
 use adw::gdk::pango::EllipsizeMode;
 use adw::prelude::ListModelExtManual;
 use adw::{ActionRow, ComboRow};
-use glib::{Cast, Object};
+use glib::{Object};
+use glib::prelude::Cast;
 use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, WidgetExt};
 use gtk::{Align, SignalListItemFactory, StringObject};
 

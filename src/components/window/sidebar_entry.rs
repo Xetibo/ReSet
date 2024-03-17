@@ -1,14 +1,13 @@
-use std::cell::RefCell;
 use std::rc::Rc;
-use std::sync::Arc;
 
-use crate::components::base::utils::{Listeners, Position};
 use crate::components::window::sidebar_entry_impl;
-use crate::components::window::sidebar_entry_impl::{Categories, SidebarAction};
+use crate::components::window::sidebar_entry_impl::{SidebarAction};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::prelude::*;
-use gtk::FlowBox;
+use crate::components::plugin::function::{PluginSidebarInfo, ReSetSidebarInfo};
+
+use super::handle_sidebar_click::HANDLE_HOME;
 
 glib::wrapper! {
     pub struct SidebarEntry(ObjectSubclass<sidebar_entry_impl::SidebarEntry>)
@@ -17,37 +16,62 @@ glib::wrapper! {
 }
 
 impl SidebarEntry {
-    pub fn new(
-        entry_name: &str,
-        icon_name: &str,
-        category: Categories,
-        is_subcategory: bool,
-        click_event: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>),
-    ) -> Self {
+    pub fn new(info: &ReSetSidebarInfo) -> Self {
         let entry: SidebarEntry = Object::builder().build();
         let entry_imp = entry.imp();
-        entry_imp.reset_sidebar_label.get().set_text(entry_name);
+        entry_imp.reset_sidebar_label.get().set_text(info.name);
         entry_imp
             .reset_sidebar_image
-            .set_from_icon_name(Some(icon_name));
-        entry_imp.category.set(category);
-        entry_imp.is_subcategory.set(is_subcategory);
+            .set_from_icon_name(Some(info.icon_name));
+        
+        match &info.parent {
+            None => {}
+            Some(parent) => {
+                let mut name = entry_imp.parent.borrow_mut();
+                *name = parent.to_string();
+                entry.child().unwrap().set_margin_start(30);
+            }
+        }
+        
         {
             let mut name = entry_imp.name.borrow_mut();
-            *name = String::from(entry_name);
+            *name = info.name.to_string();
             let mut action = entry_imp.on_click_event.borrow_mut();
             *action = SidebarAction {
-                on_click_event: click_event,
+                on_click_event: Some(info.click_event),
+                on_plugin_click_event: Rc::new(|_,_,_|{}),
             };
         }
-        Self::set_margin(&entry);
         entry
     }
-
-    fn set_margin(entry: &SidebarEntry) {
-        if entry.imp().is_subcategory.get() {
-            let option = entry.child().unwrap();
-            option.set_margin_start(30);
+    
+    pub fn new_plugin(info: &PluginSidebarInfo) -> Self {
+        let entry: SidebarEntry = Object::builder().build();
+        let entry_imp = entry.imp();
+        entry_imp.reset_sidebar_label.get().set_text(info.name);
+        entry_imp
+            .reset_sidebar_image
+            .set_from_icon_name(Some(info.icon_name));
+        entry_imp.plugin_boxes.borrow_mut().extend(info.plugin_boxes.clone());
+        
+        match &info.parent {
+            None => {}
+            Some(parent) => {
+                let mut name = entry_imp.parent.borrow_mut();
+                *name = parent.to_string();
+                entry.child().unwrap().set_margin_start(30);
+            }
         }
+        
+        {
+            let mut name = entry_imp.name.borrow_mut();
+            *name = info.name.to_string();
+            let mut action = entry_imp.on_click_event.borrow_mut();
+            *action = SidebarAction {
+                on_click_event: None,
+                on_plugin_click_event: info.click_event.clone(),
+            };
+        }
+        entry
     }
 }

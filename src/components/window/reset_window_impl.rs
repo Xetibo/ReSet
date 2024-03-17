@@ -2,9 +2,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;
 use adw::{Breakpoint, OverlaySplitView};
+use glib::prelude::StaticTypeExt;
 use glib::subclass::InitializingObject;
 use gtk::prelude::WidgetExt;
 use gtk::subclass::prelude::*;
