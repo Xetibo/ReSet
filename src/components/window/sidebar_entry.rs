@@ -16,6 +16,7 @@ glib::wrapper! {
 }
 
 impl SidebarEntry {
+    // TODO refactor new and new_plugin
     pub fn new(info: &ReSetSidebarInfo) -> Self {
         let entry: SidebarEntry = Object::builder().build();
         let entry_imp = entry.imp();
