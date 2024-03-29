@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 description = "A wip universal Linux settings application."
 repository = "https://github.com/Xetibo/ReSet"
-license = "GPL-3.0-only"
+license = "GPL-3.0-or-later"
 
 [dependencies]
 #reset_daemon = "1.1.0"
