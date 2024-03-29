@@ -11,8 +11,8 @@ use dbus::{blocking::Connection, Error};
 use gtk::gio;
 
 use crate::components::{
-    input::source_box::{start_input_box_listener, SourceBox},
-    output::sink_box::{start_output_box_listener, SinkBox},
+    audio::input::source_box::{start_source_box_listener, SourceBox},
+    audio::output::sink_box::{start_sink_box_listener, SinkBox},
     utils::{BASE, DBUS_PATH, WIRELESS},
 };
 
@@ -24,6 +24,7 @@ pub enum Position {
     Audio,
     AudioOutput,
     AudioInput,
+    Custom(String),
     #[default]
     Home,
 }
@@ -71,10 +72,10 @@ pub fn start_audio_listener(
         }
 
         if let Some(sink_box) = sink_box {
-            conn = start_output_box_listener(conn, sink_box);
+            conn = start_sink_box_listener(conn, sink_box);
         }
         if let Some(source_box) = source_box {
-            conn = start_input_box_listener(conn, source_box);
+            conn = start_source_box_listener(conn, source_box);
         }
 
         listeners.pulse_listener.store(true, Ordering::SeqCst);

@@ -2,14 +2,15 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use adw::glib::StaticTypeExt;
 use adw::subclass::prelude::AdwApplicationWindowImpl;
 use adw::{Breakpoint, OverlaySplitView};
+use glib::prelude::StaticTypeExt;
 use glib::subclass::InitializingObject;
 use gtk::prelude::WidgetExt;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
+use gtk::{Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
 
+use crate::components::base::error::ReSetError;
 use crate::components::base::utils::{Listeners, Position};
 use crate::components::wifi::wifi_box::WifiBox;
 use crate::components::window::reset_window;
@@ -38,6 +39,7 @@ pub struct ReSetWindow {
     pub default_entry: RefCell<Option<Rc<SidebarEntry>>>,
     pub listeners: Arc<Listeners>,
     pub position: Rc<RefCell<Position>>,
+    pub error_popup: ReSetError,
 }
 
 unsafe impl Send for ReSetWindow {}

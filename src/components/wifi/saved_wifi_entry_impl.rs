@@ -6,7 +6,7 @@ use std::cell::RefCell;
 
 use dbus::Path;
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate};
+use gtk::CompositeTemplate;
 
 use super::saved_wifi_entry;
 

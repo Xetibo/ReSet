@@ -5,11 +5,12 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
 
+use crate::components::audio::output::input_stream_entry::InputStreamEntry;
+use crate::components::base::error::ReSetError;
 use crate::components::base::list_entry::ListEntry;
-use crate::components::output::input_stream_entry::InputStreamEntry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Box, Button, CheckButton, CompositeTemplate, Label, StringList, TemplateChild};
 use gtk::{prelude::*, Scale};
+use gtk::{Box, Button, CheckButton, CompositeTemplate, Label, StringList};
 
 use super::sink_box;
 use super::sink_entry::SinkEntry;
@@ -45,6 +46,8 @@ pub struct SinkBox {
     pub reset_input_cards_back_button: TemplateChild<ActionRow>,
     #[template_child]
     pub reset_cards: TemplateChild<PreferencesGroup>,
+    #[template_child]
+    pub error: TemplateChild<ReSetError>,
     pub reset_default_check_button: Arc<CheckButton>,
     pub reset_default_sink: Arc<RefCell<Sink>>,
     pub reset_sink_list: SinkEntryMap,

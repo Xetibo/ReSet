@@ -1,35 +1,36 @@
 use adw::subclass::prelude::PreferencesGroupImpl;
 use adw::{ComboRow, PreferencesGroup};
-use re_set_lib::audio::audio_structures::OutputStream;
+use re_set_lib::audio::audio_structures::InputStream;
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::components::input::output_stream_entry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, Scale};
+use gtk::{Button, CompositeTemplate, Label, Scale};
+
+use super::input_stream_entry;
 
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]
-pub struct OutputStreamEntry {
+#[template(resource = "/org/Xetibo/ReSet/resetInputStreamEntry.ui")]
+pub struct InputStreamEntry {
     #[template_child]
-    pub reset_source_selection: TemplateChild<ComboRow>,
+    pub reset_sink_selection: TemplateChild<ComboRow>,
     #[template_child]
-    pub reset_source_mute: TemplateChild<Button>,
+    pub reset_sink_mute: TemplateChild<Button>,
     #[template_child]
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    pub stream: Arc<RefCell<OutputStream>>,
-    pub associated_source: Arc<RefCell<(u32, String)>>,
+    pub stream: Arc<RefCell<InputStream>>,
+    pub associated_sink: Arc<RefCell<(u32, String)>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }
 
 #[glib::object_subclass]
-impl ObjectSubclass for OutputStreamEntry {
+impl ObjectSubclass for InputStreamEntry {
     const ABSTRACT: bool = false;
-    const NAME: &'static str = "resetOutputStreamEntry";
-    type Type = output_stream_entry::OutputStreamEntry;
+    const NAME: &'static str = "resetInputStreamEntry";
+    type Type = input_stream_entry::InputStreamEntry;
     type ParentType = PreferencesGroup;
 
     fn class_init(klass: &mut Self::Class) {
@@ -41,8 +42,8 @@ impl ObjectSubclass for OutputStreamEntry {
     }
 }
 
-impl PreferencesGroupImpl for OutputStreamEntry {}
+impl PreferencesGroupImpl for InputStreamEntry {}
 
-impl ObjectImpl for OutputStreamEntry {}
+impl ObjectImpl for InputStreamEntry {}
 
-impl WidgetImpl for OutputStreamEntry {}
+impl WidgetImpl for InputStreamEntry {}

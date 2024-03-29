@@ -1,36 +1,36 @@
 use adw::subclass::prelude::PreferencesGroupImpl;
-use adw::{ComboRow, PreferencesGroup};
-use re_set_lib::audio::audio_structures::InputStream;
+use adw::{ActionRow, PreferencesGroup};
+use re_set_lib::audio::audio_structures::Sink;
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
+use crate::components::audio::output::sink_entry;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, Scale};
-
-use super::input_stream_entry;
+use gtk::{Button, CheckButton, CompositeTemplate, Label, Scale};
 
 #[derive(Default, CompositeTemplate)]
-#[template(resource = "/org/Xetibo/ReSet/resetInputStreamEntry.ui")]
-pub struct InputStreamEntry {
+#[template(resource = "/org/Xetibo/ReSet/resetSinkEntry.ui")]
+pub struct SinkEntry {
     #[template_child]
-    pub reset_sink_selection: TemplateChild<ComboRow>,
+    pub reset_sink_name: TemplateChild<ActionRow>,
+    #[template_child]
+    pub reset_selected_sink: TemplateChild<CheckButton>,
     #[template_child]
     pub reset_sink_mute: TemplateChild<Button>,
     #[template_child]
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-    pub stream: Arc<RefCell<InputStream>>,
-    pub associated_sink: Arc<RefCell<(u32, String)>>,
+    pub stream: Arc<RefCell<Sink>>,
     pub volume_time_stamp: RefCell<Option<SystemTime>>,
 }
 
 #[glib::object_subclass]
-impl ObjectSubclass for InputStreamEntry {
+impl ObjectSubclass for SinkEntry {
     const ABSTRACT: bool = false;
-    const NAME: &'static str = "resetInputStreamEntry";
-    type Type = input_stream_entry::InputStreamEntry;
+    const NAME: &'static str = "resetSinkEntry";
+    type Type = sink_entry::SinkEntry;
     type ParentType = PreferencesGroup;
 
     fn class_init(klass: &mut Self::Class) {
@@ -42,8 +42,8 @@ impl ObjectSubclass for InputStreamEntry {
     }
 }
 
-impl PreferencesGroupImpl for InputStreamEntry {}
+impl PreferencesGroupImpl for SinkEntry {}
 
-impl ObjectImpl for InputStreamEntry {}
+impl ObjectImpl for SinkEntry {}
 
-impl WidgetImpl for InputStreamEntry {}
+impl WidgetImpl for SinkEntry {}

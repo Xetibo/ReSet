@@ -1,7 +1,8 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use adw::glib;
+use crate::components::base::error_impl::show_error;
+use crate::components::utils::set_action_row_ellipsis;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, CheckButtonExt, PreferencesRowExt, RangeExt};
 use dbus::blocking::Connection;
@@ -10,11 +11,11 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
 use re_set_lib::audio::audio_structures::Sink;
-use crate::components::utils::set_action_row_ellipsis;
 
-use crate::components::utils::{AUDIO, DBUS_PATH, BASE};
+use crate::components::utils::{AUDIO, BASE, DBUS_PATH};
 
-use super::sink_box::{refresh_default_sink, SinkBox};
+use super::sink_box::SinkBox;
+use super::sink_box_utils::refresh_default_sink;
 use super::sink_entry_impl;
 
 glib::wrapper! {
@@ -42,6 +43,8 @@ impl SinkEntry {
             let volume = stream.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
+            let output_box_slider = output_box.clone();
+            let output_box_ref = output_box.clone();
             imp.reset_volume_percentage.set_text(&percentage);
             imp.reset_volume_slider.set_value(*volume as f64);
             imp.stream.replace(stream);
@@ -60,7 +63,7 @@ impl SinkEntry {
                         }
                         *time = Some(SystemTime::now());
                     }
-                     set_sink_volume(value, index, channels);
+                     set_sink_volume(value, index, channels, output_box_slider.clone());
                     Propagation::Proceed
                 }),
             );
@@ -75,7 +78,7 @@ impl SinkEntry {
                 if button.is_active() {
                     let name = name.clone();
                     gio::spawn_blocking(move || {
-                        let result = set_default_sink(name);
+                        let result = set_default_sink(name, output_box_ref.clone());
                         if result.is_none() {
                             return;
                         }
@@ -95,7 +98,7 @@ impl SinkEntry {
                         imp.reset_sink_mute
                            .set_icon_name("audio-volume-high-symbolic");
                     }
-                    toggle_sink_mute(stream.index, stream.muted);
+                    toggle_sink_mute(stream.index, stream.muted, output_box_ref.clone());
                 }));
             set_action_row_ellipsis(imp.reset_sink_name.get());
         }
@@ -103,55 +106,37 @@ impl SinkEntry {
     }
 }
 
-pub fn set_sink_volume(value: f64, index: u32, channels: u16) -> bool {
+pub fn set_sink_volume(value: f64, index: u32, channels: u16, output_box: Arc<SinkBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> = proxy.method_call(
-            AUDIO,
-            "SetSinkVolume",
-            (index, channels, value as u32),
-        );
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let res: Result<(), Error> =
+            proxy.method_call(AUDIO, "SetSinkVolume", (index, channels, value as u32));
+        if res.is_err() {
+            show_error::<SinkBox>(output_box, "Failed to set sink volume")
+        }
     });
     true
 }
 
-pub fn toggle_sink_mute(index: u32, muted: bool) -> bool {
+pub fn toggle_sink_mute(index: u32, muted: bool, output_box: Arc<SinkBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> =
-            proxy.method_call(AUDIO, "SetSinkMute", (index, muted));
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let res: Result<(), Error> = proxy.method_call(AUDIO, "SetSinkMute", (index, muted));
+        if res.is_err() {
+            show_error::<SinkBox>(output_box, "Failed to mute sink")
+        }
     });
     true
 }
 
-pub fn set_default_sink(name: Arc<String>) -> Option<Sink> {
+pub fn set_default_sink(name: Arc<String>, output_box: Arc<SinkBox>) -> Option<Sink> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Sink,), Error> =
-        proxy.method_call(AUDIO, "SetDefaultSink", (name.as_str(),));
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Sink,), Error> = proxy.method_call(AUDIO, "SetDefaultSink", (name.as_str(),));
     if res.is_err() {
+        show_error::<SinkBox>(output_box, "Failed to set default sink");
         return None;
     }
     Some(res.unwrap().0)

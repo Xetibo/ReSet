@@ -4,13 +4,13 @@ use std::time::Duration;
 
 use crate::components::utils::{BASE, DBUS_PATH, WIRELESS};
 use crate::components::wifi::utils::get_connection_settings;
-use adw::glib;
-use adw::glib::{Object, PropertySet};
+use adw::glib::{Object};
 use adw::prelude::{ActionRowExt, ButtonExt, EditableExt, PopoverExt, PreferencesRowExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::clone;
+use glib::property::PropertySet;
 use gtk::prelude::{BoxExt, ListBoxRowExt, WidgetExt};
 use gtk::{gio, Align, Button, Image, Orientation};
 use re_set_lib::network::network_structures::{AccessPoint, WifiStrength};

@@ -4,13 +4,14 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Duration;
 
+use adw::gio;
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ComboRowExt, PreferencesGroupExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
-use adw::{gio, glib};
 use dbus::arg::PropMap;
 use dbus::{Error, Path};
-use glib::{clone, PropertySet};
+use glib::{clone};
+use glib::property::PropertySet;
 use gtk::prelude::{ActionableExt, ButtonExt, EditableExt, ListBoxRowExt, WidgetExt};
 use re_set_lib::network::connection::{
     Connection, DNSMethod4, DNSMethod6, Enum, KeyManagement, TypeSettings,
@@ -389,15 +390,8 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
 fn set_connection_settings(path: Path<'static>, prop: HashMap<String, PropMap>) {
     gio::spawn_blocking(move || {
         let conn = dbus::blocking::Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(bool,), Error> = proxy.method_call(
-            WIRELESS,
-            "SetConnectionSettings",
-            (path, prop),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let _: Result<(bool,), Error> =
+            proxy.method_call(WIRELESS, "SetConnectionSettings", (path, prop));
     });
 }

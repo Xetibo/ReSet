@@ -1,4 +1,3 @@
-use adw::glib;
 use adw::glib::Object;
 use gtk::{gdk, Editable, Popover};
 

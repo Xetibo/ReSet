@@ -1,14 +1,15 @@
 use adw::{ActionRow, ComboRow, PreferencesGroup, SwitchRow};
 use dbus::Path;
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Switch};
 use gtk::{prelude::*, StringList};
+use gtk::{Button, CompositeTemplate, Switch};
 use re_set_lib::bluetooth::bluetooth_structures::BluetoothAdapter;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, RwLock};
 
+use crate::components::base::error::ReSetError;
 use crate::components::base::list_entry::ListEntry;
 use crate::components::bluetooth::bluetooth_box;
 use crate::components::bluetooth::bluetooth_entry::BluetoothEntry;
@@ -36,6 +37,8 @@ pub struct BluetoothBox {
     pub reset_bluetooth_discoverable_switch: TemplateChild<SwitchRow>,
     #[template_child]
     pub reset_bluetooth_pairable_switch: TemplateChild<SwitchRow>,
+    #[template_child]
+    pub error: TemplateChild<ReSetError>,
     pub available_devices: BluetoothMap,
     pub connected_devices: BluetoothMap,
     pub reset_bluetooth_adapters: Arc<RwLock<HashMap<String, (BluetoothAdapter, u32)>>>,

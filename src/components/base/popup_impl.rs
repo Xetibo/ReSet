@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::sync::Arc;
 
 use gtk::subclass::prelude::*;
-use gtk::{glib, Button, CompositeTemplate, Label, PasswordEntry, PasswordEntryBuffer, Popover};
+use gtk::{Button, CompositeTemplate, Label, PasswordEntry, PasswordEntryBuffer, Popover};
 
 use super::popup;
 

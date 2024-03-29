@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
-<cambalache-project version="0.13.1" target_tk="gtk-4.0">
+<cambalache-project version="0.17.1" target_tk="gtk-4.0">
   <ui>
 	(3,1,None,"resetMainWindow.ui",None,None,None,None,None,None,None),
 	(4,7,None,"resetWiFi.ui",None,None,None,None,None,None,None),
@@ -22,7 +22,8 @@
 	(21,1,None,"resetWifiOptions.ui",None,None,None,None,None,None,None),
 	(22,1,None,"resetWifiAddressEntry.ui",None,None,None,None,None,None,None),
 	(23,1,None,"resetWifiRouteEntry.ui",None,None,None,None,None,None,None),
-	(24,None,None,"resetShortcuts.ui",None,None,None,None,None,None,None)
+	(24,None,None,"resetShortcuts.ui",None,None,None,None,None,None,None),
+	(25,1,None,"resetError.ui",None,None,None,None,None,None,None)
   </ui>
   <ui_library>
 	(21,"gtk","4.12",None),
@@ -76,6 +77,7 @@
 	(4,206,"AdwActionRow","reset_available_networks",205,None,None,None,-1,None),
 	(4,207,"GtkImage",None,206,None,None,None,None,None),
 	(4,208,"AdwPreferencesGroup","reset_wifi_list",154,None,None,None,1,None),
+	(4,209,"resetError","error",7,None,None,None,2,None),
 	(5,12,"AdwActionRow","resetWifiEntry",None,None,None,None,-1,None),
 	(5,13,"resetPopup","reset_wifi_popup",12,None,None,None,None,None),
 	(6,1,"GtkListBoxRow","resetSidebarEntry",None,None,None,None,None,None),
@@ -126,6 +128,7 @@
 	(8,148,"GtkScale","reset_volume_slider",146,None,None,None,1,None),
 	(8,149,"GtkAdjustment",None,148,None,None,None,None,None),
 	(8,150,"GtkLabel","reset_volume_percentage",146,None,None,None,2,None),
+	(8,151,"resetError","error",1,None,None,None,2,None),
 	(10,1,"GtkBox","resetBluetooth",None,None,None,None,None,None),
 	(10,119,"AdwNavigationView",None,1,None,None,None,1,None),
 	(10,120,"AdwNavigationPage",None,119,None,None,None,None,None),
@@ -148,6 +151,7 @@
 	(10,211,"AdwSwitchRow","reset_bluetooth_discoverable_switch",209,None,None,None,-1,None),
 	(10,212,"AdwActionRow","reset_bluetooth_main_tab",208,None,None,None,None,None),
 	(10,213,"GtkImage",None,212,None,None,None,None,None),
+	(10,214,"resetError","error",1,None,None,None,2,None),
 	(11,1,"AdwActionRow","resetBluetoothEntry",None,None,None,None,None,None),
 	(12,11,"GtkBox","resetAudioInput",None,None,None,None,None,None),
 	(12,12,"GtkLabel",None,11,None,None,None,None,None),
@@ -183,6 +187,7 @@
 	(12,83,"GtkScale","reset_volume_slider",81,None,None,None,1,None),
 	(12,84,"GtkAdjustment",None,83,None,None,None,None,None),
 	(12,85,"GtkLabel","reset_volume_percentage",81,None,None,None,2,None),
+	(12,86,"resetError","error",11,None,None,None,-1,None),
 	(13,22,"AdwPreferencesGroup","resetOutputStreamEntry",None,None,None,None,None,None),
 	(13,23,"AdwComboRow","reset_source_selection",22,None,None,None,None,None),
 	(13,26,"AdwActionRow",None,22,None,None,None,1,None),
@@ -303,7 +308,11 @@
 	(24,3,"GtkShortcutsGroup",None,2,None,None,None,-1,None),
 	(24,4,"GtkShortcutsShortcut",None,3,None,None,None,-1,None),
 	(24,5,"GtkShortcutsShortcut",None,3,None,None,None,-1,None),
-	(24,6,"GtkShortcutsShortcut",None,3,None,None,None,2,None)
+	(24,6,"GtkShortcutsShortcut",None,3,None,None,None,2,None),
+	(25,1,"GtkPopover","resetError",None,None,None,None,None,None),
+	(25,2,"GtkBox",None,1,None,None,None,None,None),
+	(25,3,"GtkLabel","reset_error_label",2,None,None,None,None,None),
+	(25,5,"GtkButton","reset_error_button",2,None,None,None,2,None)
   </object>
   <object_property>
 	(3,1,"GtkWidget","height-request","200",None,None,None,None,None,None,None,None,None),
@@ -962,7 +971,14 @@
 	(24,6,"GtkShortcutsShortcut","accelerator","&lt;Ctrl&gt;H",None,None,None,None,None,None,None,None,None),
 	(24,6,"GtkShortcutsShortcut","action-name","win.about",None,None,None,None,None,None,None,None,None),
 	(24,6,"GtkShortcutsShortcut","icon-set","True",None,None,None,None,None,None,None,None,None),
-	(24,6,"GtkShortcutsShortcut","title","Show about window",None,None,None,None,None,None,None,None,None)
+	(24,6,"GtkShortcutsShortcut","title","Show about window",None,None,None,None,None,None,None,None,None),
+	(25,2,"GtkBox","homogeneous","True",None,None,None,None,None,None,None,None,None),
+	(25,2,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
+	(25,5,"GtkButton","label","ok",None,None,None,None,None,None,None,None,None),
+	(25,5,"GtkWidget","margin-bottom","5",None,None,None,None,None,None,None,None,None),
+	(25,5,"GtkWidget","margin-end","5",None,None,None,None,None,None,None,None,None),
+	(25,5,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
+	(25,5,"GtkWidget","margin-top","5",None,None,None,None,None,None,None,None,None)
   </object_property>
   <object_data>
 	(3,42,"GtkWidget",1,1,None,None,None,None,None,None),

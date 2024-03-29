@@ -3,8 +3,8 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use glib::subclass::InitializingObject;
+use gtk::{CompositeTemplate, FlowBox, Image, Label, ListBoxRow};
 use gtk::subclass::prelude::*;
-use gtk::{glib, CompositeTemplate, FlowBox, Image, Label, ListBoxRow};
 
 use crate::components::base::utils::{Listeners, Position};
 use crate::components::window::handle_sidebar_click::HANDLE_HOME;
@@ -26,20 +26,22 @@ pub struct SidebarEntry {
     pub reset_sidebar_label: TemplateChild<Label>,
     #[template_child]
     pub reset_sidebar_image: TemplateChild<Image>,
-    pub category: Cell<Categories>,
-    pub is_subcategory: Cell<bool>,
+    pub parent: RefCell<String>,
     pub on_click_event: RefCell<SidebarAction>,
+    pub plugin_boxes: RefCell<Vec<gtk::Box>>,
     pub name: RefCell<String>,
 }
 
 pub struct SidebarAction {
-    pub on_click_event: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>),
+    pub on_click_event: Option<fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>)>,
+    pub on_plugin_click_event: Rc<dyn Fn(FlowBox, Rc<RefCell<Position>>, Vec<gtk::Box>)>,
 }
 
 impl Default for SidebarAction {
     fn default() -> Self {
         Self {
-            on_click_event: HANDLE_HOME,
+            on_click_event: Some(HANDLE_HOME),
+            on_plugin_click_event: Rc::new(|_,_,_|{}),
         }
     }
 }

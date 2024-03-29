@@ -1,16 +1,17 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use crate::components::base::error_impl::show_error;
 use crate::components::utils::{
     create_dropdown_label_factory, set_combo_row_ellipsis, AUDIO, BASE, DBUS_PATH,
 };
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
-use glib::{clone, Cast, Propagation};
+use glib::{clone, Propagation};
+use glib::prelude::Cast;
 use gtk::{gio, StringObject};
 use re_set_lib::audio::audio_structures::OutputStream;
 
@@ -30,6 +31,9 @@ impl OutputStreamEntry {
     pub fn new(source_box: Arc<SourceBox>, stream: OutputStream) -> Self {
         let obj: Self = Object::builder().build();
         // TODO use event callback for progress bar -> this is the "im speaking" indicator
+        let output_box_volume_ref = source_box.clone();
+        let output_box_mute_ref = source_box.clone();
+        let output_box_source_ref = source_box.clone();
         {
             let index = stream.index;
             let box_imp = source_box.imp();
@@ -66,7 +70,7 @@ impl OutputStreamEntry {
                         }
                         *time = Some(SystemTime::now());
                     }
-                    set_outputstream_volume(value, index, channels);
+                    set_outputstream_volume(value, index, channels, output_box_volume_ref.clone());
                     Propagation::Proceed
                 }),
             );
@@ -118,7 +122,7 @@ impl OutputStreamEntry {
                     }
                     let stream = stream.unwrap();
                     let source = source.unwrap().0;
-                    set_source_of_output_stream(stream.index, source);
+                    set_source_of_output_stream(stream.index, source, output_box_source_ref.clone());
                 }),
             );
             imp.reset_source_mute
@@ -139,53 +143,56 @@ impl OutputStreamEntry {
                         imp.reset_source_mute
                            .set_icon_name("audio-input-microphone-symbolic");
                     }
-                    toggle_output_stream_mute(index, muted);
+                    toggle_output_stream_mute(index, muted, output_box_mute_ref.clone());
                 }));
         }
         obj
     }
 }
 
-fn set_outputstream_volume(value: f64, index: u32, channels: u16) -> bool {
+fn set_outputstream_volume(
+    value: f64,
+    index: u32,
+    channels: u16,
+    input_box: Arc<SourceBox>,
+) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let _: Result<(), Error> = proxy.method_call(
+        let res: Result<(), Error> = proxy.method_call(
             AUDIO,
             "SetOutputStreamVolume",
             (index, channels, value as u32),
         );
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        if res.is_err() {
+            show_error::<SourceBox>(input_box.clone(), "Failed to set output stream volume");
+        }
     });
     true
 }
 
-fn toggle_output_stream_mute(index: u32, muted: bool) -> bool {
+fn toggle_output_stream_mute(index: u32, muted: bool, input_box: Arc<SourceBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let _: Result<(), Error> = proxy.method_call(AUDIO, "SetOutputStreamMute", (index, muted));
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        let res: Result<(), Error> =
+            proxy.method_call(AUDIO, "SetOutputStreamMute", (index, muted));
+        if res.is_err() {
+            show_error::<SourceBox>(input_box.clone(), "Failed to mute output stream");
+        }
     });
     true
 }
 
-fn set_source_of_output_stream(stream: u32, source: u32) -> bool {
+fn set_source_of_output_stream(stream: u32, source: u32, input_box: Arc<SourceBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let _: Result<(bool,), Error> =
+        let res: Result<(bool,), Error> =
             proxy.method_call(AUDIO, "SetSourceOfOutputStream", (stream, source));
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        if res.is_err() {
+            show_error::<SourceBox>(input_box.clone(), "Failed to set source of output stream");
+        }
     });
     true
 }

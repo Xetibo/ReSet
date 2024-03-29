@@ -1,19 +1,19 @@
 use std::time::Duration;
 
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::Error;
 use glib::subclass::types::ObjectSubclassIsExt;
-use glib::{clone, Cast};
+use glib::{clone};
+use glib::prelude::Cast;
 use gtk::{gio, StringList, StringObject};
 
 use components::utils::create_dropdown_label_factory;
 use re_set_lib::audio::audio_structures::Card;
 
 use crate::components;
-use crate::components::utils::{BASE, DBUS_PATH, AUDIO};
+use crate::components::utils::{AUDIO, BASE, DBUS_PATH};
 
 use super::card_entry_impl;
 
@@ -66,11 +66,7 @@ impl CardEntry {
 fn set_card_profile_of_device(device_index: u32, profile_name: String) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
         let _: Result<(), Error> = proxy.method_call(
             AUDIO,
             "SetCardProfileOfDevice",

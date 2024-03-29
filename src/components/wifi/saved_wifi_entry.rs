@@ -6,13 +6,13 @@ use crate::components::wifi::saved_wifi_entry_impl;
 use crate::components::wifi::utils::get_connection_settings;
 use crate::components::wifi::wifi_box_impl::WifiBox;
 use crate::components::wifi::wifi_options::WifiOptions;
-use adw::glib;
 use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ButtonExt, PreferencesGroupExt, PreferencesRowExt};
 use dbus::blocking::Connection;
 use dbus::{Error, Path};
 use glib::subclass::types::ObjectSubclassIsExt;
-use glib::{clone, PropertySet};
+use glib::{clone};
+use glib::property::PropertySet;
 use gtk::prelude::{BoxExt, ListBoxRowExt};
 use gtk::{gio, Align, Button, Orientation};
 
@@ -66,12 +66,7 @@ impl SavedWifiEntry {
 fn delete_connection(path: Path<'static>) {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> =
-            proxy.method_call(WIRELESS, "DeleteConnection", (path,));
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let _: Result<(), Error> = proxy.method_call(WIRELESS, "DeleteConnection", (path,));
     });
 }

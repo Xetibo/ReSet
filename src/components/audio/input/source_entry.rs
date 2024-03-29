@@ -1,7 +1,8 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use adw::glib;
+use crate::components::base::error_impl::show_error;
+use crate::components::utils::set_action_row_ellipsis;
 use adw::glib::Object;
 use adw::prelude::{ButtonExt, CheckButtonExt, PreferencesRowExt, RangeExt};
 use dbus::blocking::Connection;
@@ -10,11 +11,11 @@ use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
 use gtk::{gio, CheckButton};
 use re_set_lib::audio::audio_structures::Source;
-use crate::components::utils::set_action_row_ellipsis;
 
-use crate::components::utils::{BASE, DBUS_PATH, AUDIO};
+use crate::components::utils::{AUDIO, BASE, DBUS_PATH};
 
-use super::source_box::{refresh_default_source, SourceBox};
+use super::source_box::SourceBox;
+use super::source_box_utils::refresh_default_source;
 use super::source_entry_impl;
 
 glib::wrapper! {
@@ -43,6 +44,8 @@ impl SourceEntry {
             let volume = source.volume.first().unwrap_or(&0_u32);
             let fraction = (*volume as f64 / 655.36).round();
             let percentage = (fraction).to_string() + "%";
+            let input_box_slider = input_box.clone();
+            let input_box_ref = input_box.clone();
             imp.reset_volume_percentage.set_text(&percentage);
             imp.reset_volume_slider.set_value(*volume as f64);
             imp.source.replace(source);
@@ -63,7 +66,7 @@ impl SourceEntry {
                         }
                         *time = Some(SystemTime::now());
                     }
-                    set_source_volume(value, index, channels);
+                    set_source_volume(value, index, channels, input_box_slider.clone());
                     Propagation::Proceed
                 }),
             );
@@ -78,7 +81,7 @@ impl SourceEntry {
                 if button.is_active() {
                     let name = name.clone();
                     gio::spawn_blocking(move || {
-                        let result = set_default_source(name);
+                        let result = set_default_source(name, input_box.clone());
                         if result.is_none() {
                             return;
                         }
@@ -97,7 +100,7 @@ impl SourceEntry {
                         imp.reset_source_mute
                            .set_icon_name("audio-input-microphone-symbolic");
                     }
-                    toggle_source_mute(source.index, source.muted);
+                    toggle_source_mute(source.index, source.muted, input_box_ref.clone());
                 }));
             set_action_row_ellipsis(imp.reset_source_name.get());
         }
@@ -105,58 +108,39 @@ impl SourceEntry {
     }
 }
 
-pub fn set_source_volume(value: f64, index: u32, channels: u16) -> bool {
+pub fn set_source_volume(value: f64, index: u32, channels: u16, input_box: Arc<SourceBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> = proxy.method_call(
-            AUDIO,
-            "SetSourceVolume",
-            (index, channels, value as u32),
-        );
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let res: Result<(), Error> =
+            proxy.method_call(AUDIO, "SetSourceVolume", (index, channels, value as u32));
+        if res.is_err() {
+            // TODO: also log this with LOG/ERROR
+            show_error::<SourceBox>(input_box.clone(), "Failed to set source volume");
+        }
     });
     true
 }
 
-pub fn toggle_source_mute(index: u32, muted: bool) -> bool {
+pub fn toggle_source_mute(index: u32, muted: bool, input_box: Arc<SourceBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(
-            BASE,
-            DBUS_PATH,
-            Duration::from_millis(1000),
-        );
-        let _: Result<(), Error> =
-            proxy.method_call(AUDIO, "SetSourceMute", (index, muted));
-        // if res.is_err() {
-        //     return false;
-        // }
-        // res.unwrap().0
+        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+        let res: Result<(), Error> = proxy.method_call(AUDIO, "SetSourceMute", (index, muted));
+        if res.is_err() {
+            show_error::<SourceBox>(input_box.clone(), "Failed to mute source");
+        }
     });
     true
 }
 
-pub fn set_default_source(name: Arc<String>) -> Option<Source> {
+pub fn set_default_source(name: Arc<String>, input_box: Arc<SourceBox>) -> Option<Source> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(
-        BASE,
-        DBUS_PATH,
-        Duration::from_millis(1000),
-    );
-    let res: Result<(Source,), Error> = proxy.method_call(
-        AUDIO,
-        "SetDefaultSource",
-        (name.as_str(),),
-    );
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Source,), Error> =
+        proxy.method_call(AUDIO, "SetDefaultSource", (name.as_str(),));
     if res.is_err() {
+        show_error::<SourceBox>(input_box.clone(), "Failed to set default source");
         return None;
     }
     Some(res.unwrap().0)
