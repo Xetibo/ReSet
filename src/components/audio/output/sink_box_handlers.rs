@@ -99,12 +99,12 @@ pub fn sink_added_handler(sink_box: Arc<SinkBox>, ir: SinkAdded) -> bool {
             if sink_box_imp.reset_default_sink.borrow().name == ir.sink.name {
                 is_default = true;
             }
-            let sink_entry = Arc::new(SinkEntry::new(
+            let sink_entry = SinkEntry::new(
                 is_default,
                 sink_box_imp.reset_default_check_button.clone(),
                 ir.sink,
                 sink_box.clone(),
-            ));
+            );
             let sink_clone = sink_entry.clone();
             let entry = Arc::new(ListEntry::new(&*sink_entry));
             entry.set_activatable(false);

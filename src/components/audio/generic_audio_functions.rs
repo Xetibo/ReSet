@@ -2,13 +2,13 @@ use std::{sync::Arc, time::Duration};
 
 use adw::traits::ComboRowExt;
 use dbus::{
-    arg::{Arg, Get, ReadAll},
+    arg::{Arg, Get},
     blocking::Connection,
     Error,
 };
 use gtk::{
     gio,
-    prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt},
+    prelude::{ButtonExt, CheckButtonExt, RangeExt},
 };
 use re_set_lib::audio::audio_structures::AudioObject;
 

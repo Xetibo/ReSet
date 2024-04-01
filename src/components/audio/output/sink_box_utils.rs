@@ -56,12 +56,12 @@ pub fn populate_sink_information(sink_box: Arc<SinkBox>, sinks: Vec<Sink>) {
                     if sink_box_imp.reset_default_sink.borrow().name == sink.name {
                         is_default = true;
                     }
-                    let sink_entry = Arc::new(SinkEntry::new(
+                    let sink_entry = SinkEntry::new(
                         is_default,
                         sink_box_imp.reset_default_check_button.clone(),
                         sink,
                         sink_box.clone(),
-                    ));
+                    );
                     let sink_clone = sink_entry.clone();
                     let entry = Arc::new(ListEntry::new(&*sink_entry));
                     entry.set_activatable(false);

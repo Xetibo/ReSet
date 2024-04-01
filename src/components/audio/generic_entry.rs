@@ -1,21 +1,18 @@
 use std::collections::HashMap;
-use std::rc::Rc;
 use std::sync::RwLock;
 use std::time::Duration;
 use std::{cell::RefCell, sync::Arc, time::SystemTime};
 
 use adw::prelude::{ButtonExt, CheckButtonExt, PreferencesRowExt, RangeExt};
 use adw::{ActionRow, ComboRow, PreferencesGroup};
-use dbus::arg::{Arg, Get, ReadAll};
-use glib::clone::{Downgrade, Upgrade};
-use glib::{clone, Propagation};
+use dbus::arg::{Arg, Get};
+use glib::Propagation;
 use glib::{
-    object::{IsA, IsClass, ObjectSubclassIs, ParentClassIs},
-    subclass::types::{InstanceStruct, InstanceStructExt, ObjectSubclass, ObjectSubclassType},
+    object::{IsA, IsClass},
     Object,
 };
 use gtk::{gio, Button, CheckButton, Label, Scale, StringList, TemplateChild};
-use re_set_lib::audio::audio_structures::{AudioObject, Source, Volume};
+use re_set_lib::audio::audio_structures::AudioObject;
 
 use crate::components::base::error::ReSetError;
 use crate::components::base::error_impl::ReSetErrorImpl;
@@ -35,9 +32,11 @@ pub trait AudioBox<AudioBoxImpl> {
 }
 
 pub type AudioEntryMap<T> = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<T>, String)>>>;
+#[allow(dead_code)]
 pub type AudioStreamEntryMap<T> = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<T>)>>>;
 pub type AudioMap = Arc<RwLock<HashMap<String, (u32, String)>>>;
 
+#[allow(dead_code)]
 pub trait AudioBoxImpl<OBJ, ENTRY, STREAMENTRY> {
     fn audio_object_row(&self) -> &TemplateChild<ActionRow>;
     fn cards_row(&self) -> &TemplateChild<ActionRow>;

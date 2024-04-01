@@ -17,6 +17,7 @@ use glib::Variant;
 use gtk::gio;
 use gtk::prelude::ActionableExt;
 
+use crate::components::audio::generic_entry::AudioBox;
 use crate::components::base::error_impl::ReSetErrorImpl;
 use crate::components::utils::BASE;
 use crate::components::utils::DBUS_PATH;
@@ -49,6 +50,12 @@ impl ReSetErrorImpl for SinkBox {
         &self,
     ) -> &gtk::subclass::prelude::TemplateChild<crate::components::base::error::ReSetError> {
         &self.imp().error
+    }
+}
+
+impl AudioBox<super::sink_box_impl::SinkBox> for SinkBox {
+    fn box_imp(&self) -> &super::sink_box_impl::SinkBox {
+        self.imp()
     }
 }
 
