@@ -4,8 +4,8 @@ use std::{
 };
 
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
-use glib::{subclass::types::ObjectSubclassIsExt, ControlFlow, Propagation};
 use glib::prelude::Cast;
+use glib::{subclass::types::ObjectSubclassIsExt, ControlFlow, Propagation};
 use gtk::{
     gio,
     prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt},

@@ -50,7 +50,7 @@ impl TSideBarInfo for ReSetSidebarInfo {
     }
 
     fn plugin_click_event(&self) -> PluginClickEvent {
-       Rc::new(|_,_,_| {}) 
+        Rc::new(|_, _, _| {})
     }
 
     fn plugin_boxes(&self) -> Option<Vec<gtk::Box>> {
@@ -66,7 +66,6 @@ pub struct PluginSidebarInfo {
     pub click_event: PluginClickEvent,
     pub plugin_boxes: Vec<gtk::Box>,
 }
-
 
 impl TSideBarInfo for PluginSidebarInfo {
     fn name(&self) -> &'static str {
@@ -93,4 +92,3 @@ impl TSideBarInfo for PluginSidebarInfo {
         Some(self.plugin_boxes.clone())
     }
 }
-

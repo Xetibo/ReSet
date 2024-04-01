@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use crate::components::utils::{BASE, DBUS_PATH, WIRELESS};
 use crate::components::wifi::utils::get_connection_settings;
-use adw::glib::{Object};
+use adw::glib::Object;
 use adw::prelude::{ActionRowExt, ButtonExt, EditableExt, PopoverExt, PreferencesRowExt};
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use dbus::blocking::Connection;
