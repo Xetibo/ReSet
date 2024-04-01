@@ -37,12 +37,12 @@ pub fn source_added_handler(source_box: Arc<SourceBox>, ir: SourceAdded) -> bool
             if source_box_imp.reset_default_source.borrow().name == ir.source.name {
                 is_default = true;
             }
-            let source_entry = Arc::new(SourceEntry::new(
+            let source_entry = SourceEntry::new(
                 is_default,
                 source_box_imp.reset_default_check_button.clone(),
                 ir.source,
                 source_box.clone(),
-            ));
+            );
             let source_clone = source_entry.clone();
             let entry = Arc::new(ListEntry::new(&*source_entry));
             entry.set_activatable(false);

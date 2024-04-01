@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
 
+use crate::components::audio::generic_entry::AudioBoxImpl;
 use crate::components::audio::input::source_box;
 use crate::components::base::error::ReSetError;
 use crate::components::base::list_entry::ListEntry;
@@ -35,7 +36,6 @@ pub struct SourceBox {
     pub reset_volume_slider: TemplateChild<Scale>,
     #[template_child]
     pub reset_volume_percentage: TemplateChild<Label>,
-
     #[template_child]
     pub reset_sources: TemplateChild<gtk::Box>,
     #[template_child]
@@ -93,3 +93,89 @@ impl WidgetImpl for SourceBox {}
 impl WindowImpl for SourceBox {}
 
 impl ApplicationWindowImpl for SourceBox {}
+
+impl AudioBoxImpl<Source, SourceEntry, super::source_entry_impl::SourceEntry> for SourceBox {
+    fn audio_object_row(&self) -> &TemplateChild<ActionRow> {
+        &self.reset_source_row
+    }
+
+    fn cards_row(&self) -> &TemplateChild<ActionRow> {
+        &self.reset_cards_row
+    }
+
+    fn audio_object_dropdown(&self) -> &TemplateChild<ComboRow> {
+        &self.reset_source_dropdown
+    }
+
+    fn audio_object_mute(&self) -> &TemplateChild<Button> {
+        &self.reset_source_mute
+    }
+
+    fn volume_slider(&self) -> &TemplateChild<Scale> {
+        &self.reset_volume_slider
+    }
+
+    fn volume_percentage(&self) -> &TemplateChild<Label> {
+        &self.reset_volume_percentage
+    }
+
+    fn audio_objects(&self) -> &TemplateChild<gtk::Box> {
+        &self.reset_sources
+    }
+
+    fn audio_object_stream_button(&self) -> &TemplateChild<ActionRow> {
+        &self.reset_output_stream_button
+    }
+
+    fn audio_object_streams(&self) -> &TemplateChild<gtk::Box> {
+        &self.reset_output_streams
+    }
+
+    fn cards_button(&self) -> &TemplateChild<ActionRow> {
+        &self.reset_input_cards_back_button
+    }
+
+    fn cards(&self) -> &TemplateChild<PreferencesGroup> {
+        &self.reset_cards
+    }
+
+    fn error(&self) -> &TemplateChild<ReSetError> {
+        &self.error
+    }
+
+    fn default_check_button(&self) -> Arc<CheckButton> {
+        self.reset_default_check_button.clone()
+    }
+
+    fn default_audio_object(&self) -> Arc<RefCell<Source>> {
+        self.reset_default_source.clone()
+    }
+
+    fn audio_object_list(
+        &self,
+    ) -> &crate::components::audio::generic_entry::AudioEntryMap<SourceEntry> {
+        &self.reset_source_list
+    }
+
+    // fn audio_object_stream_list(
+    //     &self,
+    // ) -> &crate::components::audio::generic_entry::AudioStreamEntryMap<SourceEntry> {
+    //     &
+    // }
+
+    fn model_list(&self) -> Arc<RwLock<StringList>> {
+        self.reset_model_list.clone()
+    }
+
+    fn model_index(&self) -> Arc<RwLock<u32>> {
+        self.reset_model_index.clone()
+    }
+
+    fn source_map(&self) -> &crate::components::audio::generic_entry::AudioMap {
+        &self.reset_source_map
+    }
+
+    fn volume_time_stamp(&self) -> &RefCell<Option<SystemTime>> {
+        &self.volume_time_stamp
+    }
+}

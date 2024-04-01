@@ -14,6 +14,7 @@ use glib::Variant;
 use gtk::gio;
 use gtk::prelude::ActionableExt;
 
+use crate::components::audio::generic_entry::AudioBox;
 use crate::components::audio::input::source_box_impl;
 use crate::components::base::error::{self};
 use crate::components::base::error_impl::ReSetErrorImpl;
@@ -42,6 +43,12 @@ unsafe impl Sync for SourceBox {}
 impl ReSetErrorImpl for SourceBox {
     fn error(&self) -> &gtk::subclass::prelude::TemplateChild<error::ReSetError> {
         &self.imp().error
+    }
+}
+
+impl AudioBox<super::source_box_impl::SourceBox> for SourceBox {
+    fn box_imp(&self) -> &super::source_box_impl::SourceBox {
+        self.imp()
     }
 }
 

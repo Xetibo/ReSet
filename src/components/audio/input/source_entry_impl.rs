@@ -8,6 +8,8 @@ use std::time::SystemTime;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CheckButton, CompositeTemplate, Label, Scale};
 
+use crate::components::audio::generic_entry::AudioImpl;
+
 use super::source_entry;
 
 #[derive(Default, CompositeTemplate)]
@@ -48,3 +50,45 @@ impl PreferencesGroupImpl for SourceEntry {}
 impl ObjectImpl for SourceEntry {}
 
 impl WidgetImpl for SourceEntry {}
+
+impl AudioImpl<Source> for SourceEntry {
+    fn name(&self) -> &TemplateChild<ActionRow> {
+        &self.reset_source_name
+    }
+
+    fn selected_audio_object(&self) -> &TemplateChild<CheckButton> {
+        &self.reset_selected_source
+    }
+
+    fn mute(&self) -> &TemplateChild<Button> {
+        &self.reset_source_mute
+    }
+
+    fn volume_slider(&self) -> &TemplateChild<Scale> {
+        &self.reset_volume_slider
+    }
+
+    fn volume_percentage(&self) -> &TemplateChild<Label> {
+        &self.reset_volume_percentage
+    }
+
+    fn audio_object(&self) -> Arc<RefCell<Source>> {
+        self.source.clone()
+    }
+
+    fn volume_time_stamp(&self) -> &RefCell<Option<SystemTime>> {
+        &self.volume_time_stamp
+    }
+
+    fn set_volume_fn(&self) -> (&'static str, &'static str) {
+        ("SetSourceVolume", "Failed to set set source volume")
+    }
+
+    fn set_audio_object_fn(&self) -> (&'static str, &'static str) {
+        ("SetDefaultSource", "Faield to set default source")
+    }
+
+    fn set_mute_fn(&self) -> (&'static str, &'static str) {
+        ("SetSourceMute", "Failed to mute source")
+    }
+}
