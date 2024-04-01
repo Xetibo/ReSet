@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use adw::traits::ComboRowExt;
+use adw::prelude::ComboRowExt;
 use gtk::prelude::{ButtonExt, CheckButtonExt, RangeExt};
 use re_set_lib::audio::audio_structures::{TAudioObject, TAudioStreamObject};
 
