@@ -1,90 +1,25 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 use adw::traits::ComboRowExt;
-use dbus::{
-    arg::{Arg, Get},
-    blocking::Connection,
-    Error,
+use gtk::prelude::{ButtonExt, CheckButtonExt, RangeExt};
+use re_set_lib::audio::audio_structures::{TAudioObject, TAudioStreamObject};
+
+use super::generic_entry::{
+    TAudioBox, TAudioBoxImpl, TAudioEntry, TAudioEntryImpl, TAudioStream, TAudioStreamImpl,
 };
-use gtk::{
-    gio,
-    prelude::{ButtonExt, CheckButtonExt, RangeExt},
-};
-use re_set_lib::audio::audio_structures::AudioObject;
-
-use crate::components::{
-    base::error_impl::{show_error, ReSetErrorImpl},
-    utils::{AUDIO, BASE, DBUS_PATH},
-};
-
-use super::generic_entry::{Audio, AudioBox, AudioBoxImpl, AudioImpl, DBusFunction};
-
-pub fn set_volume<T: ReSetErrorImpl + 'static>(
-    value: f64,
-    index: u32,
-    channels: u16,
-    reset_box: Arc<T>,
-    function: &'static DBusFunction,
-) -> bool {
-    gio::spawn_blocking(move || {
-        let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let res: Result<(), Error> =
-            proxy.method_call(AUDIO, function.function, (index, channels, value as u32));
-        if res.is_err() {
-            // TODO: also log this with LOG/ERROR
-            show_error::<T>(reset_box.clone(), function.error);
-        }
-    });
-    true
-}
-
-pub fn toggle_audio_object_mute<T: ReSetErrorImpl + 'static>(
-    index: u32,
-    muted: bool,
-    input_box: Arc<T>,
-    function: &'static DBusFunction,
-) -> bool {
-    gio::spawn_blocking(move || {
-        let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let res: Result<(), Error> = proxy.method_call(AUDIO, function.function, (index, muted));
-        if res.is_err() {
-            // TODO: also log this with LOG/ERROR
-            show_error::<T>(input_box.clone(), function.error);
-        }
-    });
-    true
-}
-
-pub fn set_default_audio_object<T, R>(
-    name: Arc<String>,
-    input_box: Arc<T>,
-    function: &'static DBusFunction,
-) -> Option<R>
-where
-    T: ReSetErrorImpl + 'static,
-    R: Arg + for<'z> Get<'z>,
-{
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let res: Result<(R,), Error> = proxy.method_call(AUDIO, function.function, (name.as_str(),));
-    if res.is_err() {
-        show_error::<T>(input_box.clone(), function.error);
-        return None;
-    }
-    Some(res.unwrap().0)
-}
 
 pub fn refresh_default_audio_object<
-    A: AudioBox<BoxImpl> + Send + Sync + 'static,
-    OBJ: AudioObject + Send + Sync + 'static,
-    Entry: Audio<OBJ, EntryImpl>,
-    EntryImpl: AudioImpl<OBJ>,
-    BoxImpl: AudioBoxImpl<OBJ, Entry, EntryImpl>,
+    AudioObject: TAudioObject + Send + Sync + 'static,
+    StreamObject: TAudioStreamObject + Send + Sync + 'static,
+    AudioEntry: TAudioEntry<AudioEntryImpl>,
+    AudioEntryImpl: TAudioEntryImpl<AudioObject>,
+    AudioStream: TAudioStream<AudioStreamImpl>,
+    AudioStreamImpl: TAudioStreamImpl<AudioObject, StreamObject>,
+    AudioBox: TAudioBox<AudioBoxImpl> + Send + Sync + 'static,
+    AudioBoxImpl: TAudioBoxImpl<AudioObject, AudioEntry, AudioStream>,
 >(
-    new_audio_object: OBJ,
-    reset_box: Arc<A>,
+    new_audio_object: AudioObject,
+    reset_box: Arc<AudioBox>,
     entry: bool,
 ) {
     let volume = *new_audio_object.volume().first().unwrap_or(&0_u32);

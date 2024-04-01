@@ -1,10 +1,11 @@
 use adw::subclass::prelude::PreferencesGroupImpl;
 use adw::{ComboRow, PreferencesGroup};
-use re_set_lib::audio::audio_structures::OutputStream;
+use re_set_lib::audio::audio_structures::{OutputStream, Source};
 use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
+use crate::components::audio::generic_entry::TAudioStreamImpl;
 use crate::components::audio::input::output_stream_entry;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CompositeTemplate, Label, Scale};
@@ -46,3 +47,33 @@ impl PreferencesGroupImpl for OutputStreamEntry {}
 impl ObjectImpl for OutputStreamEntry {}
 
 impl WidgetImpl for OutputStreamEntry {}
+
+impl TAudioStreamImpl<Source, OutputStream> for OutputStreamEntry {
+    fn audio_object_selection(&self) -> &TemplateChild<ComboRow> {
+        &self.reset_source_selection
+    }
+
+    fn audio_object_mute(&self) -> &TemplateChild<Button> {
+        &self.reset_source_mute
+    }
+
+    fn volume_slider(&self) -> &TemplateChild<Scale> {
+        &self.reset_volume_slider
+    }
+
+    fn volume_percentage(&self) -> &TemplateChild<Label> {
+        &self.reset_volume_percentage
+    }
+
+    fn stream_object(&self) -> Arc<RefCell<OutputStream>> {
+        self.stream.clone()
+    }
+
+    fn associated_audio_object(&self) -> Arc<RefCell<(u32, String)>> {
+        self.associated_source.clone()
+    }
+
+    fn volume_time_stamp(&self) -> &RefCell<Option<SystemTime>> {
+        &self.volume_time_stamp
+    }
+}

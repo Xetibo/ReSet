@@ -11,19 +11,22 @@ use gtk::{
     prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt},
     StringObject,
 };
-use re_set_lib::signals::{
-    OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
-    SourceRemoved,
+use re_set_lib::{
+    audio::audio_structures::Source,
+    signals::{
+        OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
+        SourceRemoved,
+    },
 };
 
-use crate::components::{audio::generic_audio_functions::set_volume, base::list_entry::ListEntry};
+use crate::components::{audio::generic_utils::audio_dbus_call, base::list_entry::ListEntry};
 
 use super::{
     output_stream_entry::OutputStreamEntry,
     source_box::SourceBox,
     source_box_utils::{get_default_source_name, refresh_default_source},
-    source_const::SETVOLUME,
-    source_entry::{set_default_source, toggle_source_mute, SourceEntry},
+    source_const::{SETDEFAULT, SETMUTE, SETVOLUME},
+    source_entry::SourceEntry,
 };
 
 pub fn source_added_handler(source_box: Arc<SourceBox>, ir: SourceAdded) -> bool {
@@ -266,11 +269,15 @@ pub fn dropdown_handler(source_box: Arc<SourceBox>, dropdown: &adw::ComboRow) ->
     }
     let source = Arc::new(source.unwrap().1.clone());
     gio::spawn_blocking(move || {
-        let result = set_default_source(source, source_box_ref.clone());
+        let result = audio_dbus_call::<SourceBox, (Source,), (&String,)>(
+            source_box_ref.clone(),
+            (&source,),
+            &SETDEFAULT,
+        );
         if result.is_none() {
             return ControlFlow::Break;
         }
-        refresh_default_source(result.unwrap(), source_box_ref.clone(), false);
+        refresh_default_source(result.unwrap().0, source_box_ref.clone(), false);
         ControlFlow::Continue
     });
     ControlFlow::Continue
@@ -291,7 +298,11 @@ pub fn volume_slider_handler(source_box: Arc<SourceBox>, value: f64) -> Propagat
         }
         *time = Some(SystemTime::now());
     }
-    set_volume::<SourceBox>(value, index, channels, source_box.clone(), &SETVOLUME);
+    audio_dbus_call::<SourceBox, (), (u32, u16, u32)>(
+        source_box.clone(),
+        (index, channels, value as u32),
+        &SETVOLUME,
+    );
     Propagation::Proceed
 }
 
@@ -306,5 +317,9 @@ pub fn mute_clicked_handler(source_box_ref_mute: Arc<SourceBox>) {
         imp.reset_source_mute
             .set_icon_name("audio-input-microphone-symbolic");
     }
-    toggle_source_mute(source.index, source.muted, source_box_ref_mute.clone());
+    audio_dbus_call::<SourceBox, (), (u32, bool)>(
+        source_box_ref_mute.clone(),
+        (source.index, source.muted),
+        &SETMUTE,
+    );
 }

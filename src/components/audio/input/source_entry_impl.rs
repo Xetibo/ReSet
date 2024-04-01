@@ -8,7 +8,7 @@ use std::time::SystemTime;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CheckButton, CompositeTemplate, Label, Scale};
 
-use crate::components::audio::generic_entry::{AudioIcons, AudioImpl, DBusFunction};
+use crate::components::audio::generic_entry::{AudioIcons, TAudioEntryImpl, DBusFunction};
 
 use super::source_const::{ICONS, SETDEFAULT, SETMUTE, SETVOLUME};
 use super::source_entry;
@@ -52,7 +52,7 @@ impl ObjectImpl for SourceEntry {}
 
 impl WidgetImpl for SourceEntry {}
 
-impl AudioImpl<Source> for SourceEntry {
+impl TAudioEntryImpl<Source> for SourceEntry {
     fn name(&self) -> &TemplateChild<ActionRow> {
         &self.reset_source_name
     }

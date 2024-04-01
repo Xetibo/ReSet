@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use crate::components::audio::generic_entry::TAudioStream;
 use crate::components::base::error_impl::show_error;
 use crate::components::utils::{
     create_dropdown_label_factory, set_combo_row_ellipsis, AUDIO, BASE, DBUS_PATH,
@@ -26,6 +27,12 @@ glib::wrapper! {
 
 unsafe impl Send for OutputStreamEntry {}
 unsafe impl Sync for OutputStreamEntry {}
+
+impl TAudioStream<super::output_stream_entry_impl::OutputStreamEntry> for OutputStreamEntry {
+    fn entry_imp(&self) -> &super::output_stream_entry_impl::OutputStreamEntry {
+        self.imp()
+    }
+}
 
 impl OutputStreamEntry {
     pub fn new(source_box: Arc<SourceBox>, stream: OutputStream) -> Self {

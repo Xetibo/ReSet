@@ -19,3 +19,23 @@ pub const SETDEFAULT: DBusFunction = DBusFunction {
     function: "SetDefaultSink",
     error: "Failed to set default sink",
 };
+
+pub const GETDEFAULT: DBusFunction = DBusFunction {
+    function: "GetDefaultSink",
+    error: "Failed to get default sink",
+};
+
+pub const GETDEFAULTNAME: DBusFunction = DBusFunction {
+    function: "GetDefaultSinkName",
+    error: "Failed to get default sink name",
+};
+
+pub const GETOBJECTS: DBusFunction = DBusFunction {
+    function: "ListSinks",
+    error: "Failed to list sinks",
+};
+
+pub const GETSTREAMS: DBusFunction = DBusFunction {
+    function: "ListInputStreams",
+    error: "Failed to list input streams",
+};

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
 
-use crate::components::audio::generic_entry::{AudioBoxImpl, AudioIcons};
+use crate::components::audio::generic_entry::{AudioIcons, TAudioBoxImpl};
 use crate::components::audio::input::source_box;
 use crate::components::base::error::ReSetError;
 use crate::components::base::list_entry::ListEntry;
@@ -95,7 +95,7 @@ impl WindowImpl for SourceBox {}
 
 impl ApplicationWindowImpl for SourceBox {}
 
-impl AudioBoxImpl<Source, SourceEntry, super::source_entry_impl::SourceEntry> for SourceBox {
+impl TAudioBoxImpl<Source, SourceEntry, OutputStreamEntry> for SourceBox {
     fn audio_object_row(&self) -> &TemplateChild<ActionRow> {
         &self.reset_source_row
     }
@@ -158,11 +158,11 @@ impl AudioBoxImpl<Source, SourceEntry, super::source_entry_impl::SourceEntry> fo
         &self.reset_source_list
     }
 
-    // fn audio_object_stream_list(
-    //     &self,
-    // ) -> &crate::components::audio::generic_entry::AudioStreamEntryMap<SourceEntry> {
-    //     &
-    // }
+    fn audio_object_stream_list(
+        &self,
+    ) -> &crate::components::audio::generic_entry::AudioStreamEntryMap<OutputStreamEntry> {
+        &self.reset_output_stream_list
+    }
 
     fn model_list(&self) -> Arc<RwLock<StringList>> {
         self.reset_model_list.clone()

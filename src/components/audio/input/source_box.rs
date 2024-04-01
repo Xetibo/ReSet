@@ -14,7 +14,7 @@ use glib::Variant;
 use gtk::gio;
 use gtk::prelude::ActionableExt;
 
-use crate::components::audio::generic_entry::AudioBox;
+use crate::components::audio::generic_entry::TAudioBox;
 use crate::components::audio::input::source_box_impl;
 use crate::components::base::error::{self};
 use crate::components::base::error_impl::ReSetErrorImpl;
@@ -46,7 +46,7 @@ impl ReSetErrorImpl for SourceBox {
     }
 }
 
-impl AudioBox<super::source_box_impl::SourceBox> for SourceBox {
+impl TAudioBox<super::source_box_impl::SourceBox> for SourceBox {
     fn box_imp(&self) -> &super::source_box_impl::SourceBox {
         self.imp()
     }

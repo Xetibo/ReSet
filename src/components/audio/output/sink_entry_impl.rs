@@ -5,7 +5,7 @@ use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::components::audio::generic_entry::{AudioIcons, AudioImpl, DBusFunction};
+use crate::components::audio::generic_entry::{AudioIcons, TAudioEntryImpl, DBusFunction};
 use crate::components::audio::output::sink_entry;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CheckButton, CompositeTemplate, Label, Scale};
@@ -51,7 +51,7 @@ impl ObjectImpl for SinkEntry {}
 
 impl WidgetImpl for SinkEntry {}
 
-impl AudioImpl<Sink> for SinkEntry {
+impl TAudioEntryImpl<Sink> for SinkEntry {
     fn name(&self) -> &TemplateChild<ActionRow> {
         &self.reset_sink_name
     }

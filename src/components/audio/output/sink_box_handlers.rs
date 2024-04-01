@@ -14,17 +14,22 @@ use gtk::{
     prelude::{BoxExt, ButtonExt, CheckButtonExt, ListBoxRowExt, RangeExt},
     StringObject,
 };
-use re_set_lib::signals::{
-    InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged, SinkRemoved,
+use re_set_lib::{
+    audio::audio_structures::Sink,
+    signals::{
+        InputStreamAdded, InputStreamChanged, InputStreamRemoved, SinkAdded, SinkChanged,
+        SinkRemoved,
+    },
 };
 
-use crate::components::base::list_entry::ListEntry;
+use crate::components::{audio::generic_utils::audio_dbus_call, base::list_entry::ListEntry};
 
 use super::{
     input_stream_entry::InputStreamEntry,
     sink_box::SinkBox,
     sink_box_utils::{get_default_sink_name, refresh_default_sink},
-    sink_entry::{set_default_sink, set_sink_volume, toggle_sink_mute, SinkEntry},
+    sink_const::{SETDEFAULT, SETMUTE, SETVOLUME},
+    sink_entry::SinkEntry,
 };
 
 pub fn drop_down_handler(sink_box: Arc<SinkBox>, dropdown: &ComboRow) {
@@ -45,11 +50,15 @@ pub fn drop_down_handler(sink_box: Arc<SinkBox>, dropdown: &ComboRow) {
     }
     let new_sink_name = Arc::new(sink.unwrap().1.clone());
     gio::spawn_blocking(move || {
-        let result = set_default_sink(new_sink_name, sink_box_ref.clone());
+        let result = audio_dbus_call::<SinkBox, (Sink,), (&String,)>(
+            sink_box_ref.clone(),
+            (&new_sink_name,),
+            &SETDEFAULT,
+        );
         if result.is_none() {
             return;
         }
-        let new_sink = result.unwrap();
+        let new_sink = result.unwrap().0;
         refresh_default_sink(new_sink, sink_box_ref, false);
     });
 }
@@ -69,7 +78,11 @@ pub fn volume_slider_handler(sink_box: Arc<SinkBox>, value: f64) -> glib::Propag
         }
         *time = Some(SystemTime::now());
     }
-    set_sink_volume(value, index, channels, sink_box.clone());
+    audio_dbus_call::<SinkBox, (), (u32, u16, u32)>(
+        sink_box.clone(),
+        (index, channels, value as u32),
+        &SETVOLUME,
+    );
     Propagation::Proceed
 }
 
@@ -84,7 +97,11 @@ pub fn mute_handler(sink_box: Arc<SinkBox>) {
         imp.reset_sink_mute
             .set_icon_name("audio-volume-high-symbolic");
     }
-    toggle_sink_mute(stream.index, stream.muted, sink_box.clone());
+    audio_dbus_call::<SinkBox, (), (u32, bool)>(
+        sink_box.clone(),
+        (stream.index, stream.muted),
+        &SETMUTE,
+    );
 }
 
 pub fn sink_added_handler(sink_box: Arc<SinkBox>, ir: SinkAdded) -> bool {
