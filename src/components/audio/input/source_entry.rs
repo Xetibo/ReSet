@@ -46,20 +46,6 @@ impl SourceEntry {
     }
 }
 
-pub fn set_source_volume(value: f64, index: u32, channels: u16, input_box: Arc<SourceBox>) -> bool {
-    gio::spawn_blocking(move || {
-        let conn = Connection::new_session().unwrap();
-        let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let res: Result<(), Error> =
-            proxy.method_call(AUDIO, "SetSourceVolume", (index, channels, value as u32));
-        if res.is_err() {
-            // TODO: also log this with LOG/ERROR
-            show_error::<SourceBox>(input_box.clone(), "Failed to set source volume");
-        }
-    });
-    true
-}
-
 pub fn toggle_source_mute(index: u32, muted: bool, input_box: Arc<SourceBox>) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();

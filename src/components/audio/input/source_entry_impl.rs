@@ -8,8 +8,9 @@ use std::time::SystemTime;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CheckButton, CompositeTemplate, Label, Scale};
 
-use crate::components::audio::generic_entry::AudioImpl;
+use crate::components::audio::generic_entry::{AudioIcons, AudioImpl, DBusFunction};
 
+use super::source_const::{ICONS, SETDEFAULT, SETMUTE, SETVOLUME};
 use super::source_entry;
 
 #[derive(Default, CompositeTemplate)]
@@ -80,15 +81,19 @@ impl AudioImpl<Source> for SourceEntry {
         &self.volume_time_stamp
     }
 
-    fn set_volume_fn(&self) -> (&'static str, &'static str) {
-        ("SetSourceVolume", "Failed to set set source volume")
+    fn set_volume_fn(&self) -> &'static DBusFunction {
+        &SETVOLUME
     }
 
-    fn set_audio_object_fn(&self) -> (&'static str, &'static str) {
-        ("SetDefaultSource", "Faield to set default source")
+    fn set_audio_object_fn(&self) -> &'static DBusFunction {
+        &SETDEFAULT
     }
 
-    fn set_mute_fn(&self) -> (&'static str, &'static str) {
-        ("SetSourceMute", "Failed to mute source")
+    fn set_mute_fn(&self) -> &'static DBusFunction {
+        &SETMUTE
+    }
+
+    fn icons(&self) -> &AudioIcons {
+        &ICONS
     }
 }

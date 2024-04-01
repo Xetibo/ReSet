@@ -4,5 +4,6 @@ pub mod sink_box;
 mod sink_box_handlers;
 pub mod sink_box_impl;
 mod sink_box_utils;
+mod sink_const;
 pub mod sink_entry;
 pub mod sink_entry_impl;

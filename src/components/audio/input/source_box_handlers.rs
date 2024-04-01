@@ -16,13 +16,14 @@ use re_set_lib::signals::{
     SourceRemoved,
 };
 
-use crate::components::base::list_entry::ListEntry;
+use crate::components::{audio::generic_audio_functions::set_volume, base::list_entry::ListEntry};
 
 use super::{
     output_stream_entry::OutputStreamEntry,
     source_box::SourceBox,
     source_box_utils::{get_default_source_name, refresh_default_source},
-    source_entry::{set_default_source, set_source_volume, toggle_source_mute, SourceEntry},
+    source_const::SETVOLUME,
+    source_entry::{set_default_source, toggle_source_mute, SourceEntry},
 };
 
 pub fn source_added_handler(source_box: Arc<SourceBox>, ir: SourceAdded) -> bool {
@@ -290,7 +291,7 @@ pub fn volume_slider_handler(source_box: Arc<SourceBox>, value: f64) -> Propagat
         }
         *time = Some(SystemTime::now());
     }
-    set_source_volume(value, index, channels, source_box.clone());
+    set_volume::<SourceBox>(value, index, channels, source_box.clone(), &SETVOLUME);
     Propagation::Proceed
 }
 

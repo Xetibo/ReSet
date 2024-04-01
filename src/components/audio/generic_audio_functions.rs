@@ -17,23 +17,23 @@ use crate::components::{
     utils::{AUDIO, BASE, DBUS_PATH},
 };
 
-use super::generic_entry::{Audio, AudioBox, AudioBoxImpl, AudioImpl};
+use super::generic_entry::{Audio, AudioBox, AudioBoxImpl, AudioImpl, DBusFunction};
 
 pub fn set_volume<T: ReSetErrorImpl + 'static>(
     value: f64,
     index: u32,
     channels: u16,
     reset_box: Arc<T>,
-    function: (&'static str, &'static str),
+    function: &'static DBusFunction,
 ) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
         let res: Result<(), Error> =
-            proxy.method_call(AUDIO, function.0, (index, channels, value as u32));
+            proxy.method_call(AUDIO, function.function, (index, channels, value as u32));
         if res.is_err() {
             // TODO: also log this with LOG/ERROR
-            show_error::<T>(reset_box.clone(), function.1);
+            show_error::<T>(reset_box.clone(), function.error);
         }
     });
     true
@@ -43,15 +43,15 @@ pub fn toggle_audio_object_mute<T: ReSetErrorImpl + 'static>(
     index: u32,
     muted: bool,
     input_box: Arc<T>,
-    function: (&'static str, &'static str),
+    function: &'static DBusFunction,
 ) -> bool {
     gio::spawn_blocking(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-        let res: Result<(), Error> = proxy.method_call(AUDIO, function.0, (index, muted));
+        let res: Result<(), Error> = proxy.method_call(AUDIO, function.function, (index, muted));
         if res.is_err() {
             // TODO: also log this with LOG/ERROR
-            show_error::<T>(input_box.clone(), function.1);
+            show_error::<T>(input_box.clone(), function.error);
         }
     });
     true
@@ -60,7 +60,7 @@ pub fn toggle_audio_object_mute<T: ReSetErrorImpl + 'static>(
 pub fn set_default_audio_object<T, R>(
     name: Arc<String>,
     input_box: Arc<T>,
-    function: (&'static str, &'static str),
+    function: &'static DBusFunction,
 ) -> Option<R>
 where
     T: ReSetErrorImpl + 'static,
@@ -68,9 +68,9 @@ where
 {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let res: Result<(R,), Error> = proxy.method_call(AUDIO, function.0, (name.as_str(),));
+    let res: Result<(R,), Error> = proxy.method_call(AUDIO, function.function, (name.as_str(),));
     if res.is_err() {
-        show_error::<T>(input_box.clone(), function.1);
+        show_error::<T>(input_box.clone(), function.error);
         return None;
     }
     Some(res.unwrap().0)
@@ -116,12 +116,11 @@ pub fn refresh_default_audio_object<
             }
             imp.volume_percentage().set_text(&percentage);
             imp.volume_slider().set_value(volume as f64);
+            let icons = imp.icons();
             if new_audio_object.muted() {
-                imp.audio_object_mute()
-                    .set_icon_name("audio-volume-muted-symbolic");
+                imp.audio_object_mute().set_icon_name(icons.muted);
             } else {
-                imp.audio_object_mute()
-                    .set_icon_name("audio-volume-high-symbolic");
+                imp.audio_object_mute().set_icon_name(icons.active);
             }
             imp.default_audio_object().replace(new_audio_object);
         });

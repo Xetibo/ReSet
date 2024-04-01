@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
 
-use crate::components::audio::generic_entry::AudioBoxImpl;
+use crate::components::audio::generic_entry::{AudioBoxImpl, AudioIcons};
 use crate::components::audio::output::input_stream_entry::InputStreamEntry;
 use crate::components::base::error::ReSetError;
 use crate::components::base::list_entry::ListEntry;
@@ -14,6 +14,7 @@ use gtk::{prelude::*, Scale};
 use gtk::{Box, Button, CheckButton, CompositeTemplate, Label, StringList};
 
 use super::sink_box;
+use super::sink_const::ICONS;
 use super::sink_entry::SinkEntry;
 
 type SinkEntryMap = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<SinkEntry>, String)>>>;
@@ -178,5 +179,9 @@ impl AudioBoxImpl<Sink, SinkEntry, super::sink_entry_impl::SinkEntry> for SinkBo
 
     fn volume_time_stamp(&self) -> &RefCell<Option<SystemTime>> {
         &self.volume_time_stamp
+    }
+
+    fn icons(&self) -> &AudioIcons {
+        &ICONS
     }
 }

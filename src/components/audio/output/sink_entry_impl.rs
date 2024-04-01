@@ -5,10 +5,12 @@ use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::components::audio::generic_entry::AudioImpl;
+use crate::components::audio::generic_entry::{AudioIcons, AudioImpl, DBusFunction};
 use crate::components::audio::output::sink_entry;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CheckButton, CompositeTemplate, Label, Scale};
+
+use super::sink_const::{ICONS, SETDEFAULT, SETMUTE, SETVOLUME};
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetSinkEntry.ui")]
@@ -78,15 +80,19 @@ impl AudioImpl<Sink> for SinkEntry {
         &self.volume_time_stamp
     }
 
-    fn set_volume_fn(&self) -> (&'static str, &'static str) {
-        ("SetSinkVolume", "Failed to set set sink volume")
+    fn set_volume_fn(&self) -> &'static DBusFunction {
+        &SETVOLUME
     }
 
-    fn set_audio_object_fn(&self) -> (&'static str, &'static str) {
-        ("SetDefaultSink", "Faield to set default sink")
+    fn set_audio_object_fn(&self) -> &'static DBusFunction {
+        &SETDEFAULT
     }
 
-    fn set_mute_fn(&self) -> (&'static str, &'static str) {
-        ("SetSinkMute", "Failed to mute sink")
+    fn set_mute_fn(&self) -> &'static DBusFunction {
+        &SETMUTE
+    }
+
+    fn icons(&self) -> &AudioIcons {
+        &ICONS
     }
 }

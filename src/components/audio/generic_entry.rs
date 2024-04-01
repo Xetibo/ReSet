@@ -58,8 +58,10 @@ pub trait AudioBoxImpl<OBJ, ENTRY, STREAMENTRY> {
     fn model_index(&self) -> Arc<RwLock<u32>>;
     fn source_map(&self) -> &AudioMap;
     fn volume_time_stamp(&self) -> &RefCell<Option<SystemTime>>;
+    fn icons(&self) -> &AudioIcons;
 }
 
+#[allow(dead_code)]
 pub trait AudioImpl<T: AudioObject> {
     fn name(&self) -> &TemplateChild<ActionRow>;
     fn selected_audio_object(&self) -> &TemplateChild<CheckButton>;
@@ -68,9 +70,10 @@ pub trait AudioImpl<T: AudioObject> {
     fn volume_percentage(&self) -> &TemplateChild<Label>;
     fn audio_object(&self) -> Arc<RefCell<T>>;
     fn volume_time_stamp(&self) -> &RefCell<Option<SystemTime>>;
-    fn set_volume_fn(&self) -> (&'static str, &'static str);
-    fn set_audio_object_fn(&self) -> (&'static str, &'static str);
-    fn set_mute_fn(&self) -> (&'static str, &'static str);
+    fn set_volume_fn(&self) -> &'static DBusFunction;
+    fn set_audio_object_fn(&self) -> &'static DBusFunction;
+    fn set_mute_fn(&self) -> &'static DBusFunction;
+    fn icons(&self) -> &AudioIcons;
 }
 
 // pub trait AudioObject {
@@ -83,6 +86,17 @@ pub trait AudioImpl<T: AudioObject> {
 //     fn toggle_muted(&mut self);
 //     fn active() -> i32;
 // }
+//
+
+pub struct AudioIcons {
+    pub muted: &'static str,
+    pub active: &'static str,
+}
+
+pub struct DBusFunction {
+    pub function: &'static str,
+    pub error: &'static str,
+}
 
 pub fn new_entry<
     AObject: AudioObject + Arg + for<'z> Get<'z> + Send + Sync + 'static,
