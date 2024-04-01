@@ -3,18 +3,17 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use gtk::FlowBox;
-use re_set_lib::utils::plugin::SidebarInfo;
 
 use crate::components::base::utils::{Listeners, Position};
 
-extern "C" {
-    pub fn startup() -> SidebarInfo;
-    pub fn shutdown();
-    pub fn run_test();
-}
+// extern "C" {
+//     pub fn startup() -> SidebarInfo;
+//     pub fn shutdown();
+//     pub fn run_test();
+// }
 
-type RegularClickEvent = fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>);
-type PluginClickEvent = Rc<dyn Fn(FlowBox, Rc<RefCell<Position>>, Vec<gtk::Box>)>;
+pub type RegularClickEvent = fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>);
+pub type PluginClickEvent = Rc<dyn Fn(FlowBox, Rc<RefCell<Position>>, Vec<gtk::Box>)>;
 
 pub trait TSideBarInfo {
     fn name(&self) -> &'static str;
