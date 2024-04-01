@@ -9,9 +9,9 @@ use adw::glib::Object;
 use adw::prelude::{ButtonExt, ComboRowExt, PreferencesRowExt, RangeExt};
 use dbus::blocking::Connection;
 use dbus::Error;
+use glib::prelude::Cast;
 use glib::subclass::types::ObjectSubclassIsExt;
 use glib::{clone, Propagation};
-use glib::prelude::Cast;
 use gtk::{gio, StringObject};
 use re_set_lib::audio::audio_structures::OutputStream;
 

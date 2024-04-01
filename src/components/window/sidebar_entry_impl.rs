@@ -1,20 +1,20 @@
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 use std::rc::Rc;
-use std::sync::Arc;
 
 use glib::subclass::InitializingObject;
-use gtk::{CompositeTemplate, FlowBox, Image, Label, ListBoxRow};
 use gtk::subclass::prelude::*;
+use gtk::{CompositeTemplate, Image, Label, ListBoxRow};
 
-use crate::components::base::utils::{Listeners, Position};
+use crate::components::plugin::function::{PluginClickEvent, RegularClickEvent};
 use crate::components::window::handle_sidebar_click::HANDLE_HOME;
 use crate::components::window::sidebar_entry;
 
 #[derive(Default)]
 pub enum Categories {
-    Connectivity,
-    Audio,
-    Peripherals,
+    // TODO: are these ever used ?
+    // Connectivity,
+    // Audio,
+    // Peripherals,
     #[default]
     Misc,
 }
@@ -33,15 +33,15 @@ pub struct SidebarEntry {
 }
 
 pub struct SidebarAction {
-    pub on_click_event: Option<fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>)>,
-    pub on_plugin_click_event: Rc<dyn Fn(FlowBox, Rc<RefCell<Position>>, Vec<gtk::Box>)>,
+    pub on_click_event: Option<RegularClickEvent>,
+    pub on_plugin_click_event: PluginClickEvent,
 }
 
 impl Default for SidebarAction {
     fn default() -> Self {
         Self {
             on_click_event: Some(HANDLE_HOME),
-            on_plugin_click_event: Rc::new(|_,_,_|{}),
+            on_plugin_click_event: Rc::new(|_, _, _| {}),
         }
     }
 }

@@ -2,13 +2,16 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use adw::BreakpointCondition;
 use adw::glib::clone;
 use adw::subclass::prelude::ObjectSubclassIsExt;
+use adw::BreakpointCondition;
 use glib::Object;
-use gtk::{AccessibleRole, Align, Application, FlowBox, FlowBoxChild, Frame, gio, ListBoxRow, Orientation, StateFlags};
-use gtk::{DirectionType, prelude::*};
 use gtk::gio::ActionEntry;
+use gtk::{
+    gio, AccessibleRole, Align, Application, FlowBox, FlowBoxChild, Frame, ListBoxRow, Orientation,
+    StateFlags,
+};
+use gtk::{prelude::*, DirectionType};
 use re_set_lib::utils::plugin_setup::FRONTEND_PLUGINS;
 
 use crate::components::base::setting_box::SettingBox;
@@ -157,17 +160,24 @@ impl ReSetWindow {
                 (plugin.frontend_startup)();
 
                 let event = Rc::new(
-                    move |reset_main: FlowBox, position: Rc<RefCell<Position>>, boxes: Vec<gtk::Box>| {
-                        if handle_init(listeners.clone(), position, Position::Custom(String::from(sidebar_info.name))) {
+                    move |reset_main: FlowBox,
+                          position: Rc<RefCell<Position>>,
+                          boxes: Vec<gtk::Box>| {
+                        if handle_init(
+                            listeners.clone(),
+                            position,
+                            Position::Custom(String::from(sidebar_info.name)),
+                        ) {
                             return;
                         }
                         reset_main.remove_all();
                         for plugin_box in &boxes {
-                            let frame = wrap_in_flow_box_child(SettingBox::new(&plugin_box.clone()));
+                            let frame =
+                                wrap_in_flow_box_child(SettingBox::new(&plugin_box.clone()));
                             reset_main.insert(&frame, -1);
                         }
                         reset_main.set_max_children_per_line(boxes.len() as u32);
-                    }
+                    },
                 );
 
                 plugin_sidebar_list.push(PluginSidebarInfo {
@@ -208,7 +218,7 @@ impl ReSetWindow {
                 self_imp.reset_sidebar_list.insert(&create_separator(), i);
                 i += 1;
             }
-            let entry = SidebarEntry::new_plugin(&info);
+            let entry = SidebarEntry::new(&info);
             self_imp.reset_sidebar_list.insert(&entry, i);
             i += 1;
         }
