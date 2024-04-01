@@ -208,7 +208,7 @@ impl ReSetWindow {
                 self_imp.reset_sidebar_list.insert(&create_separator(), i);
                 i += 1;
             }
-            let entry = SidebarEntry::new_plugin(&info);
+            let entry = SidebarEntry::new(&info);
             self_imp.reset_sidebar_list.insert(&entry, i);
             i += 1;
         }
