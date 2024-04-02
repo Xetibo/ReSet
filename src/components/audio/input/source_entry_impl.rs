@@ -8,7 +8,7 @@ use std::time::SystemTime;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CheckButton, CompositeTemplate, Label, Scale};
 
-use crate::components::audio::generic_entry::{AudioIcons, TAudioEntryImpl, DBusFunction};
+use crate::components::audio::generic_entry::{AudioIcons, DBusFunction, TAudioEntryImpl};
 
 use super::source_const::{ICONS, SETDEFAULT, SETMUTE, SETVOLUME};
 use super::source_entry;

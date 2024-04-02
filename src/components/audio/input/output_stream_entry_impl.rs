@@ -5,10 +5,12 @@ use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::components::audio::generic_entry::TAudioStreamImpl;
+use crate::components::audio::generic_entry::{AudioIcons, TAudioStreamImpl};
 use crate::components::audio::input::output_stream_entry;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CompositeTemplate, Label, Scale};
+
+use super::source_const::{ICONS, SETSTREAMMUTE, SETSTREAMOBJECT, SETSTREAMVOLUME};
 
 #[derive(Default, CompositeTemplate)]
 #[template(resource = "/org/Xetibo/ReSet/resetOutputStreamEntry.ui")]
@@ -75,5 +77,23 @@ impl TAudioStreamImpl<Source, OutputStream> for OutputStreamEntry {
 
     fn volume_time_stamp(&self) -> &RefCell<Option<SystemTime>> {
         &self.volume_time_stamp
+    }
+
+    fn set_volume_fn(&self) -> &'static crate::components::audio::generic_entry::DBusFunction {
+        &SETSTREAMVOLUME
+    }
+
+    fn set_audio_object_fn(
+        &self,
+    ) -> &'static crate::components::audio::generic_entry::DBusFunction {
+        &SETSTREAMOBJECT
+    }
+
+    fn set_mute_fn(&self) -> &'static crate::components::audio::generic_entry::DBusFunction {
+        &SETSTREAMMUTE
+    }
+
+    fn icons(&self) -> &AudioIcons {
+        &ICONS
     }
 }

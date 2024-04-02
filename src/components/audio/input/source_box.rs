@@ -1,3 +1,4 @@
+use re_set_lib::audio::audio_structures::Source;
 use re_set_lib::signals::{
     OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
     SourceRemoved,
@@ -15,6 +16,7 @@ use gtk::gio;
 use gtk::prelude::ActionableExt;
 
 use crate::components::audio::generic_entry::TAudioBox;
+use crate::components::audio::generic_utils::audio_dbus_call;
 use crate::components::audio::input::source_box_impl;
 use crate::components::base::error::{self};
 use crate::components::base::error_impl::ReSetErrorImpl;
@@ -27,9 +29,9 @@ use super::source_box_handlers::{
     source_added_handler, source_changed_handler, source_removed_handler,
 };
 use super::source_box_utils::{
-    get_default_source, get_sources, populate_cards, populate_outputstreams,
-    populate_source_information,
+    populate_cards, populate_outputstreams, populate_source_information,
 };
+use super::source_const::{GETDEFAULT, GETOBJECTS};
 
 glib::wrapper! {
     pub struct SourceBox(ObjectSubclass<source_box_impl::SourceBox>)
@@ -105,15 +107,24 @@ impl Default for SourceBox {
 
 pub fn populate_sources(source_box: Arc<SourceBox>) {
     gio::spawn_blocking(move || {
-        let sources = get_sources(source_box.clone());
+        let sources =
+            audio_dbus_call::<SourceBox, (Vec<Source>,), ()>(source_box.clone(), (), &GETOBJECTS);
+        if sources.is_none() {
+            return;
+        }
+        let sources = sources.unwrap().0;
         {
             let source_box_imp = source_box.imp();
             let list = source_box_imp.reset_model_list.write().unwrap();
             let mut map = source_box_imp.reset_source_map.write().unwrap();
             let mut model_index = source_box_imp.reset_model_index.write().unwrap();
-            source_box_imp
-                .reset_default_source
-                .replace(get_default_source(source_box.clone()));
+
+            let source =
+                audio_dbus_call::<SourceBox, (Source,), ()>(source_box.clone(), (), &GETDEFAULT);
+            if let Some(source) = source {
+                source_box_imp.reset_default_source.replace(source.0);
+            }
+
             for source in sources.iter() {
                 list.append(&source.alias);
                 map.insert(source.alias.clone(), (source.index, source.name.clone()));

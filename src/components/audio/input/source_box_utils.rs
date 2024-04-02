@@ -1,7 +1,6 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 use adw::prelude::{ComboRowExt, PreferencesGroupExt};
-use dbus::{blocking::Connection, Error};
 use glib::subclass::types::ObjectSubclassIsExt;
 use gtk::{
     gio,
@@ -10,14 +9,15 @@ use gtk::{
 use re_set_lib::audio::audio_structures::{Card, OutputStream, Source};
 
 use crate::components::{
-    base::{card_entry::CardEntry, error_impl::show_error, list_entry::ListEntry},
-    utils::{AUDIO, BASE, DBUS_PATH},
+    audio::{generic_const::GETCARDS, generic_utils::audio_dbus_call},
+    base::{card_entry::CardEntry, list_entry::ListEntry},
 };
 
 use super::{
     output_stream_entry::OutputStreamEntry,
     source_box::SourceBox,
     source_box_handlers::{dropdown_handler, mute_clicked_handler, volume_slider_handler},
+    source_const::GETSTREAMS,
     source_entry::SourceEntry,
 };
 
@@ -136,16 +136,23 @@ pub fn refresh_default_source(new_source: Source, source_box: Arc<SourceBox>, en
 
 pub fn populate_outputstreams(source_box: Arc<SourceBox>) {
     let source_box_ref = source_box.clone();
-
     gio::spawn_blocking(move || {
-        let streams = get_output_streams(source_box.clone());
+        let streams = audio_dbus_call::<SourceBox, (Vec<OutputStream>,), ()>(
+            source_box.clone(),
+            (),
+            &GETSTREAMS,
+        );
+        if streams.is_none() {
+            return;
+        }
+        let streams = streams.unwrap().0;
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let source_box_imp = source_box_ref.imp();
                 let mut list = source_box_imp.reset_output_stream_list.write().unwrap();
                 for stream in streams {
                     let index = stream.index;
-                    let input_stream = Arc::new(OutputStreamEntry::new(source_box.clone(), stream));
+                    let input_stream = OutputStreamEntry::new(source_box.clone(), stream);
                     let input_stream_clone = input_stream.clone();
                     let entry = Arc::new(ListEntry::new(&*input_stream));
                     entry.set_activatable(false);
@@ -160,7 +167,12 @@ pub fn populate_outputstreams(source_box: Arc<SourceBox>) {
 pub fn populate_cards(source_box: Arc<SourceBox>) {
     gio::spawn_blocking(move || {
         let source_box_ref = source_box.clone();
-        let cards = get_cards(source_box.clone());
+        let cards =
+            audio_dbus_call::<SourceBox, (Vec<Card>,), ()>(source_box.clone(), (), &GETCARDS);
+        if cards.is_none() {
+            return;
+        }
+        let cards = cards.unwrap().0;
         glib::spawn_future(async move {
             glib::idle_add_once(move || {
                 let imp = source_box_ref.imp();
@@ -170,60 +182,4 @@ pub fn populate_cards(source_box: Arc<SourceBox>) {
             });
         });
     });
-}
-
-pub fn get_output_streams(source_box: Arc<SourceBox>) -> Vec<OutputStream> {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let res: Result<(Vec<OutputStream>,), Error> =
-        proxy.method_call(AUDIO, "ListOutputStreams", ());
-    if res.is_err() {
-        show_error::<SourceBox>(source_box.clone(), "Failed to get output streams");
-        return Vec::new();
-    }
-    res.unwrap().0
-}
-
-pub fn get_sources(source_box: Arc<SourceBox>) -> Vec<Source> {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let res: Result<(Vec<Source>,), Error> = proxy.method_call(AUDIO, "ListSources", ());
-    if res.is_err() {
-        show_error::<SourceBox>(source_box.clone(), "Failed to get sources");
-        return Vec::new();
-    }
-    res.unwrap().0
-}
-
-pub fn get_cards(source_box: Arc<SourceBox>) -> Vec<Card> {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let res: Result<(Vec<Card>,), Error> = proxy.method_call(AUDIO, "ListCards", ());
-    if res.is_err() {
-        show_error::<SourceBox>(source_box.clone(), "Failed to get profiles");
-        return Vec::new();
-    }
-    res.unwrap().0
-}
-
-pub fn get_default_source_name(source_box: Arc<SourceBox>) -> String {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let res: Result<(String,), Error> = proxy.method_call(AUDIO, "GetDefaultSourceName", ());
-    if res.is_err() {
-        show_error::<SourceBox>(source_box.clone(), "Failed to get default source name");
-        return String::from("");
-    }
-    res.unwrap().0
-}
-
-pub fn get_default_source(source_box: Arc<SourceBox>) -> Source {
-    let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
-    let res: Result<(Source,), Error> = proxy.method_call(AUDIO, "GetDefaultSource", ());
-    if res.is_err() {
-        show_error::<SourceBox>(source_box.clone(), "Failed to get default source");
-        return Source::default();
-    }
-    res.unwrap().0
 }

@@ -24,8 +24,8 @@ use crate::components::{audio::generic_utils::audio_dbus_call, base::list_entry:
 use super::{
     output_stream_entry::OutputStreamEntry,
     source_box::SourceBox,
-    source_box_utils::{get_default_source_name, refresh_default_source},
-    source_const::{SETDEFAULT, SETMUTE, SETVOLUME},
+    source_box_utils::refresh_default_source,
+    source_const::{GETDEFAULTNAME, SETDEFAULT, SETMUTE, SETVOLUME},
     source_entry::SourceEntry,
 };
 
@@ -114,7 +114,12 @@ pub fn source_removed_handler(source_box: Arc<SourceBox>, ir: SourceRemoved) -> 
 }
 
 pub fn source_changed_handler(source_box: Arc<SourceBox>, ir: SourceChanged) -> bool {
-    let default_source = get_default_source_name(source_box.clone());
+    let source =
+        audio_dbus_call::<SourceBox, (String,), ()>(source_box.clone(), (), &GETDEFAULTNAME);
+    if source.is_none() {
+        return false;
+    }
+    let default_source = source.unwrap().0;
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
             let source_box = source_box.clone();
@@ -172,7 +177,7 @@ pub fn output_stream_added_handler(source_box: Arc<SourceBox>, ir: OutputStreamA
             let source_box_imp = source_box.imp();
             let mut list = source_box_imp.reset_output_stream_list.write().unwrap();
             let index = ir.stream.index;
-            let output_stream = Arc::new(OutputStreamEntry::new(source_box.clone(), ir.stream));
+            let output_stream = OutputStreamEntry::new(source_box.clone(), ir.stream);
             let entry = Arc::new(ListEntry::new(&*output_stream));
             entry.set_activatable(false);
             list.insert(index, (entry.clone(), output_stream.clone()));

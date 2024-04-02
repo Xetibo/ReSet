@@ -150,7 +150,7 @@ pub fn populate_inputstreams(sink_box: Arc<SinkBox>) {
                 let mut list = sink_box_imp.reset_input_stream_list.write().unwrap();
                 for stream in streams {
                     let index = stream.index;
-                    let input_stream = Arc::new(InputStreamEntry::new(sink_box.clone(), stream));
+                    let input_stream = InputStreamEntry::new(sink_box.clone(), stream);
                     let entry = Arc::new(ListEntry::new(&*input_stream));
                     entry.set_activatable(false);
                     list.insert(index, (entry.clone(), input_stream.clone()));

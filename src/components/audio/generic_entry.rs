@@ -59,7 +59,6 @@ pub trait TAudioEntry<TAudioEntryImpl>: IsClass + IsA<glib::Object> {
     fn entry_imp(&self) -> &TAudioEntryImpl;
 }
 
-#[allow(dead_code)]
 pub trait TAudioEntryImpl<AudioObject: TAudioObject> {
     fn name(&self) -> &TemplateChild<ActionRow>;
     fn selected_audio_object(&self) -> &TemplateChild<CheckButton>;
@@ -74,7 +73,7 @@ pub trait TAudioEntryImpl<AudioObject: TAudioObject> {
     fn icons(&self) -> &AudioIcons;
 }
 
-pub trait TAudioStream<TAudioStreamImpl> {
+pub trait TAudioStream<TAudioStreamImpl>: IsClass + IsA<glib::Object> {
     fn entry_imp(&self) -> &TAudioStreamImpl;
 }
 
@@ -86,6 +85,10 @@ pub trait TAudioStreamImpl<AudioObject: TAudioObject, StreamObject: TAudioStream
     fn stream_object(&self) -> Arc<RefCell<StreamObject>>;
     fn associated_audio_object(&self) -> Arc<RefCell<(u32, String)>>;
     fn volume_time_stamp(&self) -> &RefCell<Option<SystemTime>>;
+    fn set_volume_fn(&self) -> &'static DBusFunction;
+    fn set_audio_object_fn(&self) -> &'static DBusFunction;
+    fn set_mute_fn(&self) -> &'static DBusFunction;
+    fn icons(&self) -> &AudioIcons;
 }
 
 pub struct AudioIcons {

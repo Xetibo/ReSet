@@ -1,8 +1,8 @@
 use crate::components::audio::generic_entry::{AudioIcons, DBusFunction};
 
 pub const ICONS: AudioIcons = AudioIcons {
-    muted: "audio-input-microphone-symbolic",
-    active: "microphone-disabled-symbolic",
+    muted: "microphone-disabled-symbolic",
+    active: "audio-input-microphone-symbolic",
 };
 
 pub const SETVOLUME: DBusFunction = DBusFunction {
@@ -38,4 +38,19 @@ pub const GETOBJECTS: DBusFunction = DBusFunction {
 pub const GETSTREAMS: DBusFunction = DBusFunction {
     function: "ListOutputStreams",
     error: "Failed to list output streams",
+};
+
+pub const SETSTREAMVOLUME: DBusFunction = DBusFunction {
+    function: "SetOutputStreamVolume",
+    error: "Failed to set output stream volume",
+};
+
+pub const SETSTREAMMUTE: DBusFunction = DBusFunction {
+    function: "SetOutputStreamMute",
+    error: "Failed to mute output stream",
+};
+
+pub const SETSTREAMOBJECT: DBusFunction = DBusFunction {
+    function: "SetSourceOfOutputStream",
+    error: "Failed to set source of output stream",
 };

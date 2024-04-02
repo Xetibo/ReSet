@@ -246,7 +246,7 @@ pub fn input_stream_added_handler(sink_box: Arc<SinkBox>, ir: InputStreamAdded) 
             let sink_box_imp = sink_box.imp();
             let mut list = sink_box_imp.reset_input_stream_list.write().unwrap();
             let index = ir.stream.index;
-            let input_stream = Arc::new(InputStreamEntry::new(sink_box.clone(), ir.stream));
+            let input_stream = InputStreamEntry::new(sink_box.clone(), ir.stream);
             let entry = Arc::new(ListEntry::new(&*input_stream));
             entry.set_activatable(false);
             list.insert(index, (entry.clone(), input_stream.clone()));

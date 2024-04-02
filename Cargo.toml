@@ -9,7 +9,7 @@ license = "GPL-3.0-or-later"
 [dependencies]
 # reset_daemon = "1.1.0"
 re_set-lib = { git = "https://github.com/Xetibo/ReSet-Lib" , branch = "audioobject"}
-# re_set-lib = "3.1.6"
+# re_set-lib = "3.1.7"
 reset_daemon = { git = "https://github.com/Xetibo/ReSet-Daemon", branch = "dashie" }
 adw = { version = "0.6.0", package = "libadwaita", features = ["v1_4"] }
 dbus = "0.9.7"
