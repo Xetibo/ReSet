@@ -1,4 +1,4 @@
-use re_set_lib::audio::audio_structures::Source;
+use re_set_lib::audio::audio_structures::{OutputStream, Source};
 use re_set_lib::signals::{
     OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
     SourceRemoved,
@@ -6,32 +6,30 @@ use re_set_lib::signals::{
 use std::sync::Arc;
 
 use adw::glib::Object;
-use adw::prelude::{ComboRowExt, ListBoxRowExt};
 use dbus::blocking::Connection;
 use dbus::message::SignalArgs;
 use dbus::Path;
 use glib::subclass::prelude::ObjectSubclassIsExt;
-use glib::Variant;
 use gtk::gio;
-use gtk::prelude::ActionableExt;
 
+use crate::components::audio::generic_audio_box_handlers::populate_audio_objects;
+use crate::components::audio::generic_audio_box_utils::{
+    populate_audio_object_information, populate_cards, populate_streams, setup_audio_box_callbacks,
+};
 use crate::components::audio::generic_entry::TAudioBox;
 use crate::components::audio::generic_utils::audio_dbus_call;
 use crate::components::audio::input::source_box_impl;
 use crate::components::base::error::{self};
 use crate::components::base::error_impl::ReSetErrorImpl;
-use crate::components::utils::{
-    create_dropdown_label_factory, set_combo_row_ellipsis, BASE, DBUS_PATH,
-};
+use crate::components::utils::{BASE, DBUS_PATH};
 
+use super::output_stream_entry::OutputStreamEntry;
 use super::source_box_handlers::{
     output_stream_added_handler, output_stream_changed_handler, output_stream_removed_handler,
     source_added_handler, source_changed_handler, source_removed_handler,
 };
-use super::source_box_utils::{
-    populate_cards, populate_outputstreams, populate_source_information,
-};
-use super::source_const::{GETDEFAULT, GETOBJECTS};
+use super::source_const::{GETDEFAULT, GETOBJECTS, GETSTREAMS, SETDEFAULT, SETMUTE, SETVOLUME};
+use super::source_entry::SourceEntry;
 
 glib::wrapper! {
     pub struct SourceBox(ObjectSubclass<source_box_impl::SourceBox>)
@@ -56,46 +54,23 @@ impl TAudioBox<super::source_box_impl::SourceBox> for SourceBox {
 
 impl SourceBox {
     pub fn new() -> Self {
-        let obj: Self = Object::builder().build();
+        let mut obj: Self = Object::builder().build();
+        setup_audio_box_callbacks::<
+            Source,
+            OutputStream,
+            SourceEntry,
+            super::source_entry_impl::SourceEntry,
+            OutputStreamEntry,
+            super::output_stream_entry_impl::OutputStreamEntry,
+            SourceBox,
+            super::source_box_impl::SourceBox,
+        >(&mut obj);
         {
             let imp = obj.imp();
             let mut model_index = imp.reset_model_index.write().unwrap();
             *model_index = 0;
         }
         obj
-    }
-
-    pub fn setup_callbacks(&self) {
-        let self_imp = self.imp();
-        self_imp.reset_source_row.set_activatable(true);
-        self_imp
-            .reset_source_row
-            .set_action_name(Some("navigation.push"));
-        self_imp
-            .reset_source_row
-            .set_action_target_value(Some(&Variant::from("sources")));
-        self_imp.reset_cards_row.set_activatable(true);
-        self_imp
-            .reset_cards_row
-            .set_action_name(Some("navigation.push"));
-        self_imp
-            .reset_cards_row
-            .set_action_target_value(Some(&Variant::from("profileConfiguration")));
-
-        self_imp.reset_output_stream_button.set_activatable(true);
-        self_imp
-            .reset_output_stream_button
-            .set_action_name(Some("navigation.pop"));
-
-        self_imp.reset_input_cards_back_button.set_activatable(true);
-        self_imp
-            .reset_input_cards_back_button
-            .set_action_name(Some("navigation.pop"));
-
-        self_imp
-            .reset_source_dropdown
-            .set_factory(Some(&create_dropdown_label_factory()));
-        set_combo_row_ellipsis(self_imp.reset_source_dropdown.get());
     }
 }
 
@@ -106,36 +81,24 @@ impl Default for SourceBox {
 }
 
 pub fn populate_sources(source_box: Arc<SourceBox>) {
-    gio::spawn_blocking(move || {
-        let sources =
-            audio_dbus_call::<SourceBox, (Vec<Source>,), ()>(source_box.clone(), (), &GETOBJECTS);
-        if sources.is_none() {
-            return;
-        }
-        let sources = sources.unwrap().0;
-        {
-            let source_box_imp = source_box.imp();
-            let list = source_box_imp.reset_model_list.write().unwrap();
-            let mut map = source_box_imp.reset_source_map.write().unwrap();
-            let mut model_index = source_box_imp.reset_model_index.write().unwrap();
-
-            let source =
-                audio_dbus_call::<SourceBox, (Source,), ()>(source_box.clone(), (), &GETDEFAULT);
-            if let Some(source) = source {
-                source_box_imp.reset_default_source.replace(source.0);
-            }
-
-            for source in sources.iter() {
-                list.append(&source.alias);
-                map.insert(source.alias.clone(), (source.index, source.name.clone()));
-                *model_index += 1;
-            }
-        }
-
-        populate_outputstreams(source_box.clone());
-        populate_cards(source_box.clone());
-        populate_source_information(source_box, sources);
-    });
+    populate_audio_objects::<
+        Source,
+        OutputStream,
+        SourceEntry,
+        super::source_entry_impl::SourceEntry,
+        OutputStreamEntry,
+        super::output_stream_entry_impl::OutputStreamEntry,
+        SourceBox,
+        super::source_box_impl::SourceBox,
+    >(
+        source_box,
+        &GETOBJECTS,
+        &GETDEFAULT,
+        &SETDEFAULT,
+        &GETSTREAMS,
+        &SETVOLUME,
+        &SETMUTE,
+    );
 }
 
 pub fn start_source_box_listener(conn: Connection, source_box: Arc<SourceBox>) -> Connection {

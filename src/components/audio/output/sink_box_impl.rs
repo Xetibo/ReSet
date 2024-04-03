@@ -81,12 +81,7 @@ impl ObjectSubclass for SinkBox {
 
 impl BoxImpl for SinkBox {}
 
-impl ObjectImpl for SinkBox {
-    fn constructed(&self) {
-        let obj = self.obj();
-        obj.setup_callbacks();
-    }
-}
+impl ObjectImpl for SinkBox {}
 
 impl ListBoxRowImpl for SinkBox {}
 

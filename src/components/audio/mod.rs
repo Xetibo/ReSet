@@ -4,3 +4,7 @@ pub mod generic_entry;
 mod generic_utils;
 pub mod input;
 pub mod output;
+mod generic_audio_box_utils;
+mod generic_audio_stream_utils;
+mod generic_audio_object_entry_utils;
+mod generic_audio_box_handlers;

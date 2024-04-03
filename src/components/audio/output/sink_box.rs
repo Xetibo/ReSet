@@ -1,3 +1,5 @@
+use re_set_lib::audio::audio_structures::InputStream;
+use re_set_lib::audio::audio_structures::Sink;
 use re_set_lib::signals::InputStreamAdded;
 use re_set_lib::signals::InputStreamChanged;
 use re_set_lib::signals::InputStreamRemoved;
@@ -17,12 +19,14 @@ use glib::Variant;
 use gtk::gio;
 use gtk::prelude::ActionableExt;
 
+use crate::components::audio::generic_audio_box_utils::setup_audio_box_callbacks;
 use crate::components::audio::generic_entry::TAudioBox;
 use crate::components::base::error_impl::ReSetErrorImpl;
 use crate::components::utils::BASE;
 use crate::components::utils::DBUS_PATH;
 use crate::components::utils::{create_dropdown_label_factory, set_combo_row_ellipsis};
 
+use super::input_stream_entry::InputStreamEntry;
 use super::sink_box_handlers::input_stream_added_handler;
 use super::sink_box_handlers::input_stream_changed_handler;
 use super::sink_box_handlers::input_stream_removed_handler;
@@ -35,6 +39,7 @@ use super::sink_box_utils::get_sinks;
 use super::sink_box_utils::populate_cards;
 use super::sink_box_utils::populate_inputstreams;
 use super::sink_box_utils::populate_sink_information;
+use super::sink_entry::SinkEntry;
 
 glib::wrapper! {
     pub struct SinkBox(ObjectSubclass<sink_box_impl::SinkBox>)
@@ -61,46 +66,23 @@ impl TAudioBox<super::sink_box_impl::SinkBox> for SinkBox {
 
 impl SinkBox {
     pub fn new() -> Self {
-        let obj: Self = Object::builder().build();
+        let mut obj: Self = Object::builder().build();
+        setup_audio_box_callbacks::<
+            Sink,
+            InputStream,
+            SinkEntry,
+            super::sink_entry_impl::SinkEntry,
+            InputStreamEntry,
+            super::input_stream_entry_impl::InputStreamEntry,
+            SinkBox,
+            super::sink_box_impl::SinkBox,
+        >(&mut obj);
         {
             let imp = obj.imp();
             let mut model_index = imp.reset_model_index.write().unwrap();
             *model_index = 0;
         }
         obj
-    }
-
-    pub fn setup_callbacks(&self) {
-        let self_imp = self.imp();
-        self_imp.reset_sinks_row.set_activatable(true);
-        self_imp
-            .reset_sinks_row
-            .set_action_name(Some("navigation.push"));
-        self_imp
-            .reset_sinks_row
-            .set_action_target_value(Some(&Variant::from("outputDevices")));
-        self_imp.reset_cards_row.set_activatable(true);
-        self_imp
-            .reset_cards_row
-            .set_action_name(Some("navigation.push"));
-        self_imp
-            .reset_cards_row
-            .set_action_target_value(Some(&Variant::from("profileConfiguration")));
-
-        self_imp.reset_input_stream_button.set_activatable(true);
-        self_imp
-            .reset_input_stream_button
-            .set_action_name(Some("navigation.pop"));
-
-        self_imp.reset_input_cards_back_button.set_activatable(true);
-        self_imp
-            .reset_input_cards_back_button
-            .set_action_name(Some("navigation.pop"));
-
-        self_imp
-            .reset_sink_dropdown
-            .set_factory(Some(&create_dropdown_label_factory()));
-        set_combo_row_ellipsis(self_imp.reset_sink_dropdown.get());
     }
 }
 

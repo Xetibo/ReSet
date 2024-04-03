@@ -12,19 +12,23 @@ use gtk::{
     StringObject,
 };
 use re_set_lib::{
-    audio::audio_structures::Source,
+    audio::audio_structures::{OutputStream, Source},
     signals::{
         OutputStreamAdded, OutputStreamChanged, OutputStreamRemoved, SourceAdded, SourceChanged,
         SourceRemoved,
     },
 };
 
-use crate::components::{audio::generic_utils::audio_dbus_call, base::list_entry::ListEntry};
+use crate::components::{
+    audio::{
+        generic_audio_box_utils::refresh_default_audio_object, generic_utils::audio_dbus_call,
+    },
+    base::list_entry::ListEntry,
+};
 
 use super::{
     output_stream_entry::OutputStreamEntry,
     source_box::SourceBox,
-    source_box_utils::refresh_default_source,
     source_const::{GETDEFAULTNAME, SETDEFAULT, SETMUTE, SETVOLUME},
     source_entry::SourceEntry,
 };
@@ -257,74 +261,3 @@ pub fn output_stream_removed_handler(source_box: Arc<SourceBox>, ir: OutputStrea
     true
 }
 
-pub fn dropdown_handler(source_box: Arc<SourceBox>, dropdown: &adw::ComboRow) -> ControlFlow {
-    let source_box_imp = source_box.imp();
-    let source_box_ref = source_box.clone();
-    let selected = dropdown.selected_item();
-    if selected.is_none() {
-        return ControlFlow::Break;
-    }
-    let selected = selected.unwrap();
-    let selected = selected.downcast_ref::<StringObject>().unwrap();
-    let selected = selected.string().to_string();
-    let source = source_box_imp.reset_source_map.read().unwrap();
-    let source = source.get(&selected);
-    if source.is_none() {
-        return ControlFlow::Break;
-    }
-    let source = Arc::new(source.unwrap().1.clone());
-    gio::spawn_blocking(move || {
-        let result = audio_dbus_call::<SourceBox, (Source,), (&String,)>(
-            source_box_ref.clone(),
-            (&source,),
-            &SETDEFAULT,
-        );
-        if result.is_none() {
-            return ControlFlow::Break;
-        }
-        refresh_default_source(result.unwrap().0, source_box_ref.clone(), false);
-        ControlFlow::Continue
-    });
-    ControlFlow::Continue
-}
-
-pub fn volume_slider_handler(source_box: Arc<SourceBox>, value: f64) -> Propagation {
-    let imp = source_box.imp();
-    let fraction = (value / 655.36).round();
-    let percentage = (fraction).to_string() + "%";
-    imp.reset_volume_percentage.set_text(&percentage);
-    let source = imp.reset_default_source.borrow();
-    let index = source.index;
-    let channels = source.channels;
-    {
-        let mut time = imp.volume_time_stamp.borrow_mut();
-        if time.is_some() && time.unwrap().elapsed().unwrap() < Duration::from_millis(50) {
-            return Propagation::Proceed;
-        }
-        *time = Some(SystemTime::now());
-    }
-    audio_dbus_call::<SourceBox, (), (u32, u16, u32)>(
-        source_box.clone(),
-        (index, channels, value as u32),
-        &SETVOLUME,
-    );
-    Propagation::Proceed
-}
-
-pub fn mute_clicked_handler(source_box_ref_mute: Arc<SourceBox>) {
-    let imp = source_box_ref_mute.imp();
-    let mut source = imp.reset_default_source.borrow_mut();
-    source.muted = !source.muted;
-    if source.muted {
-        imp.reset_source_mute
-            .set_icon_name("microphone-disabled-symbolic");
-    } else {
-        imp.reset_source_mute
-            .set_icon_name("audio-input-microphone-symbolic");
-    }
-    audio_dbus_call::<SourceBox, (), (u32, bool)>(
-        source_box_ref_mute.clone(),
-        (source.index, source.muted),
-        &SETMUTE,
-    );
-}

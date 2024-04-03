@@ -80,12 +80,7 @@ impl ObjectSubclass for SourceBox {
 
 impl BoxImpl for SourceBox {}
 
-impl ObjectImpl for SourceBox {
-    fn constructed(&self) {
-        let obj = self.obj();
-        obj.setup_callbacks();
-    }
-}
+impl ObjectImpl for SourceBox {}
 
 impl ListBoxRowImpl for SourceBox {}
 
