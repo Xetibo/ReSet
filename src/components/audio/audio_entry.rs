@@ -19,8 +19,8 @@ use crate::components::base::error_impl::ReSetErrorImpl;
 use crate::components::base::list_entry::ListEntry;
 use crate::components::utils::set_action_row_ellipsis;
 
-use super::generic_audio_functions::refresh_default_audio_object;
-use super::generic_utils::audio_dbus_call;
+use super::audio_functions::refresh_default_audio_object;
+use super::audio_utils::audio_dbus_call;
 
 pub type AudioEntryMap<T> = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<T>, String)>>>;
 pub type AudioStreamEntryMap<T> = Arc<RwLock<HashMap<u32, (Arc<ListEntry>, Arc<T>)>>>;

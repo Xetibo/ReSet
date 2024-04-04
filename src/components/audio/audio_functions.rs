@@ -17,10 +17,10 @@ use crate::components::{
 };
 
 use super::{
-    generic_entry::{
+    audio_entry::{
         TAudioBox, TAudioBoxImpl, TAudioEntry, TAudioEntryImpl, TAudioStream, TAudioStreamImpl,
     },
-    generic_utils::audio_dbus_call,
+    audio_utils::audio_dbus_call,
 };
 
 pub fn refresh_default_audio_object<

@@ -8,7 +8,7 @@ use std::time::SystemTime;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CompositeTemplate, Label, Scale};
 
-use crate::components::audio::generic_entry::{AudioIcons, TAudioStreamImpl};
+use crate::components::audio::audio_entry::{AudioIcons, TAudioStreamImpl};
 
 use super::input_stream_entry;
 use super::sink_const::{ICONS, SETSTREAMMUTE, SETSTREAMOBJECT, SETSTREAMVOLUME};
@@ -80,17 +80,15 @@ impl TAudioStreamImpl<Sink, InputStream> for InputStreamEntry {
         &self.volume_time_stamp
     }
 
-    fn set_volume_fn(&self) -> &'static crate::components::audio::generic_entry::DBusFunction {
+    fn set_volume_fn(&self) -> &'static crate::components::audio::audio_entry::DBusFunction {
         &SETSTREAMVOLUME
     }
 
-    fn set_audio_object_fn(
-        &self,
-    ) -> &'static crate::components::audio::generic_entry::DBusFunction {
+    fn set_audio_object_fn(&self) -> &'static crate::components::audio::audio_entry::DBusFunction {
         &SETSTREAMOBJECT
     }
 
-    fn set_mute_fn(&self) -> &'static crate::components::audio::generic_entry::DBusFunction {
+    fn set_mute_fn(&self) -> &'static crate::components::audio::audio_entry::DBusFunction {
         &SETSTREAMMUTE
     }
 

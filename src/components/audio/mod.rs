@@ -1,10 +1,8 @@
-pub mod generic_audio_functions;
-mod generic_const;
-pub mod generic_entry;
-mod generic_utils;
+mod audio_box_handlers;
+mod audio_box_utils;
+mod audio_const;
+pub mod audio_entry;
+pub mod audio_functions;
+mod audio_utils;
 pub mod input;
 pub mod output;
-mod generic_audio_box_utils;
-mod generic_audio_stream_utils;
-mod generic_audio_object_entry_utils;
-mod generic_audio_box_handlers;

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::components::audio::generic_entry::{new_entry, TAudioEntry};
+use crate::components::audio::audio_entry::{new_entry, TAudioEntry};
 use glib::subclass::types::ObjectSubclassIsExt;
 use gtk::CheckButton;
 use re_set_lib::audio::audio_structures::{OutputStream, Source};

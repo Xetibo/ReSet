@@ -23,17 +23,18 @@ use crate::components::{
 };
 
 use super::{
-    generic_audio_box_handlers::{
+    audio_box_handlers::{
+        audio_stream_added_handler, audio_stream_changed_handler, audio_stream_removed_handler,
         dropdown_handler, mute_clicked_handler, object_added_handler, object_changed_handler,
         object_removed_handler, volume_slider_handler,
     },
-    generic_audio_functions::new_stream_entry,
-    generic_const::GETCARDS,
-    generic_entry::{
+    audio_const::GETCARDS,
+    audio_entry::{
         new_entry, DBusFunction, TAudioBox, TAudioBoxImpl, TAudioEntry, TAudioEntryImpl,
         TAudioStream, TAudioStreamImpl,
     },
-    generic_utils::audio_dbus_call,
+    audio_functions::new_stream_entry,
+    audio_utils::audio_dbus_call,
 };
 
 pub fn setup_audio_box_callbacks<
@@ -308,7 +309,7 @@ pub fn populate_audio_object_information<
     });
 }
 
-pub fn start_source_box_listener<
+pub fn start_audio_box_listener<
     AudioObject: TAudioObject,
     StreamObject: TAudioStreamObject,
     AudioEntry: TAudioEntry<AudioEntryImpl> + IsA<gtk::Widget>,
@@ -407,8 +408,17 @@ pub fn start_source_box_listener<
     }
 
     let res = conn.add_match(stream_added, move |ir: StreamAdded, _, _| {
-        // output_stream_added_handler(output_stream_added_box.clone(), ir)
-        true
+        audio_stream_added_handler::<
+            AudioObject,
+            StreamObject,
+            AudioEntry,
+            AudioEntryImpl,
+            AudioStream,
+            AudioStreamImpl,
+            AudioBox,
+            AudioBoxImpl,
+            StreamAdded,
+        >(stream_added_box.clone(), ir)
     });
     if res.is_err() {
         println!("fail on output stream add event");
@@ -416,8 +426,17 @@ pub fn start_source_box_listener<
     }
 
     let res = conn.add_match(stream_changed, move |ir: StreamChanged, _, _| {
-        // output_stream_changed_handler(output_stream_changed_box.clone(), ir)
-        true
+        audio_stream_changed_handler::<
+            AudioObject,
+            StreamObject,
+            AudioEntry,
+            AudioEntryImpl,
+            AudioStream,
+            AudioStreamImpl,
+            AudioBox,
+            AudioBoxImpl,
+            StreamChanged,
+        >(stream_changed_box.clone(), ir)
     });
     if res.is_err() {
         println!("fail on output stream change event");
@@ -425,8 +444,17 @@ pub fn start_source_box_listener<
     }
 
     let res = conn.add_match(stream_removed, move |ir: StreamRemoved, _, _| {
-        // output_stream_removed_handler(output_stream_removed_box.clone(), ir)
-        true
+        audio_stream_removed_handler::<
+            AudioObject,
+            StreamObject,
+            AudioEntry,
+            AudioEntryImpl,
+            AudioStream,
+            AudioStreamImpl,
+            AudioBox,
+            AudioBoxImpl,
+            StreamRemoved,
+        >(stream_removed_box.clone(), ir)
     });
     if res.is_err() {
         println!("fail on output stream remove event");

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
 
-use crate::components::audio::generic_entry::{AudioIcons, TAudioBoxImpl};
+use crate::components::audio::audio_entry::{AudioIcons, TAudioBoxImpl};
 use crate::components::audio::input::source_box;
 use crate::components::base::error::ReSetError;
 use crate::components::base::list_entry::ListEntry;
@@ -149,13 +149,13 @@ impl TAudioBoxImpl<Source, SourceEntry, OutputStreamEntry> for SourceBox {
 
     fn audio_object_list(
         &self,
-    ) -> &crate::components::audio::generic_entry::AudioEntryMap<SourceEntry> {
+    ) -> &crate::components::audio::audio_entry::AudioEntryMap<SourceEntry> {
         &self.reset_source_list
     }
 
     fn audio_object_stream_list(
         &self,
-    ) -> &crate::components::audio::generic_entry::AudioStreamEntryMap<OutputStreamEntry> {
+    ) -> &crate::components::audio::audio_entry::AudioStreamEntryMap<OutputStreamEntry> {
         &self.reset_output_stream_list
     }
 
@@ -167,7 +167,7 @@ impl TAudioBoxImpl<Source, SourceEntry, OutputStreamEntry> for SourceBox {
         self.reset_model_index.clone()
     }
 
-    fn source_map(&self) -> &crate::components::audio::generic_entry::AudioMap {
+    fn source_map(&self) -> &crate::components::audio::audio_entry::AudioMap {
         &self.reset_source_map
     }
 

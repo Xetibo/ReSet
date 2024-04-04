@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use crate::components::audio::generic_audio_functions::new_stream_entry;
-use crate::components::audio::generic_entry::TAudioStream;
+use crate::components::audio::audio_entry::TAudioStream;
+use crate::components::audio::audio_functions::new_stream_entry;
 use glib::subclass::types::ObjectSubclassIsExt;
 use re_set_lib::audio::audio_structures::{InputStream, Sink};
 

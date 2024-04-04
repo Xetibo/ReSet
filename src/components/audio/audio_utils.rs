@@ -11,7 +11,7 @@ use crate::components::{
     utils::{AUDIO, BASE, DBUS_PATH},
 };
 
-use super::generic_entry::DBusFunction;
+use super::audio_entry::DBusFunction;
 
 pub fn audio_dbus_call<B, O, I>(
     source_box: Arc<B>,

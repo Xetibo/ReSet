@@ -22,16 +22,16 @@ use re_set_lib::{
 use crate::components::base::{error_impl::ReSetErrorImpl, list_entry::ListEntry};
 
 use super::{
-    generic_audio_box_utils::{
+    audio_box_utils::{
         populate_audio_object_information, populate_cards, populate_streams,
         refresh_default_audio_object,
     },
-    generic_audio_functions::new_stream_entry,
-    generic_entry::{
+    audio_entry::{
         new_entry, DBusFunction, TAudioBox, TAudioBoxImpl, TAudioEntry, TAudioEntryImpl,
         TAudioStream, TAudioStreamImpl,
     },
-    generic_utils::audio_dbus_call,
+    audio_functions::new_stream_entry,
+    audio_utils::audio_dbus_call,
 };
 
 pub fn mute_clicked_handler<
@@ -448,7 +448,7 @@ pub fn object_removed_handler<
     true
 }
 
-pub fn output_stream_added_handler<
+pub fn audio_stream_added_handler<
     AudioObject: TAudioObject,
     StreamObject: TAudioStreamObject,
     AudioEntry: TAudioEntry<AudioEntryImpl> + IsA<gtk::Widget>,
@@ -466,7 +466,7 @@ pub fn output_stream_added_handler<
         glib::idle_add_once(move || {
             let audio_box = audio_box.clone();
             let imp = audio_box.box_imp();
-            let mut list = imp.audio_object_stream_list();
+            let list = imp.audio_object_stream_list();
             let mut list = list.write().unwrap();
             let index = ir.stream_ref().index();
             let stream = new_stream_entry::<

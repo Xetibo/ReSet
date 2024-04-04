@@ -5,7 +5,7 @@ use std::cell::RefCell;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::components::audio::generic_entry::{AudioIcons, TAudioStreamImpl};
+use crate::components::audio::audio_entry::{AudioIcons, TAudioStreamImpl};
 use crate::components::audio::input::output_stream_entry;
 use gtk::subclass::prelude::*;
 use gtk::{Button, CompositeTemplate, Label, Scale};
@@ -79,17 +79,15 @@ impl TAudioStreamImpl<Source, OutputStream> for OutputStreamEntry {
         &self.volume_time_stamp
     }
 
-    fn set_volume_fn(&self) -> &'static crate::components::audio::generic_entry::DBusFunction {
+    fn set_volume_fn(&self) -> &'static crate::components::audio::audio_entry::DBusFunction {
         &SETSTREAMVOLUME
     }
 
-    fn set_audio_object_fn(
-        &self,
-    ) -> &'static crate::components::audio::generic_entry::DBusFunction {
+    fn set_audio_object_fn(&self) -> &'static crate::components::audio::audio_entry::DBusFunction {
         &SETSTREAMOBJECT
     }
 
-    fn set_mute_fn(&self) -> &'static crate::components::audio::generic_entry::DBusFunction {
+    fn set_mute_fn(&self) -> &'static crate::components::audio::audio_entry::DBusFunction {
         &SETSTREAMMUTE
     }
 

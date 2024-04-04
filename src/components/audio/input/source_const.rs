@@ -1,4 +1,4 @@
-use crate::components::audio::generic_entry::{AudioIcons, DBusFunction};
+use crate::components::audio::audio_entry::{AudioIcons, DBusFunction};
 
 pub const ICONS: AudioIcons = AudioIcons {
     muted: "microphone-disabled-symbolic",
