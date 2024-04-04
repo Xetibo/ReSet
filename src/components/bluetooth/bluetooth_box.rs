@@ -179,7 +179,9 @@ pub fn populate_connected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
     // TODO handle saved devices -> they also exist
     gio::spawn_blocking(move || {
         let ref_box = bluetooth_box.clone();
-        let devices = get_connected_devices(ref_box.clone());
+        let devices = get_bluetooth_devices(ref_box.clone());
+        dbg!(&devices);
+        let connected_devices = get_connected_devices(ref_box.clone());
         let adapters = get_bluetooth_adapters(ref_box.clone());
         {
             let imp = bluetooth_box.imp();
@@ -228,10 +230,24 @@ pub fn populate_connected_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) {
                     });
 
                 for device in devices {
+                    dbg!(&device);
                     let path = device.path.clone();
                     let connected = device.connected;
                     let bluetooth_entry = BluetoothEntry::new(device, ref_box.clone());
                     imp.available_devices
+                        .borrow_mut()
+                        .insert(path, bluetooth_entry.clone());
+                    if connected {
+                        imp.reset_bluetooth_connected_devices.add(&*bluetooth_entry);
+                    } else {
+                        imp.reset_bluetooth_available_devices.add(&*bluetooth_entry);
+                    }
+                }
+                for device in connected_devices {
+                    let path = device.path.clone();
+                    let connected = device.connected;
+                    let bluetooth_entry = BluetoothEntry::new(device, ref_box.clone());
+                    imp.connected_devices
                         .borrow_mut()
                         .insert(path, bluetooth_entry.clone());
                     if connected {
@@ -419,6 +435,21 @@ fn get_connected_devices(bluetooth_box: Arc<BluetoothBox>) -> Vec<BluetoothDevic
         show_error::<BluetoothBox>(
             bluetooth_box.clone(),
             "Failed to get connected bluetooth devices",
+        );
+        return Vec::new();
+    }
+    res.unwrap().0
+}
+
+fn get_bluetooth_devices(bluetooth_box: Arc<BluetoothBox>) -> Vec<BluetoothDevice> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Vec<BluetoothDevice>,), Error> =
+        proxy.method_call(BLUETOOTH, "GetBluetoothDevices", ());
+    if res.is_err() {
+        show_error::<BluetoothBox>(
+            bluetooth_box.clone(),
+            "Failed to get bluetooth devices",
         );
         return Vec::new();
     }

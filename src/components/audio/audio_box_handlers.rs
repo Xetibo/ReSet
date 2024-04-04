@@ -171,8 +171,8 @@ pub fn populate_audio_objects<
     default_audio_object_function: &'static DBusFunction,
     set_default_audio_object_function: &'static DBusFunction,
     get_audio_streams_function: &'static DBusFunction,
-    set_audio_object_mute_function: &'static DBusFunction,
     set_audio_object_volume_function: &'static DBusFunction,
+    set_audio_object_mute_function: &'static DBusFunction,
 ) {
     gio::spawn_blocking(move || {
         let sources = audio_dbus_call::<AudioBox, (Vec<AudioObject>,), ()>(

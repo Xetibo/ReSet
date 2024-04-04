@@ -20,13 +20,9 @@ use crate::components::base::error_impl::ReSetErrorImpl;
 
 use super::input_stream_entry::InputStreamEntry;
 use super::sink_box_impl;
-use super::sink_const::GETDEFAULT;
-use super::sink_const::GETDEFAULTNAME;
-use super::sink_const::GETOBJECTS;
-use super::sink_const::GETSTREAMS;
-use super::sink_const::SETDEFAULT;
-use super::sink_const::SETMUTE;
-use super::sink_const::SETVOLUME;
+use super::sink_const::{
+    GETDEFAULT, GETDEFAULTNAME, GETOBJECTS, GETSTREAMS, SETDEFAULT, SETMUTE, SETVOLUME,
+};
 use super::sink_entry::SinkEntry;
 
 glib::wrapper! {

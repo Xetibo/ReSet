@@ -7,7 +7,7 @@ use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, Wid
 use gtk::{Align, SignalListItemFactory, StringObject};
 
 pub const DBUS_PATH: &str = "/org/Xetibo/ReSet/Daemon";
-pub const WIRELESS: &str = "org.Xetibo.ReSet.Wireless";
+pub const WIRELESS: &str = "org.Xetibo.ReSet.Network";
 pub const BLUETOOTH: &str = "org.Xetibo.ReSet.Bluetooth";
 pub const AUDIO: &str = "org.Xetibo.ReSet.Audio";
 pub const BASE: &str = "org.Xetibo.ReSet.Daemon";
