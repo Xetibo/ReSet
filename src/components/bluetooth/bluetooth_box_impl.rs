@@ -24,6 +24,8 @@ pub struct BluetoothBox {
     #[template_child]
     pub reset_bluetooth_available_devices: TemplateChild<PreferencesGroup>,
     #[template_child]
+    pub reset_bluetooth_saved_devices: TemplateChild<PreferencesGroup>,
+    #[template_child]
     pub reset_bluetooth_refresh_button: TemplateChild<Button>,
     #[template_child]
     pub reset_bluetooth_adapter: TemplateChild<ComboRow>,
@@ -41,6 +43,7 @@ pub struct BluetoothBox {
     pub error: TemplateChild<ReSetError>,
     pub available_devices: BluetoothMap,
     pub connected_devices: BluetoothMap,
+    pub saved_devices: BluetoothMap,
     pub reset_bluetooth_adapters: Arc<RwLock<HashMap<String, (BluetoothAdapter, u32)>>>,
     pub reset_current_bluetooth_adapter: Arc<RefCell<BluetoothAdapter>>,
     pub reset_model_list: Arc<RwLock<StringList>>,

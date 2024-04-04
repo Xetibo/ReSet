@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.17.3 -->
+<!-- Created with Cambalache 0.90.1 -->
 <interface>
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.4"/>
@@ -85,6 +85,15 @@
                     <property name="margin-start">5</property>
                     <property name="margin-top">10</property>
                     <property name="title">Available Devices</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup" id="reset_bluetooth_saved_devices">
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">10</property>
+                    <property name="title">Saved Devices</property>
                   </object>
                 </child>
               </object>

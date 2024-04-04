@@ -29,8 +29,8 @@ pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Posi
         scan_for_wifi(wifi_box.clone());
         let wifi_frame = wrap_in_flow_box_child(SettingBox::new(&*wifi_box));
         let bluetooth_box = BluetoothBox::new(listeners.clone());
-        populate_connected_bluetooth_devices(bluetooth_box.clone());
-        start_bluetooth_listener(listeners, bluetooth_box.clone());
+        populate_connected_bluetooth_devices(listeners, bluetooth_box.clone());
+        // start_bluetooth_listener(listeners, bluetooth_box.clone());
         let bluetooth_frame = wrap_in_flow_box_child(SettingBox::new(&*bluetooth_box));
         reset_main.remove_all();
         reset_main.insert(&wifi_frame, -1);
@@ -59,8 +59,8 @@ pub const HANDLE_BLUETOOTH_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Positio
             return;
         }
         let bluetooth_box = BluetoothBox::new(listeners.clone());
-        start_bluetooth_listener(listeners, bluetooth_box.clone());
-        populate_connected_bluetooth_devices(bluetooth_box.clone());
+        populate_connected_bluetooth_devices(listeners, bluetooth_box.clone());
+        // start_bluetooth_listener(listeners, bluetooth_box.clone());
         let bluetooth_frame = wrap_in_flow_box_child(SettingBox::new(&*bluetooth_box));
         reset_main.remove_all();
         reset_main.insert(&bluetooth_frame, -1);
