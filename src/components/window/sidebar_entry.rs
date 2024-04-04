@@ -1,11 +1,9 @@
-
-use crate::components::plugin::function::{TSideBarInfo};
+use crate::components::plugin::function::TSideBarInfo;
 use crate::components::window::sidebar_entry_impl;
 use crate::components::window::sidebar_entry_impl::SidebarAction;
 use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::Object;
 use gtk::prelude::*;
-
 
 glib::wrapper! {
     pub struct SidebarEntry(ObjectSubclass<sidebar_entry_impl::SidebarEntry>)
