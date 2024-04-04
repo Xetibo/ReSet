@@ -251,7 +251,6 @@ pub fn get_wifi_devices(wifi_box: Arc<WifiBox>) -> Vec<WifiDevice> {
     let res: Result<(Vec<WifiDevice>,), Error> =
         proxy.method_call(WIRELESS, "GetAllWifiDevices", ());
     if res.is_err() {
-        dbg!(&res);
         show_error::<WifiBox>(wifi_box.clone(), "Failed to get WiFi devices");
         return Vec::new();
     }

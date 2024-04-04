@@ -175,13 +175,15 @@ fn bluetooth_enabled_switch_handler(
     glib::Propagation::Proceed
 }
 
-pub fn populate_connected_bluetooth_devices(listeners: Arc<Listeners>,bluetooth_box: Arc<BluetoothBox>) {
+pub fn populate_connected_bluetooth_devices(
+    listeners: Arc<Listeners>,
+    bluetooth_box: Arc<BluetoothBox>,
+) {
     // TODO handle saved devices -> they also exist
     gio::spawn_blocking(move || {
         let ref_box = bluetooth_box.clone();
         let adapters = get_bluetooth_adapters(ref_box.clone());
         let devices = get_bluetooth_devices(ref_box.clone());
-        dbg!(&adapters);
         {
             let imp = bluetooth_box.imp();
             let list = imp.reset_model_list.write().unwrap();
@@ -232,25 +234,23 @@ pub fn populate_connected_bluetooth_devices(listeners: Arc<Listeners>,bluetooth_
                 for device in devices {
                     let path = device.path.clone();
                     let connected = device.connected;
-                    let rssi = device.rssi.clone();
+                    let rssi = device.rssi;
                     let bluetooth_entry = BluetoothEntry::new(device, ref_box.clone());
                     if connected {
                         imp.reset_bluetooth_connected_devices.add(&*bluetooth_entry);
                         imp.connected_devices
                             .borrow_mut()
                             .insert(path, bluetooth_entry.clone());
+                    } else if rssi == -1 {
+                        imp.reset_bluetooth_saved_devices.add(&*bluetooth_entry);
+                        imp.saved_devices
+                            .borrow_mut()
+                            .insert(path, bluetooth_entry.clone());
                     } else {
-                        if rssi == -1 {
-                            imp.reset_bluetooth_saved_devices.add(&*bluetooth_entry);
-                            imp.saved_devices
-                                .borrow_mut()
-                                .insert(path, bluetooth_entry.clone());
-                        } else {
-                            imp.reset_bluetooth_available_devices.add(&*bluetooth_entry);
-                            imp.available_devices
-                                .borrow_mut()
-                                .insert(path, bluetooth_entry.clone());
-                        }
+                        imp.reset_bluetooth_available_devices.add(&*bluetooth_entry);
+                        imp.available_devices
+                            .borrow_mut()
+                            .insert(path, bluetooth_entry.clone());
                     }
                 }
             });
