@@ -1,4 +1,4 @@
-use super::generic_entry::DBusFunction;
+use super::{audio_entry::DBusFunction};
 
 pub const GETCARDS: DBusFunction = DBusFunction {
     function: "ListCards",
