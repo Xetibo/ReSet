@@ -3,7 +3,7 @@ use std::{
     time::{Duration, SystemTime},
 };
 
-use adw::traits::{ComboRowExt, PreferencesRowExt};
+use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::arg::{Arg, Get};
 use glib::{
     object::{Cast, IsA},
