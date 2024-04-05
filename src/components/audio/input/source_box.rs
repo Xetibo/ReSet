@@ -20,7 +20,7 @@ use crate::components::base::error_impl::ReSetErrorImpl;
 
 use super::output_stream_entry::OutputStreamEntry;
 use super::source_const::{
-    GETDEFAULT, GETDEFAULTNAME, GETOBJECTS, GETSTREAMS, SETDEFAULT, SETMUTE, SETVOLUME,
+    DUMMY, GETDEFAULT, GETDEFAULTNAME, GETOBJECTS, GETSTREAMS, SETDEFAULT, SETMUTE, SETVOLUME
 };
 use super::source_entry::SourceEntry;
 
@@ -110,5 +110,5 @@ pub fn start_source_box_listener(conn: Connection, source_box: Arc<SourceBox>) -
         OutputStreamAdded,
         OutputStreamChanged,
         OutputStreamRemoved,
-    >(conn, source_box, &GETDEFAULTNAME)
+    >(conn, source_box, &GETDEFAULTNAME, DUMMY)
 }

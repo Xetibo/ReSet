@@ -20,6 +20,7 @@ use crate::components::base::error_impl::ReSetErrorImpl;
 
 use super::input_stream_entry::InputStreamEntry;
 use super::sink_box_impl;
+use super::sink_const::DUMMY;
 use super::sink_const::{
     GETDEFAULT, GETDEFAULTNAME, GETOBJECTS, GETSTREAMS, SETDEFAULT, SETMUTE, SETVOLUME,
 };
@@ -113,5 +114,5 @@ pub fn start_sink_box_listener(conn: Connection, sink_box: Arc<SinkBox>) -> Conn
         InputStreamAdded,
         InputStreamChanged,
         InputStreamRemoved,
-    >(conn, sink_box, &GETDEFAULTNAME)
+    >(conn, sink_box, &GETDEFAULTNAME, DUMMY)
 }

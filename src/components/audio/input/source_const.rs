@@ -54,3 +54,5 @@ pub const SETSTREAMOBJECT: DBusFunction = DBusFunction {
     function: "SetSourceOfOutputStream",
     error: "Failed to set source of output stream",
 };
+
+pub const DUMMY: &str = "Monitor of Dummy Output";

@@ -6,7 +6,8 @@ use std::{
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::arg::{Arg, Get};
 use glib::{
-    object::{Cast, IsA},
+    object::{Cast, IsA, ObjectExt},
+    property::PropertyGet,
     ControlFlow, Propagation,
 };
 use gtk::{
@@ -264,6 +265,7 @@ pub fn object_added_handler<
 >(
     audio_box: Arc<AudioBox>,
     ir: Event,
+    dummy_name: &'static str,
 ) -> bool {
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
@@ -305,8 +307,7 @@ pub fn object_added_handler<
             let mut index = index.write().unwrap();
             let model_list = source_box_imp.model_list();
             let model_list = model_list.write().unwrap();
-            // TODO: make this work generic!
-            if model_list.string(*index - 1) == Some("Monitor of Dummy Output".into()) {
+            if model_list.string(*index - 1) == Some(dummy_name.into()) {
                 model_list.append(&alias);
                 model_list.remove(*index - 1);
                 map.insert(alias, (object_index, name));
@@ -314,8 +315,7 @@ pub fn object_added_handler<
             } else {
                 model_list.append(&alias);
                 map.insert(alias.clone(), (object_index, name));
-                // TODO: make this work generic!
-                if alias == "Monitor of Dummy Output" {
+                if alias == dummy_name {
                     source_box_imp.audio_object_dropdown().set_selected(0);
                 }
                 *index += 1;
@@ -406,6 +406,7 @@ pub fn object_removed_handler<
 >(
     audio_box: Arc<AudioBox>,
     ir: Event,
+    dummy_name: &'static str,
 ) -> bool {
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
@@ -431,8 +432,7 @@ pub fn object_removed_handler<
             let model_list = model_list.write().unwrap();
 
             if *index == 1 {
-                // TODO: ensure dummy output and input are mentioned
-                model_list.append("Dummy");
+                model_list.append(dummy_name);
             }
             for entry in 0..*index {
                 if model_list.string(entry) == Some(alias.clone().into()) {
