@@ -155,9 +155,9 @@ impl ReSetWindow {
         let mut plugin_sidebar_list = vec![];
         unsafe {
             for plugin in FRONTEND_PLUGINS.iter() {
+                (plugin.frontend_startup)();
                 let (sidebar_info, plugin_boxes) = (plugin.frontend_data)();
                 let listeners = self_imp.listeners.clone();
-                (plugin.frontend_startup)();
 
                 let event = Rc::new(
                     move |reset_main: FlowBox,
