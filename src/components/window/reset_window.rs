@@ -149,17 +149,17 @@ impl ReSetWindow {
                 let listeners = self_imp.listeners.clone();
                 (plugin.frontend_startup)();
 
-                let mut found = false;
-                    dbg!(&capabilities);
-                for capability in plugin_capabilities {
-                    dbg!(&capability);
-                    if capabilities.contains(&capability.to_string()) {
-                        found = true;
-                        break;
+                if plugin_capabilities.1 {
+                    let mut found = false;
+                    for capability in plugin_capabilities.0.iter() {
+                        if capabilities.contains(&capability.to_string()) {
+                            found = true;
+                            break;
+                        }
                     }
-                }
-                if !found {
-                    continue;
+                    if !found {
+                        continue;
+                    }
                 }
                 let event = Rc::new(
                     move |reset_main: FlowBox,
