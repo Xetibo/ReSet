@@ -124,7 +124,6 @@ impl ReSetWindow {
         let audio = capabilities.contains(&"Audio".to_string());
         self_imp.capabilities.set(wifi, bluetooth, audio);
 
-        // let sidebar_list = vec![CONNECTIVITY_SIDEBAR, WIFI_SIDEBAR, BLUETOOTH_SIDEBAR, AUDIO_SIDEBAR, SINK_SIDEBAR, SOURCE_SIDEBAR];
         let mut sidebar_list = Vec::new();
 
         if wifi || bluetooth {
@@ -145,10 +144,23 @@ impl ReSetWindow {
         let mut plugin_sidebar_list = vec![];
         unsafe {
             for plugin in FRONTEND_PLUGINS.iter() {
+                let plugin_capabilities = &plugin.capabilities;
                 let (sidebar_info, plugin_boxes) = (plugin.frontend_data)();
                 let listeners = self_imp.listeners.clone();
                 (plugin.frontend_startup)();
 
+                let mut found = false;
+                    dbg!(&capabilities);
+                for capability in plugin_capabilities {
+                    dbg!(&capability);
+                    if capabilities.contains(&capability.to_string()) {
+                        found = true;
+                        break;
+                    }
+                }
+                if !found {
+                    continue;
+                }
                 let event = Rc::new(
                     move |reset_main: FlowBox,
                           position: Rc<RefCell<Position>>,
