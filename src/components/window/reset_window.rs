@@ -144,10 +144,13 @@ impl ReSetWindow {
         let mut plugin_sidebar_list = vec![];
         unsafe {
             for plugin in FRONTEND_PLUGINS.iter() {
+
                 let plugin_capabilities = &plugin.capabilities;
+              
+                (plugin.frontend_startup)();
+              
                 let (sidebar_info, plugin_boxes) = (plugin.frontend_data)();
                 let listeners = self_imp.listeners.clone();
-                (plugin.frontend_startup)();
 
                 if plugin_capabilities.1 {
                     let mut found = false;
