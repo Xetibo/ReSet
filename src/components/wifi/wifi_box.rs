@@ -116,7 +116,7 @@ pub fn scan_for_wifi(wifi_box: Arc<WifiBox>) {
         if devices.is_empty() {
             return;
         }
-        let access_points = get_access_points(wifibox_ref.clone());
+        let access_points = get_access_points(wifi_box.clone());
         {
             let imp = wifibox_ref.imp();
             let list = imp.reset_model_list.write().unwrap();

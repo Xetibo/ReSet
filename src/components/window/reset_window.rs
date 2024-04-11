@@ -16,10 +16,16 @@ use re_set_lib::utils::plugin_setup::FRONTEND_PLUGINS;
 
 use crate::components::base::setting_box::SettingBox;
 use crate::components::base::utils::{Listeners, Position};
-use crate::components::plugin::function::{PluginSidebarInfo, ReSetSidebarInfo};
+use crate::components::plugin::function::PluginSidebarInfo;
+use crate::components::utils::get_capabilities;
 use crate::components::window::handle_sidebar_click::*;
 use crate::components::window::reset_window_impl;
 use crate::components::window::sidebar_entry::SidebarEntry;
+
+use super::consts::{
+    AUDIO_SIDEBAR, BLUETOOTH_SIDEBAR, CONNECTIVITY_SIDEBAR, SINK_SIDEBAR, SOURCE_SIDEBAR,
+    WIFI_SIDEBAR,
+};
 
 glib::wrapper! {
     pub struct ReSetWindow(ObjectSubclass<reset_window_impl::ReSetWindow>)
@@ -112,53 +118,52 @@ impl ReSetWindow {
 
     pub fn setup_sidebar_entries(&self) {
         let self_imp = self.imp();
+        let capabilities = get_capabilities();
+        let wifi = capabilities.contains(&"WiFi".to_string());
+        let bluetooth = capabilities.contains(&"Bluetooth".to_string());
+        let audio = capabilities.contains(&"Audio".to_string());
+        self_imp.capabilities.set(wifi, bluetooth, audio);
 
-        let sidebar_list = vec![
-            ReSetSidebarInfo {
-                name: "Connectivity",
-                icon_name: "network-wired-symbolic",
-                parent: None,
-                click_event: HANDLE_CONNECTIVITY_CLICK,
-            },
-            ReSetSidebarInfo {
-                name: "WiFi",
-                icon_name: "network-wireless-symbolic",
-                parent: Some("Connectivity"),
-                click_event: HANDLE_WIFI_CLICK,
-            },
-            ReSetSidebarInfo {
-                name: "Bluetooth",
-                icon_name: "bluetooth-symbolic",
-                parent: Some("Connectivity"),
-                click_event: HANDLE_BLUETOOTH_CLICK,
-            },
-            ReSetSidebarInfo {
-                name: "Audio",
-                icon_name: "audio-headset-symbolic",
-                parent: None,
-                click_event: HANDLE_AUDIO_CLICK,
-            },
-            ReSetSidebarInfo {
-                name: "Output",
-                icon_name: "audio-volume-high-symbolic",
-                parent: Some("Audio"),
-                click_event: HANDLE_VOLUME_CLICK,
-            },
-            ReSetSidebarInfo {
-                name: "Input",
-                icon_name: "audio-input-microphone-symbolic",
-                parent: Some("Audio"),
-                click_event: HANDLE_MICROPHONE_CLICK,
-            },
-        ];
+        let mut sidebar_list = Vec::new();
+
+        if wifi || bluetooth {
+            sidebar_list.push(CONNECTIVITY_SIDEBAR);
+        }
+        if wifi {
+            sidebar_list.push(WIFI_SIDEBAR);
+        };
+        if bluetooth {
+            sidebar_list.push(BLUETOOTH_SIDEBAR);
+        };
+        if audio {
+            sidebar_list.push(AUDIO_SIDEBAR);
+            sidebar_list.push(SINK_SIDEBAR);
+            sidebar_list.push(SOURCE_SIDEBAR);
+        }
 
         let mut plugin_sidebar_list = vec![];
         unsafe {
             for plugin in FRONTEND_PLUGINS.iter() {
+
+                let plugin_capabilities = &plugin.capabilities;
+              
                 (plugin.frontend_startup)();
+              
                 let (sidebar_info, plugin_boxes) = (plugin.frontend_data)();
                 let listeners = self_imp.listeners.clone();
 
+                if plugin_capabilities.1 {
+                    let mut found = false;
+                    for capability in plugin_capabilities.0.iter() {
+                        if capabilities.contains(&capability.to_string()) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if !found {
+                        continue;
+                    }
+                }
                 let event = Rc::new(
                     move |reset_main: FlowBox,
                           position: Rc<RefCell<Position>>,
@@ -191,6 +196,7 @@ impl ReSetWindow {
         }
 
         HANDLE_VOLUME_CLICK(
+            &self_imp.capabilities,
             self_imp.listeners.clone(),
             self_imp.reset_main.clone(),
             self_imp.position.clone(),
@@ -361,6 +367,7 @@ fn setup_callback(window: Rc<ReSetWindow>) -> Rc<ReSetWindow> {
             let click_event = result.imp().on_click_event.borrow();
             if let Some(event) = click_event.on_click_event {
                 event(
+                    &imp.capabilities,
                     imp.listeners.clone(),
                     imp.reset_main.get(),
                     imp.position.clone(),

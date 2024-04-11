@@ -15,7 +15,7 @@ pub const INTERFACE: &str = "org.Xetibo.ReSet.TestPlugin";
 #[allow(improper_ctypes_definitions)]
 pub extern "C" fn capabilities() -> PluginCapabilities {
     println!("frontend capabilities called");
-    PluginCapabilities::new(vec!["frontend test"], PluginImplementation::Frontend)
+    PluginCapabilities::new(vec!["test"], PluginImplementation::Frontend)
 }
 
 #[no_mangle]

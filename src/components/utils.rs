@@ -1,16 +1,36 @@
+use std::cell::Cell;
+use std::time::Duration;
+
 use adw::gdk::pango::EllipsizeMode;
 use adw::prelude::ListModelExtManual;
 use adw::{ActionRow, ComboRow};
+use dbus::blocking::Connection;
+use dbus::Error;
 use glib::prelude::Cast;
 use glib::Object;
 use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, WidgetExt};
 use gtk::{Align, SignalListItemFactory, StringObject};
 
 pub const DBUS_PATH: &str = "/org/Xetibo/ReSet/Daemon";
-pub const WIRELESS: &str = "org.Xetibo.ReSet.Wireless";
+pub const WIRELESS: &str = "org.Xetibo.ReSet.Network";
 pub const BLUETOOTH: &str = "org.Xetibo.ReSet.Bluetooth";
 pub const AUDIO: &str = "org.Xetibo.ReSet.Audio";
 pub const BASE: &str = "org.Xetibo.ReSet.Daemon";
+
+#[derive(Default)]
+pub struct Capabilities {
+    pub wifi: Cell<bool>,
+    pub bluetooth: Cell<bool>,
+    pub audio: Cell<bool>,
+}
+
+impl Capabilities {
+    pub fn set(&self, wifi: bool, bluetooth: bool, audio: bool) {
+        self.wifi.set(wifi);
+        self.bluetooth.set(bluetooth);
+        self.audio.set(audio);
+    }
+}
 
 pub fn create_dropdown_label_factory() -> SignalListItemFactory {
     let factory = SignalListItemFactory::new();
@@ -67,4 +87,11 @@ pub fn set_action_row_ellipsis(element: ActionRow) {
             }
         }
     }
+}
+
+pub fn get_capabilities() -> Vec<String> {
+    let conn = Connection::new_session().unwrap();
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let res: Result<(Vec<String>,), Error> = proxy.method_call(BASE, "GetCapabilities", ());
+    res.unwrap().0
 }

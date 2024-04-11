@@ -328,6 +328,7 @@ pub fn start_audio_box_listener<
     conn: Connection,
     source_box: Arc<AudioBox>,
     get_default_name_function: &'static DBusFunction,
+    dummy_name: &'static str,
 ) -> Connection {
     // TODO: make the failed logs generically sound -> deynamic output for both
     let object_added =
@@ -361,7 +362,7 @@ pub fn start_audio_box_listener<
             AudioBox,
             AudioBoxImpl,
             ObjectAdded,
-        >(object_added_box.clone(), ir)
+        >(object_added_box.clone(), ir, dummy_name)
     });
     if res.is_err() {
         // TODO: handle this with the log/error macro
@@ -370,7 +371,6 @@ pub fn start_audio_box_listener<
     }
 
     let res = conn.add_match(object_changed, move |ir: ObjectChanged, _, _| {
-        // source_changed_handler(source_changed_box.clone(), ir)
         object_changed_handler::<
             AudioObject,
             StreamObject,
@@ -389,7 +389,6 @@ pub fn start_audio_box_listener<
     }
 
     let res = conn.add_match(object_removed, move |ir: ObjectRemoved, _, _| {
-        // source_removed_handler(source_removed_box.clone(), ir)
         object_removed_handler::<
             AudioObject,
             StreamObject,
@@ -400,7 +399,7 @@ pub fn start_audio_box_listener<
             AudioBox,
             AudioBoxImpl,
             ObjectRemoved,
-        >(object_removed_box.clone(), ir)
+        >(object_removed_box.clone(), ir, dummy_name)
     });
     if res.is_err() {
         println!("fail on source remove event");

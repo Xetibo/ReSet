@@ -10,65 +10,98 @@ use crate::components::audio::output::sink_box::{populate_sinks, SinkBox};
 use crate::components::base::setting_box::SettingBox;
 use crate::components::base::utils::{start_audio_listener, Listeners, Position};
 use crate::components::bluetooth::bluetooth_box::{
-    populate_connected_bluetooth_devices, start_bluetooth_listener, BluetoothBox,
+    populate_connected_bluetooth_devices, BluetoothBox,
 };
+use crate::components::utils::Capabilities;
 use crate::components::wifi::wifi_box::{
     scan_for_wifi, show_stored_connections, start_event_listener, WifiBox,
 };
 use gtk::prelude::WidgetExt;
 use gtk::{Align, FlowBox, FlowBoxChild, Frame};
 
-pub const HANDLE_CONNECTIVITY_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
-    |listeners: Arc<Listeners>, reset_main: FlowBox, position: Rc<RefCell<Position>>| {
-        if handle_init(listeners.clone(), position, Position::Connectivity) {
-            return;
-        }
+pub const HANDLE_CONNECTIVITY_CLICK: fn(
+    &Capabilities,
+    Arc<Listeners>,
+    FlowBox,
+    Rc<RefCell<Position>>,
+) = |capabilities: &Capabilities,
+     listeners: Arc<Listeners>,
+     reset_main: FlowBox,
+     position: Rc<RefCell<Position>>| {
+    if handle_init(listeners.clone(), position, Position::Connectivity) {
+        return;
+    }
+    reset_main.remove_all();
+
+    let mut count = 0;
+
+    if capabilities.wifi.get() {
         let wifi_box = WifiBox::new(listeners.clone());
         start_event_listener(listeners.clone(), wifi_box.clone());
         show_stored_connections(wifi_box.clone());
         scan_for_wifi(wifi_box.clone());
         let wifi_frame = wrap_in_flow_box_child(SettingBox::new(&*wifi_box));
-        let bluetooth_box = BluetoothBox::new(listeners.clone());
-        populate_connected_bluetooth_devices(bluetooth_box.clone());
-        start_bluetooth_listener(listeners, bluetooth_box.clone());
-        let bluetooth_frame = wrap_in_flow_box_child(SettingBox::new(&*bluetooth_box));
-        reset_main.remove_all();
         reset_main.insert(&wifi_frame, -1);
-        reset_main.insert(&bluetooth_frame, -1);
-        reset_main.set_max_children_per_line(2);
-    };
+        count += 1;
+    }
 
-pub const HANDLE_WIFI_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
-    |listeners: Arc<Listeners>, reset_main: FlowBox, position: Rc<RefCell<Position>>| {
+    if capabilities.bluetooth.get() {
+        let bluetooth_box = BluetoothBox::new(listeners.clone());
+        populate_connected_bluetooth_devices(listeners, bluetooth_box.clone());
+        let bluetooth_frame = wrap_in_flow_box_child(SettingBox::new(&*bluetooth_box));
+        reset_main.insert(&bluetooth_frame, -1);
+        count += 1;
+    }
+
+    reset_main.set_max_children_per_line(count);
+};
+
+pub const HANDLE_WIFI_CLICK: fn(&Capabilities, Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
+    |_: &Capabilities,
+     listeners: Arc<Listeners>,
+     reset_main: FlowBox,
+     position: Rc<RefCell<Position>>| {
         if handle_init(listeners.clone(), position, Position::Wifi) {
             return;
         }
+        reset_main.remove_all();
+
         let wifi_box = WifiBox::new(listeners.clone());
         start_event_listener(listeners, wifi_box.clone());
         show_stored_connections(wifi_box.clone());
         scan_for_wifi(wifi_box.clone());
         let wifi_frame = wrap_in_flow_box_child(SettingBox::new(&*wifi_box));
-        reset_main.remove_all();
         reset_main.insert(&wifi_frame, -1);
+
         reset_main.set_max_children_per_line(1);
     };
 
-pub const HANDLE_BLUETOOTH_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
-    |listeners: Arc<Listeners>, reset_main: FlowBox, position: Rc<RefCell<Position>>| {
-        if handle_init(listeners.clone(), position, Position::Bluetooth) {
-            return;
-        }
-        let bluetooth_box = BluetoothBox::new(listeners.clone());
-        start_bluetooth_listener(listeners, bluetooth_box.clone());
-        populate_connected_bluetooth_devices(bluetooth_box.clone());
-        let bluetooth_frame = wrap_in_flow_box_child(SettingBox::new(&*bluetooth_box));
-        reset_main.remove_all();
-        reset_main.insert(&bluetooth_frame, -1);
-        reset_main.set_max_children_per_line(1);
-    };
+pub const HANDLE_BLUETOOTH_CLICK: fn(
+    &Capabilities,
+    Arc<Listeners>,
+    FlowBox,
+    Rc<RefCell<Position>>,
+) = |_: &Capabilities,
+     listeners: Arc<Listeners>,
+     reset_main: FlowBox,
+     position: Rc<RefCell<Position>>| {
+    if handle_init(listeners.clone(), position, Position::Bluetooth) {
+        return;
+    }
+    let bluetooth_box = BluetoothBox::new(listeners.clone());
+    populate_connected_bluetooth_devices(listeners, bluetooth_box.clone());
+    // start_bluetooth_listener(listeners, bluetooth_box.clone());
+    let bluetooth_frame = wrap_in_flow_box_child(SettingBox::new(&*bluetooth_box));
+    reset_main.remove_all();
+    reset_main.insert(&bluetooth_frame, -1);
+    reset_main.set_max_children_per_line(1);
+};
 
-pub const HANDLE_AUDIO_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
-    |listeners: Arc<Listeners>, reset_main: FlowBox, position: Rc<RefCell<Position>>| {
+pub const HANDLE_AUDIO_CLICK: fn(&Capabilities, Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
+    |_: &Capabilities,
+     listeners: Arc<Listeners>,
+     reset_main: FlowBox,
+     position: Rc<RefCell<Position>>| {
         if handle_init(listeners.clone(), position, Position::Audio) {
             return;
         }
@@ -92,8 +125,11 @@ pub const HANDLE_AUDIO_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>)
         reset_main.set_max_children_per_line(2);
     };
 
-pub const HANDLE_VOLUME_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
-    |listeners: Arc<Listeners>, reset_main: FlowBox, position: Rc<RefCell<Position>>| {
+pub const HANDLE_VOLUME_CLICK: fn(&Capabilities, Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
+    |_: &Capabilities,
+     listeners: Arc<Listeners>,
+     reset_main: FlowBox,
+     position: Rc<RefCell<Position>>| {
         if handle_init(listeners.clone(), position, Position::AudioOutput) {
             return;
         }
@@ -109,25 +145,35 @@ pub const HANDLE_VOLUME_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>
         reset_main.set_max_children_per_line(1);
     };
 
-pub const HANDLE_MICROPHONE_CLICK: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
-    |listeners: Arc<Listeners>, reset_main: FlowBox, position: Rc<RefCell<Position>>| {
-        if handle_init(listeners.clone(), position, Position::AudioInput) {
-            return;
-        }
-        let audio_input = Arc::new(SourceBox::new());
-        start_audio_listener(listeners.clone(), None, Some(audio_input.clone()));
-        if !listeners.pulse_listener.load(Ordering::SeqCst) {
-            spin_loop();
-        }
-        populate_sources(audio_input.clone());
-        let source_frame = wrap_in_flow_box_child(SettingBox::new(&*audio_input));
-        reset_main.remove_all();
-        reset_main.insert(&source_frame, -1);
-        reset_main.set_max_children_per_line(1);
-    };
+pub const HANDLE_MICROPHONE_CLICK: fn(
+    &Capabilities,
+    Arc<Listeners>,
+    FlowBox,
+    Rc<RefCell<Position>>,
+) = |_: &Capabilities,
+     listeners: Arc<Listeners>,
+     reset_main: FlowBox,
+     position: Rc<RefCell<Position>>| {
+    if handle_init(listeners.clone(), position, Position::AudioInput) {
+        return;
+    }
+    let audio_input = Arc::new(SourceBox::new());
+    start_audio_listener(listeners.clone(), None, Some(audio_input.clone()));
+    if !listeners.pulse_listener.load(Ordering::SeqCst) {
+        spin_loop();
+    }
+    populate_sources(audio_input.clone());
+    let source_frame = wrap_in_flow_box_child(SettingBox::new(&*audio_input));
+    reset_main.remove_all();
+    reset_main.insert(&source_frame, -1);
+    reset_main.set_max_children_per_line(1);
+};
 
-pub const HANDLE_HOME: fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
-    |listeners: Arc<Listeners>, reset_main: FlowBox, position: Rc<RefCell<Position>>| {
+pub const HANDLE_HOME: fn(&Capabilities, Arc<Listeners>, FlowBox, Rc<RefCell<Position>>) =
+    |_: &Capabilities,
+     listeners: Arc<Listeners>,
+     reset_main: FlowBox,
+     position: Rc<RefCell<Position>>| {
         if handle_init(listeners, position, Position::Home) {
             return;
         }

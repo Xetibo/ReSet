@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use gtk::FlowBox;
 
-use crate::components::base::utils::{Listeners, Position};
+use crate::components::{base::utils::{Listeners, Position}, utils::Capabilities};
 
 // extern "C" {
 //     pub fn startup() -> SidebarInfo;
@@ -12,7 +12,7 @@ use crate::components::base::utils::{Listeners, Position};
 //     pub fn run_test();
 // }
 
-pub type RegularClickEvent = fn(Arc<Listeners>, FlowBox, Rc<RefCell<Position>>);
+pub type RegularClickEvent = fn(&Capabilities, Arc<Listeners>, FlowBox, Rc<RefCell<Position>>);
 pub type PluginClickEvent = Rc<dyn Fn(FlowBox, Rc<RefCell<Position>>, Vec<gtk::Box>)>;
 
 pub trait TSideBarInfo {
@@ -28,7 +28,9 @@ pub struct ReSetSidebarInfo {
     pub name: &'static str,
     pub icon_name: &'static str,
     pub parent: Option<&'static str>,
+    // pub pre_click: 
     pub click_event: RegularClickEvent,
+    // pub post_click: 
 }
 
 impl TSideBarInfo for ReSetSidebarInfo {

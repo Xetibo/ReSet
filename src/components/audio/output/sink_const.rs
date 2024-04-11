@@ -54,3 +54,5 @@ pub const SETSTREAMOBJECT: DBusFunction = DBusFunction {
     function: "SetSinkOfInputStream",
     error: "Failed to set sink of input stream",
 };
+
+pub const DUMMY: &str = "Dummy Input";

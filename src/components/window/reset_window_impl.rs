@@ -12,6 +12,7 @@ use gtk::{Button, CompositeTemplate, FlowBox, ListBox, SearchEntry};
 
 use crate::components::base::error::ReSetError;
 use crate::components::base::utils::{Listeners, Position};
+use crate::components::utils::Capabilities;
 use crate::components::wifi::wifi_box::WifiBox;
 use crate::components::window::reset_window;
 use crate::components::window::sidebar_entry::SidebarEntry;
@@ -40,6 +41,7 @@ pub struct ReSetWindow {
     pub listeners: Arc<Listeners>,
     pub position: Rc<RefCell<Position>>,
     pub error_popup: ReSetError,
+    pub capabilities: Capabilities, 
 }
 
 unsafe impl Send for ReSetWindow {}

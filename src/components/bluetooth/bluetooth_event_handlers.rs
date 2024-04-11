@@ -15,15 +15,22 @@ pub fn device_changed_handler(
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
             let imp = bluetooth_box.imp();
+            let rssi = ir.bluetooth_device.rssi;
             let mut map = imp.available_devices.borrow_mut();
             if let Some(list_entry) = map.get_mut(&ir.bluetooth_device.path) {
                 let mut existing_bluetooth_device = list_entry.imp().bluetooth_device.borrow_mut();
                 if existing_bluetooth_device.connected != ir.bluetooth_device.connected {
                     if ir.bluetooth_device.connected {
                         imp.reset_bluetooth_available_devices.remove(&**list_entry);
+                        imp.reset_bluetooth_saved_devices.remove(&**list_entry);
                         imp.reset_bluetooth_connected_devices.add(&**list_entry);
+                    } else if rssi == -1 {
+                        imp.reset_bluetooth_connected_devices.remove(&**list_entry);
+                        imp.reset_bluetooth_saved_devices.add(&**list_entry);
+                        imp.reset_bluetooth_available_devices.remove(&**list_entry);
                     } else {
                         imp.reset_bluetooth_connected_devices.remove(&**list_entry);
+                        imp.reset_bluetooth_saved_devices.remove(&**list_entry);
                         imp.reset_bluetooth_available_devices.add(&**list_entry);
                     }
                 }
@@ -62,7 +69,9 @@ pub fn device_removed_handler(
                 if list_entry.imp().bluetooth_device.borrow().connected {
                     imp.reset_bluetooth_connected_devices.remove(&*list_entry);
                 } else {
+                    // TODO: is there a better way for this?
                     imp.reset_bluetooth_available_devices.remove(&*list_entry);
+                    imp.reset_bluetooth_saved_devices.remove(&*list_entry);
                 }
             }
         });
@@ -76,6 +85,7 @@ pub fn device_added_handler(device_added_box: Arc<BluetoothBox>, ir: BluetoothDe
         glib::idle_add_once(move || {
             let imp = bluetooth_box.imp();
             let path = ir.bluetooth_device.path.clone();
+            let rssi = ir.bluetooth_device.rssi;
             let connected = ir.bluetooth_device.connected;
             let bluetooth_entry = BluetoothEntry::new(ir.bluetooth_device, bluetooth_box.clone());
             imp.available_devices
@@ -83,6 +93,8 @@ pub fn device_added_handler(device_added_box: Arc<BluetoothBox>, ir: BluetoothDe
                 .insert(path, bluetooth_entry.clone());
             if connected {
                 imp.reset_bluetooth_connected_devices.add(&*bluetooth_entry);
+            } else if rssi == -1 {
+                imp.reset_bluetooth_saved_devices.add(&*bluetooth_entry);
             } else {
                 imp.reset_bluetooth_available_devices.add(&*bluetooth_entry);
             }
