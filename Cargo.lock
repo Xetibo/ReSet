@@ -968,9 +968,9 @@ dependencies = [
 
 [[package]]
 name = "re_set-lib"
-version = "3.1.7"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1777735e2eb0461dd531b5b2bf74900d068046d25af7385830106bd5bb44bf00"
+checksum = "386bc67e1c4bce0c8fd01eb2999e60b34b83c86f635db38cbbc39890d1cb248f"
 dependencies = [
  "dbus",
  "dbus-crossroads",
@@ -980,21 +980,7 @@ dependencies = [
  "libpulse-binding",
  "once_cell",
  "serial_test",
-]
-
-[[package]]
-name = "re_set-lib"
-version = "3.1.11"
-source = "git+https://github.com/Xetibo/ReSet-Lib?branch=audioobject#6da871ec1fa7c52277b70065ccbcfbe6d12073a6"
-dependencies = [
- "dbus",
- "dbus-crossroads",
- "directories-next",
- "gtk4",
- "libloading",
- "libpulse-binding",
- "once_cell",
- "serial_test",
+ "toml",
 ]
 
 [[package]]
@@ -1028,15 +1014,16 @@ dependencies = [
  "gtk4",
  "ipnetwork",
  "libadwaita",
- "re_set-lib 3.1.11",
+ "re_set-lib",
  "reset_daemon",
  "tokio",
 ]
 
 [[package]]
 name = "reset_daemon"
-version = "1.1.0"
-source = "git+https://github.com/Xetibo/ReSet-Daemon?branch=dashie#26abc95a72ff1b5f515bdfbb82f3bfabfe8ba8f7"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9fa262cbdbb8408260b960764ed612d249b165bb9cde76633a5856c587ef5a21"
 dependencies = [
  "crossbeam",
  "dbus",
@@ -1045,9 +1032,10 @@ dependencies = [
  "libloading",
  "libpulse-binding",
  "once_cell",
- "re_set-lib 3.1.7",
+ "re_set-lib",
  "serial_test",
  "tokio",
+ "toml",
 ]
 
 [[package]]

@@ -6,8 +6,7 @@ use std::{
 use adw::prelude::{ComboRowExt, PreferencesRowExt};
 use dbus::arg::{Arg, Get};
 use glib::{
-    object::{Cast, IsA, ObjectExt},
-    property::PropertyGet,
+    object::{Cast, IsA},
     ControlFlow, Propagation,
 };
 use gtk::{

@@ -68,6 +68,6 @@ async fn daemon_check() {
     });
     let res = handle.join();
     if res.unwrap().is_err() {
-        run_daemon(vec![String::from("ina")]).await;
+        run_daemon().await;
     }
 }
