@@ -24,7 +24,6 @@ impl ReSetError {
             .imp()
             .reset_error_button
             .connect_clicked(clone!(@strong error => move |_| {
-                println!("pingpangpung");
                error.popdown();
             }));
         error

@@ -144,11 +144,10 @@ impl ReSetWindow {
         let mut plugin_sidebar_list = vec![];
         unsafe {
             for plugin in FRONTEND_PLUGINS.iter() {
-
                 let plugin_capabilities = &plugin.capabilities;
-              
+
                 (plugin.frontend_startup)();
-              
+
                 let (sidebar_info, plugin_boxes) = (plugin.frontend_data)();
                 let listeners = self_imp.listeners.clone();
 
@@ -241,6 +240,17 @@ impl ReSetWindow {
             })
             .build();
 
+        let banner_action = ActionEntry::builder("banner")
+            .parameter_type(Some(&String::static_variant_type()))
+            .activate(move |window: &Self, _, text| {
+                let imp = window.imp();
+                if let Some(text) = text {
+                    imp.reset_banner.set_title(&text.to_string());
+                }
+                imp.reset_banner.set_revealed(true);
+            })
+            .build();
+
         let close_action = ActionEntry::builder("close")
             .activate(move |window: &Self, _, _| {
                 window.close();
@@ -320,6 +330,7 @@ impl ReSetWindow {
 
         self.add_action_entries([
             search_action,
+            banner_action,
             close_action,
             about_action,
             vim_up,
@@ -385,6 +396,12 @@ fn setup_callback(window: Rc<ReSetWindow>) -> Rc<ReSetWindow> {
     self_imp.reset_close.connect_clicked(move |_| {
         close_ref.close();
     });
+
+    self_imp.reset_banner.connect_button_clicked(|banner| {
+        banner.set_revealed(false);
+        banner.set_title("Info");
+    });
+
     window
 }
 

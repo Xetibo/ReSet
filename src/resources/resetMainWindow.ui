@@ -39,7 +39,6 @@
                         <property name="hexpand">True</property>
                         <property name="hexpand-set">True</property>
                         <property name="icon-name">open-menu-symbolic</property>
-                        <property name="menu-model">main_menu</property>
                         <property name="valign">end</property>
                         <property name="vexpand">True</property>
                       </object>
@@ -63,14 +62,27 @@
                 <child>
                   <object class="GtkViewport">
                     <child>
-                      <object class="GtkFlowBox" id="reset_main">
-                        <property name="column-spacing">25</property>
-                        <property name="hexpand">True</property>
-                        <property name="hexpand-set">True</property>
-                        <property name="margin-top">5</property>
-                        <property name="row-spacing">25</property>
-                        <property name="selection-mode">none</property>
-                        <property name="valign">start</property>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="AdwBanner" id="reset_banner">
+                            <property name="button-label">Acknowledge</property>
+                            <property name="css-classes">banner</property>
+                            <property name="margin-bottom">5</property>
+                            <property name="margin-top">5</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkFlowBox" id="reset_main">
+                            <property name="column-spacing">25</property>
+                            <property name="hexpand">True</property>
+                            <property name="hexpand-set">True</property>
+                            <property name="margin-top">5</property>
+                            <property name="row-spacing">25</property>
+                            <property name="selection-mode">none</property>
+                            <property name="valign">start</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>

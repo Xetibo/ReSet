@@ -25,6 +25,8 @@ pub struct ReSetWindow {
     #[template_child]
     pub reset_main: TemplateChild<FlowBox>,
     #[template_child]
+    pub reset_banner: TemplateChild<adw::Banner>,
+    #[template_child]
     pub reset_sidebar_breakpoint: TemplateChild<Breakpoint>,
     #[template_child]
     pub reset_overlay_split_view: TemplateChild<OverlaySplitView>,
@@ -36,6 +38,8 @@ pub struct ReSetWindow {
     pub reset_sidebar_toggle: TemplateChild<Button>,
     #[template_child]
     pub reset_close: TemplateChild<Button>,
+    // #[template_child]
+    // pub reset_banner: TemplateChild<adw::Banner>,
     pub sidebar_entries: SidebarEntries,
     pub default_entry: RefCell<Option<Rc<SidebarEntry>>>,
     pub listeners: Arc<Listeners>,
@@ -81,14 +85,20 @@ impl WidgetImpl for ReSetWindow {
         if width > 658 {
             self.reset_main.set_margin_start(60);
             self.reset_main.set_margin_end(60);
+                self.reset_banner.set_margin_start(60);
+                self.reset_banner.set_margin_end(60);
         } else {
             let div = (width - 540) / 2;
             if div > 1 {
                 self.reset_main.set_margin_start(div);
                 self.reset_main.set_margin_end(div);
+                self.reset_banner.set_margin_start(div);
+                self.reset_banner.set_margin_end(div);
             } else {
                 self.reset_main.set_margin_start(0);
                 self.reset_main.set_margin_end(0);
+                self.reset_banner.set_margin_start(0);
+                self.reset_banner.set_margin_end(0);
             }
         }
     }

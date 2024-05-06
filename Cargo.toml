@@ -1,16 +1,14 @@
 [package]
 name = "reset"
-version = "1.1.1"
+version = "1.2.0"
 edition = "2021"
 description = "A wip universal Linux settings application."
 repository = "https://github.com/Xetibo/ReSet"
 license = "GPL-3.0-or-later"
 
 [dependencies]
-#reset_daemon = { git = "https://github.com/Xetibo/ReSet-Daemon", branch = "dashie" }
-reset_daemon = "1.2.1"
-#re_set-lib = { git = "https://github.com/Xetibo/ReSet-Lib" , branch = "audioobject"}
-re_set-lib = "3.3.0"
+reset_daemon = "1.3.1"
+re_set-lib = "3.4.1"
 adw = { version = "0.6.0", package = "libadwaita", features = ["v1_4"] }
 dbus = "0.9.7"
 gtk = { version = "0.8.1", package = "gtk4", features = ["v4_12"] }

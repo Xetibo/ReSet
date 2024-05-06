@@ -14,8 +14,14 @@ use glib::{clone, ControlFlow};
 use gtk::glib::Variant;
 use gtk::prelude::{ActionableExt, ButtonExt, ListBoxRowExt, WidgetExt};
 use gtk::{gio, StringObject};
-use re_set_lib::bluetooth::bluetooth_structures::{BluetoothAdapter, BluetoothDevice};
-use re_set_lib::signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved};
+use re_set_lib::{
+    bluetooth::bluetooth_structures::{BluetoothAdapter, BluetoothDevice},
+    signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved},
+    ERROR
+};
+
+#[cfg(debug_assertions)]
+use re_set_lib::{utils::macros::ErrorLevel, write_log_to_file};
 
 use crate::components::base::error_impl::{show_error, ReSetErrorImpl};
 use crate::components::base::utils::Listeners;
@@ -318,7 +324,10 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
             device_added_handler(device_added_box.clone(), ir)
         });
         if res.is_err() {
-            println!("fail on bluetooth device add event");
+            ERROR!(
+                "fail on bluetooth device add event",
+                ErrorLevel::PartialBreakage
+            );
             return;
         }
 
@@ -326,7 +335,10 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
             device_removed_handler(device_removed_box.clone(), ir)
         });
         if res.is_err() {
-            println!("fail on bluetooth device remove event");
+            ERROR!(
+                "fail on bluetooth device remove event",
+                ErrorLevel::PartialBreakage
+            );
             return;
         }
 
@@ -334,7 +346,10 @@ pub fn start_bluetooth_listener(listeners: Arc<Listeners>, bluetooth_box: Arc<Bl
             device_changed_handler(device_changed_box.clone(), ir)
         });
         if res.is_err() {
-            println!("fail on bluetooth device remove event");
+            ERROR!(
+                "fail on bluetooth device remove event",
+                ErrorLevel::PartialBreakage
+            );
             return;
         }
 

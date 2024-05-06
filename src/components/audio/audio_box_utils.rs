@@ -15,7 +15,11 @@ use gtk::{
 use re_set_lib::{
     audio::audio_structures::{Card, TAudioObject, TAudioStreamObject},
     signals::{TAudioEventRemoved, TAudioObjectEvent, TAudioStreamEvent},
+    ERROR,
 };
+
+#[cfg(debug_assertions)]
+use re_set_lib::{utils::macros::ErrorLevel, write_log_to_file};
 
 use crate::components::{
     base::{card_entry::CardEntry, error_impl::ReSetErrorImpl, list_entry::ListEntry},
@@ -365,8 +369,7 @@ pub fn start_audio_box_listener<
         >(object_added_box.clone(), ir, dummy_name)
     });
     if res.is_err() {
-        // TODO: handle this with the log/error macro
-        println!("fail on source add event");
+        ERROR!("fail on source add event", ErrorLevel::PartialBreakage);
         return conn;
     }
 
@@ -384,7 +387,7 @@ pub fn start_audio_box_listener<
         >(object_changed_box.clone(), ir, get_default_name_function)
     });
     if res.is_err() {
-        println!("fail on source change event");
+        ERROR!("fail on source change event", ErrorLevel::PartialBreakage);
         return conn;
     }
 
@@ -402,7 +405,7 @@ pub fn start_audio_box_listener<
         >(object_removed_box.clone(), ir, dummy_name)
     });
     if res.is_err() {
-        println!("fail on source remove event");
+        ERROR!("fail on source remove event", ErrorLevel::PartialBreakage);
         return conn;
     }
 
@@ -420,7 +423,10 @@ pub fn start_audio_box_listener<
         >(stream_added_box.clone(), ir)
     });
     if res.is_err() {
-        println!("fail on output stream add event");
+        ERROR!(
+            "fail on output stream add event",
+            ErrorLevel::PartialBreakage
+        );
         return conn;
     }
 
@@ -438,7 +444,10 @@ pub fn start_audio_box_listener<
         >(stream_changed_box.clone(), ir)
     });
     if res.is_err() {
-        println!("fail on output stream change event");
+        ERROR!(
+            "fail on output stream change event",
+            ErrorLevel::PartialBreakage
+        );
         return conn;
     }
 
@@ -456,7 +465,10 @@ pub fn start_audio_box_listener<
         >(stream_removed_box.clone(), ir)
     });
     if res.is_err() {
-        println!("fail on output stream remove event");
+        ERROR!(
+            "fail on output stream remove event",
+            ErrorLevel::PartialBreakage
+        );
         return conn;
     }
 

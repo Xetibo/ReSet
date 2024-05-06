@@ -28,3 +28,7 @@ row.audioRow  {
 notebook > stack > box, notebook > stack {
     background-color: @window_bg_color;
 }
+
+banner {
+  border-radius: 5px;
+}

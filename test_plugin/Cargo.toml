@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["dylib"]
 
 [dependencies]
-re_set-lib = { git = "https://github.com/Xetibo/ReSet-Lib" }
+re_set-lib = "3.4.0" 
 gtk = { version = "0.8.1", package = "gtk4", features = ["v4_12"] }
 dbus = "0.9.7"
 glib = "0.19.3"

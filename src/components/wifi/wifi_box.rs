@@ -20,9 +20,15 @@ use glib::{clone, ControlFlow};
 use gtk::glib::Variant;
 use gtk::prelude::ActionableExt;
 use gtk::{gio, StringList, StringObject};
-use re_set_lib::network::network_structures::{AccessPoint, WifiDevice};
-use re_set_lib::signals::{AccessPointAdded, WifiDeviceChanged, WifiDeviceReset};
-use re_set_lib::signals::{AccessPointChanged, AccessPointRemoved};
+use re_set_lib::{
+    network::network_structures::{AccessPoint, WifiDevice},
+    signals::{AccessPointAdded, WifiDeviceChanged, WifiDeviceReset},
+    signals::{AccessPointChanged, AccessPointRemoved},
+    ERROR,
+};
+
+#[cfg(debug_assertions)]
+use re_set_lib::{utils::macros::ErrorLevel, write_log_to_file};
 
 use crate::components::wifi::wifi_box_impl;
 use crate::components::wifi::wifi_entry::WifiEntry;
@@ -324,35 +330,50 @@ pub fn start_event_listener(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) {
             access_point_added_handler(added_ref.clone(), ir)
         });
         if res.is_err() {
-            println!("fail on access point add event");
+            ERROR!(
+                "fail on access point add event",
+                ErrorLevel::PartialBreakage
+            );
             return;
         }
         let res = conn.add_match(access_point_removed, move |ir: AccessPointRemoved, _, _| {
             access_point_removed_handler(removed_ref.clone(), ir)
         });
         if res.is_err() {
-            println!("fail on access point remove event");
+            ERROR!(
+                "fail on access point remove event",
+                ErrorLevel::PartialBreakage
+            );
             return;
         }
         let res = conn.add_match(access_point_changed, move |ir: AccessPointChanged, _, _| {
             access_point_changed_handler(changed_ref.clone(), ir)
         });
         if res.is_err() {
-            println!("fail on access point change event");
+            ERROR!(
+                "fail on access point change event",
+                ErrorLevel::PartialBreakage
+            );
             return;
         }
         let res = conn.add_match(device_changed, move |ir: WifiDeviceChanged, _, _| {
             wifi_device_changed_handler(wifi_changed_ref.clone(), ir)
         });
         if res.is_err() {
-            println!("fail on wifi device change event");
+            ERROR!(
+                "fail on wifi device change event",
+                ErrorLevel::PartialBreakage
+            );
             return;
         }
         let res = conn.add_match(devices_reset, move |ir: WifiDeviceReset, _, _| {
             wifi_device_reset_handler(wifi_reset_ref.clone(), ir)
         });
         if res.is_err() {
-            println!("fail on wifi device change event");
+            ERROR!(
+                "fail on wifi device change event",
+                ErrorLevel::PartialBreakage
+            );
             return;
         }
 
