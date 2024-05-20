@@ -85,12 +85,15 @@
       "locked": {
         "lastModified": 1716171463,
         "narHash": "sha256-lc7wOh5BjYUoxdhcPkeUY8BmuL2qtRaHlW1403RW48E=",
-        "type": "tarball",
-        "url": "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "04d61d14803854fd8453ec43c5c53a471e5407a8",
+        "type": "github"
       },
       "original": {
-        "type": "tarball",
-        "url": "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "systems": {

@@ -37,8 +37,9 @@ rustPlatform.buildRustPackage rec {
   nativeBuildInputs = [
     pkg-config
     wrapGAppsHook4
-    (rust-bin.selectLatestNightlyWith
-      (toolchain: toolchain.default))
+    # (rust-bin.selectLatestNightlyWith
+    # (toolchain: toolchain.default))
+    rust-bin.nightly."2024-05-10".default
   ];
   copyLibs = true;
 

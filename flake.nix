@@ -7,9 +7,7 @@
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-    rust-overlay = {
-      url = "https://github.com/oxalica/rust-overlay/archive/master.tar.gz";
-    };
+    rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
   outputs = inputs @ { self, flake-parts, ... }:
@@ -36,8 +34,9 @@
           devShells.default = pkgs.mkShell {
             inputsFrom = builtins.attrValues self'.packages;
             packages = with pkgs; [
-              (rust-bin.selectLatestNightlyWith
-                (toolchain: toolchain.default))
+              # (rust-bin.selectLatestNightlyWith
+                # (toolchain: toolchain.default))
+              rust-bin.nightly."2024-05-10".default
             ];
           };
 
