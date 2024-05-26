@@ -32,3 +32,11 @@ notebook > stack > box, notebook > stack {
 banner {
   border-radius: 5px;
 }
+
+row.selectedLanguage {
+    background-color: @dialog_bg_color;
+}
+
+row.activeLanguage {
+    background-color: darker(darker(darker(@window_fg_color)));
+}
