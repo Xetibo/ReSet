@@ -968,9 +968,9 @@ dependencies = [
 
 [[package]]
 name = "re_set-lib"
-version = "3.4.1"
+version = "4.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d25cf78a85f7e39ca17fd755a370044d828b1d99998f41a6778d4d707e278c74"
+checksum = "06cb3803fff21953f1c17a685ae01e92b6b4d3231b99726d389520c48fbc1310"
 dependencies = [
  "dbus",
  "dbus-crossroads",
@@ -1021,9 +1021,9 @@ dependencies = [
 
 [[package]]
 name = "reset_daemon"
-version = "1.3.1"
+version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "130fefb02b41748af697f67ff201fffe5e73864331a177442e7cd9910b538fb1"
+checksum = "4c9858fdb8b54d8d81a2e0c16f5f2f16837c627da54ea9f3e7a27a888c0ef1fa"
 dependencies = [
  "crossbeam",
  "dbus",
