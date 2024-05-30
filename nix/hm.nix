@@ -36,7 +36,7 @@ in
       plugin_config = mkOption {
         # TODO: define type 
         # type = with types; nullOr (listOf toml);
-        default = null;
+        default = {};
         description = mdDoc ''
           Toml values passed to the configuration for plugins to use. 
         '';
