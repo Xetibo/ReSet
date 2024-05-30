@@ -23,8 +23,45 @@ in
         Package to run
       '';
     };
+
+    config = {
+      plugins = mkOption {
+        type = with types; nullOr (listOf package);
+        default = null;
+        description = mdDoc ''
+          List of plugins to use, represented as a list of packages.
+        '';
+      };
+
+      plugin_config = mkOption {
+        type = with types; nullOr (listOf toml);
+        default = null;
+        description = mdDoc ''
+          Toml values passed to the configuration for plugins to use. 
+        '';
+      };
+    };
+
   };
-  config = lib.mkIf cfg.enable {
-    home.packages = lib.optional (cfg.package != null) cfg.package;
-  };
+  config =
+    let
+      fetchedPlugins =
+        if cfg.config.plugins == null
+        then [ ]
+        else
+          builtins.map
+            (entry:
+              if lib.types.package.check entry
+              then "${entry}/lib/lib${entry.pname}.so"
+              else "")
+            cfg.config.plugins;
+    in
+    lib.mkIf cfg.enable {
+      home.packages = lib.optional (cfg.package != null) cfg.package;
+
+      xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml { }).generate "reset"
+        {
+          plugins = fetchedPlugins;
+        } ++ cfg.config.plugin_config;
+    };
 }
