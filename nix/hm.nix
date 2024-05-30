@@ -63,6 +63,6 @@ in
       xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml { }).generate "reset"
         {
           plugins = fetchedPlugins;
-        } ++ (pkgs.formats.toml cfg.config.plugin_config);
+        } ;#++ (pkgs.formats.toml cfg.config.plugin_config);
     };
 }
