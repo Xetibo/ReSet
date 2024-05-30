@@ -34,7 +34,8 @@ in
       };
 
       plugin_config = mkOption {
-        type = with types; nullOr (listOf toml);
+        # TODO: define type 
+        # type = with types; nullOr (listOf toml);
         default = null;
         description = mdDoc ''
           Toml values passed to the configuration for plugins to use. 
@@ -62,6 +63,6 @@ in
       xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml { }).generate "reset"
         {
           plugins = fetchedPlugins;
-        } ++ cfg.config.plugin_config;
+        } ++ (pkgs.formats.toml cfg.config.plugin_config);
     };
 }
