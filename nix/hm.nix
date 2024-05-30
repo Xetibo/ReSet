@@ -36,7 +36,7 @@ in
       plugin_config = mkOption {
         # TODO: define type 
         # type = with types; nullOr (listOf toml);
-        default = {};
+        default = { };
         description = mdDoc ''
           Toml values passed to the configuration for plugins to use. 
         '';
@@ -56,6 +56,11 @@ in
               then "${entry}/lib/lib${entry.pname}.so"
               else "")
             cfg.config.plugins;
+      path =
+        if cfg.config.plugins == null
+        then ""
+        else
+          "${lib.lists.last cfg.config.plugins}/lib";
     in
     lib.mkIf cfg.enable {
       home.packages = lib.optional (cfg.package != null) cfg.package;
@@ -63,6 +68,7 @@ in
       xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml { }).generate "reset"
         {
           plugins = fetchedPlugins;
-        } ;#++ (pkgs.formats.toml cfg.config.plugin_config);
+          plugin_path = path;
+        }; #++ (pkgs.formats.toml cfg.config.plugin_config);
     };
 }
