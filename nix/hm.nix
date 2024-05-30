@@ -53,7 +53,7 @@ in
           builtins.map
             (entry:
               if lib.types.package.check entry
-              then "lib${entry.pname}.so"
+              then "lib${lib.replaceStrings ["-"] ["_"] entry.pname}.so"
               else "")
             cfg.config.plugins;
       path =
