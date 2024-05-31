@@ -8,6 +8,9 @@
 , wrapGAppsHook4
 , gtk4
 , libadwaita
+, python312Packages
+, flatpak
+, flatpak-builder
 , lib
 , lockFile
 , ...
@@ -28,6 +31,10 @@ rustPlatform.buildRustPackage rec {
     dbus
     gdk-pixbuf
     gnome.adwaita-icon-theme
+    python312Packages.aiohttp
+    python312Packages.toml
+    flatpak
+    flatpak-builder
   ];
 
   cargoLock = {
