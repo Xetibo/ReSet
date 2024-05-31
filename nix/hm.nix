@@ -34,7 +34,7 @@ in
       };
 
       plugin_config = mkOption {
-        type = with types; nullOr (listOf pkgs.formats.toml);
+        type = with types; attrs;
         default = { };
         description = mdDoc ''
           Toml values passed to the configuration for plugins to use. 
