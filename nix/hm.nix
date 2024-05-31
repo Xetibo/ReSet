@@ -34,8 +34,7 @@ in
       };
 
       plugin_config = mkOption {
-        # TODO: define type 
-        # type = with types; nullOr (listOf toml);
+        type = with types; nullOr (listOf pkgs.formats.toml);
         default = { };
         description = mdDoc ''
           Toml values passed to the configuration for plugins to use. 
@@ -65,10 +64,10 @@ in
     lib.mkIf cfg.enable {
       home.packages = lib.optional (cfg.package != null) cfg.package;
 
-      xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml { }).generate "reset"
+      xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml cfg.config.plugin_config).generate "reset"
         {
           plugins = fetchedPlugins;
           plugin_path = path;
-        }; #++ (pkgs.formats.toml cfg.config.plugin_config);
+        };
     };
 }
