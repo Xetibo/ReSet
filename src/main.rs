@@ -11,6 +11,7 @@ use gtk::{gio, Application, CssProvider};
 use reset_daemon::run_daemon;
 
 mod components;
+mod tests;
 
 const APP_ID: &str = "org.Xetibo.ReSet";
 
