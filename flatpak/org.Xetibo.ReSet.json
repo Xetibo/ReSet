@@ -35,7 +35,7 @@
       "build-commands": [
         "cargo --offline fetch --manifest-path Cargo.toml --verbose",
         "cargo --offline build --verbose",
-        "install -Dm755 ./target/release/reset -t /app/bin/",
+        "install -Dm755 ./target/debug/reset -t /app/bin/",
         "install -Dm644 ./src/resources/icons/ReSet.svg /app/share/icons/hicolor/scalable/apps/org.Xetibo.ReSet.svg",
         "install -Dm644 ./flatpak/org.Xetibo.ReSet.desktop /app/share/applications/org.Xetibo.ReSet.desktop"
       ],
