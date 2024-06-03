@@ -35,7 +35,7 @@
             inputsFrom = builtins.attrValues self'.packages;
             packages = with pkgs; [
               # (rust-bin.selectLatestNightlyWith
-                # (toolchain: toolchain.default))
+              # (toolchain: toolchain.default))
               rust-bin.nightly."2024-05-10".default
             ];
           };

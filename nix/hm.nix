@@ -26,7 +26,7 @@ in
 
     config = {
       plugins = mkOption {
-        type = with types; nullOr (listOf package);
+        type = with types; listOf package;
         default = null;
         description = mdDoc ''
           List of plugins to use, represented as a list of packages.
@@ -46,7 +46,7 @@ in
   config =
     let
       fetchedPlugins =
-        if cfg.config.plugins == null
+        if cfg.config.plugins == [ ]
         then [ ]
         else
           builtins.map
@@ -55,19 +55,23 @@ in
               then "lib${lib.replaceStrings ["-"] ["_"] entry.pname}.so"
               else "")
             cfg.config.plugins;
-      path =
-        if cfg.config.plugins == null
-        then ""
-        else
-          "${lib.lists.last cfg.config.plugins}/lib";
     in
-    lib.mkIf cfg.enable {
-      home.packages = lib.optional (cfg.package != null) cfg.package;
+    lib.mkIf
+      cfg.enable
+      {
+        home.packages = lib.optional (cfg.package != null) cfg.package ++ cfg.config.plugins;
+        home.file = builtins.listToAttrs (builtins.map
+          (pkg: {
+            name = ".config/reset/plugins/lib${lib.replaceStrings ["-"] ["_"] pkg.pname}.so";
+            value = {
+              source = "${pkg}/lib/lib${lib.replaceStrings ["-"] ["_"] pkg.pname}.so";
+            };
+          })
+          cfg.config.plugins);
 
-      xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml cfg.config.plugin_config).generate "reset"
-        {
-          plugins = fetchedPlugins;
-          plugin_path = path;
-        };
-    };
+        xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml cfg.config.plugin_config).generate "reset"
+          {
+            plugins = fetchedPlugins;
+          };
+      };
 }

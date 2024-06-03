@@ -347,7 +347,7 @@
 	(3,33,"GtkMenuButton","can-shrink","True",None,None,None,None,None,None,None,None,None),
 	(3,33,"GtkMenuButton","has-frame","False",None,None,None,None,None,None,None,None,None),
 	(3,33,"GtkMenuButton","icon-name","open-menu-symbolic",None,None,None,None,None,None,None,None,None),
-	(3,33,"GtkMenuButton","menu-model",None,None,None,None,None,None,None,None,None,None),
+	(3,33,"GtkMenuButton","menu-model","54",None,None,None,None,None,None,None,None,None),
 	(3,33,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
 	(3,33,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
 	(3,33,"GtkWidget","hexpand-set","True",None,None,None,None,None,None,None,None,None),

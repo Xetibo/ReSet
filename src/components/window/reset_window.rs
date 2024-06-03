@@ -21,6 +21,7 @@ use crate::components::utils::get_capabilities;
 use crate::components::window::handle_sidebar_click::*;
 use crate::components::window::reset_window_impl;
 use crate::components::window::sidebar_entry::SidebarEntry;
+use crate::VERSION;
 
 use super::consts::{
     AUDIO_SIDEBAR, BLUETOOTH_SIDEBAR, CONNECTIVITY_SIDEBAR, SINK_SIDEBAR, SOURCE_SIDEBAR,
@@ -316,7 +317,7 @@ impl ReSetWindow {
                     .license_type(gtk::License::Gpl30)
                     .website("https://github.com/Xetibo/ReSet")
                     .issue_url("https://github.com/Xetibo/ReSet/issues")
-                    .version("1.0.0")
+                    .version(VERSION)
                     .transient_for(window)
                     .modal(true)
                     .copyright("© 2022-2023 Xetibo")

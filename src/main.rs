@@ -15,6 +15,10 @@ mod tests;
 
 const APP_ID: &str = "org.Xetibo.ReSet";
 
+/// Version of the current package.
+/// Use this to avoid version mismatch conflicts.
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 #[tokio::main]
 async fn main() {
     tokio::task::spawn(daemon_check());

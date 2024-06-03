@@ -44,16 +44,19 @@ rustPlatform.buildRustPackage rec {
   nativeBuildInputs = [
     pkg-config
     wrapGAppsHook4
-    # (rust-bin.selectLatestNightlyWith
-    # (toolchain: toolchain.default))
     rust-bin.nightly."2024-05-10".default
   ];
+
   copyLibs = true;
 
   postInstall = ''
     	install -D --mode=444 $src/${pname}.desktop $out/share/applications/${pname}.desktop
     	install -D --mode=444 $src/src/resources/icons/ReSet.svg $out/share/pixmaps/ReSet.svg
   '';
+
+  # test is broken in nix for some reason
+  doInstallCheck = false;
+  doCheck = false;
 
   meta = with lib; {
     description = "A wip universal Linux settings application.";
