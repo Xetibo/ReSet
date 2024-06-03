@@ -91,7 +91,7 @@ pub fn set_action_row_ellipsis(element: ActionRow) {
 
 pub fn get_capabilities() -> Vec<String> {
     let conn = Connection::new_session().unwrap();
-    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(1000));
+    let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(10000));
     let res: Result<(Vec<String>,), Error> = proxy.method_call(BASE, "GetCapabilities", ());
     res.unwrap().0
 }
