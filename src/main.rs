@@ -24,7 +24,11 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[tokio::main]
 async fn main() {
-    tokio::task::spawn(daemon_check());
+    let ready = Arc::new(AtomicBool::new(false));
+    tokio::task::spawn(daemon_check(ready.clone()));
+    while !ready.load(std::sync::atomic::Ordering::SeqCst) {
+        hint::spin_loop();
+    }
     gio::resources_register_include!("src.templates.gresource")
         .expect("Failed to register resources.");
     gio::resources_register_include!("src.icons.gresource").expect("Failed to register resources.");
@@ -67,19 +71,15 @@ fn shutdown(_: &Application) {
     });
 }
 
-async fn daemon_check() {
-    let handle = thread::spawn(|| {
+async fn daemon_check(ready: Arc<AtomicBool>) {
+    let handle = thread::spawn(move || {
         let conn = Connection::new_session().unwrap();
         let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(100));
         let res: Result<(), Error> = proxy.method_call(BASE, "RegisterClient", ("ReSet",));
         res
     });
-    let ready = Arc::new(AtomicBool::new(false));
     let res = handle.join();
     if res.unwrap().is_err() {
-        run_daemon(Some(ready.clone())).await;
-    }
-    while !ready.load(std::sync::atomic::Ordering::SeqCst) {
-        hint::spin_loop();
+        run_daemon(Some(ready)).await;
     }
 }
