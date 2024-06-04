@@ -37,6 +37,8 @@
               # (rust-bin.selectLatestNightlyWith
               # (toolchain: toolchain.default))
               rust-bin.nightly."2024-05-10".default
+              rust-analyzer
+              clippy
             ];
           };
 

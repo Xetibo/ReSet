@@ -1,3 +1,6 @@
+use std::hint::{self};
+use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
@@ -71,8 +74,12 @@ async fn daemon_check() {
         let res: Result<(), Error> = proxy.method_call(BASE, "RegisterClient", ("ReSet",));
         res
     });
+    let ready = Arc::new(AtomicBool::new(false));
     let res = handle.join();
     if res.unwrap().is_err() {
-        run_daemon().await;
+        run_daemon(Some(ready.clone())).await;
+    }
+    while !ready.load(std::sync::atomic::Ordering::SeqCst) {
+        hint::spin_loop();
     }
 }
