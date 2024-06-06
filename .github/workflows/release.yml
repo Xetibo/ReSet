@@ -24,7 +24,7 @@ jobs:
           mkdir -p ./debian/usr/share/applications
           mkdir -p ./debian/usr/share/pixmaps
           cp ./target/release/ReSet ./debian/usr/bin/ReSet
-          cp ./reset.desktop ./debian/usr/share/applications/.
+          cp ./ReSet.desktop ./debian/usr/share/applications/.
           cp ./src/resources/icons/ReSet.svg ./debian/usr/share/pixmaps/.
           dpkg-deb --build debian
           mv debian.deb ReSet.deb
