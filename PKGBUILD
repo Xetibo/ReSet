@@ -18,3 +18,4 @@ package() {
 	install -Dm644 "$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
 	install -Dm644 "src/resources/icons/ReSet.svg" "$pkgdir/usr/share/pixmaps/ReSet.svg"
 }
+

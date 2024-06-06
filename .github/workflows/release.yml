@@ -1,7 +1,6 @@
 on:
   release:
-    types: [ created ]
-
+    types: [created]
 jobs:
   release:
     runs-on: [self-hosted, ubuntu]
@@ -15,15 +14,12 @@ jobs:
       - name: Build rust package
         run: cargo build --release --verbose
       - name: Build Flatpak
-        run: |
-          cd flatpak
-          python3 flatpak-generator.py ../Cargo.lock -o cargo-sources.json 
-          flatpak-builder build org.Xetibo.ReSet.json --force-clean 
-          flatpak build-export export build
-          flatpak build-bundle export reset.flatpak org.Xetibo.ReSet
+        run: "cd flatpak\npython3 flatpak-generator.py ../Cargo.lock -o cargo-sources.json \nflatpak-builder build org.Xetibo.ReSet.json --force-clean \nflatpak build-export export build\nflatpak build-bundle export reset.flatpak org.Xetibo.ReSet\n"
       - name: Build Ubuntu package
         run: |
-          cp ./target/release/reset ./debian/.
+          cp ./target/release/reset ./debian/usr/bin/.
+          cp ./reset.desktop ./debian/share/applications/.
+          cp ./src/resources/icons/ReSet.svg ./debian/share/pixmaps/.
           dpkg-deb --build debian
           mv debian.deb reset.deb
       - name: Release
