@@ -31,6 +31,11 @@ A window manager/compositor agnostic settings application for Linux written in r
 <img alt="Bluetooth Screenshot of ReSet" src="./assets/reset_bluetooth.png"  width="80%">
 </div>
 
+## Plugins
+
+ReSet features a plugin system by loading dynamic libraries for both the daemon and the ReSet graphical user interface.
+A list of official plugins and their documentation can be found at [ReSet-Plugins](https://github.com/Xetibo/ReSet-Plugins).
+
 ## Packaging
 
 ReSet is available with the following packaging solutions:
@@ -109,14 +114,13 @@ It is therefore possible to use a different application as well for interacting 
 
 By default, the daemon is integrated into ReSet and is started automatically if no other daemon is found.
 
-## Roadmap
+## Roadmap and Notes
 
-This application was developed as a semester project for the Eastern Switzerland University of Applied Sciences.
-With potential advancements as a next project, due to this, no major development will happen until February 2024.
-However, there is still a roadmap for this application.
-
-- Plugin System
 - Accessibility Features
 - Better Error handling
 - Customizable shortcuts
 - and more
+
+### notes
+
+This application was developed as a semester project/bachelor thesis for the Eastern Switzerland University of Applied Sciences.
