@@ -17,6 +17,11 @@ jobs:
         run: "cd flatpak\npython3 flatpak-generator.py ../Cargo.lock -o cargo-sources.json \nflatpak-builder build org.Xetibo.ReSet.json --force-clean \nflatpak build-export export build\nflatpak build-bundle export reset.flatpak org.Xetibo.ReSet\n"
       - name: Build Ubuntu package
         run: |
+          mkdir -p ./debian/usr
+          mkdir -p ./debian/usr/lib
+          mkdir -p ./debian/usr/share
+          mkdir -p ./debian/usr/share/application
+          mkdir -p ./debian/usr/share/pixmaps
           cp ./target/release/reset ./debian/usr/bin/.
           cp ./reset.desktop ./debian/share/applications/.
           cp ./src/resources/icons/ReSet.svg ./debian/share/pixmaps/.
