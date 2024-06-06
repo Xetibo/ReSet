@@ -69,9 +69,10 @@ in
           })
           cfg.config.plugins);
 
-        xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml cfg.config.plugin_config).generate "reset"
+        xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml {}).generate "reset"
           {
             plugins = fetchedPlugins;
-          };
+            
+          } ++ cfg.config.plugin_config;
       };
 }
