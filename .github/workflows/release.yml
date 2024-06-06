@@ -18,13 +18,13 @@ jobs:
       - name: Build Ubuntu package
         run: |
           mkdir -p ./debian/usr
-          mkdir -p ./debian/usr/lib
+          mkdir -p ./debian/usr/bin
           mkdir -p ./debian/usr/share
-          mkdir -p ./debian/usr/share/application
+          mkdir -p ./debian/usr/share/applications
           mkdir -p ./debian/usr/share/pixmaps
           cp ./target/release/reset ./debian/usr/bin/.
-          cp ./reset.desktop ./debian/share/applications/.
-          cp ./src/resources/icons/ReSet.svg ./debian/share/pixmaps/.
+          cp ./reset.desktop ./debian/usr/share/applications/.
+          cp ./src/resources/icons/ReSet.svg ./debian/usr/share/pixmaps/.
           dpkg-deb --build debian
           mv debian.deb reset.deb
       - name: Release
