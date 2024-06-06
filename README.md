@@ -84,12 +84,12 @@ reset.url = "github:Xetibo/ReSet";
 reset-plugins.url = "github:Xetibo/ReSet-Plugins";
 
 #installation and configuration
-  programs.reset.enable = true;
-  programs.reset.config.plugins = [
+  programs.ReSet.enable = true;
+  programs.ReSet.config.plugins = [
     inputs.reset-plugins.packages."x86_64-linux".monitor
     inputs.reset-plugins.packages."x86_64-linux".keyboard
   ];
-  programs.reset.config.plugin_config = {
+  programs.ReSet.config.plugin_config = {
     #custom toml config
     Keyboard = {
       path = "/home/user/.config/reset/keyboard.conf";
