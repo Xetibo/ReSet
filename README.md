@@ -5,11 +5,11 @@
 ![Logo of ReSet](./assets/ReSet.png)
 
 A window manager/compositor agnostic settings application for Linux written in rust and gtk4.
+
 </div>
 
-
-
 ## Features
+
 - Bluetooth via bluez
 - Audio via PulseAudio
 - Wi-Fi via NetworkManager
@@ -23,27 +23,34 @@ A window manager/compositor agnostic settings application for Linux written in r
 <img alt="Audio Screenshot of ReSet" src="./assets/reset_audio.png"  width="80%">
 
 ### Wi-Fi
+
 <img alt="Wi-Fi Screenshot of ReSet" src="./assets/reset_wifi.png"  width="80%">
 
 ### Bluetooth
+
 <img alt="Bluetooth Screenshot of ReSet" src="./assets/reset_bluetooth.png"  width="80%">
 </div>
 
 ## Packaging
+
 ReSet is available with the following packaging solutions:
 
 ### Flatpak
+
 We are currently not published on flatpak due to issues with permissions.
 This is being worked on...
 
 installation:
 Download the flatpak package from the release and install with the terminal.
+
 ```
 flatpak install --user reset.flatpak
 ```
 
 ### Arch Package
+
 <!-- AUR: -->
+
 <!-- ```paru -S ReSet``` -->
 
 Manually:
@@ -56,22 +63,52 @@ sudo pacman -U /path/to/reset
 ### Debian Package(Ubuntu 23.04 dependencies)
 
 Download the package from the releases tab and install it with apt.
+
 ```
 sudo apt install ./path/to/reset
 ```
+
+### NixOS/Home-manager
+
+ReSet offers a flake with a home-manager module which you can use to declaratively install ReSet and plugins.
+Here is an example configuration:
+
+```nix
+#inputs
+reset.url = "github:Xetibo/ReSet";
+reset-plugins.url = "github:Xetibo/ReSet-Plugins";
+
+#installation and configuration
+  programs.reset.enable = true;
+  programs.reset.config.plugins = [
+    inputs.reset-plugins.packages."x86_64-linux".monitor
+    inputs.reset-plugins.packages."x86_64-linux".keyboard
+  ];
+  programs.reset.config.plugin_config = {
+    #custom toml config
+    Keyboard = {
+      path = "/home/user/.config/reset/keyboard.conf";
+    };
+  };
+```
+
 ### crates
+
 ```
 cargo install reset
 ```
+
 ### Compiled Binary
 
 The compiled binary is provided in the releases.
 
 ## Usage
+
 Besides starting the application itself, a standalone daemon version ([ReSet-Daemon](https://github.com/Xetibo/ReSet-Daemon)) also exists, which is what provides the functionality for ReSet.\
 It is therefore possible to use a different application as well for interacting with the daemon.
 
 By default, the daemon is integrated into ReSet and is started automatically if no other daemon is found.
+
 ## Roadmap
 
 This application was developed as a semester project for the Eastern Switzerland University of Applied Sciences.
