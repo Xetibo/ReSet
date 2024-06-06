@@ -70,7 +70,7 @@ in
           cfg.config.plugins);
 
         xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml { }).generate "reset"
-          (lib.mkMerge
+          (lib.recursiveUpdate
             {
               plugins = fetchedPlugins;
 
