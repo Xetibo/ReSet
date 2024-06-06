@@ -14,7 +14,6 @@ jobs:
       - name: Build rust package
         run: |
           cargo build --release --verbose
-          mv ./target/release/reset ./target/release/ReSet
       - name: Build Flatpak
         run: "cd flatpak\npython3 flatpak-generator.py ../Cargo.lock -o cargo-sources.json \nflatpak-builder build org.Xetibo.ReSet.json --force-clean \nflatpak build-export export build\nflatpak build-bundle export reset.flatpak org.Xetibo.ReSet\n"
       - name: Build Ubuntu package
