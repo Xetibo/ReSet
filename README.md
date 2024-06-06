@@ -45,7 +45,7 @@ ReSet is available with the following packaging solutions:
 We are currently not published on flatpak due to issues with permissions.
 This is being worked on...
 
-installation:
+Installation:
 Download the flatpak package from the release and install with the terminal.
 
 ```

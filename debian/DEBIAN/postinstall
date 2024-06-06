@@ -1,0 +1,3 @@
+install -Dm755 target/release/reset /usr/bin/reset
+install -Dm644 reset.desktop /usr/share/applications/reset.desktop
+install -Dm644 src/resources/icons/ReSet.svg /usr/share/pixmaps/ReSet.svg
