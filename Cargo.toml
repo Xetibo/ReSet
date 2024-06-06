@@ -1,5 +1,5 @@
 [package]
-name = "reset"
+name = "ReSet"
 version = "1.2.4"
 edition = "2021"
 description = "A wip universal Linux settings application."
