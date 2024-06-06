@@ -69,10 +69,12 @@ in
           })
           cfg.config.plugins);
 
-        xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml {}).generate "reset"
+        xdg.configFile."reset/ReSet.toml".source = (pkgs.formats.toml { }).generate "reset"
+          lib.mkMerge
           {
             plugins = fetchedPlugins;
-            
-          } ++ cfg.config.plugin_config;
+
+          }
+          cfg.config.plugin_config;
       };
 }
