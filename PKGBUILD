@@ -14,7 +14,7 @@ build() {
 
 package() {
 	cd ..
-	install -Dm755 target/release/"$pkgname" "$pkgdir"/usr/bin/"$pkgname"
+	install -Dm755 target/release/"$pkgname" "$pkgdir"/usr/bin/ReSet
 	install -Dm644 "$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
 	install -Dm644 "src/resources/icons/ReSet.svg" "$pkgdir/usr/share/pixmaps/ReSet.svg"
 }

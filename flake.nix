@@ -47,15 +47,15 @@
               lockFile = ./Cargo.lock;
             in
             rec {
-              reset = pkgs.callPackage ./nix/default.nix { inherit inputs lockFile; };
-              default = reset;
+              ReSet = pkgs.callPackage ./nix/default.nix { inherit inputs lockFile; };
+              default = ReSet;
             };
         };
       flake = _: rec {
         nixosModules.home-manager = homeManagerModules.default;
         homeManagerModules = rec {
-          reset = import ./nix/hm.nix inputs.self;
-          default = reset;
+          ReSet = import ./nix/hm.nix inputs.self;
+          default = ReSet;
         };
       };
     };

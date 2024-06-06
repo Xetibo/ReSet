@@ -12,7 +12,9 @@ jobs:
           profile: minimal
           toolchain: nightly
       - name: Build rust package
-        run: cargo build --release --verbose
+        run: |
+          cargo build --release --verbose
+          mv ./target/release/reset ./target/release/ReSet
       - name: Build Flatpak
         run: "cd flatpak\npython3 flatpak-generator.py ../Cargo.lock -o cargo-sources.json \nflatpak-builder build org.Xetibo.ReSet.json --force-clean \nflatpak build-export export build\nflatpak build-bundle export reset.flatpak org.Xetibo.ReSet\n"
       - name: Build Ubuntu package
@@ -22,15 +24,15 @@ jobs:
           mkdir -p ./debian/usr/share
           mkdir -p ./debian/usr/share/applications
           mkdir -p ./debian/usr/share/pixmaps
-          cp ./target/release/reset ./debian/usr/bin/.
+          cp ./target/release/ReSet ./debian/usr/bin/ReSet
           cp ./reset.desktop ./debian/usr/share/applications/.
           cp ./src/resources/icons/ReSet.svg ./debian/usr/share/pixmaps/.
           dpkg-deb --build debian
-          mv debian.deb reset.deb
+          mv debian.deb ReSet.deb
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            target/release/reset
+            target/release/ReSet
             flatpak/reset.flatpak
-            reset.deb
+            ReSet.deb

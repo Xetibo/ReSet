@@ -5,19 +5,19 @@ self: { config
       , ...
       }:
 let
-  cfg = config.programs.reset;
+  cfg = config.programs.ReSet;
   defaultPackage = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   meta.maintainers = with lib.maintainers; [ DashieTM ];
-  options.programs.reset = with lib; {
-    enable = mkEnableOption "reset";
+  options.programs.ReSet = with lib; {
+    enable = mkEnableOption "ReSet";
 
     package = mkOption {
       type = with types; nullOr package;
       default = defaultPackage;
       defaultText = lib.literalExpression ''
-        reset.packages.''${pkgs.stdenv.hostPlatform.system}.default
+        ReSet.packages.''${pkgs.stdenv.hostPlatform.system}.default
       '';
       description = mdDoc ''
         Package to run
