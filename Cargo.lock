@@ -969,7 +969,8 @@ dependencies = [
 [[package]]
 name = "reset_daemon"
 version = "2.1.1"
-source = "git+https://github.com/Xetibo/ReSet-Daemon?branch=dev#ea5e866068fa991a1ca05c42c0707b93f8701413"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "552d57783fc84dd8d2b8765af8feb2aa157e29f92374dc22906852766379738d"
 dependencies = [
  "crossbeam",
  "dbus",
