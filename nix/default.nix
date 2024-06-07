@@ -50,7 +50,7 @@ rustPlatform.buildRustPackage rec {
   copyLibs = true;
 
   postInstall = ''
-    	install -D --mode=444 $src/reset.desktop $out/share/applications/reset.desktop
+    	install -D --mode=444 $src/${pname}.desktop $out/share/applications/${pname}.desktop
     	install -D --mode=444 $src/src/resources/icons/${pname}.svg $out/share/pixmaps/${pname}.svg
   '';
 
