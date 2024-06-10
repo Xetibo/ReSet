@@ -2,7 +2,7 @@
 Name=ReSet
 GenericName=SettingsApplication
 GenericName[de]=SettingsApplikation
-Exec=reset
+Exec=ReSet
 Terminal=false
 Type=Application
 Keywords=settings;gtk;
