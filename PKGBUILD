@@ -1,7 +1,7 @@
 # Maintainer: Fabio Lenherr <dashie@dashie.org>
 
 pkgname=ReSet
-pkgver=1.2.6
+pkgver=1.2.7
 pkgrel=0
 arch=('x86_64')
 pkgdir="/usr/bin/${pkgname}"
