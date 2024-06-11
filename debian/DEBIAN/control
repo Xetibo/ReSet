@@ -3,3 +3,7 @@ Version: 1.2.6
 Maintainer: DashieTM
 Architecture: all
 Description: A wip universal Linux settings application.
+Homepage: https://github.com/Xetibo/ReSet
+Build-Depends: rust
+Depends: libadwaita, gtk, dbus
+Recommends: pipewire-pulse, networkmanager, bluez

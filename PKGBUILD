@@ -6,7 +6,10 @@ pkgrel=0
 arch=('x86_64')
 pkgdir="/usr/bin/${pkgname}"
 pkgdesc="A wip universal Linux settings application."
-depends=('rust' 'gtk4' 'dbus')
+depends=('gtk4' 'dbus' 'libadwaita')
+optdepends=('pipewire-pulse' 'networkmanager' 'bluez')
+makedepends=('rust')
+
 
 build() {
 	cargo build --release

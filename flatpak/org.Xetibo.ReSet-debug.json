@@ -1,12 +1,12 @@
 {
   "app-id": "org.Xetibo.ReSet",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "45",
+  "runtime-version": "46",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.rust-nightly"
   ],
-  "command": "reset",
+  "command": "ReSet",
   "finish-args": [
     "--socket=pulseaudio",
     "--share=network",
@@ -17,8 +17,7 @@
     "--device=all",
     "--allow=bluetooth",
     "--socket=system-bus",
-    "--socket=session-bus",
-    "--persist=~/.config/reset:create"
+    "--socket=session-bus"
   ],
   "build-options": {
     "append-path": "/usr/lib/sdk/rust-nightly/bin"
@@ -34,8 +33,8 @@
       },
       "build-commands": [
         "cargo --offline fetch --manifest-path Cargo.toml --verbose",
-        "cargo --offline build --release --verbose",
-        "install -Dm755 ./target/release/reset -t /app/bin/",
+        "cargo --offline build --verbose",
+        "install -Dm755 ./target/debug/ReSet -t /app/bin/",
         "install -Dm644 ./src/resources/icons/ReSet.svg /app/share/icons/hicolor/scalable/apps/org.Xetibo.ReSet.svg",
         "install -Dm644 ./flatpak/org.Xetibo.ReSet.desktop /app/share/applications/org.Xetibo.ReSet.desktop"
       ],
