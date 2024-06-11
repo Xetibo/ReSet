@@ -14,7 +14,6 @@ async fn test_plugins() {
         hint::spin_loop();
     }
     unsafe {
-        println!("pang");
         for plugin in FRONTEND_PLUGINS.iter() {
             let name = (plugin.frontend_name)();
             let tests = (plugin.frontend_tests)();
