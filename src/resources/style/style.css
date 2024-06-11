@@ -38,5 +38,5 @@ row.selectedLanguage {
 }
 
 row.activeLanguage {
-    background-color: darker(darker(darker(@window_fg_color)));
+    background-color: @blue_2;
 }
