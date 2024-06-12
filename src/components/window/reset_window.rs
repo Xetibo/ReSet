@@ -207,7 +207,6 @@ impl ReSetWindow {
             .connect_row_activated(clone!(@ weak self_imp => move |_, _| {
                 self_imp.reset_search_entry.set_text("");
             }));
-        // TODO: refactor this
         let mut i = 0;
         for info in sidebar_list {
             if info.parent.is_none() && i != 0 {

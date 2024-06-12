@@ -57,7 +57,7 @@ impl BluetoothBox {
     }
 }
 
-// TODO
+// FUTURE TODO:
 // handle bonded -> this means saved but not connected
 // handle rssi below x -> don't show device
 
@@ -185,7 +185,6 @@ pub fn populate_connected_bluetooth_devices(
     listeners: Arc<Listeners>,
     bluetooth_box: Arc<BluetoothBox>,
 ) {
-    // TODO handle saved devices -> they also exist
     gio::spawn_blocking(move || {
         let ref_box = bluetooth_box.clone();
         let adapters = get_bluetooth_adapters(ref_box.clone());

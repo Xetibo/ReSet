@@ -91,7 +91,7 @@ pub fn new_stream_entry<
     stream: StreamObject,
 ) -> Arc<AudioStream> {
     let obj: Arc<AudioStream> = Arc::new(Object::builder().build());
-    // TODO use event callback for progress bar -> this is the "im speaking" indicator
+    // FUTURE TODO: use event callback for progress bar -> this is the "im speaking" indicator
     let output_box_mute_ref = audio_box.clone();
     let output_box_volume_ref = audio_box.clone();
     let output_box_sink_ref = audio_box.clone();

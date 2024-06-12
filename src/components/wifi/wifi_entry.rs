@@ -48,7 +48,7 @@ impl WifiEntry {
                 .build(),
         );
 
-        // TODO handle encryption thing
+        // FUTURE TODO: handle encryption
         let wifi_strength = Image::builder()
             .icon_name(match strength {
                 WifiStrength::Excellent => "network-wireless-signal-excellent-symbolic",
@@ -177,7 +177,7 @@ pub fn click_stored_network(entry: Arc<WifiEntry>) {
             });
         });
     });
-    // TODO crate spinner animation and block UI
+    // FUTURE TODO: crate spinner animation and block UI
 }
 
 pub fn click_new_network(entry: Arc<WifiEntry>) {
@@ -228,7 +228,7 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
                     });
                 });
             });
-            // TODO crate spinner animation and block UI
+            // FUTURE TODO: crate spinner animation and block UI
         };
 
     let entry_imp = entry.imp();

@@ -69,7 +69,7 @@ pub fn device_removed_handler(
                 if list_entry.imp().bluetooth_device.borrow().connected {
                     imp.reset_bluetooth_connected_devices.remove(&*list_entry);
                 } else {
-                    // TODO: is there a better way for this?
+                    // FUTURE TODO: is there a better way for this?
                     imp.reset_bluetooth_available_devices.remove(&*list_entry);
                     imp.reset_bluetooth_saved_devices.remove(&*list_entry);
                 }

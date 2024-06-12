@@ -72,7 +72,7 @@ pub fn access_point_changed_handler(wifi_box: Arc<WifiBox>, ir: AccessPointChang
             let name = name_opt.as_str();
             entry_imp.wifi_strength.set(strength);
             entry.set_title(name);
-            // TODO handle encryption thing
+            // FUTURE TODO: handle encryption thing
             entry_imp
                 .reset_wifi_strength
                 .borrow()

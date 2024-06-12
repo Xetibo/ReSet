@@ -209,7 +209,7 @@ pub fn show_stored_connections(wifi_box: Arc<WifiBox>) {
             glib::idle_add_once(move || {
                 let self_imp = wifibox_ref.imp();
                 for connection in connections {
-                    // TODO include button for settings
+                    // FUTURE TODO: include button for settings
                     let name =
                         &String::from_utf8(connection.1).unwrap_or_else(|_| String::from(""));
                     let entry = SavedWifiEntry::new(name, connection.0, self_imp);

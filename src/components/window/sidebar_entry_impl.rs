@@ -11,7 +11,7 @@ use crate::components::window::sidebar_entry;
 
 #[derive(Default)]
 pub enum Categories {
-    // TODO: are these ever used ?
+    // FUTURE TODO: are these ever used ?
     // Connectivity,
     // Audio,
     // Peripherals,

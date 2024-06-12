@@ -334,7 +334,7 @@ pub fn start_audio_box_listener<
     get_default_name_function: &'static DBusFunction,
     dummy_name: &'static str,
 ) -> Connection {
-    // TODO: make the failed logs generically sound -> deynamic output for both
+    // FUTURE TODO: make the failed logs generically sound -> deynamic output for both
     let object_added =
         ObjectAdded::match_rule(Some(&BASE.into()), Some(&Path::from(DBUS_PATH))).static_clone();
     let object_changed =

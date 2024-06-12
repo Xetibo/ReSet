@@ -70,7 +70,7 @@ impl BluetoothEntry {
             });
         let gesture = GestureClick::new();
         // paired is not what we think
-        // TODO implement paired
+        // FUTURE TODO: implement paired
         gesture.connect_released(move |_, _, _, _| {
             let imp = entry_ref.imp();
             let borrow = imp.bluetooth_device.borrow();

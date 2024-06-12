@@ -54,7 +54,7 @@ pub fn show_error<T: ReSetErrorImpl + Send + Sync + 'static>(
     parent: Arc<T>,
     message: &'static str,
 ) {
-    // TODO: Add error to log
+    // FUTURE TODO: Add error to log
     glib::spawn_future(async move {
         glib::idle_add_once(move || {
             let error = parent.error();

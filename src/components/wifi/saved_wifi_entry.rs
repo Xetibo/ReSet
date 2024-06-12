@@ -55,7 +55,7 @@ impl SavedWifiEntry {
         let entry_ref = entry.clone();
         delete_button.connect_clicked(clone!(@weak wifi_box => move |_| {
             delete_connection(entry_ref.imp().reset_connection_path.take());
-            // TODO handle error
+            // FUTURE TODO: handle error
             wifi_box.reset_stored_wifi_list.remove(&*entry_ref);
 
         }));

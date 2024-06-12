@@ -117,7 +117,7 @@ pub fn new_entry<
     reset_box: Arc<AudioBox>,
 ) -> Arc<AudioEntry> {
     let obj: Arc<AudioEntry> = Arc::new(Object::builder().build());
-    // TODO use event callback for progress bar -> this is the "im speaking" indicator
+    // FUTURE TODO: use event callback for progress bar -> this is the "im speaking" indicator
     {
         let imp = obj.entry_imp();
         let slider_obj_ref = obj.clone();
