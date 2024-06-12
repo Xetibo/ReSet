@@ -36,6 +36,15 @@ A window manager/compositor agnostic settings application for Linux written in r
 ReSet features a plugin system by loading dynamic libraries for both the daemon and the ReSet graphical user interface.
 A list of official plugins, installation guides and their documentation can be found at [ReSet-Plugins](https://github.com/Xetibo/ReSet-Plugins).
 
+### Confirmation
+
+In order for your plugins to load, you have to define them in `.config/reset/ReSet.toml`.
+This is done to avoid loading of arbitrary plugins that might be placed within this folder by accident.
+
+```toml
+plugins = ["libreset_monitors.so", "libreset_keyboard_plugin.so"]
+```
+
 ## Packaging
 
 ReSet is available with the following packaging solutions:
