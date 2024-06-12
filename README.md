@@ -34,7 +34,7 @@ A window manager/compositor agnostic settings application for Linux written in r
 ## Plugins
 
 ReSet features a plugin system by loading dynamic libraries for both the daemon and the ReSet graphical user interface.
-A list of official plugins and their documentation can be found at [ReSet-Plugins](https://github.com/Xetibo/ReSet-Plugins).
+A list of official plugins, installation guides and their documentation can be found at [ReSet-Plugins](https://github.com/Xetibo/ReSet-Plugins).
 
 ## Packaging
 
