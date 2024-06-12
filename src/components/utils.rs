@@ -10,6 +10,9 @@ use glib::prelude::Cast;
 use glib::Object;
 use gtk::prelude::{GObjectPropertyExpressionExt, ListBoxRowExt, ListItemExt, WidgetExt};
 use gtk::{Align, SignalListItemFactory, StringObject};
+use re_set_lib::ERROR;
+#[cfg(debug_assertions)]
+use re_set_lib::{utils::macros::ErrorLevel, write_log_to_file};
 
 pub const DBUS_PATH: &str = "/org/Xetibo/ReSet/Daemon";
 pub const WIRELESS: &str = "org.Xetibo.ReSet.Network";
@@ -93,5 +96,12 @@ pub fn get_capabilities() -> Vec<String> {
     let conn = Connection::new_session().unwrap();
     let proxy = conn.with_proxy(BASE, DBUS_PATH, Duration::from_millis(10000));
     let res: Result<(Vec<String>,), Error> = proxy.method_call(BASE, "GetCapabilities", ());
+    if res.is_err() {
+        ERROR!(
+            "Could not call capabilities from daemon",
+            ErrorLevel::Critical
+        );
+        return Vec::new();
+    }
     res.unwrap().0
 }

@@ -1,5 +1,5 @@
 use std::hint::{self};
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
@@ -81,5 +81,7 @@ async fn daemon_check(ready: Arc<AtomicBool>) {
     let res = handle.join();
     if res.unwrap().is_err() {
         run_daemon(Some(ready)).await;
+    } else {
+        ready.store(true, Ordering::SeqCst);
     }
 }
