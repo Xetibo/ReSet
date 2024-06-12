@@ -46,7 +46,7 @@ We are currently not published on flatpak due to issues with permissions.
 This is being worked on...
 
 Installation:
-Download the flatpak package from the release and install with the terminal.
+Download the flatpak package (reset.flatpak) from the release and install with the terminal.
 
 ```
 flatpak install --user reset.flatpak
@@ -59,7 +59,7 @@ flatpak install --user reset.flatpak
 <!-- ```paru -S ReSet``` -->
 
 Manually:
-Download the package from the releases tab and install it with pacman.
+Download the package (ReSet-version-x86_64.pkg.tar.zst) from the releases tab and install it with pacman.
 
 ```
 sudo pacman -U /path/to/reset
@@ -67,7 +67,7 @@ sudo pacman -U /path/to/reset
 
 ### Debian Package(Ubuntu 23.04 dependencies)
 
-Download the package from the releases tab and install it with apt.
+Download the package (ReSet.deb) from the releases tab and install it with apt.
 
 ```
 sudo apt install ./path/to/reset
