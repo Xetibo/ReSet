@@ -5,5 +5,5 @@ Architecture: all
 Description: A wip universal Linux settings application.
 Homepage: https://github.com/Xetibo/ReSet
 Build-Depends: rust
-Depends: libadwaita, gtk, dbus
-Recommends: pipewire-pulse, networkmanager, bluez
+Depends: libadwaita-1-0, libgtk-4-1, dbus
+Recommends: pipewire-pulse, network-manager, bluez
