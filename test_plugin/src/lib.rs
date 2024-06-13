@@ -8,7 +8,7 @@ use gtk::prelude::{BoxExt, ButtonExt};
 use re_set_lib::utils::plugin::{PluginCapabilities, PluginImplementation, PluginTestFunc, SidebarInfo};
 
 pub const BASE: &str = "org.Xetibo.ReSet.Daemon";
-pub const DBUS_PATH: &str = "/org/Xebito/ReSet/Plugins/test";
+pub const DBUS_PATH: &str = "/org/Xetibo/ReSet/Plugins/test";
 pub const INTERFACE: &str = "org.Xetibo.ReSet.TestPlugin";
 
 #[no_mangle]
