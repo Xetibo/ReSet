@@ -82,8 +82,12 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
     imp.reset_available_networks
         .set_action_name(Some("navigation.pop"));
     set_combo_row_ellipsis(imp.reset_wifi_device.get());
-    imp.reset_wifi_switch.connect_state_set(
-        clone!(@weak imp => @default-return glib::Propagation::Proceed, move |_, value| {
+    imp.reset_wifi_switch.connect_state_set(clone!(
+        #[weak]
+        imp,
+        #[upgrade_or]
+        glib::Propagation::Proceed,
+        move |_, value| {
             if imp.reset_switch_initial.load(Ordering::SeqCst) {
                 return glib::Propagation::Proceed;
             }
@@ -105,8 +109,8 @@ fn setup_callbacks(listeners: Arc<Listeners>, wifi_box: Arc<WifiBox>) -> Arc<Wif
                 scan_for_wifi(wifibox_ref.clone());
             }
             glib::Propagation::Proceed
-        }),
-    );
+        }
+    ));
 
     wifi_box
 }

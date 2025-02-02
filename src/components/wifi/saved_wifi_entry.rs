@@ -45,20 +45,31 @@ impl SavedWifiEntry {
         suffix_box.append(&delete_button);
         entry.add_suffix(&suffix_box);
 
-        edit_button.connect_clicked(
-            clone!(@ weak entry_imp, @ weak wifi_box => move |_| {
-                let _option = get_connection_settings(entry_imp.reset_connection_path.borrow().clone());
-                wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(_option, entry_imp.reset_connection_path.borrow().clone()));
-            }),
-        );
+        edit_button.connect_clicked(clone!(
+            #[weak]
+            entry_imp,
+            #[weak]
+            wifi_box,
+            move |_| {
+                let _option =
+                    get_connection_settings(entry_imp.reset_connection_path.borrow().clone());
+                wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(
+                    _option,
+                    entry_imp.reset_connection_path.borrow().clone(),
+                ));
+            }
+        ));
 
         let entry_ref = entry.clone();
-        delete_button.connect_clicked(clone!(@weak wifi_box => move |_| {
-            delete_connection(entry_ref.imp().reset_connection_path.take());
-            // FUTURE TODO: handle error
-            wifi_box.reset_stored_wifi_list.remove(&*entry_ref);
-
-        }));
+        delete_button.connect_clicked(clone!(
+            #[weak]
+            wifi_box,
+            move |_| {
+                delete_connection(entry_ref.imp().reset_connection_path.take());
+                // FUTURE TODO: handle error
+                wifi_box.reset_stored_wifi_list.remove(&*entry_ref);
+            }
+        ));
         entry
     }
 }

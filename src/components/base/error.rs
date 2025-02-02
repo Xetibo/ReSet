@@ -20,12 +20,13 @@ unsafe impl Sync for ReSetError {}
 impl ReSetError {
     pub fn new() -> Self {
         let error: ReSetError = Object::builder().build();
-        error
-            .imp()
-            .reset_error_button
-            .connect_clicked(clone!(@strong error => move |_| {
-               error.popdown();
-            }));
+        error.imp().reset_error_button.connect_clicked(clone!(
+            #[strong]
+            error,
+            move |_| {
+                error.popdown();
+            }
+        ));
         error
     }
 }

@@ -17,7 +17,7 @@ use gtk::{gio, StringObject};
 use re_set_lib::{
     bluetooth::bluetooth_structures::{BluetoothAdapter, BluetoothDevice},
     signals::{BluetoothDeviceAdded, BluetoothDeviceChanged, BluetoothDeviceRemoved},
-    ERROR
+    ERROR,
 };
 
 #[cfg(debug_assertions)]
@@ -90,23 +90,31 @@ fn setup_callbacks(
 
     let bluetooth_box_discover = bluetooth_box.clone();
     imp.reset_bluetooth_discoverable_switch
-        .connect_active_notify(clone!(@weak imp => move |state| {
-            set_bluetooth_adapter_visibility(
-                imp.reset_current_bluetooth_adapter.borrow().path.clone(),
-                state.is_active(),
-                bluetooth_box_discover.clone()
-            );
-        }));
+        .connect_active_notify(clone!(
+            #[weak]
+            imp,
+            move |state| {
+                set_bluetooth_adapter_visibility(
+                    imp.reset_current_bluetooth_adapter.borrow().path.clone(),
+                    state.is_active(),
+                    bluetooth_box_discover.clone(),
+                );
+            }
+        ));
 
     let bluetooth_box_pairable = bluetooth_box.clone();
     imp.reset_bluetooth_pairable_switch
-        .connect_active_notify(clone!(@weak imp => move |state| {
-            set_bluetooth_adapter_pairability(
-                imp.reset_current_bluetooth_adapter.borrow().path.clone(),
-                state.is_active(),
-                bluetooth_box_pairable.clone()
-            );
-        }));
+        .connect_active_notify(clone!(
+            #[weak]
+            imp,
+            move |state| {
+                set_bluetooth_adapter_pairability(
+                    imp.reset_current_bluetooth_adapter.borrow().path.clone(),
+                    state.is_active(),
+                    bluetooth_box_pairable.clone(),
+                );
+            }
+        ));
 
     imp.reset_bluetooth_switch
         .connect_state_set(move |_, state| {

@@ -94,26 +94,44 @@ impl WifiEntry {
         entry_imp.access_point.set(access_point);
 
         entry.set_activatable(true);
-        entry.connect_activated(clone!(@weak entry_imp => move |_| {
-            let access_point = entry_imp.access_point.borrow();
-            if *entry_imp.connected.borrow() {
-                click_disconnect(stored_entry.clone());
-            } else if access_point.stored {
-                click_stored_network(stored_entry.clone());
-            } else {
-                click_new_network(new_entry.clone());
+        entry.connect_activated(clone!(
+            #[weak]
+            entry_imp,
+            move |_| {
+                let access_point = entry_imp.access_point.borrow();
+                if *entry_imp.connected.borrow() {
+                    click_disconnect(stored_entry.clone());
+                } else if access_point.stored {
+                    click_stored_network(stored_entry.clone());
+                } else {
+                    click_new_network(new_entry.clone());
+                }
             }
-        }));
+        ));
         entry.setup_callbacks(wifi_box);
         entry
     }
 
     pub fn setup_callbacks(&self, wifi_box: &WifiBox) {
         let self_imp = self.imp();
-        self_imp.reset_wifi_edit_button.borrow().connect_clicked(clone!(@ weak self_imp, @ weak wifi_box => move |_| {
-            let _option = get_connection_settings(self_imp.access_point.borrow().associated_connection.clone());
-            wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(_option, self_imp.access_point.borrow().associated_connection.clone()));
-        }));
+        self_imp
+            .reset_wifi_edit_button
+            .borrow()
+            .connect_clicked(clone!(
+                #[weak]
+                self_imp,
+                #[weak]
+                wifi_box,
+                move |_| {
+                    let _option = get_connection_settings(
+                        self_imp.access_point.borrow().associated_connection.clone(),
+                    );
+                    wifi_box.reset_wifi_navigation.push(&*WifiOptions::new(
+                        _option,
+                        self_imp.access_point.borrow().associated_connection.clone(),
+                    ));
+                }
+            ));
     }
 }
 
@@ -233,16 +251,33 @@ pub fn click_new_network(entry: Arc<WifiEntry>) {
 
     let entry_imp = entry.imp();
     let popup_imp = entry_imp.reset_wifi_popup.imp();
-    popup_imp
-        .reset_popup_entry
-        .connect_activate(clone!(@weak entry as orig_entry, @weak entry_imp => move |entry| {
-                connect_new_network(orig_entry, entry_imp.access_point.clone().take(), entry.text().to_string());
-        }));
-    popup_imp.reset_popup_button.connect_clicked(
-        clone!(@weak entry as orig_entry,@weak entry_imp, @weak popup_imp => move |_| {
-            let entry = entry_imp.reset_wifi_popup.imp().reset_popup_entry.text().to_string();
-                connect_new_network(orig_entry, entry_imp.access_point.clone().take(), entry);
-        }),
-    );
+    popup_imp.reset_popup_entry.connect_activate(clone!(
+        #[weak(rename_to = orig_entry)]
+        entry,
+        #[weak]
+        entry_imp,
+        move |entry| {
+            connect_new_network(
+                orig_entry,
+                entry_imp.access_point.clone().take(),
+                entry.text().to_string(),
+            );
+        }
+    ));
+    popup_imp.reset_popup_button.connect_clicked(clone!(
+        #[weak(rename_to = orig_entry)]
+        entry,
+        #[weak]
+        entry_imp,
+        move |_| {
+            let entry = entry_imp
+                .reset_wifi_popup
+                .imp()
+                .reset_popup_entry
+                .text()
+                .to_string();
+            connect_new_network(orig_entry, entry_imp.access_point.clone().take(), entry);
+        }
+    ));
     entry_imp.reset_wifi_popup.popup();
 }

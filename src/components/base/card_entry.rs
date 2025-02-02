@@ -45,18 +45,22 @@ impl CardEntry {
             entry.set_model(Some(&list));
             entry.set_selected(index);
             entry.set_use_subtitle(true);
-            entry.connect_selected_notify(clone!(@weak imp => move |dropdown| {
-                let selected = dropdown.selected_item();
-                if selected.is_none() {
-                    return;
+            entry.connect_selected_notify(clone!(
+                #[weak]
+                imp,
+                move |dropdown| {
+                    let selected = dropdown.selected_item();
+                    if selected.is_none() {
+                        return;
+                    }
+                    let selected = selected.unwrap();
+                    let selected = selected.downcast_ref::<StringObject>().unwrap();
+                    let selected = selected.string().to_string();
+                    let map = imp.reset_card_map.borrow();
+                    let (device_index, profile_name) = map.get(&selected).unwrap();
+                    set_card_profile_of_device(*device_index, profile_name.clone());
                 }
-                let selected = selected.unwrap();
-                let selected = selected.downcast_ref::<StringObject>().unwrap();
-                let selected = selected.string().to_string();
-                let map = imp.reset_card_map.borrow();
-                let (device_index, profile_name) = map.get(&selected).unwrap();
-                set_card_profile_of_device(*device_index, profile_name.clone());
-            }));
+            ));
             entry.set_factory(Some(&create_dropdown_label_factory()));
         }
         entry

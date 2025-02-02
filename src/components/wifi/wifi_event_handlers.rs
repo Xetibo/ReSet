@@ -76,7 +76,7 @@ pub fn access_point_changed_handler(wifi_box: Arc<WifiBox>, ir: AccessPointChang
             entry_imp
                 .reset_wifi_strength
                 .borrow()
-                .set_from_icon_name(match strength {
+                .set_icon_name(match strength {
                     WifiStrength::Excellent => Some("network-wireless-signal-excellent-symbolic"),
                     WifiStrength::Ok => Some("network-wireless-signal-ok-symbolic"),
                     WifiStrength::Weak => Some("network-wireless-signal-weak-symbolic"),

@@ -235,31 +235,45 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
     let imp = wifi_options.imp();
 
     // General
-    imp.reset_wifi_auto_connect
-        .connect_active_notify(clone!(@weak imp => move |x| {
+    imp.reset_wifi_auto_connect.connect_active_notify(clone!(
+        #[weak]
+        imp,
+        move |x| {
             imp.connection.borrow_mut().settings.autoconnect = x.is_active();
-        }));
-    imp.reset_wifi_metered
-        .connect_active_notify(clone!(@weak imp => move |x| {
+        }
+    ));
+    imp.reset_wifi_metered.connect_active_notify(clone!(
+        #[weak]
+        imp,
+        move |x| {
             imp.connection.borrow_mut().settings.metered = if x.is_active() { 1 } else { 2 };
-        }));
-    imp.wifi_options_apply_button
-        .connect_clicked(clone!(@weak imp => move |_| {
+        }
+    ));
+    imp.wifi_options_apply_button.connect_clicked(clone!(
+        #[weak]
+        imp,
+        move |_| {
             let prop = imp.connection.borrow().convert_to_propmap();
             set_connection_settings(path.clone(), prop);
-        }));
+        }
+    ));
     // IPv4
     let wifi_options_ip4 = wifi_options.clone();
-    imp.reset_ip4_method
-        .connect_selected_notify(clone!(@weak imp => move |dropdown| {
+    imp.reset_ip4_method.connect_selected_notify(clone!(
+        #[weak]
+        imp,
+        move |dropdown| {
             let selected = dropdown.selected();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv4.method = DNSMethod4::from_i32(selected as i32);
             wifi_options_ip4.set_ip4_visibility(selected);
-        }));
+        }
+    ));
 
-    imp.reset_ip4_dns
-        .connect_changed(clone!(@weak imp => move |entry| {
+    imp.reset_ip4_dns.connect_changed(clone!(
+        #[weak]
+        imp,
+        move |entry| {
             let dns_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv4.dns.clear();
@@ -275,15 +289,21 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
                     imp.reset_ip4_dns.add_css_class("error");
                 }
             }
-        }));
-    imp.reset_ip4_address_add_button
-        .connect_clicked(clone!(@weak imp => move |_|  {
+        }
+    ));
+    imp.reset_ip4_address_add_button.connect_clicked(clone!(
+        #[weak]
+        imp,
+        move |_| {
             let address = &WifiAddressEntry::new(None, imp.connection.clone(), IPv4);
             imp.reset_ip4_address_group.add(address);
-        }));
+        }
+    ));
 
-    imp.reset_ip4_gateway
-        .connect_changed(clone!(@weak imp => move |entry| {
+    imp.reset_ip4_gateway.connect_changed(clone!(
+        #[weak]
+        imp,
+        move |entry| {
             let gateway_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv4.gateway.clear();
@@ -297,19 +317,25 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             } else {
                 imp.reset_ip4_gateway.add_css_class("error");
             }
-        }));
+        }
+    ));
     // IPv6
     let wifi_options_ip6 = wifi_options.clone();
-    imp.reset_ip6_method
-        .connect_selected_notify(clone!(@weak imp => move |dropdown| {
+    imp.reset_ip6_method.connect_selected_notify(clone!(
+        #[weak]
+        imp,
+        move |dropdown| {
             let selected = dropdown.selected();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv6.method = DNSMethod6::from_i32(selected as i32);
             wifi_options_ip6.set_ip6_visibility(selected);
-        }));
+        }
+    ));
 
-    imp.reset_ip6_dns
-        .connect_changed(clone!(@weak imp => move |entry| {
+    imp.reset_ip6_dns.connect_changed(clone!(
+        #[weak]
+        imp,
+        move |entry| {
             let dns_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv6.dns.clear();
@@ -325,15 +351,21 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
                     imp.reset_ip6_dns.add_css_class("error");
                 }
             }
-        }));
-    imp.reset_ip6_address_add_button
-        .connect_clicked(clone!(@weak imp => move |_|  {
+        }
+    ));
+    imp.reset_ip6_address_add_button.connect_clicked(clone!(
+        #[weak]
+        imp,
+        move |_| {
             let address = &WifiAddressEntry::new(None, imp.connection.clone(), IPv4);
             imp.reset_ip6_address_group.add(address);
-        }));
+        }
+    ));
 
-    imp.reset_ip6_gateway
-        .connect_changed(clone!(@weak imp => move |entry| {
+    imp.reset_ip6_gateway.connect_changed(clone!(
+        #[weak]
+        imp,
+        move |entry| {
             let gateway_input = entry.text();
             let mut conn = imp.connection.borrow_mut();
             conn.ipv6.gateway.clear();
@@ -347,31 +379,40 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             } else {
                 imp.reset_ip6_gateway.add_css_class("error");
             }
-        }));
+        }
+    ));
 
     // Security
     imp.reset_wifi_security_dropdown
-        .connect_selected_notify(clone!(@weak imp => move |dropdown| {
-            let selected = dropdown.selected();
-            let mut conn = imp.connection.borrow_mut();
+        .connect_selected_notify(clone!(
+            #[weak]
+            imp,
+            move |dropdown| {
+                let selected = dropdown.selected();
+                let mut conn = imp.connection.borrow_mut();
 
-            match selected {
-                0 => { // None
-                    imp.reset_wifi_password.set_visible(false);
-                    conn.security.key_management = KeyManagement::NONE;
-                    conn.security.authentication_algorithm = String::from("none");
-                },
-                1 => { // WPA/WPA2 Personal
-                    imp.reset_wifi_password.set_visible(true);
-                    conn.security.key_management = KeyManagement::WPAPSK;
-                    conn.security.authentication_algorithm = String::from("none");
-                },
-                _ => {}
+                match selected {
+                    0 => {
+                        // None
+                        imp.reset_wifi_password.set_visible(false);
+                        conn.security.key_management = KeyManagement::NONE;
+                        conn.security.authentication_algorithm = String::from("none");
+                    }
+                    1 => {
+                        // WPA/WPA2 Personal
+                        imp.reset_wifi_password.set_visible(true);
+                        conn.security.key_management = KeyManagement::WPAPSK;
+                        conn.security.authentication_algorithm = String::from("none");
+                    }
+                    _ => {}
+                }
             }
-        }));
+        ));
 
-    imp.reset_wifi_password
-        .connect_changed(clone!(@weak imp => move |entry| {
+    imp.reset_wifi_password.connect_changed(clone!(
+        #[weak]
+        imp,
+        move |entry| {
             let password_input = entry.text();
             if password_input.len() < 8 && !password_input.is_empty() {
                 entry.add_css_class("error");
@@ -380,7 +421,8 @@ fn setup_callbacks(wifi_options: &Arc<WifiOptions>, path: Path<'static>) {
             }
             let mut conn = imp.connection.borrow_mut();
             conn.security.psk = password_input.to_string();
-        }));
+        }
+    ));
 
     imp.reset_available_networks.set_activatable(true);
     imp.reset_available_networks

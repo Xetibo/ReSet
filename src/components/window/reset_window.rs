@@ -62,12 +62,12 @@ impl ReSetWindow {
         self_imp.reset_sidebar_breakpoint.add_setter(
             &Object::from(self_imp.reset_overlay_split_view.get()),
             "collapsed",
-            &true.to_value(),
+            Some(&true.to_value()),
         );
         self_imp.reset_sidebar_breakpoint.add_setter(
             &Object::from(self_imp.reset_sidebar_toggle.get()),
             "visible",
-            &true.to_value(),
+            Some(&true.to_value()),
         );
     }
 
@@ -202,11 +202,13 @@ impl ReSetWindow {
             self_imp.position.clone(),
         );
 
-        self_imp
-            .reset_sidebar_list
-            .connect_row_activated(clone!(@ weak self_imp => move |_, _| {
+        self_imp.reset_sidebar_list.connect_row_activated(clone!(
+            #[weak]
+            self_imp,
+            move |_, _| {
                 self_imp.reset_search_entry.set_text("");
-            }));
+            }
+        ));
         let mut i = 0;
         for info in sidebar_list {
             if info.parent.is_none() && i != 0 {

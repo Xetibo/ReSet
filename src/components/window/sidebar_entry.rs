@@ -18,7 +18,7 @@ impl SidebarEntry {
         entry_imp.reset_sidebar_label.get().set_text(info.name());
         entry_imp
             .reset_sidebar_image
-            .set_from_icon_name(Some(info.icon_name()));
+            .set_icon_name(Some(info.icon_name()));
         if let Some(boxes) = info.plugin_boxes() {
             entry_imp.plugin_boxes.borrow_mut().extend(boxes);
         }
