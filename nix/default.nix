@@ -1,69 +1,69 @@
-{ rustPlatform
-, rust-bin
-, pulseaudio
-, dbus
-, gdk-pixbuf
-, gnome
-, pkg-config
-, wrapGAppsHook4
-, gtk4
-, libadwaita
-, python312Packages
-, flatpak
-, flatpak-builder
-, lib
-, lockFile
-, ...
-}:
-let
+{
+  rustPlatform,
+  rust-bin,
+  pulseaudio,
+  dbus,
+  gdk-pixbuf,
+  adwaita-icon-theme,
+  pkg-config,
+  wrapGAppsHook4,
+  gtk4,
+  libadwaita,
+  python312Packages,
+  flatpak,
+  flatpak-builder,
+  lib,
+  lockFile,
+  ...
+}: let
   cargoToml = builtins.fromTOML (builtins.readFile ../Cargo.toml);
 in
-rustPlatform.buildRustPackage rec {
-  pname = "ReSet";
-  version = cargoToml.package.version;
+  rustPlatform.buildRustPackage rec {
+    pname = "ReSet";
+    version = cargoToml.package.version;
 
-  src = ../.;
+    src = ../.;
 
-  buildInputs = [
-    gtk4
-    libadwaita
-    pulseaudio
-    dbus
-    gdk-pixbuf
-    gnome.adwaita-icon-theme
-    python312Packages.aiohttp
-    python312Packages.toml
-    flatpak
-    flatpak-builder
-  ];
+    buildInputs = [
+      gtk4
+      libadwaita
+      pulseaudio
+      dbus
+      gdk-pixbuf
+      adwaita-icon-theme
+      python312Packages.aiohttp
+      python312Packages.toml
+      flatpak
+      flatpak-builder
+    ];
 
-  cargoLock = {
-    inherit lockFile;
-  };
+    cargoLock = {
+      inherit lockFile;
+    };
 
-  nativeBuildInputs = [
-    pkg-config
-    wrapGAppsHook4
-    rust-bin.nightly."2024-05-10".default
-  ];
+    nativeBuildInputs = [
+      pkg-config
+      wrapGAppsHook4
+      rust-bin.nightly."2024-05-10".default
+    ];
 
-  copyLibs = true;
+    copyLibs = true;
 
-  postInstall = ''
-    	install -D --mode=444 $src/${pname}.desktop $out/share/applications/${pname}.desktop
-    	install -D --mode=444 $src/src/resources/icons/${pname}.svg $out/share/pixmaps/${pname}.svg
-  '';
+    postInstall = ''
+      install -D --mode=444 $src/${pname}.desktop $out/share/applications/${pname}.desktop
+      install -D --mode=444 $src/src/resources/icons/${pname}.svg $out/share/pixmaps/${pname}.svg
+    '';
 
-  # test is broken in nix for some reason
-  doInstallCheck = false;
-  doCheck = false;
+    # test is broken in nix for some reason
+    doInstallCheck = false;
+    doCheck = false;
 
-  meta = with lib; {
-    description = "A wip universal Linux settings application.";
-    homepage = "https://github.com/Xetibo/ReSet";
-    changelog = "https://github.com/Xetibo/ReSet/releases/tag/${version}";
-    license = licenses.gpl3;
-    maintainers = with maintainers; [ DashieTM ];
-    mainProgram = "ReSet";
-  };
-}
+    meta = with lib; {
+      description = "A wip universal Linux settings application.";
+      homepage = "https://github.com/Xetibo/ReSet";
+      changelog = "https://github.com/Xetibo/ReSet/releases/tag/${version}";
+      license = licenses.gpl3;
+      maintainers = with maintainers; [DashieTM];
+      mainProgram = "ReSet";
+    };
+  }
